@@ -1,7 +1,11 @@
 from django.shortcuts import render
+from django.http import Http404
 
 
 # Create your views here.
+from wbmcrawlr import oms
+
+from utils.omsutils import retrieve_run
 
 
 def index(request):
@@ -18,10 +22,23 @@ def index(request):
 
 
 def certify(request, run_number, reco):
-    context = {'run_number': run_number, 'reco': reco}
+    try:
+        run = retrieve_run(run_number)
+    except IndexError:
+        context = {"message": "Run {} does not exist".format(run_number)}
+        return render(request, 'crtfr/404.html', context)
+
+    context = {'run_number': run_number, 'reco': reco, 'run': run}
     return render(request, 'crtfr/certify.html', context)
 
 
 def analyse(request, run_number, reco):
-    context = {'run_number': run_number, 'reco': reco}
+    run = retrieve_run(run_number)
+    context = {'run_number': run_number, 'reco': reco, 'run': run}
     return render(request, 'crtfr/analyse.html', context)
+
+
+def plot(request, run_number, reco):
+    run = retrieve_run(run_number)
+    context = {'run_number': run_number, 'reco': reco, 'run': run}
+    return render(request, 'crtfr/plot.html', context)

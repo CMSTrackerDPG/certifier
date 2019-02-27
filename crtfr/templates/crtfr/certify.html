@@ -1,10 +1,11 @@
 {% extends 'crtfr/base.html' %}
 
 {% block content %}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
     <div class="container">
         <div class="row">
             <div class="mt-4 mb-4 col-lg-12 text-center">
-                <h1>{{ run_number }} <span class="badge badge-info">{{ reco|capfirst }}</span></h1>
+                <h1>{{ run_number }} <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span></h1>
             </div>
         </div>
     </div>
@@ -18,45 +19,45 @@
                         <h6 class="card-title text-primary">Type</h6>
 
                         <div class="row">
-                            <div class="col-md-5 text-right">
+                            <div class="col-md-4 text-right">
                                 <strong>Run type</strong>
                             </div>
-                            <div class="col-md-7">
-                                Collisions
+                            <div class="col-md-8">
+                                {{ run.run_type|capfirst }}
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5 text-right">
+                            <div class="col-md-4 text-right">
                                 <strong>B field</strong>
                             </div>
-                            <div class="col-md-7">
-                                3.8 T
+                            <div class="col-md-8">
+                                \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5 text-right">
+                            <div class="col-md-4 text-right">
                                 <strong>Energy</strong>
                             </div>
-                            <div class="col-md-7">
-                                13 TeV
+                            <div class="col-md-8">
+                                \({{ run.energy }}\) \({{ run.energy_unit }}\)
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-5 text-right">
+                            <div class="col-md-4 text-right">
                                 <strong>Particle</strong>
                             </div>
-                            <div class="col-md-7">
-                                Protons
+                            <div class="col-md-8">
+                                {{ run.fill.fill_type_runtime }}
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-5 text-right">
+                            <div class="col-md-4 text-right">
                                 <strong>Era</strong>
                             </div>
-                            <div class="col-md-7">
-                                2018B
+                            <div class="col-md-8">
+                                {{ run.fill.era|capfirst }}
                             </div>
                         </div>
                     </div>
@@ -70,44 +71,44 @@
 
                         <h6 class="card-title text-success">Lumi</h6>
                         <div class="row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-5 text-right">
                                 <strong>Lumisections</strong>
                             </div>
-                            <div class="col-md-6">
-                                <span>543</span>
+                            <div class="col-md-7">
+                                \(543\)
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-5 text-right">
                                 <strong>Recorded lumi</strong>
                             </div>
                             <div class="col-md-6">
-                                <span class="badge badge-danger">0.71 <i>pb<sup>-1</sup></i></span>
+                                \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-5 text-right">
                                 <strong>Delivered lumi</strong>
                             </div>
-                            <div class="col-md-6">
-                                <span class="">5.91 <i>pb<sup>-1</sup></i></span>
+                            <div class="col-md-7">
+                                \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-5 text-right">
                                 <strong>Initial lumi</strong>
                             </div>
-                            <div class="col-md-6">
-                                <span class="">13.9 &times; <i>10<sup>​27</sup>cm<sup>​−2</sup>​s<sup>​−1</sup></i></span>
+                            <div class="col-md-7">
+                                \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-5 text-right">
                                 <strong>End lumi</strong>
                             </div>
-                            <div class="col-md-6">
-                                <span class="">4.9 &times; <i>10<sup>​27</sup>cm<sup>​−2</sup>​s<sup>​−1</sup></i></span>
+                            <div class="col-md-7">
+                                \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
                             </div>
                         </div>
                     </div>
@@ -123,7 +124,7 @@
                                 <strong>Fill number</strong>
                             </div>
                             <div class="col-md-7">
-                                6444
+                                {{ run.fill.fill_number }}
                             </div>
                         </div>
                         <div class="row">
@@ -131,7 +132,7 @@
                                 <strong>Bunches</strong>
                             </div>
                             <div class="col-md-7">
-                                2544
+                                \({{ run.fill.bunches_colliding }}\)
                             </div>
                         </div>
                         <div class="row">
@@ -139,7 +140,7 @@
                                 <strong>Initial lumi</strong>
                             </div>
                             <div class="col-md-7">
-                                1.7 &times; <i>10<sup>​27</sup>cm<sup>​−2</sup>​s<sup>​−1</sup></i>
+                                \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
                             </div>
                         </div>
 
@@ -148,7 +149,7 @@
                                 <strong>Peak lumi</strong>
                             </div>
                             <div class="col-md-7">
-                                1.9 &times; <i>10<sup>​27</sup>cm<sup>​−2</sup>​s<sup>​−1</sup></i>
+                                \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
                             </div>
                         </div>
 
@@ -157,8 +158,7 @@
                                 <strong>Peak pileup</strong>
                             </div>
                             <div class="col-md-7">
-                                54.7
-                                ​​
+                                \({{ run.fill.peak_pileup|floatformat:3 }}\)
                             </div>
                         </div>
                     </div>
@@ -175,8 +175,11 @@
         </div>
 
         <div class="text-center" id="id-analyse-content" style="display:none;">
-            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info">
+            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
                 Open Analysis
+            </a>
+            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+                Open Plots
             </a>
         </div>
     </div>

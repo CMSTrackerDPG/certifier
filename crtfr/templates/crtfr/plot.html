@@ -1,0 +1,151 @@
+{%  extends 'crtfr/base.html' %}
+
+{% block head %}
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock head %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="mt-4 mb-4 col-lg-12 text-center">
+                <h1>{{ run_number }} <span class="badge badge-info">{{ reco|capfirst }}</span></h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-pixel-tab" data-toggle="pill" href="#v-pills-pixel" role="tab" aria-controls="v-pills-pixel" aria-selected="false">Pixel</a>
+                    <a class="nav-link" id="v-pills-strip-tab" data-toggle="pill" href="#v-pills-strip" role="tab" aria-controls="v-pills-strip" aria-selected="false">Strip</a>
+                    <a class="nav-link" id="v-pills-tracking-tab" data-toggle="pill" href="#v-pills-tracking" role="tab" aria-controls="v-pills-tracking" aria-selected="false">Tracking</a>
+                </div>
+            </div>
+            <div class="col-10">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-pixel" role="tabpanel" aria-labelledby="v-pills-pixel-tab"><div id="myDiv"></div></div>
+                    <div class="tab-pane fade" id="v-pills-strip" role="tabpanel" aria-labelledby="v-pills-strip-tab">Strip</div>
+                    <div class="tab-pane fade" id="v-pills-tracking" role="tabpanel" aria-labelledby="v-pills-tracking-tab">Tracking</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script>
+            var x = [
+                89,
+                12536,
+                40568,
+                64450,
+                85868,
+                105657,
+                113882,
+                121973,
+                133032,
+                146352,
+                169560,
+                209066,
+                277466,
+                392911,
+                575178,
+                838524,
+                1190342,
+                1604264,
+                2038940,
+                2440871,
+                2752970,
+                2931917,
+                2961808,
+                2858818,
+                2653020,
+                2385360,
+                2090088,
+                1804740,
+                1541389,
+                1311436,
+                1113792,
+                948688,
+                813254,
+                701506,
+                607623,
+                526514,
+                456904,
+                397933,
+                347704,
+                307084,
+                269684,
+                237923,
+                209903,
+                186423,
+                166272,
+                148671,
+                132482,
+                119718,
+                107480,
+                96591,
+                88027,
+                80290,
+                73475,
+                66923,
+                61711,
+                56570,
+                51856,
+                48005,
+                44568,
+                41386,
+                38271,
+                35887,
+                32687,
+                30914,
+                28757,
+                26741,
+                25053,
+                23290,
+                21799,
+                20429,
+                19247,
+                18017,
+                16774,
+                15784,
+                14539,
+                13824,
+                12957,
+                11901,
+                11348,
+                10591,
+                10059,
+                9576,
+                8947,
+                8330,
+                7824,
+                7420,
+                6994,
+                6563,
+                6226,
+                6013,
+                5429,
+                5307,
+                4909,
+                4689,
+                4399,
+                4257,
+                3861,
+                3797,
+                3513,
+                3392
+            ];
+
+            var trace = {
+                x: x,
+                opacity: 0.6,
+                type: 'histogram',
+                nbinsx: 100,
+            };
+            var data = [trace];
+            Plotly.newPlot('myDiv', data);
+        </script>
+
+{% endblock content %}
