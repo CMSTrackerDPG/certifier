@@ -25,7 +25,7 @@ SECRET_KEY = "*o5*!8r8_nkv5=81dddg+y12hm7#_pw$88g8v218*tpn1g0s9="
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["test-tracker-certifer.web.cern.ch/", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["test-tracker-certifer.web.cern.ch", "127.0.0.1", "localhost"]
 
 
 # Application definition
