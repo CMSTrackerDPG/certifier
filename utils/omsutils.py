@@ -1,5 +1,3 @@
-import json
-
 from django.db import IntegrityError
 from wbmcrawlr import oms
 
@@ -17,7 +15,6 @@ def create_django_model_from_oms_meta(oms_meta_dict):
         description = value['description']
         title = value['title']
 
-        django_model = None
         if "float" in source_type:
             django_model = "FloatField("
         elif "varchar" in source_type:
@@ -58,8 +55,8 @@ def retrieve_run(run_number):
     fill_number = response.pop("fill_number")
 
     exclude = ["start_time", "last_update", "end_time"]
-
     run_kwargs = {key: value for key, value in response.items() if key not in exclude}
+    run_kwargs["lumisections"] = oms.get_lumisection_count(run_number)
 
     try:
         fill = OmsFill.objects.get(fill_number=fill_number)

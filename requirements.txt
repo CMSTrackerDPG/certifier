@@ -1,1 +1,16 @@
+appdirs==1.4.3
+attrs==18.2.0
+black==18.9b0
+cernrequests==0.2.0
+certifi==2018.11.29
+chardet==3.0.4
+Click==7.0
 Django==2.1.7
+future==0.17.1
+idna==2.8
+pytz==2018.9
+requests==2.21.0
+toml==0.10.0
+urllib3==1.24.1
+git+https://github.com/ptrstn/wbmcrawlr
+xmltodict==0.12.0

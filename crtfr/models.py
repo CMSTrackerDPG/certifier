@@ -53,13 +53,17 @@ class BadReason(models.Model):
     description = models.TextField()
 
 
-class RunCertification(models.Model):
-    SUBCOMPONENT_STATUS_CHOICES = (("bad", "Bad"), ("good", "Good"), ("excluded", "Excluded"))
+class TrackerCertification(models.Model):
+    SUBCOMPONENT_STATUS_CHOICES = (
+        ("bad", "Bad"),
+        ("good", "Good"),
+        ("excluded", "Excluded"),
+    )
 
     runreconstruction = models.OneToOneField(
         RunReconstruction, on_delete=models.CASCADE, primary_key=True
     )
-    reference_runrunreconstruction = models.ForeignKey(
+    reference_runreconstruction = models.ForeignKey(
         RunReconstruction, on_delete=models.CASCADE, related_name="+"
     )
 
@@ -83,17 +87,19 @@ class RunCertification(models.Model):
 
     @property
     def run_number(self):
-        return self.run.run.run_number
+        return self.runreconstruction.run.run_number
 
     @property
     def reconstruction(self):
-        return self.run.get_reconstruction_display()
+        return self.runreconstruction.get_reconstruction_display()
 
     @property
     def reference_run_number(self):
-        return self.reference_run.run.run_number
+        return self.reference_runreconstruction.run.run_number
 
     def __str__(self):
         return "{} {} {}".format(
-            self.run, self.reconstruction, self.get_tracking_display()
+            self.runreconstruction,
+            self.reference_runreconstruction,
+            self.get_tracking_display(),
         )

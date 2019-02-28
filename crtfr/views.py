@@ -15,10 +15,10 @@ def index(request):
     from django.shortcuts import redirect
 
     if run_number and reco:
-        response = redirect('/certify/{}/{}'.format(run_number, reco))
+        response = redirect("/certify/{}/{}".format(run_number, reco))
         return response
 
-    return render(request, 'crtfr/index.html')
+    return render(request, "crtfr/index.html")
 
 
 def certify(request, run_number, reco):
@@ -26,19 +26,19 @@ def certify(request, run_number, reco):
         run = retrieve_run(run_number)
     except IndexError:
         context = {"message": "Run {} does not exist".format(run_number)}
-        return render(request, 'crtfr/404.html', context)
+        return render(request, "crtfr/404.html", context)
 
-    context = {'run_number': run_number, 'reco': reco, 'run': run}
-    return render(request, 'crtfr/certify.html', context)
+    context = {"run_number": run_number, "reco": reco, "run": run}
+    return render(request, "crtfr/certify.html", context)
 
 
 def analyse(request, run_number, reco):
     run = retrieve_run(run_number)
-    context = {'run_number': run_number, 'reco': reco, 'run': run}
-    return render(request, 'crtfr/analyse.html', context)
+    context = {"run_number": run_number, "reco": reco, "run": run}
+    return render(request, "crtfr/analyse.html", context)
 
 
 def plot(request, run_number, reco):
     run = retrieve_run(run_number)
-    context = {'run_number': run_number, 'reco': reco, 'run': run}
-    return render(request, 'crtfr/plot.html', context)
+    context = {"run_number": run_number, "reco": reco, "run": run}
+    return render(request, "crtfr/plot.html", context)
