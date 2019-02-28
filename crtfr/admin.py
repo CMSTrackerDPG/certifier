@@ -1,7 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+
 from .models import (
-    User,
     TrackerCertification,
     RunReconstruction,
     TrackingProblem,
@@ -10,7 +9,6 @@ from .models import (
     BadReason,
 )
 
-admin.site.register(User, UserAdmin)
 admin.site.register(RunReconstruction)
 admin.site.register(TrackerCertification)
 admin.site.register(BadReason)

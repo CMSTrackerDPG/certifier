@@ -1,12 +1,6 @@
 from django.db import models
 
-from django.contrib.auth.models import AbstractUser
-
 from oms.models import OmsRun
-
-
-class User(AbstractUser):
-    pass
 
 
 class RunReconstruction(models.Model):

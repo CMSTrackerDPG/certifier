@@ -1,11 +1,8 @@
 from django.shortcuts import render
-from django.http import Http404
-
 
 # Create your views here.
-from wbmcrawlr import oms
 
-from utils.omsutils import retrieve_run
+from oms.utils import retrieve_run
 
 
 def index(request):

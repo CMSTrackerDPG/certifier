@@ -115,4 +115,4 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-AUTH_USER_MODEL = "crtfr.User"
+#AUTH_USER_MODEL = "crtfr.User"
