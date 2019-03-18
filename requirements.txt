@@ -14,3 +14,6 @@ toml==0.10.0
 urllib3==1.24.1
 git+https://github.com/ptrstn/wbmcrawlr
 xmltodict==0.12.0
+django-filter==2.1.0
+djangorestframework==3.9.1
+Markdown==3.0.1

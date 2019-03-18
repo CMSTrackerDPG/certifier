@@ -11,7 +11,7 @@ class RunReconstruction(models.Model):
         ("rereco", "ReReco"),
     )
     run = models.ForeignKey(OmsRun, on_delete=models.CASCADE)
-    reconstruction = models.CharField(max_length=3, choices=RECONSTRUCTION_CHOICES)
+    reconstruction = models.CharField(max_length=8, choices=RECONSTRUCTION_CHOICES)
     dataset = models.CharField(max_length=150)
 
     is_reference = models.BooleanField(default=False)
