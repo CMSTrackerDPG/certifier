@@ -162,6 +162,16 @@ class OmsFill(models.Model):
     crossing_angle_unit = models.CharField(max_length=50)
     energy_unit = models.CharField(max_length=50)
 
+    first_run_number = models.PositiveIntegerField(
+        help_text="Run number for the first run in the fill",
+        verbose_name="First run number",
+    )
+
+    last_run_number = models.PositiveIntegerField(
+        help_text="Run number for the last run in the fill",
+        verbose_name="Last run number",
+    )
+
 
 class OmsRun(models.Model):
     """
