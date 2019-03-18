@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 # Create your tests here.
-from crtfr.models import RunReconstruction
+from certifier.models import RunReconstruction
 from dqmgui.models import Histogram
 
 

@@ -2,7 +2,7 @@ from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 
 # Create your models here.
-from crtfr.models import RunReconstruction
+from certifier.models import RunReconstruction
 
 
 class Histogram(models.Model):
