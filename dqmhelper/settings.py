@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["test-tracker-certifer.web.cern.ch", "127.0.0.1", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
+    "home.apps.HomeConfig",
     "certifier.apps.CertifierConfig",
     "oms.apps.OmsConfig",
     "django.contrib.admin",
@@ -114,6 +115,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
 
 #AUTH_USER_MODEL = "certifier.User"
