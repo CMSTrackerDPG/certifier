@@ -27,15 +27,3 @@ def certify(request, run_number, reco):
 
     context = {"run_number": run_number, "reco": reco, "run": run}
     return render(request, "certifier/certify.html", context)
-
-
-def analyse(request, run_number, reco):
-    run = retrieve_run(run_number)
-    context = {"run_number": run_number, "reco": reco, "run": run}
-    return render(request, "certifier/analyse.html", context)
-
-
-def plot(request, run_number, reco):
-    run = retrieve_run(run_number)
-    context = {"run_number": run_number, "reco": reco, "run": run}
-    return render(request, "certifier/plot.html", context)
