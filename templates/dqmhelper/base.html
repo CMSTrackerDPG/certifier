@@ -32,10 +32,22 @@
                     <a class="nav-link" href="https://github.com/ptrstn/dqmhelper/issues/new">Report Issue</a>
                 </li>
 
-
                 <li class="nav-item">
                     <a class="nav-link" href="/admin/">Admin</a>
                 </li>
+
+                {% load socialaccount %}
+
+                {% if user.is_authenticated %}
+
+                <li class="nav-item">
+                <p class="nav-link">{{ user.username }}</p>
+                </li>
+
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% provider_login_url 'cern' %}">Sign Up CERN</a>
+                {% endif %}
             </ul>
         </div>
     </div>
