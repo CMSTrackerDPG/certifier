@@ -105,12 +105,15 @@ WSGI_APPLICATION = "dqmhelper.wsgi.application"
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
+    'default': {
+        'ENGINE': config('DJANGO_DATABASE_ENGINE', default=''),
+        'NAME': config('DJANGO_DATABASE_NAME', default=''),
+        'USER': config('DJANGO_DATABASE_USER', default=''),
+        'PASSWORD': config('DJANGO_DATABASE_PASSWORD', default=''),
+        'HOST': config('DJANGO_DATABASE_HOST', default=''),
+        'PORT': config('DJANGO_DATABASE_PORT', default=''),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
