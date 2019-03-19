@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ["test-tracker-certifer.web.cern.ch", "127.0.0.1", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
+    "plot.apps.PlotConfig",
+    "analysis.apps.AnalysisConfig",
     "home.apps.HomeConfig",
     "certifier.apps.CertifierConfig",
     "oms.apps.OmsConfig",
