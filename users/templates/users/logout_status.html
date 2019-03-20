@@ -1,0 +1,21 @@
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<div class="container">
+    <div class="text-center">
+        {% if logout_successful %}
+            <h1>Logout successfull</h1>
+            <p class="lead">Please end your session by closing all browser windows to successfully delete all cookies.</p>
+
+            <p class="lead"><a href="{% url 'home:home' %}">Go back home</a></p>
+        {% else %}
+            <h1>Logout <strong>not</strong> successful.</h1>
+            <p class="lead">Oops. Something went wrong.</p>
+            <p class="lead">Looks like you're still logged in.</p>
+
+            <p class="lead"><a href="{% url 'users:logout' %}">Try again</a></p>
+        {% endif %}
+    </div>
+</div>

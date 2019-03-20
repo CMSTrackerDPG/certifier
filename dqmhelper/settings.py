@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "users.apps.UsersConfig",
     "plot.apps.PlotConfig",
     "analysis.apps.AnalysisConfig",
     "home.apps.HomeConfig",
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'django.contrib.sites',
     'rest_framework',
-
+    'bootstrap3',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -87,6 +88,8 @@ TEMPLATES = [
         },
     }
 ]
+
+AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
