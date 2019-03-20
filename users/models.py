@@ -10,6 +10,8 @@ from users.utilities.utilities import (
     get_or_create_shift_leader_group,
 )
 
+logger = get_configured_logger(loggername=__name__, filename="models.log")
+
 class User(AbstractUser):
     """
     Do NOT instantiate this manually!
