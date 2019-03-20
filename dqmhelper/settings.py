@@ -89,8 +89,6 @@ TEMPLATES = [
     }
 ]
 
-AUTH_USER_MODEL = "users.User"
-
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -153,8 +151,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'))
 STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
 
-#AUTH_USER_MODEL = "certifier.User"
+AUTH_USER_MODEL = "users.User"
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = config('DJANGO_EMAIL_HOST', default='localhost')
 EMAIL_PORT = config('DJANGO_EMAIL_PORT', default=25, cast=int)
 EMAIL_HOST_USER = config('DJANGO_EMAIL_HOST_USER', default='')

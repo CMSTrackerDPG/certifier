@@ -2,6 +2,14 @@ from django.contrib.auth.models import AbstractUser
 from allauth.socialaccount.fields import JSONField
 from django.db import models
 
+from users.utilities.logger import get_configured_logger
+from users.utilities.utilities import (
+    get_full_name,
+    get_highest_privilege_from_egroup_list,
+    extract_egroups,
+    get_or_create_shift_leader_group,
+)
+
 class User(AbstractUser):
     """
     Do NOT instantiate this manually!
@@ -62,19 +70,19 @@ class User(AbstractUser):
             )
 
             if self.user_privilege >= self.SHIFTLEADER:
-                is_staff = True
+                self.is_staff = True
                 logger.info("User {} is now staff".format(self))
                 shift_leader_group = get_or_create_shift_leader_group(
                     self.SHIFT_LEADER_GROUP_NAME
                 )
-                groups.add(shift_leader_group)
+                self.groups.add(shift_leader_group)
                 logger.info(
                     "User {} has been added "
                     "to the shift leader group".format(self)
                 )
 
             if self.user_privilege >= self.ADMIN:
-                is_superuser = True
+                self.is_superuser = True
                 logger.info("User {} is now superuser".format(self))
         return self
 
@@ -103,14 +111,14 @@ class User(AbstractUser):
         return (
             self.user_privilege
             in (self.SHIFTER, self.SHIFTLEADER, self.EXPERT, self.ADMIN)
-            or is_staff
-            or is_superuser
+            or self.is_staff
+            or self.is_superuser
         )
 
     @property
     def has_shift_leader_rights(self):
         return (
             self.user_privilege in (self.SHIFTLEADER, self.EXPERT, self.ADMIN)
-            or is_staff
-            or is_superuser
+            or self.is_staff
+            or self.is_superuser
         )

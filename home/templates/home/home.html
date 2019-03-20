@@ -13,12 +13,15 @@
 <div class="album py-4 bg-light">
     <div class="container">
         <div class="card-deck">
+            {% if user.is_authenticated %}
+
+            {% if user.has_shifter_rights %}
             <div class="card h-50">
                 <div class="btn btn-dark" onclick="location.href='{% url 'index' %}'">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Certification</h4>
                     </div>
-                    <img class="card-img-top img img-thumbnail" src="{% static "home/img/certify.png" %}" alt="Card image cap">
+                    <img class="card-img-top img" src="{% static "home/img/certify.png" %}" alt="Card image cap">
                     <div class="card-body">
                         <p class="card-text text-center" style="font-size: 18px">Tool for the certification of the runs</p>
                     </div>
@@ -27,25 +30,30 @@
             <div class="card h-50">
                 <div class="btn btn-dark">
                     <div class="card-header">
-                        <h4 class="text-center font-weight-bold mt-1 mb-1">Shift Leader Report</h4>
-                    </div>
-                    <img class="card-img-top img img-thumbnail" src="{% static "home/img/shiftreport.jpg" %}" alt="Card image cap">
-                    <div class="card-body">
-                        <p class="card-text text-center" style="font-size: 18px">Generate the Shift Leader Report</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card h-50">
-                <div class="btn btn-dark">
-                    <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Daily Report</h4>
                     </div>
-                    <img class="card-img-top img img-thumbnail" src="{% static "home/img/dailyreport.png" %}" alt="Card image cap">
+                    <img class="card-img-top img" src="{% static "home/img/dailyreport.jpg" %}" alt="Card image cap">
                     <div class="card-body">
                         <p class="card-text text-center" style="font-size: 18px">Generate the Daily Report</p>
                     </div>
                 </div>
             </div>
+            {% endif %}
+
+            {% if user.has_shift_leader_rights %}
+            <div class="card h-50">
+                <div class="btn btn-dark">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">Shift Leader Report</h4>
+                    </div>
+                    <img class="card-img-top img" src="{% static "home/img/shiftreport.jpg" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Generate the Shift Leader Report</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>
