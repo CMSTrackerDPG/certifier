@@ -202,20 +202,35 @@ def get_or_create_group(group_name):
     try:
         g = Group.objects.get(name=group_name)
     except Group.DoesNotExist:
-        user_permissions = Permission.objects.filter(content_type__model="user")
+        user_permissions = Permission.objects.filter(
+                content_type__model="user"
+        )
         users_permissions = Permission.objects.filter(
             content_type__app_label="users"
         )
-        categories_permissions = Permission.objects.filter(
-            content_type__app_label="categories"
+        oms_permissions = Permission.objects.filter(
+            content_type__app_label="oms"
         )
+        certifier_permissions = Permission.objects.filter(
+            content_type__app_label="certifier"
+        )
+        all_permissions = Permission.objects.all()
+
         g = Group.objects.create(name=group_name)
-        for permission in user_permissions:
-            g.permissions.add(permission)
-        for permission in users_permissions:
-            g.permissions.add(permission)
-        for permission in categories_permissions:
-            g.permissions.add(permission)
+
+        if group_name == "Shift Leaders" or group_name == "Experts":
+            for permission in user_permissions:
+                g.permissions.add(permission)
+            for permission in users_permissions:
+                g.permissions.add(permission)
+            for permission in oms_permissions:
+                g.permissions.add(permission)
+            for permission in certifier_permissions:
+                g.permissions.add(permission)
+        elif group_name == "Administrators":
+            for permission in all_permissions:
+                g.permissions.add(permission)
+
         g.save()
     return g
 

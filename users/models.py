@@ -40,11 +40,15 @@ class User(AbstractUser):
     to gain a specific user privilege (e.g. Shift Leader or Admin)
     """
     criteria_groups_dict = {
-        SHIFTER: ["CMS-Shiftlist_shifters_DQM_Offline", "tkdqmdoctor-shifters"],
+        SHIFTER: [
+            "CMS-Shiftlist_shifters_DQM_Offline",
+            "tkdqmdoctor-shifters",
+            "CMS-Shiftlist_shifters_DQM_P5"],
         SHIFTLEADER: [
             "cms-tracker-offline-shiftleader",
             "cms-tracker-offline-shiftleaders",
             "tkdqmdoctor-shiftleaders",
+            "cms-dqm-runregistry-admin-tracker",
         ],
         EXPERT: ["cms-dqm-certification-experts", "tkdqmdoctor-experts"],
         ADMIN: ["tkdqmdoctor-admins"],
