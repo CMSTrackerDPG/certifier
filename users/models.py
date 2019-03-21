@@ -7,7 +7,7 @@ from users.utilities.utilities import (
     get_full_name,
     get_highest_privilege_from_egroup_list,
     extract_egroups,
-    get_or_create_shift_leader_group,
+    get_or_create_group,
 )
 
 logger = get_configured_logger(loggername=__name__, filename="models.log")
@@ -27,15 +27,13 @@ class User(AbstractUser):
     EXPERT = 30
     ADMIN = 50
 
-    USER_PRIVILEGE_CHOICES = (
-        (GUEST, "Guest"),
-        (SHIFTER, "Shifter"),
-        (SHIFTLEADER, "Shift Leader"),
-        (EXPERT, "Expert"),
-        (ADMIN, "Administrator"),
+    USER_PRIVILEGE_GROUPS = (
+        (GUEST, "Guests"),
+        (SHIFTER, "Shifters"),
+        (SHIFTLEADER, "Shift Leaders"),
+        (EXPERT, "Experts"),
+        (ADMIN, "Administrators"),
     )
-
-    SHIFT_LEADER_GROUP_NAME = "Shift leaders"
 
     """
     Dictionary containing which e-group a user has to be member of, in order to 
@@ -54,7 +52,9 @@ class User(AbstractUser):
 
     extra_data = JSONField(verbose_name="extra data", default=dict)
 
-    user_privilege = models.IntegerField(choices=USER_PRIVILEGE_CHOICES, default=GUEST)
+    user_privilege = models.IntegerField(choices=USER_PRIVILEGE_GROUPS, default=GUEST)
+
+    user_groups = dict((privilege, group) for privilege, group in USER_PRIVILEGE_GROUPS)
 
     def update_privilege(self):
         egroups = extract_egroups(self.extra_data)
@@ -74,8 +74,8 @@ class User(AbstractUser):
             if self.user_privilege >= self.SHIFTLEADER:
                 self.is_staff = True
                 logger.info("User {} is now staff".format(self))
-                shift_leader_group = get_or_create_shift_leader_group(
-                    self.SHIFT_LEADER_GROUP_NAME
+                shift_leader_group = get_or_create_group(
+                    self.user_groups[self.user_privilege]
                 )
                 self.groups.add(shift_leader_group)
                 logger.info(

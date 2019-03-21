@@ -198,7 +198,7 @@ def get_highest_privilege_from_egroup_list(egroups, criteria_dict):
     return highest_privilege
 
 
-def get_or_create_shift_leader_group(group_name):
+def get_or_create_group(group_name):
     try:
         g = Group.objects.get(name=group_name)
     except Group.DoesNotExist:
