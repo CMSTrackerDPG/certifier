@@ -14,8 +14,6 @@ logger = get_configured_logger(loggername=__name__, filename="models.log")
 
 class User(AbstractUser):
     """
-    Do NOT instantiate this manually!
-    It will be automatically created/updated when a User instance is created/updated
     - adds extra information to the django User model
     - extends the default django User model using signals
     - grants user more access rights based on CERN e-groups the user is member of
