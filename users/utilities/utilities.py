@@ -234,7 +234,7 @@ def get_or_create_group(group_name):
         g.save()
     return g
 
-def update_userprofile(user):
+def update_user_extradata(user):
     if user.pk:  # Only already existing users
         try:
             socialaccount = SocialAccount.objects.get(user=user)
@@ -245,7 +245,7 @@ def update_userprofile(user):
         except SocialAccount.DoesNotExist:
             logger.warning("No SocialAccount exists for User {}".format(user))
     else:
-        logger.info("Cannot update UserProfile for non existing User {}".format(user))
+        logger.info("Cannot update extradata for non existing User {}".format(user))
 
 
 def get_ascii_table(column_description, data):

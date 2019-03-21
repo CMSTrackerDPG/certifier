@@ -9,27 +9,27 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from users.utilities.logger import get_configured_logger
-from users.utilities.utilities import update_userprofile
+from users.utilities.utilities import update_user_extradata
 
 logger = get_configured_logger(loggername=__name__, filename="signals.log")
 
 @receiver(social_account_added)
 def update_newly_added_user(request, sociallogin, **kwargs):
-    logger.info("Updating UserProfile of newly added Social Account {}"
+    logger.info("Updating User of newly added Social Account {}"
                 .format(sociallogin.user))
-    update_userprofile(sociallogin.user)
+    update_user_extradata(sociallogin.user)
 
 
 @receiver(django.contrib.auth.signals.user_logged_in)
-def update_users_userprofile_on_login(sender, user, request, **kwargs):
-    update_userprofile(user)
+def update_users_on_login(sender, user, request, **kwargs):
+    update_user_extradata(user)
     user.save()
 
 
 @receiver(pre_save, sender=User)
-def update_users_userprofile_on_save(sender, instance, **kwargs):
+def update_users_on_save(sender, instance, **kwargs):
     if instance.pk:
-        update_userprofile(instance)
+        update_user_extradata(instance)
 
 
 @receiver(django.contrib.auth.signals.user_logged_in)
