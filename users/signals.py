@@ -4,7 +4,7 @@ from allauth.account.signals import user_logged_in
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.signals import social_account_updated, \
     social_account_added, social_account_removed, pre_social_login
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
@@ -26,7 +26,7 @@ def update_users_on_login(sender, user, request, **kwargs):
     user.save()
 
 
-@receiver(pre_save, sender=User)
+@receiver(pre_save, sender=get_user_model())
 def update_users_on_save(sender, instance, **kwargs):
     if instance.pk:
         update_user_extradata(instance)
@@ -51,7 +51,7 @@ def log_user_logged_out(sender, user, request, **kwargs):
 def log_pre_social_login(request, sociallogin, **kwargs):
     try:
         logger.debug("Pre social login for User {}".format(sociallogin.user))
-    except (User.DoesNotExist, AttributeError):
+    except (get_user_model().DoesNotExist, AttributeError):
         logger.debug("Pre social login for non-existing User")
 
 
@@ -60,7 +60,7 @@ def log_social_account_added(request, sociallogin, **kwargs):
     try:
         logger.info("Social Account {} has been added for User {}"
                     .format(sociallogin.account, sociallogin.user))
-    except (SocialAccount.DoesNotExist, User.DoesNotExist, AttributeError):
+    except (SocialAccount.DoesNotExist, get_user_model().DoesNotExist, AttributeError):
         logger.debug("Pre social login for non-existing User")
 
 
@@ -69,7 +69,7 @@ def log_social_account_updated(request, sociallogin, **kwargs):
     try:
         logger.debug("Social Account {} has been updated for User {}"
                      .format(sociallogin.account, sociallogin.user))
-    except (SocialAccount.DoesNotExist, User.DoesNotExist, AttributeError):
+    except (SocialAccount.DoesNotExist, get_user_model().DoesNotExist, AttributeError):
         logger.error("Something unexpected happened")
 
 
@@ -78,7 +78,7 @@ def log_social_account_removed(request, socialaccount, **kwargs):
     try:
         logger.info("Social Account {} has been removed from User {}"
                     .format(socialaccount, socialaccount.user))
-    except (User.DoesNotExist, AttributeError):
+    except (get_user_model().DoesNotExist, AttributeError):
         logger.error("Something unexpected happened")
 
 

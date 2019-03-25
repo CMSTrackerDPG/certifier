@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from allauth.socialaccount.fields import JSONField
 from django.db import models
-
+from django.db.models import Manager
 from users.utilities.logger import get_configured_logger
 from users.utilities.utilities import (
     get_full_name,
@@ -51,6 +51,8 @@ class User(AbstractUser):
         EXPERT: ["cms-dqm-certification-experts", "tkdqmdoctor-experts"],
         ADMIN: ["tkdqmdoctor-admins"],
     }
+
+    objects = Manager()
 
     extra_data = JSONField(verbose_name="extra data", default=dict)
 
