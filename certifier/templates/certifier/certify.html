@@ -216,7 +216,7 @@
                     <ul class="list-inline" id="id_pixel">
                         {% for status in form.pixel.field.choices %}
                         <li class="list-inline-item">
-                            <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col ml-2">
+                            <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                 <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
                             </label>
                         </li>
@@ -225,8 +225,11 @@
                 </div>
             </div>
 
-            <div class="col text-left col-form-label">
-                {{form.pixel_lowstat}} {{form.pixel_lowstat.label}}
+            <div class="col text-left col-form-label ml-3">
+                {{form.pixel_lowstat}}
+                <label for="id_pixel_lowstat">
+                    {{form.pixel_lowstat.label}}
+                </label>
             </div>
         </div>
 <!--================================ STRIP ==============================-->
@@ -242,7 +245,7 @@
                     <ul class="list-inline" id="id_strip">
                         {% for status in form.strip.field.choices %}
                         <li class="list-inline-item">
-                            <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col ml-2">
+                            <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                 <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
                             </label>
                         </li>
@@ -251,8 +254,11 @@
                 </div>
             </div>
 
-            <div class="col text-left col-form-label">
-                {{form.strip_lowstat}} {{form.strip_lowstat.label}}
+            <div class="col text-left col-form-label ml-3">
+                {{form.strip_lowstat}}
+                <label for="id_strip_lowstat">
+                    {{form.strip_lowstat.label}}
+                </label>
             </div>
         </div>
 <!--================================ TRACKING ===========================-->
@@ -268,7 +274,7 @@
                     <ul class="list-inline" id="id_tracking">
                         {% for status in form.tracking.field.choices %}
                         <li class="list-inline-item">
-                            <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col ml-2">
+                            <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                 <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
 
                             </label>
@@ -278,8 +284,11 @@
                 </div>
             </div>
 
-            <div class="col text-left col-form-label">
-                {{form.tracking_lowstat}} {{form.tracking_lowstat.label}}
+            <div class="col text-left col-form-label ml-3">
+                {{form.tracking_lowstat}}
+                <label for="id_tracking_lowstat">
+                    {{form.tracking_lowstat.label}}
+                </label>
             </div>
         </div>
 <!--================================ BAD REASON =========================-->
