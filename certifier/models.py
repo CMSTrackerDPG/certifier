@@ -46,11 +46,13 @@ class BadReason(models.Model):
     name = models.CharField(max_length=20, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
 
 class TrackerCertification(models.Model):
     SUBCOMPONENT_STATUS_CHOICES = (
-        ("bad", "Bad"),
         ("good", "Good"),
+        ("bad", "Bad"),
         ("excluded", "Excluded"),
     )
 
@@ -61,9 +63,9 @@ class TrackerCertification(models.Model):
         RunReconstruction, on_delete=models.CASCADE, related_name="+"
     )
 
-    pixel = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
-    strip = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
-    tracking = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
+    pixel = None
+    strip = None
+    tracking = None
 
     pixel_lowstat = models.BooleanField(default=False)
     strip_lowstat = models.BooleanField(default=False)
