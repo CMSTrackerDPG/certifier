@@ -1,0 +1,17 @@
+django-allauth==0.38
+django-bootstrap3==9.1.0
+django-categories==1.6
+django-ckeditor==5.5.0
+django-dynamic-preferences==1.6
+django-filter==1.1.0
+django-nested-admin==3.0.21
+django-tables2==1.21.2
+django-widget-tweaks==1.4.2
+psycopg2-binary==2.7.4
+terminaltables==3.1.0
+codecov
+pytest-django
+pytest-cov
+python-decouple==3.1
+mixer
+selenium==3.14.1
