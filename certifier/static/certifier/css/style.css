@@ -1,0 +1,5 @@
+.problems{
+    overflow-y: scroll;
+    height: 65px;
+    font-size: 16px
+}

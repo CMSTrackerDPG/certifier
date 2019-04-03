@@ -8,6 +8,7 @@
 
 {% endblock %}
 
+{% load bootstrap3 %}
 {% load widget_tweaks %}
 {% load filters %}
 
@@ -200,110 +201,158 @@
 </div>
 
 <!--================================ FORM ===============================-->
-<div class="container">
+<div class="container-fluid">
     <form method="POST" action="" id="id_runinfo_form" >
         {% csrf_token %}
+        <div class="row mt-4">
+            <div class="col-sm-7">
 <!--================================ PIXEL ==============================-->
-        <div class="row mt-5 no-gutters">
-            <div class="col text-right">
-                <label for="id_pixel" style="font-size: 24px;">
-                    {{ form.pixel.label }}:
-                </label>
-            </div>
+                <div class="row no-gutters">
+                    <div class="col text-right">
+                        <label for="id_pixel" style="font-size: 24px;">
+                            {{ form.pixel.label }}:
+                        </label>
+                    </div>
 
-            <div class="col text-center">
-                <div data-toggle="buttons">
-                    <ul class="list-inline" id="id_pixel">
-                        {% for status in form.pixel.field.choices %}
-                        <li class="list-inline-item">
-                            <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
-                                <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                            </label>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_pixel">
+                                {% for status in form.pixel.field.choices %}
+                                <li class="list-inline-item">
+                                    <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.pixel_lowstat}}
+                        <label for="id_pixel_lowstat">
+                            {{form.pixel_lowstat.label}}
+                        </label>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col text-left col-form-label ml-3">
-                {{form.pixel_lowstat}}
-                <label for="id_pixel_lowstat">
-                    {{form.pixel_lowstat.label}}
-                </label>
-            </div>
-        </div>
 <!--================================ STRIP ==============================-->
-        <div class="row mt-2 no-gutters">
-            <div class="col text-right">
-                <label for="id_strip" style="font-size: 24px;">
-                    {{ form.strip.label }}:
-                </label>
-            </div>
+                <div class="row mt-2 no-gutters">
+                    <div class="col text-right">
+                        <label for="id_strip" style="font-size: 24px;">
+                            {{ form.strip.label }}:
+                        </label>
+                    </div>
 
-            <div class="col text-center">
-                <div data-toggle="buttons">
-                    <ul class="list-inline" id="id_strip">
-                        {% for status in form.strip.field.choices %}
-                        <li class="list-inline-item">
-                            <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
-                                <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                            </label>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_strip">
+                                {% for status in form.strip.field.choices %}
+                                <li class="list-inline-item">
+                                    <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.strip_lowstat}}
+                        <label for="id_strip_lowstat">
+                            {{form.strip_lowstat.label}}
+                        </label>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col text-left col-form-label ml-3">
-                {{form.strip_lowstat}}
-                <label for="id_strip_lowstat">
-                    {{form.strip_lowstat.label}}
-                </label>
-            </div>
-        </div>
 <!--================================ TRACKING ===========================-->
-        <div class="row mt-2 no-gutters">
-            <div class="col text-right">
-                <label for="id_tracking" style="font-size: 24px;">
-                    {{ form.tracking.label }}:
-                </label>
-            </div>
+                <div class="row mt-2 no-gutters">
+                    <div class="col text-right">
+                        <label for="id_tracking" style="font-size: 24px;">
+                            {{ form.tracking.label }}:
+                        </label>
+                    </div>
 
-            <div class="col text-center">
-                <div data-toggle="buttons">
-                    <ul class="list-inline" id="id_tracking">
-                        {% for status in form.tracking.field.choices %}
-                        <li class="list-inline-item">
-                            <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
-                                <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_tracking">
+                                {% for status in form.tracking.field.choices|slice_last_elem %}
+                                <li class="list-inline-item">
+                                    <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
 
-                            </label>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.tracking_lowstat}}
+                        <label for="id_tracking_lowstat">
+                            {{form.tracking_lowstat.label}}
+                        </label>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col text-left col-form-label ml-3">
-                {{form.tracking_lowstat}}
-                <label for="id_tracking_lowstat">
-                    {{form.tracking_lowstat.label}}
-                </label>
-            </div>
-        </div>
 <!--================================ BAD REASON =========================-->
-        <div class="row mt-3 justify-content-center">
-            <div class="col text-right col-form-label ml-4">Why bad?</div>
-            <div class="col text-center">
-                <div class="input-group">
-                    {% render_field form.bad_reason class="custom-select" %}
+                <div class="row mt-3 justify-content-center">
+                    <div class="col text-right col-form-label ml-4">Why bad?</div>
+                    <div class="col text-center">
+                        <div class="input-group">
+                            {% render_field form.bad_reason class="custom-select" %}
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+<!--================================ SUBMIT ==============================-->
+                <div class="row mt-4 justify-content-center">
+                    <input class="btn btn-primary btn-lg" type="submit" value="Submit">
                 </div>
             </div>
-            <div class="col"></div>
-        </div>
-<!--================================ SUBMIT ==============================-->
-        <div class="row mt-5 justify-content-center">
-            <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+<!--================================ PROBLEMS ============================-->
+            <div class="col-sm-5" style="">
+                <div class="col">
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.pixel_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% bootstrap_field form.pixel_problems field_class="form-control problems" label="" %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col mt-3">
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.strip_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% bootstrap_field form.strip_problems field_class="form-control problems" label="" %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col mt-3">
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.tracking_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% bootstrap_field form.tracking_problems field_class="form-control problems" label="" %}
+                        </div>
+                    </div>
+                </div>
+<!--================================ COMMENT ============================-->
+                <div class="col my-2">
+                    <div class="row no-gutters">
+                        <div class="col-sm-12 col-form-label" style="font-size: 19px;">
+                            {{ form.comment.label}}:
+                        </div>
+                        <div class="col-sm-8">
+                        {% render_field form.comment class="form-control" rows="4" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </div>
@@ -313,8 +362,9 @@
 <script type="text/javascript">
 function label_highlight(inputName){
     $(document).ready(function(){
-        var id = $("input[name='"+inputName+"']:checked")[0].id
-        if(id){
+        radio_button= $("input[name='"+inputName+"']:checked")[0]
+        if(radio_button){
+            var id = radio_button.id
             label = $("label[for='"+id+"']")
             label.toggleClass('active')
         }

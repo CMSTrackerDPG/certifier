@@ -1,8 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import TrackerCertification, BadReason
-from django.forms import ModelForm, RadioSelect
+from .models import TrackerCertification, BadReason, PixelProblem, StripProblem, TrackingProblem
+from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField
 
 
 class CertifyForm(ModelForm):
@@ -10,7 +10,11 @@ class CertifyForm(ModelForm):
     pixel = forms.ChoiceField(choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES, widget=forms.RadioSelect())
     strip = forms.ChoiceField(choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES, widget=forms.RadioSelect())
     tracking = forms.ChoiceField(choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES, widget=forms.RadioSelect())
-    test="dsadasdas"
+
+    pixel_problems = ModelMultipleChoiceField(queryset=PixelProblem.objects.all(), widget=CheckboxSelectMultiple)
+    strip_problems = ModelMultipleChoiceField(queryset=StripProblem.objects.all(), widget=CheckboxSelectMultiple)
+    tracking_problems = ModelMultipleChoiceField(queryset=TrackingProblem.objects.all(), widget=CheckboxSelectMultiple)
+
     class Meta:
         model = TrackerCertification
         fields = [
@@ -20,11 +24,11 @@ class CertifyForm(ModelForm):
             'pixel_lowstat',
             'strip_lowstat',
             'tracking_lowstat',
-#            'pixel_problems',
-#            'strip_problems',
-#            'tracking_problems',
+            'pixel_problems',
+            'strip_problems',
+            'tracking_problems',
             'bad_reason',
-#            'comment',
+            'comment',
         ]
 
     def clean(self):

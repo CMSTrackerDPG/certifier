@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 from oms.models import OmsRun
 
@@ -31,16 +32,22 @@ class PixelProblem(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
 
 class StripProblem(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
 
 class TrackingProblem(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
 
 class BadReason(models.Model):
     name = models.CharField(max_length=20, unique=True)
@@ -56,6 +63,8 @@ class TrackerCertification(models.Model):
         ("excluded", "Excluded"),
     )
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+
     runreconstruction = models.OneToOneField(
         RunReconstruction, on_delete=models.CASCADE, primary_key=True
     )
@@ -63,9 +72,9 @@ class TrackerCertification(models.Model):
         RunReconstruction, on_delete=models.CASCADE, related_name="+"
     )
 
-    pixel = None
-    strip = None
-    tracking = None
+    pixel = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
+    strip = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
+    tracking = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
 
     pixel_lowstat = models.BooleanField(default=False)
     strip_lowstat = models.BooleanField(default=False)
