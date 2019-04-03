@@ -62,6 +62,7 @@ class TrackerCertification(models.Model):
         ("bad", "Bad"),
         ("excluded", "Excluded"),
     )
+    TRACKERMAP_CHOICES = (("Exists", "Exists"), ("Missing", "Missing"))
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
@@ -71,6 +72,8 @@ class TrackerCertification(models.Model):
     reference_runreconstruction = models.ForeignKey(
         RunReconstruction, on_delete=models.CASCADE, related_name="+"
     )
+
+    trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
 
     pixel = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
     strip = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
@@ -87,6 +90,8 @@ class TrackerCertification(models.Model):
     bad_reason = models.ForeignKey(
         BadReason, null=True, blank=True, on_delete=models.SET_NULL
     )
+
+    date = models.DateField()
 
     comment = models.TextField()
 
