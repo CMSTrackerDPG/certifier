@@ -1,9 +1,9 @@
+'''
 from django.test import TestCase
 
 # Create your tests here.
 from certifier.models import RunReconstruction
 from dqmgui.models import Histogram
-
 
 class TestHistogram:
     def test_histogram_creation(self):
@@ -28,3 +28,4 @@ class TestHistogram:
         histogram = Histogram(**kwargs)
         histogram.save()
         assert Histogram.objects.count() == 1
+'''
