@@ -1,0 +1,19 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+
+services: postgresql
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r testing-requirements.txt
+
+before_script:
+  - psql -c "create database testdb;" -U postgres
+
+script:
+  - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=.
+
+after_success:
+  - codecov
