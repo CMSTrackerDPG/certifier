@@ -75,9 +75,9 @@ class TrackerCertification(models.Model):
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
 
-    pixel = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
-    strip = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
-    tracking = models.CharField(max_length=3, choices=SUBCOMPONENT_STATUS_CHOICES)
+    pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
+    strip = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
+    tracking = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
 
     pixel_lowstat = models.BooleanField(default=False)
     strip_lowstat = models.BooleanField(default=False)
