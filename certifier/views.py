@@ -32,8 +32,6 @@ def certify(request, run_number, reco):
         # check whether it's valid:
         print(form.errors.as_text())
         if form.is_valid():
-            import os
-            os.system('notify-send valid')
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:

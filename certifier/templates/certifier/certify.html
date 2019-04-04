@@ -317,7 +317,7 @@
                             {{ form.pixel_problems.label}}:
                         </div>
                         <div class="col-sm-5">
-                            {% bootstrap_field form.pixel_problems field_class="form-control problems" label="" %}
+                            {% render_field form.pixel_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                         </div>
                     </div>
                 </div>
@@ -327,7 +327,7 @@
                             {{ form.strip_problems.label}}:
                         </div>
                         <div class="col-sm-5">
-                            {% bootstrap_field form.strip_problems field_class="form-control problems" label="" %}
+                            {% render_field form.strip_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                         </div>
                     </div>
                 </div>
@@ -337,7 +337,7 @@
                             {{ form.tracking_problems.label}}:
                         </div>
                         <div class="col-sm-5">
-                            {% bootstrap_field form.tracking_problems field_class="form-control problems" label="" %}
+                            {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                         </div>
                     </div>
                 </div>
@@ -358,7 +358,6 @@
 </div>
 
 <!--================================ SCRIPTS ==============================-->
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
 function label_highlight(inputName){
     $(document).ready(function(){
@@ -370,12 +369,13 @@ function label_highlight(inputName){
         }
     });
 }
-
-label_highlight('pixel')
-label_highlight('strip')
-label_highlight('tracking')
-
+$(document).ready(function () {
+    label_highlight('pixel')
+    label_highlight('strip')
+    label_highlight('tracking')
+});
 </script>
+
 <script>
     myFunction();
 var myVar;

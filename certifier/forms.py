@@ -11,10 +11,6 @@ class CertifyForm(ModelForm):
     strip = forms.ChoiceField(choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES, widget=forms.RadioSelect())
     tracking = forms.ChoiceField(choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES, widget=forms.RadioSelect())
 
-    pixel_problems = ModelMultipleChoiceField(queryset=PixelProblem.objects.all(), widget=CheckboxSelectMultiple)
-    strip_problems = ModelMultipleChoiceField(queryset=StripProblem.objects.all(), widget=CheckboxSelectMultiple)
-    tracking_problems = ModelMultipleChoiceField(queryset=TrackingProblem.objects.all(), widget=CheckboxSelectMultiple)
-
     class Meta:
         model = TrackerCertification
         fields = [
