@@ -2,43 +2,61 @@ import pytest
 from mixer.backend.django import mixer
 
 from certifier.models import *
+from oms.models import OmsRun
 
 pytestmark = pytest.mark.django_db
 
 class TestRunReconstruction:
-    def test_init(self):
-        obj = mixer.blend(RunReconstruction, reconstruction="online")
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "RunReconstruction"
+    def test_run_number(self):
+        test_number=323444
+        runReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        assert runReconstruction.run_number == test_number
+
+    def test_str_return(self):
+        test_number=323444
+        test_reconstruction="online"
+        runReconstruction = mixer.blend(RunReconstruction, reconstruction=test_reconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        assert str(runReconstruction) == "{} {}".format(test_number, test_reconstruction)
 
 class TestPixelProblem:
-    def test_init(self):
-        obj = mixer.blend(PixelProblem)
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "PixelProblem"
+    def test_name(self):
+        test_problem="test_problem_pixel"
+        pixelProblem = mixer.blend(PixelProblem, name=test_problem)
+        assert str(pixelProblem) == test_problem
 
 class TestStripProblem:
-    def test_init(self):
-        obj = mixer.blend(StripProblem)
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "StripProblem"
+    def test_name(self):
+        test_problem="test_problem_strip"
+        stripProblem = mixer.blend(StripProblem, name=test_problem)
+        assert str(stripProblem) == test_problem
 
 class TestTrackingProblem:
-    def test_init(self):
-        obj = mixer.blend(TrackingProblem)
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "TrackingProblem"
+    def test_name(self):
+        test_problem="test_problem_tracking"
+        trackingProblem = mixer.blend(TrackingProblem, name=test_problem)
+        assert str(trackingProblem) == test_problem
 
-class BadReason:
-    def test_init(self):
-        obj = mixer.blend(BadReason)
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "BadReason"
+class TestBadReason:
+    def test_name(self):
+        test_reason="test_reason"
+        badReason = mixer.blend(BadReason, name=test_reason)
+        assert str(badReason) == test_reason
 
-class TrackerCertification:
-    def test_init(self):
-        obj = mixer.blend(TrackerCertification)
-        assert obj.pk == 1
-        assert obj.__class__.__name__ == "TrackerCertification"
+class TestTrackerCertification:
+    def test_run_number(self):
+        test_number=323444
+        runReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        trackerCertification = mixer.blend(TrackerCertification, runreconstruction=runReconstruction)
+        assert trackerCertification.run_number == test_number
 
+    def test_reference_run_number(self):
+        test_number=323444
+        referenceRunReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        trackerCertification = mixer.blend(TrackerCertification, reference_runreconstruction=referenceRunReconstruction)
+        assert trackerCertification.reference_run_number == test_number
+
+    def test_reconstruction(self):
+        runReconstruction = mixer.blend(RunReconstruction, reconstruction="rereco")
+        trackerCertification = mixer.blend(TrackerCertification, runreconstruction=runReconstruction)
+        assert trackerCertification.reconstruction == "ReReco"
 
