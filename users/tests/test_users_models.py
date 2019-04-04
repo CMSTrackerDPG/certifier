@@ -7,10 +7,6 @@ from django.contrib.auth import get_user_model
 pytestmark = pytest.mark.django_db
 
 class TestUser:
-    def test_init(self):
-        obj = mixer.blend(get_user_model())
-        assert obj.pk == 1, 'Should have a user in the db'
-
     def test_update_privilege_if_changed(self):
         user = mixer.blend(get_user_model())
 

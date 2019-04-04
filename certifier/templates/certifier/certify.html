@@ -1,291 +1,399 @@
 {% extends 'dqmhelper/base.html' %}
 
+{% load static %}
+
+{% block style %}
+
+<link rel="stylesheet" type="text/css" href="{% static "certifier/css/style.css" %}">
+
+{% endblock %}
+
+{% load bootstrap3 %}
+{% load widget_tweaks %}
+{% load filters %}
+
 {% block content %}
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-    <div class="container">
-        <div class="row">
-            <div class="mt-4 mb-4 col-lg-12 text-center">
-                <h1>{{ run_number }} <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span></h1>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+<div class="container">
+    <div class="row">
+        <div class="mt-4 mb-4 col-lg-12 text-center">
+            <h1>{{ run_number }} <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span></h1>
+        </div>
+    </div>
+</div>
+
+<!--================================ TYPE ===============================-->
+<div class="container-fluid">
+    <div class="row mt-2 mb-2">
+        <div class="col-md-4">
+            <div class="card shadow-sm bg-white">
+                <div class="card-body">
+
+                    <h6 class="card-title text-primary">Type</h6>
+
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            <strong>Run type</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ run.run_type|capfirst }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            <strong>B field</strong>
+                        </div>
+                        <div class="col-md-8">
+                            \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            <strong>Energy</strong>
+                        </div>
+                        <div class="col-md-8">
+                            \({{ run.energy }}\) \({{ run.energy_unit }}\)
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            <strong>Particle</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ run.fill.fill_type_runtime }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            <strong>Era</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ run.fill.era|capfirst }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!--================================ LUMI ===============================-->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h6 class="card-title text-success">Lumi</h6>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Lumisections</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.lumisections }}\)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Recorded lumi</strong>
+                        </div>
+                        <div class="col-md-6">
+                            \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Delivered lumi</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Initial lumi</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>End lumi</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!--================================ Fill ===============================-->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-info">Fill</h6>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Fill number</strong>
+                        </div>
+                        <div class="col-md-7">
+                            {{ run.fill.fill_number }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Bunches</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.fill.bunches_colliding }}\)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Initial lumi</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Peak lumi</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 text-right">
+                            <strong>Peak pileup</strong>
+                        </div>
+                        <div class="col-md-7">
+                            \({{ run.fill.peak_pileup|floatformat:3 }}\)
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="container-fluid">
-        <div class="row mt-2 mb-2">
-            <div class="col-md-4">
-                <div class="card shadow-sm bg-white">
-                    <div class="card-body">
-
-                        <h6 class="card-title text-primary">Type</h6>
-
-                        <div class="row">
-                            <div class="col-md-4 text-right">
-                                <strong>Run type</strong>
-                            </div>
-                            <div class="col-md-8">
-                                {{ run.run_type|capfirst }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 text-right">
-                                <strong>B field</strong>
-                            </div>
-                            <div class="col-md-8">
-                                \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 text-right">
-                                <strong>Energy</strong>
-                            </div>
-                            <div class="col-md-8">
-                                \({{ run.energy }}\) \({{ run.energy_unit }}\)
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 text-right">
-                                <strong>Particle</strong>
-                            </div>
-                            <div class="col-md-8">
-                                {{ run.fill.fill_type_runtime }}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 text-right">
-                                <strong>Era</strong>
-                            </div>
-                            <div class="col-md-8">
-                                {{ run.fill.era|capfirst }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-
-                        <h6 class="card-title text-success">Lumi</h6>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Lumisections</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.lumisections }}\)
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Recorded lumi</strong>
-                            </div>
-                            <div class="col-md-6">
-                                \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Delivered lumi</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Initial lumi</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>End lumi</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="card-title text-info">Fill</h6>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Fill number</strong>
-                            </div>
-                            <div class="col-md-7">
-                                {{ run.fill.fill_number }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Bunches</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.fill.bunches_colliding }}\)
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Initial lumi</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Peak lumi</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-5 text-right">
-                                <strong>Peak pileup</strong>
-                            </div>
-                            <div class="col-md-7">
-                                \({{ run.fill.peak_pileup|floatformat:3 }}\)
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--================================ ANALYSIS BUTTONS =====================-->
+<div class="container mt-5 mb-5">
+    <div class="text-center" id="id-analyze-spinner">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Running analysis...</span> Analyzing...
         </div>
     </div>
 
-    <div class="container mt-5 mb-5">
-        <div class="text-center" id="id-analyze-spinner">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Running analysis...</span> Analyzing...
-            </div>
-        </div>
-
-        <div class="text-center" id="id-analyse-content" style="display:none;">
-            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
-                Open Analysis
-            </a>
-            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
-                Open Plots
-            </a>
-        </div>
+    <div class="text-center" id="id-analyse-content" style="display:none;">
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+            Open Analysis
+        </a>
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+            Open Plots
+        </a>
     </div>
+</div>
 
+<!--================================ FORM ===============================-->
+<div class="container-fluid">
+    <form method="POST" action="" id="id_runinfo_form" >
+        {% csrf_token %}
+        <div class="row mt-4">
+            <div class="col-sm-7">
+<!--================================ PIXEL ==============================-->
+                <div class="row no-gutters">
+                    <div class="col text-right">
+                        <label for="id_pixel" style="font-size: 24px;">
+                            {{ form.pixel.label }}:
+                        </label>
+                    </div>
 
-    <div class="container">
-        <form>
-            <div class="row mt-5">
-                <div class="col text-right"><span style="font-size: 24px;">Pixel</span></div>
-                <div class="col text-center bg">
-                    <div data-toggle="buttons" class="row">
-                        <label class="btn btn-outline-success col ml-2">
-                            <input type="radio" name="pixel" value='good' id="id-pixel-good" autocomplete="off" class="sr-only" required> Good
-                        </label>
-                        <label class="btn btn-outline-danger col ml-1 mr-1">
-                            <input type="radio" name="pixel" value='bad' id="id-pixel-bad" autocomplete="off" class="sr-only" required> Bad
-                        </label>
-                        <label class="btn btn-outline-secondary col mr-2">
-                            <input type="radio" name="pixel" value='excluded' id="id-pixel-excluded" autocomplete="off" class="sr-only" required> Excluded
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_pixel">
+                                {% for status in form.pixel.field.choices %}
+                                <li class="list-inline-item">
+                                    <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.pixel_lowstat}}
+                        <label for="id_pixel_lowstat">
+                            {{form.pixel_lowstat.label}}
                         </label>
                     </div>
                 </div>
-                <div class="col text-left col-form-label">
-                    <label>
-                        <input type="checkbox" name="pixel-lowstat" value="true"> Low statistics
-                    </label>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col text-right"><span style="font-size: 24px;">Strip</span></div>
-                <div class="col text-center bg">
-                    <div data-toggle="buttons" class="row">
-                        <label class="btn btn-outline-success col ml-2">
-                            <input type="radio" name="strip" value='good' id="id-strip-good" autocomplete="off" class="sr-only" required> Good
+<!--================================ STRIP ==============================-->
+                <div class="row mt-2 no-gutters">
+                    <div class="col text-right">
+                        <label for="id_strip" style="font-size: 24px;">
+                            {{ form.strip.label }}:
                         </label>
-                        <label class="btn btn-outline-danger col ml-1 mr-1">
-                            <input type="radio" name="strip" value='bad' id="id-strip-bad" autocomplete="off" class="sr-only" required> Bad
-                        </label>
-                        <label class="btn btn-outline-secondary col mr-2">
-                            <input type="radio" name="strip" value='excluded' id="id-strip-excluded" autocomplete="off" class="sr-only" required> Excluded
+                    </div>
+
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_strip">
+                                {% for status in form.strip.field.choices %}
+                                <li class="list-inline-item">
+                                    <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.strip_lowstat}}
+                        <label for="id_strip_lowstat">
+                            {{form.strip_lowstat.label}}
                         </label>
                     </div>
                 </div>
-                <div class="col text-left col-form-label">
-                    <label>
-                        <input type="checkbox" name="strip-lowstat" value="true"> Low statistics
-                    </label>
-                </div>
-            </div>
+<!--================================ TRACKING ===========================-->
+                <div class="row mt-2 no-gutters">
+                    <div class="col text-right">
+                        <label for="id_tracking" style="font-size: 24px;">
+                            {{ form.tracking.label }}:
+                        </label>
+                    </div>
 
-            <div class="row mt-2">
-                <div class="col text-right"><span style="font-size: 24px;">Tracking</span></div>
-                <div class="col text-center bg">
-                    <div data-toggle="buttons" class="row">
-                        <label class="btn btn-outline-success col ml-2">
-                            <input type="radio" name="tracking" value='good' id="id-tracking-good" autocomplete="off" class="sr-only" required> Good
+                    <div class="col text-center">
+                        <div data-toggle="buttons">
+                            <ul class="list-inline" id="id_tracking">
+                                {% for status in form.tracking.field.choices|slice_last_elem %}
+                                <li class="list-inline-item">
+                                    <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                        <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
+
+                                    </label>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col text-left col-form-label ml-3">
+                        {{form.tracking_lowstat}}
+                        <label for="id_tracking_lowstat">
+                            {{form.tracking_lowstat.label}}
                         </label>
-                        <label class="btn btn-outline-danger col ml-1 mr-1">
-                            <input type="radio" name="tracking" value='bad' id="id-tracking-good" autocomplete="off" class="sr-only" required> Bad
-                        </label>
-                        <span class="col mr-2"></span>
                     </div>
                 </div>
-                <div class="col text-left col-form-label">
-                    <label>
-                        <input type="checkbox" name="tracking-lowstat" value="true"> Low statistics
-                    </label>
+<!--================================ BAD REASON =========================-->
+                <div class="row mt-3 justify-content-center">
+                    <div class="col text-right col-form-label ml-4">Why bad?</div>
+                    <div class="col text-center">
+                        <div class="input-group">
+                            {% render_field form.bad_reason class="custom-select" %}
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+<!--================================ SUBMIT ==============================-->
+                <div class="row mt-4 justify-content-center">
+                    <input class="btn btn-primary btn-lg" type="submit" value="Submit">
                 </div>
             </div>
-
-            <div class="row mt-3 justify-content-center">
-                <div class="col text-right col-form-label">Why bad?</div>
+<!--================================ PROBLEMS ============================-->
+            <div class="col-sm-5" style="">
                 <div class="col">
-
-                    <div class="input-group">
-                        <select class="custom-select" name='bad-reason' id="inputGroupSelect04">
-                            <option selected>Choose...</option>
-                            <option value="timing_scan">Timing scan</option>
-                            <option value="hv_problem">HV Problem</option>
-                            <option value="misconfiguration">Misconfiguration</option>
-                            <option value="other">Other</option>
-                        </select>
-
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.pixel_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% render_field form.pixel_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
+                        </div>
                     </div>
                 </div>
-                <div class="col"></div>
+                <div class="col mt-3">
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.strip_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% render_field form.strip_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
+                        </div>
+                    </div>
+                </div>
+                <div class="col mt-3">
+                    <div class="row no-gutters">
+                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
+                            {{ form.tracking_problems.label}}:
+                        </div>
+                        <div class="col-sm-5">
+                            {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
+                        </div>
+                    </div>
+                </div>
+<!--================================ COMMENT ============================-->
+                <div class="col my-2">
+                    <div class="row no-gutters">
+                        <div class="col-sm-12 col-form-label" style="font-size: 19px;">
+                            {{ form.comment.label}}:
+                        </div>
+                        <div class="col-sm-8">
+                        {% render_field form.comment class="form-control" rows="4" %}
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="row mt-5 justify-content-center">
-                <input class="btn btn-primary btn-lg" type="submit" value="Submit">
-            </div>
-
-        </form>
-    </div>
-
-    <script>
-        myFunction();
-        var myVar;
-
-        function myFunction() {
-            myVar = setTimeout(showPage, 1000);
-        }
-
-        function showPage() {
-            document.getElementById("id-analyze-spinner").style.display = "none";
-            document.getElementById("id-analyse-content").style.display = "block";
-        }
-    </script>
+        </div>
+    </form>
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<!--================================ SCRIPTS ==============================-->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+
+<script type="text/javascript">
+function label_highlight(inputName){
+    $(document).ready(function(){
+        radio_button= $("input[name='"+inputName+"']:checked")[0]
+        if(radio_button){
+            var id = radio_button.id
+            label = $("label[for='"+id+"']")
+            label.toggleClass('active')
+        }
+    });
+}
+$(document).ready(function () {
+    label_highlight('pixel')
+    label_highlight('strip')
+    label_highlight('tracking')
+});
+</script>
+
+<script>
+    myFunction();
+var myVar;
+
+function myFunction() {
+    myVar = setTimeout(showPage, 1000);
+}
+
+function showPage() {
+    document.getElementById("id-analyze-spinner").style.display = "none";
+    document.getElementById("id-analyse-content").style.display = "block";
+}
+</script>
+{% endblock scripts %}

@@ -184,7 +184,7 @@ class OmsRun(models.Model):
         help_text="Run number", verbose_name="Run", unique=True, primary_key=True
     )
 
-    run_type = models.CharField(max_length=3, choices=RUN_TYPE_CHOICES)
+    run_type = models.CharField(max_length=10, choices=RUN_TYPE_CHOICES)
 
     fill = models.ForeignKey(OmsFill, on_delete=models.CASCADE)
 

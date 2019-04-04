@@ -35,8 +35,9 @@
                 </div>
             </div>
         </div>
+{% endblock content %}
 
-
+{% block scripts %}
 
         <script>
 
@@ -119,4 +120,4 @@
             Plotly.newPlot('graph', data, layout, {showSendToCloud: true});
         </script>
 
-{% endblock content %}
+{% endblock scripts %}
