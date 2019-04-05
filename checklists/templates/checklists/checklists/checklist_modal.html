@@ -1,0 +1,66 @@
+<style>
+.checklist-remark{
+    color: red;
+}
+</style>
+
+{# used for the show_checklist_modal template tag #}
+{% if checklist %}
+    <div id="modal-{{ checklist.identifier }}-id" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form onsubmit="return validateChecklist('{{ checklist.identifier }}')">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h2 class="modal-title">
+                            {{ checklist.title }}
+                        </h2>
+                    </div>
+                    <div class="modal-body">
+                        <p class="checklist-description">{{ checklist.description|safe }}</p>
+
+                        {% for itemgroup in checklist.checklistitemgroup_set.all %}
+                            <h3>{{ itemgroup.name }}</h3>
+                            <!-- TODO: replace style attribute with css class -->
+                            <p class="checklist-remark">Please check all items and press "OK"</p>
+                            <p class="checklist-description">{{ itemgroup.description|safe }}</p>
+                            <p class="checklist-description">
+                            <table>
+                                {% for item in itemgroup.checklistitem_set.all %}
+                                    <tr>
+                                        <td valign="top" style="width:20px;">
+                                            <input type="checkbox"
+                                                   name="checklist_{{ checklist.identifier }}_item_{{ item.id }}"
+                                                   id="id_checklist_{{ checklist.identifier }}_item_{{ item.id }}"
+                                                   required >
+
+                                        </td>
+                                        <td>
+                                            <label for="id_checklist_{{ checklist.identifier }}_item_{{ item.id }}" style="font-weight: normal;">
+                                                {{ item.text|safe }}
+                                            </label>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            </p>
+                        {% endfor %}
+
+                        <p class="checklist-description">{{ checklist.additional_description|safe }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <div clas="row">
+                            <div class="col-sm-6 text-left">
+                                <button type="button" id="id_btn_checkall_{{ checklist.identifier }}" class="btn btn-info" onclick="checkAllItems('{{ checklist.identifier }}')">Check all</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button type="submit" id="id_submit_checklist_{{ checklist.identifier }}" class="btn btn-default">OK</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}

@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 
 from .models import TrackerCertification, BadReason, PixelProblem, StripProblem, TrackingProblem
 from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField
-
+from checklists.forms import ChecklistFormMixin
 
 class CertifyForm(ModelForm):
 
@@ -47,4 +47,7 @@ class CertifyForm(ModelForm):
                     "Reference run is incompatible with selected Type. ({} != {})"
                         .format(run_type.runtype, reference_run.runtype)))
 '''
+
+class CertifyFormWithChecklistForm(ChecklistFormMixin, CertifyForm):
+    pass
 

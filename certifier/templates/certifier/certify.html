@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% load form_tags %}
+
 {% block style %}
 
 <link rel="stylesheet" type="text/css" href="{% static "certifier/css/style.css" %}">
@@ -202,7 +204,7 @@
 
 <!--================================ FORM ===============================-->
 <div class="container-fluid">
-    <form method="POST" action="" id="id_runinfo_form" >
+    <form method="POST" action="" id="id_certifier_form" >
         {% csrf_token %}
         <div class="row mt-4">
             <div class="col-sm-7">
@@ -356,6 +358,11 @@
         </div>
     </form>
 </div>
+    {% render_checklist_modal form.checklists.general %}
+    {% render_checklist_modal form.checklists.trackermap %}
+    {% render_checklist_modal form.checklists.pixel %}
+    {% render_checklist_modal form.checklists.sistrip %}
+    {% render_checklist_modal form.checklists.tracking %}
 {% endblock content %}
 
 {% block scripts %}

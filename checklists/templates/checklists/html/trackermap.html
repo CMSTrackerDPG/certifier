@@ -1,0 +1,49 @@
+{% extends checklist_base_template_name %}
+
+{% block title %}TkDQM Doc: Trackermap Help{% endblock %}
+{% block checklist_block_id %}trackermap-id{% endblock %}
+{% block checklist_headline %}Trackermap Helper{% endblock %}
+
+{% block checklist_content %}
+    TrackerMaps constitute a geometrical view of the tracker layout. It shows the status of every modules, classified by partition and layer(disk).
+
+    Tracker Maps are used for two different purpose. First, the scrutiny of the QTestAlarm maps and bad componenets allow to spot large problems. Second, all other features of the tool can help to investigate specific problems observed during data taking.   <br>
+
+    This page contains the list of checks to be done for every run, but also some useful information about possible issues and links to the documentation.
+
+
+    <h3>Tracker Map Check List</h3>
+
+    First, make sure the tracker maps are indeed produced. Then, in order to ensure that no big problems are ongoing, try to answer the following questions, looking at the QTestAlarm map :
+    <ul>
+        <li>Are there a large number of modues with high number of digis and/or clusters ?</li>
+        <li>Are there new bad modules concentrated to the same location in the map  ? Or bad modules correlated, such as connected to the same power group, or "align" along the same direction (for example, two overlaping area between two layers/disks) ? </li>
+        <li>Is there big difference in comparison with the reference ? Please note anything different and try to understand these differences. </li>
+        <li>Check the number if bad modules. Is it very different from the reference run ? </li>
+    </ul>
+
+    <h3>Tips for investigating potential issues </h3>
+    <ul>
+        <li>First things to do : read the elog and search for anything unusal. Any problems observed during operations at P5 should be mention there, don't forget to look at the Central Shift Leader too</li>
+        <li> if you identify large dead regions, check excluded FEDs or large PS group problems</li>
+        <li> if you observed a larger number of modules with high number of clusters or digis, spread a bit randomly in a partition, check for recent upload of new calibrations, make sure the S/N distributions (in the GUI) is similar to the reference,</li>
+        <li> if you observed of FED errors, search for power group or DCS issues ; they might show up as FED errors,</li>
+        <li> if you see noisy modules (large number if clusters and digis), identify them in the list of bad modules, check their location using the cabling web interface  <a href="http://vocms061.cern.ch/event_display/CondDBMonitoringWebInterface/CondDBMonitoringWebInterface/WWW/CablingWebInterface/cablingweb.php" target="_top">link</a> and check if they are in the list of known noisy modules on the <a href="https://twiki.cern.ch/twiki/bin/view/CMS/TkStatusWhiteboard" target="_top">whiteboard</a>.</li>
+    </ul>
+
+
+    <h3>Descriptions of maps and tables</h3>
+
+    Here is a description of all the maps and tables produced by the TrackerMap tools. FIXME : add the same for pixel !
+
+    <p /> <ol>
+    <li style="list-style-type: lower-roman;"> QTestAlarms <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Modules_which_are_BAD_from_quali" target="_top">description</a>
+    </li> <li style="list-style-type: lower-roman;"> FEDChannelErrors <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#FED_errors_per_module" target="_top">description</a>
+</li> <li style="list-style-type: lower-roman;"> Number of Digis per module <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Number_of_digis_per_module" target="_top">description</a>
+</li> <li style="list-style-type: lower-roman;"> Number of Clusters per module <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Number_of_clusters_per_module" target="_top">description</a>
+</li> <li style="list-style-type: lower-roman;"> Number of clusters on-track per module <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Number_of_cluster_on_track_per_m" target="_top">description</a>
+</li> <li style="list-style-type: lower-roman;"> Mean value for S/N for on-track cluster corrected for the angle <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Mean_value_for_S_N_for_on_track" target="_top">description</a>
+</li> <li style="list-style-type: lower-roman;"> Cluster charge / cm from track <a href="https://twiki.cern.ch/twiki/bin/view/CMS/SiStripOfflineDQMHistoDescription#Cluster_charge_per_cm_from_Track" target="_top">description</a>
+</li></ol>
+    <p />
+{% endblock %}

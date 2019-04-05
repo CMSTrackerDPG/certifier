@@ -28,6 +28,8 @@ class RunReconstruction(models.Model):
         return "{} {}".format(self.run_number, self.reconstruction)
 
 
+
+
 class PixelProblem(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField()
@@ -64,16 +66,17 @@ class TrackerCertification(models.Model):
     )
     TRACKERMAP_CHOICES = (("Exists", "Exists"), ("Missing", "Missing"))
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+#    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     runreconstruction = models.OneToOneField(
         RunReconstruction, on_delete=models.CASCADE, primary_key=True
     )
+
     reference_runreconstruction = models.ForeignKey(
-        RunReconstruction, on_delete=models.CASCADE, related_name="+"
+        RunReconstruction, on_delete=models.CASCADE, related_name="ref"
     )
 
-    trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
+#    trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
     strip = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
@@ -91,7 +94,7 @@ class TrackerCertification(models.Model):
         BadReason, null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    date = models.DateField()
+#    date = models.DateField()
 
     comment = models.TextField()
 

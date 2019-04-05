@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
     "plot.apps.PlotConfig",
     "analysis.apps.AnalysisConfig",
