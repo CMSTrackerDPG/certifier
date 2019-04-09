@@ -35,6 +35,7 @@ def certify(request, run_number, reco):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+            form.user = request.user
             return render(request, "home/home.html")
 
     # if a GET (or any other method) we'll create a blank form
