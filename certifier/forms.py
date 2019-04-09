@@ -25,6 +25,7 @@ class CertifyForm(ModelForm):
             'tracking_problems',
             'bad_reason',
             'comment',
+            'reference_runreconstruction',
         ]
 
     def clean(self):
@@ -48,6 +49,6 @@ class CertifyForm(ModelForm):
                         .format(run_type.runtype, reference_run.runtype)))
 '''
 
-class CertifyFormWithChecklistForm(ChecklistFormMixin, CertifyForm):
+class CertifyFormWithChecklistForm(CertifyForm, ChecklistFormMixin):
     pass
 

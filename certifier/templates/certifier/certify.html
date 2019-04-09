@@ -351,6 +351,8 @@
                         </div>
                         <div class="col-sm-8">
                         {% render_field form.comment class="form-control" rows="4" %}
+                            {% render_field form.reference_runreconstruction class="form-control" %}
+                {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,6 @@ from django import template
 
 register = template.Library()
 
-
 @register.inclusion_tag('checklists/checklists/checklist_checkbox.html')
 def render_checklist_checkbox(form_checklist, label="", not_required=False):
     """"
@@ -47,3 +46,7 @@ def render_checklist_modal(form_checklist, label=""):
     except TypeError:
         # Don't render if no checklist is provided
         return {}
+
+@register.inclusion_tag('certifier/label_and_field.html')
+def render_label_and_field_for(field):
+    return {'field': field}

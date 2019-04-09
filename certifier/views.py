@@ -1,9 +1,11 @@
 from django.shortcuts import render
-
+from certifier.models import TrackerCertification, RunReconstruction
 # Create your views here.
-
+from django.shortcuts import redirect
 from oms.utils import retrieve_run
-from .forms import CertifyForm
+from .forms import CertifyFormWithChecklistForm
+from oms.models import OmsRun
+from users.models import User
 
 def index(request):
     run_number = request.GET.get("run_number", None)
@@ -17,6 +19,13 @@ def index(request):
 
     return render(request, "certifier/index.html")
 
+def listruns(request):
+    data = TrackerCertification.objects.all()
+    context = {
+        "objs": data
+    }
+    return render(request, "certifier/test.html",context)
+
 
 def certify(request, run_number, reco):
     try:
@@ -27,20 +36,40 @@ def certify(request, run_number, reco):
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
+
+        try:
+            runReconstruction = RunReconstruction.objects.get(
+                    run__run_number=run_number,reconstruction=reco)
+        except RunReconstruction.DoesNotExist:
+            runReconstruction = RunReconstruction.objects.create(
+                    run=run, reconstruction=reco, dataset="test")
+
+        try:
+            user = User.objects.get(username=request.user)
+        except User.DoesNotExist:
+            user = None
+
         # create a form instance and populate it with data from the request:
-        form = CertifyForm(request.POST)
+        form = CertifyFormWithChecklistForm(request.POST)
+
         # check whether it's valid:
-        print(form.errors.as_text())
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            form.user = request.user
-            return render(request, "home/home.html")
+            try:
+                trackerCertification = TrackerCertification.objects.get(runreconstruction=runReconstruction)
+            except TrackerCertification.DoesNotExist:
+                formToSave = form.save(commit=False)
+                formToSave.runreconstruction=runReconstruction
+#                formToSave.user=user
+                formToSave.save()
+
+            return redirect("/")
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = CertifyForm()
+        form = CertifyFormWithChecklistForm()
 
     context = {"run_number": run_number, "reco": reco, "run": run, "form": form}
 
