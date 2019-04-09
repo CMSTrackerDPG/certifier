@@ -66,7 +66,7 @@ class TrackerCertification(models.Model):
     )
     TRACKERMAP_CHOICES = (("Exists", "Exists"), ("Missing", "Missing"))
 
-#    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     runreconstruction = models.OneToOneField(
         RunReconstruction, on_delete=models.CASCADE, primary_key=True

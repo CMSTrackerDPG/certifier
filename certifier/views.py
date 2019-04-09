@@ -62,7 +62,7 @@ def certify(request, run_number, reco):
             except TrackerCertification.DoesNotExist:
                 formToSave = form.save(commit=False)
                 formToSave.runreconstruction=runReconstruction
-#                formToSave.user=user
+                formToSave.user=user
                 formToSave.save()
 
             return redirect("/")
