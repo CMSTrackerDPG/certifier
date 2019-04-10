@@ -26,6 +26,8 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
+            "trackermap": "Exists",
+            "date": "2018-01-01",
         }
 
         form = CertifyForm(data=data)
@@ -55,6 +57,8 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
+            "trackermap": "Exists",
+            "date": "2018-01-01",
         }
 
         form = CertifyForm(data=data)
