@@ -193,10 +193,10 @@
     </div>
 
     <div class="text-center" id="id-analyse-content" style="display:none;">
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info ml-2">
             Open Analysis
         </a>
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2">
             Open Plots
         </a>
     </div>
@@ -226,8 +226,23 @@
                 </div>
             </div>
             <div class="col-sm-5">
-<!--================================ PIXEL ==============================-->
+<!--================================ DATE ===============================-->
                 <div class="row no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right col-form-label">
+                        <label for="id_date_month" >
+                            {{ form.date.label }}:
+                        </label>
+                    </div>
+
+                    <div class="col-sm-6 pl-4 d-flex justify-content-center">
+                        {% bootstrap_field form.date label="" %}
+                    </div>
+
+                    <div class="col-sm-3 ml-3">
+                    </div>
+                </div>
+<!--================================ PIXEL ==============================-->
+                <div class="row mt-3 no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
                         <label for="id_pixel" style="font-size: 24px;">
                             {{ form.pixel.label }}:
@@ -314,15 +329,18 @@
                         </label>
                     </div>
                 </div>
-<!--================================ BAD REASON =========================-->
-                <div class="row mt-3 justify-content-md-center">
-                    <div class="col-sm-2 text-right col-form-label ml-5">Why bad?</div>
-                    <div class="col-sm-6 text-center">
-                        <div class="input-group">
-                            {% render_field form.bad_reason class="custom-select" %}
-                        </div>
+<!--================================ TRACKERMAP =========================-->
+                <div class="row mt-2 no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right">
+                        <label for="id_trackermap" style="font-size: 24px;">
+                            {{ form.trackermap.label}}:
+                        </label>
                     </div>
-                    <div class="col-sm-3 ml-3"></div>
+                    <div class="col-sm-6 text-center pl-5">
+                        {% render_field form.trackermap class="custom-select" %}
+                    </div>
+                    <div class="col-sm-3 ml-3">
+                    </div>
                 </div>
 <!--================================ SUBMIT ==============================-->
                 <div class="row mt-4 justify-content-center">
@@ -336,7 +354,7 @@
 <!--================================ PROBLEMS ============================-->
             <div class="col-sm-3">
                 <div class="row">
-                    <div class="col-sm-5 col-form-label"style="font-size: 22px;">
+                    <div class="col-sm-5 col-form-label" style="font-size: 22px;">
                         {{ form.pixel_problems.label}}:
                     </div>
                     <div class="col-sm-7">
@@ -344,7 +362,7 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="col-sm-5 col-form-label"style="font-size: 22px;">
+                    <div class="col-sm-5 col-form-label" style="font-size: 22px;">
                         {{ form.strip_problems.label}}:
                     </div>
                     <div class="col-sm-7">
@@ -352,15 +370,26 @@
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="col-sm-5 col-form-label"style="font-size: 22px;">
+                    <div class="col-sm-5 col-form-label" style="font-size: 22px;">
                         {{ form.tracking_problems.label}}:
                     </div>
                     <div class="col-sm-7">
                         {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
+<!--================================ BAD REASON =========================-->
+                <div class="row mt-4">
+                    <div class="col-sm-5 col-form-label" style="font-size: 20px;">
+                        Why bad?
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                            {% render_field form.bad_reason class="custom-select" %}
+                        </div>
+                    </div>
+                </div>
 <!--================================ COMMENT ============================-->
-                <div class="row mt-3">
+                <div class="row mt-2">
                     <div class="col-sm-12 col-form-label">
                         {{ form.comment.label}}:
                     </div>

@@ -76,7 +76,7 @@ class TrackerCertification(models.Model):
         RunReconstruction, on_delete=models.CASCADE, related_name="ref"
     )
 
-#    trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
+    trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
     strip = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
@@ -94,7 +94,7 @@ class TrackerCertification(models.Model):
         BadReason, null=True, blank=True, on_delete=models.SET_NULL
     )
 
-#    date = models.DateField()
+    date = models.DateField()
 
     comment = models.TextField()
 
