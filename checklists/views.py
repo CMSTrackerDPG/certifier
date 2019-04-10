@@ -6,5 +6,5 @@ from django.shortcuts import render
 class ChecklistTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["checklist_base_template_name"] = "certhelper/checklists/base.html"
+        context["checklist_base_template_name"] = "checklists/templates/checklists/html/base.html"
         return context
