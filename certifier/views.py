@@ -19,14 +19,6 @@ def index(request):
 
     return render(request, "certifier/index.html")
 
-def listruns(request):
-    data = TrackerCertification.objects.all()
-    context = {
-        "objs": data
-    }
-    return render(request, "certifier/test.html",context)
-
-
 def certify(request, run_number, reco):
     try:
         run = retrieve_run(run_number)

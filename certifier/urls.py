@@ -5,5 +5,4 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("<int:run_number>/<reco>/", views.certify, name="certify"),
-    path("test/", views.listruns, name="list"),
 ]
