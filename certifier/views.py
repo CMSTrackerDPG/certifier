@@ -42,7 +42,7 @@ def certify(request, run_number, reco):
                     run__run_number=run_number,reconstruction=reco)
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                    run=run, reconstruction=reco, dataset="test")
+                    run=run, reconstruction=reco, dataset="TODO")
 
         try:
             user = User.objects.get(username=request.user)
