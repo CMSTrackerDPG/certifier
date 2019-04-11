@@ -46,7 +46,3 @@ def render_checklist_modal(form_checklist, label=""):
     except TypeError:
         # Don't render if no checklist is provided
         return {}
-
-@register.inclusion_tag('certifier/label_and_field.html')
-def render_label_and_field_for(field):
-    return {'field': field}
