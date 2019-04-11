@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -17,7 +18,7 @@ def index(request):
 
     return render(request, "certifier/index.html")
 
-
+@login_required
 def certify(request, run_number, reco):
     try:
         run = retrieve_run(run_number)
