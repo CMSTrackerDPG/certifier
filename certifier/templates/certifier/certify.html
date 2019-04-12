@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% load form_tags %}
+
 {% block style %}
 
 <link rel="stylesheet" type="text/css" href="{% static "certifier/css/style.css" %}">
@@ -17,7 +19,14 @@
 <div class="container">
     <div class="row">
         <div class="mt-4 mb-4 col-lg-12 text-center">
-            <h1>{{ run_number }} <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span></h1>
+            <h1>
+                {{ run_number }}
+                <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
+                {% if user.is_superuser %}
+                    <!-- super secret button for developers -->
+                    <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
+                {% endif %}
+            </h1>
         </div>
     </div>
 </div>
@@ -191,10 +200,10 @@
     </div>
 
     <div class="text-center" id="id-analyse-content" style="display:none;">
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info ml-2">
             Open Analysis
         </a>
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2 ml-2">
+        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2">
             Open Plots
         </a>
     </div>
@@ -202,19 +211,52 @@
 
 <!--================================ FORM ===============================-->
 <div class="container-fluid">
-    <form method="POST" action="" id="id_runinfo_form" >
+    <form method="POST" action="" id="id_certifier_form" >
         {% csrf_token %}
-        <div class="row mt-4">
-            <div class="col-sm-7">
+        <div class="row mt-4 justify-content-md-center no-gutters">
+<!--================================ CHECKLISTS =========================-->
+            <div class="col-sm-3">
+                <div class="row no-gutters ml-1">
+                    <div class="col-sm-9 col-form-label" style="font-size: 24px; color: black;font-weight: bold;">
+                        {{ form.reference_runreconstruction.label}}:
+                    </div>
+                    <div class="col-sm-9">
+                        {% render_field form.reference_runreconstruction class="form-control" %}
+                    </div>
+                </div>
+                <div class="col-sm-offset mt-4">
+                    {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
+                    {% render_checklist_checkbox form.checklists.trackermap not_required=checklist_not_required %}
+                    {% render_checklist_checkbox form.checklists.pixel not_required=checklist_not_required%}
+                    {% render_checklist_checkbox form.checklists.sistrip not_required=checklist_not_required%}
+                    {% render_checklist_checkbox form.checklists.tracking not_required=checklist_not_required%}
+                </div>
+            </div>
+            <div class="col-sm-5">
+<!--================================ DATE ===============================-->
+                <div class="row no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right col-form-label" style="font-size: 18px;">
+                        <label for="id_date_month" >
+                            {{ form.date.label }}:
+                        </label>
+                    </div>
+
+                    <div class="col-sm-6 pl-4 d-flex justify-content-center">
+                        {% bootstrap_field form.date label="" %}
+                    </div>
+
+                    <div class="col-sm-3 ml-3">
+                    </div>
+                </div>
 <!--================================ PIXEL ==============================-->
-                <div class="row no-gutters">
-                    <div class="col text-right">
+                <div class="row mt-3 no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right">
                         <label for="id_pixel" style="font-size: 24px;">
                             {{ form.pixel.label }}:
                         </label>
                     </div>
 
-                    <div class="col text-center">
+                    <div class="col-sm-6 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_pixel">
                                 {% for status in form.pixel.field.choices %}
@@ -228,7 +270,7 @@
                         </div>
                     </div>
 
-                    <div class="col text-left col-form-label ml-3">
+                    <div class="col-sm-3 text-left col-form-label ml-3">
                         {{form.pixel_lowstat}}
                         <label for="id_pixel_lowstat">
                             {{form.pixel_lowstat.label}}
@@ -236,14 +278,14 @@
                     </div>
                 </div>
 <!--================================ STRIP ==============================-->
-                <div class="row mt-2 no-gutters">
-                    <div class="col text-right">
+                <div class="row mt-2 no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right">
                         <label for="id_strip" style="font-size: 24px;">
                             {{ form.strip.label }}:
                         </label>
                     </div>
 
-                    <div class="col text-center">
+                    <div class="col-sm-6 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_strip">
                                 {% for status in form.strip.field.choices %}
@@ -257,7 +299,7 @@
                         </div>
                     </div>
 
-                    <div class="col text-left col-form-label ml-3">
+                    <div class="col-sm-3 text-left col-form-label ml-3">
                         {{form.strip_lowstat}}
                         <label for="id_strip_lowstat">
                             {{form.strip_lowstat.label}}
@@ -265,14 +307,14 @@
                     </div>
                 </div>
 <!--================================ TRACKING ===========================-->
-                <div class="row mt-2 no-gutters">
-                    <div class="col text-right">
+                <div class="row mt-2 no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right">
                         <label for="id_tracking" style="font-size: 24px;">
                             {{ form.tracking.label }}:
                         </label>
                     </div>
 
-                    <div class="col text-center">
+                    <div class="col-sm-6 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_tracking">
                                 {% for status in form.tracking.field.choices|slice_last_elem %}
@@ -287,113 +329,156 @@
                         </div>
                     </div>
 
-                    <div class="col text-left col-form-label ml-3">
+                    <div class="col-sm-3 text-left col-form-label ml-3">
                         {{form.tracking_lowstat}}
                         <label for="id_tracking_lowstat">
                             {{form.tracking_lowstat.label}}
                         </label>
                     </div>
                 </div>
+<!--================================ TRACKERMAP =========================-->
+                <div class="row mt-2 no-gutters justify-content-md-center">
+                    <div class="col-sm-2 text-right">
+                        <label for="id_trackermap" style="font-size: 18px;">
+                            {{ form.trackermap.label}}:
+                        </label>
+                    </div>
+                    <div class="col-sm-6 text-center pl-5">
+                        {% render_field form.trackermap class="custom-select" %}
+                    </div>
+                    <div class="col-sm-3 ml-3">
+                    </div>
+                </div>
+<!--================================ SUBMIT ==============================-->
+                <div class="row mt-4 justify-content-center">
+                    <div class="col-sm-2 ml-4"></div>
+                    <div class="col-sm-6 text-center">
+                        <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+            </div>
+            <div class="col-sm-3">
 <!--================================ BAD REASON =========================-->
-                <div class="row mt-3 justify-content-center">
-                    <div class="col text-right col-form-label ml-4">Why bad?</div>
-                    <div class="col text-center">
+                <div class="row">
+                    <div class="col-sm-5 col-form-label" style="font-size: 18px;">
+                        Why bad?
+                    </div>
+                    <div class="col-sm-7">
                         <div class="input-group">
                             {% render_field form.bad_reason class="custom-select" %}
                         </div>
                     </div>
-                    <div class="col"></div>
                 </div>
-<!--================================ SUBMIT ==============================-->
-                <div class="row mt-4 justify-content-center">
-                    <input class="btn btn-primary btn-lg" type="submit" value="Submit">
-                </div>
-            </div>
 <!--================================ PROBLEMS ============================-->
-            <div class="col-sm-5" style="">
-                <div class="col">
-                    <div class="row no-gutters">
-                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
-                            {{ form.pixel_problems.label}}:
-                        </div>
-                        <div class="col-sm-5">
-                            {% render_field form.pixel_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
-                        </div>
+                <div class="row mt-4">
+                    <div class="col-sm-5 col-form-label" style="font-size: 18px;">
+                        {{ form.pixel_problems.label}}:
+                    </div>
+                    <div class="col-sm-7">
+                        {% render_field form.pixel_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
-                <div class="col mt-3">
-                    <div class="row no-gutters">
-                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
-                            {{ form.strip_problems.label}}:
-                        </div>
-                        <div class="col-sm-5">
-                            {% render_field form.strip_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
-                        </div>
+                <div class="row mt-4">
+                    <div class="col-sm-5 col-form-label" style="font-size: 18px;">
+                        {{ form.strip_problems.label}}:
+                    </div>
+                    <div class="col-sm-7">
+                        {% render_field form.strip_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
-                <div class="col mt-3">
-                    <div class="row no-gutters">
-                        <div class="col-sm-3 col-form-label"style="font-size: 19px;">
-                            {{ form.tracking_problems.label}}:
-                        </div>
-                        <div class="col-sm-5">
-                            {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
-                        </div>
+                <div class="row mt-4">
+                    <div class="col-sm-5 col-form-label" style="font-size: 18px;">
+                        {{ form.tracking_problems.label}}:
+                    </div>
+                    <div class="col-sm-7">
+                        {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
 <!--================================ COMMENT ============================-->
-                <div class="col my-2">
-                    <div class="row no-gutters">
-                        <div class="col-sm-12 col-form-label" style="font-size: 19px;">
-                            {{ form.comment.label}}:
-                        </div>
-                        <div class="col-sm-8">
-                        {% render_field form.comment class="form-control" rows="4" %}
-                        </div>
+                <div class="row mt-2">
+                    <div class="col-sm-12 col-form-label" style="font-size: 18px">
+                        {{ form.comment.label}}:
+                    </div>
+                    <div class="col-sm-12">
+                    {% render_field form.comment class="form-control" rows="4" %}
                     </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
+    {% render_checklist_modal form.checklists.general %}
+    {% render_checklist_modal form.checklists.trackermap %}
+    {% render_checklist_modal form.checklists.pixel %}
+    {% render_checklist_modal form.checklists.sistrip %}
+    {% render_checklist_modal form.checklists.tracking %}
 {% endblock content %}
 
-{% block scripts %}
 <!--================================ SCRIPTS ==============================-->
+{% block scripts %}
+<script src="{% static "checklists/js/checklist.js" %}"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
 
 <script type="text/javascript">
-function label_highlight(inputName){
-    $(document).ready(function(){
-        radio_button= $("input[name='"+inputName+"']:checked")[0]
-        if(radio_button){
-            var id = radio_button.id
-            label = $("label[for='"+id+"']")
-            label.toggleClass('active')
-        }
+    function label_highlight(inputName){
+        $(document).ready(function(){
+            radio_button= $("input[name='"+inputName+"']:checked")[0]
+            if(radio_button){
+                var id = radio_button.id
+                label = $("label[for='"+id+"']")
+                label.toggleClass('active')
+            }
+        });
+    }
+
+    function radio_select_change(inputName){
+        $('input[type=radio][name='+inputName+']').change(function() {
+            if( $("input[name='pixel']:checked")[0].value == "bad" ||
+                $("input[name='strip']:checked")[0].value == "bad" ||
+                $("input[name='tracking']:checked")[0].value == "bad" ) {
+                $("#id_bad_reason").attr("required", true);
+            } else {
+                $("#id_bad_reason").removeAttr('required');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        label_highlight('pixel')
+        label_highlight('strip')
+        label_highlight('tracking')
+        radio_select_change('pixel')
+        radio_select_change('strip')
+        radio_select_change('tracking')
     });
-}
-$(document).ready(function () {
-    label_highlight('pixel')
-    label_highlight('strip')
-    label_highlight('tracking')
-});
 </script>
 
 <script>
     myFunction();
-var myVar;
+    var myVar;
 
-function myFunction() {
-    myVar = setTimeout(showPage, 1000);
-}
+    function myFunction() {
+        myVar = setTimeout(showPage, 1000);
+    }
 
-function showPage() {
-    document.getElementById("id-analyze-spinner").style.display = "none";
-    document.getElementById("id-analyse-content").style.display = "block";
-}
+    function showPage() {
+        document.getElementById("id-analyze-spinner").style.display = "none";
+        document.getElementById("id-analyse-content").style.display = "block";
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        /**
+         * Popup Checklist modal with items when trying to check a checklist checkbox
+         */
+        $('[id^="id_checklist_"]').each(function() {
+            popupChecklistModal($(this));
+        });
+    });
 </script>
 {% endblock scripts %}

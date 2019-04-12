@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
     "plot.apps.PlotConfig",
     "analysis.apps.AnalysisConfig",
@@ -150,7 +151,7 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'))
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'))
 STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
 
 AUTH_USER_MODEL = "users.User"
