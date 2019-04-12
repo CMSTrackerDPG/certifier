@@ -1,0 +1,17 @@
+{% load static %}
+
+{# template used to inherit of for standalone web pages, e.g. https://tkdqmdoctor.web.cern.ch/checklists/pixel #}
+
+<link rel="shortcut icon" type="image/png" href="{% static "img/favicon.png" %}"/>
+<title>{% block title %}{% endblock title %}</title>
+
+<script src="{% static "jquery/jquery.min.js" %}"></script>
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+
+<h1 align="center">{% block checklist_headline %}{% endblock checklist_headline %}</h1>
+<div class="container">
+    {% block checklist_content %}
+        <p>Some content</p>
+    {% endblock %}
+</div>
