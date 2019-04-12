@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from mixer.backend.django import mixer
 from django.contrib.auth import get_user_model
 from users.signals import *
+from django.test import Client
 
 pytestmark = pytest.mark.django_db
 
@@ -25,10 +26,28 @@ def test_logs():
     log_social_account_updated(None, None)
     log_social_account_removed(None, None)
 
-
 def test_user_automatically_created():
     user = mixer.blend(get_user_model())
     assert user
+
+def test_users_login():
+    user = mixer.blend(get_user_model())
+    user.set_password("secret")
+    user.save()
+
+    assert user.is_guest
+    assert not user.is_staff
+    assert not user.is_superuser
+
+    client = Client()
+    login = client.login(username=user.username, password="secret")
+
+    assert login
+
+    user = get_user_model().objects.get()
+    assert user.is_guest
+    assert not user.is_staff
+    assert not user.is_superuser
 
 
 def test_update_users_on_save():

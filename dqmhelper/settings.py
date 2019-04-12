@@ -41,6 +41,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
+    "dqmgui.apps.DqmguiConfig",
     "plot.apps.PlotConfig",
     "analysis.apps.AnalysisConfig",
     "home.apps.HomeConfig",

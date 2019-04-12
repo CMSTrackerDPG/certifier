@@ -36,27 +36,5 @@ class CertifyForm(ModelForm):
             'trackermap',
         ]
 
-    def clean(self):
-        cleaned_data = super(CertifyForm, self).clean()
-        return cleaned_data
-'''
-        is_sistrip_bad = cleaned_data.get('sistrip') == 'Bad'
-        is_tracking_good = cleaned_data.get('tracking') == 'Good'
-
-        if is_sistrip_bad and is_tracking_good:
-            self.add_error(None, ValidationError(
-                "Tracking can not be GOOD if SiStrip is BAD. Please correct."))
-
-        run_type = cleaned_data.get('type')
-        reference_run = cleaned_data.get('reference_run')
-
-        if run_type and reference_run:
-            if run_type.runtype != reference_run.runtype:
-                self.add_error(None, ValidationError(
-                    "Reference run is incompatible with selected Type. ({} != {})"
-                        .format(run_type.runtype, reference_run.runtype)))
-'''
-
 class CertifyFormWithChecklistForm(CertifyForm, ChecklistFormMixin):
     pass
-
