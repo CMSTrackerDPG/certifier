@@ -17,7 +17,7 @@ class Histogram(models.Model):
     entries = models.FloatField()  # ""
     x_mean = models.FloatField()  # ""
     x_rms = models.FloatField()  # ""
-    x_label = models.CharField()  # "adc readout"
+    x_label = models.CharField(max_length=100)  # "adc readout"
     x_min = models.FloatField()
     x_max = models.FloatField()
     bins_integral = models.FloatField()

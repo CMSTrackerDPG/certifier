@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import UserManager
 from users.utilities.logger import get_configured_logger
 from users.utilities.utilities import (
-    get_full_name,
     get_highest_privilege_from_egroup_list,
     extract_egroups,
     get_or_create_group,
