@@ -13,7 +13,7 @@ before_script:
   - psql -c "create database testdb;" -U postgres
 
 script:
-  - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=.
+  - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py
 
 after_success:
   - codecov

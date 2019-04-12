@@ -1,0 +1,37 @@
+{# Used in for modals e.g. in the UpdateView #}
+
+<div class="col-sm-offset-3 col-sm-9 checklist">
+    <label class="col-sm-6 no-bold-label">
+        <input type="checkbox" name="{{ field.name }}" id="id_checkbox_{{ field.name }}">
+        <span class="glyphicon glyphicon-list-alt"></span> {{ label }}
+
+        <button type="button"
+                class="btn btn-link btn-sm"
+                data-toggle="modal"
+                data-target="#modal-{{ item.modal_name }}-id">
+            [Show]
+        </button>
+    </label>
+</div>
+
+<div id="modal-{% block checklist_identifier %}myModal{% endblock %}" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">
+                    {% block checklist_headline %}Modal Header{% endblock checklist_headline %}
+                </h2>
+            </div>
+            <div class="modal-body">
+                {% block checklist_content %}
+                    <p>Some text in the modal.</p>
+                {% endblock %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
