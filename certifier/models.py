@@ -13,7 +13,6 @@ class RunReconstruction(models.Model):
     )
     run = models.ForeignKey(OmsRun, on_delete=models.CASCADE)
     reconstruction = models.CharField(max_length=8, choices=RECONSTRUCTION_CHOICES)
-    dataset = models.CharField(max_length=150)
 
     is_reference = models.BooleanField(default=False)
 
@@ -26,9 +25,6 @@ class RunReconstruction(models.Model):
 
     def __str__(self):
         return "{} {}".format(self.run_number, self.reconstruction)
-
-
-
 
 class PixelProblem(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -58,6 +54,13 @@ class BadReason(models.Model):
     def __str__(self):
         return self.name
 
+class Dataset(models.Model):
+    dataset = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.dataset
+
+
 class TrackerCertification(models.Model):
     SUBCOMPONENT_STATUS_CHOICES = (
         ("good", "Good"),
@@ -71,6 +74,8 @@ class TrackerCertification(models.Model):
     runreconstruction = models.OneToOneField(
         RunReconstruction, on_delete=models.CASCADE, primary_key=True
     )
+
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
     reference_runreconstruction = models.ForeignKey(
         RunReconstruction, on_delete=models.CASCADE, related_name="ref"

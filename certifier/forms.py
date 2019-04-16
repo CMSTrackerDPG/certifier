@@ -2,8 +2,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from .models import TrackerCertification, BadReason, PixelProblem, StripProblem, TrackingProblem
-from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField
+from .models import TrackerCertification, BadReason, PixelProblem, StripProblem, TrackingProblem, Dataset
+from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField, TextInput
 from checklists.forms import ChecklistFormMixin
 
 class CertifyForm(ModelForm):
@@ -34,7 +34,18 @@ class CertifyForm(ModelForm):
             'reference_runreconstruction',
             'date',
             'trackermap',
+            'dataset',
         ]
+
+class DatasetForm(ModelForm):
+    class Meta:
+        model = Dataset
+        fields = ["dataset"]
+        widgets = {
+            'dataset': TextInput(
+                attrs={'placeholder': "e.g. /Cosmics/Run2017F-PromptReco-v1/DQMIO",
+                       'class': "form-control"}),
+        }
 
 class CertifyFormWithChecklistForm(CertifyForm, ChecklistFormMixin):
     pass
