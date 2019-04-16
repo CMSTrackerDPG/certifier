@@ -18,6 +18,12 @@ class TestRunReconstruction:
         runReconstruction = mixer.blend(RunReconstruction, reconstruction=test_reconstruction, run=mixer.blend(OmsRun, run_number=test_number))
         assert str(runReconstruction) == "{} {}".format(test_number, test_reconstruction)
 
+class TestDataset:
+    def test_name(self):
+        test_dataset="/test/test"
+        dataset = mixer.blend(Dataset, dataset=test_dataset)
+        assert str(dataset) == test_dataset
+
 class TestPixelProblem:
     def test_name(self):
         test_problem="test_problem_pixel"
@@ -60,3 +66,9 @@ class TestTrackerCertification:
         trackerCertification = mixer.blend(TrackerCertification, runreconstruction=runReconstruction)
         assert trackerCertification.reconstruction == "ReReco"
 
+    def test_str_return(self):
+        test_number=323444
+        runReconstruction = mixer.blend(RunReconstruction, reconstruction="rereco")
+        referenceRunReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        trackerCertification = mixer.blend(TrackerCertification, reference_runreconstruction=referenceRunReconstruction, runreconstruction=runReconstruction)
+        assert str(trackerCertification) == "{} {} {}".format(runReconstruction, referenceRunReconstruction, trackerCertification.get_tracking_display())
