@@ -1,12 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from certifier.models import TrackerCertification, RunReconstruction
+from certifier.models import TrackerCertification, RunReconstruction, Dataset
 # Create your views here.
 from django.shortcuts import redirect
 from oms.utils import retrieve_run
-from .forms import CertifyFormWithChecklistForm
+from .forms import CertifyFormWithChecklistForm, DatasetForm
 from oms.models import OmsRun
 from users.models import User
+from django.http import HttpResponseRedirect
 
 def index(request):
     run_number = request.GET.get("run_number", None)
@@ -19,6 +20,27 @@ def index(request):
         return response
 
     return render(request, "certifier/index.html")
+
+@login_required #WIP
+def createDataset(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = DatasetForm(request.POST)
+
+        # check whether it's valid:
+        if form.is_valid():
+            try:
+                dataset = Dataset.objects.get(
+                        dataset=request.POST.get("dataset"))
+            except Dataset.DoesNotExist:
+                form.save()
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        form = DatasetForm()
+
+    return render(request, "certifier/dataset.html", {"form": form})
 
 @login_required
 def certify(request, run_number, reco):
@@ -36,12 +58,9 @@ def certify(request, run_number, reco):
                     run__run_number=run_number,reconstruction=reco)
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                    run=run, reconstruction=reco, dataset="TODO")
+                    run=run, reconstruction=reco)
 
-        try:
-            user = User.objects.get(username=request.user)
-        except User.DoesNotExist:
-            user = None
+        user = User.objects.get(username=request.user)
 
         # create a form instance and populate it with data from the request:
         form = CertifyFormWithChecklistForm(request.POST)

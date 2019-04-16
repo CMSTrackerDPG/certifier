@@ -11,10 +11,6 @@ def translate_to_button_state(status):
     else:
         return "secondary"
 
-@register.filter(name='slice_first_elem')
-def slice(all_elem):
-    return all_elem[1:]
-
 @register.filter(name='slice_last_elem')
 def slice(all_elem):
     return all_elem[:-1]

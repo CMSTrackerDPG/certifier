@@ -21,11 +21,11 @@
         <div class="mt-4 mb-4 col-lg-12 text-center">
             <h1>
                 {{ run_number }}
-                <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
                 {% if user.is_superuser %}
                     <!-- super secret button for developers -->
                     <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
                 {% endif %}
+                <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
             </h1>
         </div>
     </div>
@@ -33,7 +33,7 @@
 
 <!--================================ TYPE ===============================-->
 <div class="container-fluid">
-    <div class="row mt-2 mb-2">
+    <div class="row mb-2">
         <div class="col-md-4">
             <div class="card shadow-sm bg-white">
                 <div class="card-body">
@@ -211,20 +211,39 @@
 
 <!--================================ FORM ===============================-->
 <div class="container-fluid">
+    <div id="includeDataset"></div>
     <form method="POST" action="" id="id_certifier_form" >
         {% csrf_token %}
-        <div class="row mt-4 justify-content-md-center no-gutters">
-<!--================================ CHECKLISTS =========================-->
-            <div class="col-sm-3">
-                <div class="row no-gutters ml-1">
-                    <div class="col-sm-9 col-form-label" style="font-size: 24px; color: black;font-weight: bold;">
+        <div class="row justify-content-md-center no-gutters">
+            <div class="col-md-3 mb-3">
+<!--================================ REFERENCE RUN ======================-->
+                <div class="row no-gutters ml-4">
+                    <div class="col-sm-10" style="font-size: 24px; font-weight: bold;">
                         {{ form.reference_runreconstruction.label}}:
                     </div>
-                    <div class="col-sm-9">
-                        {% render_field form.reference_runreconstruction class="form-control" %}
+                    <div class="col-sm-10">
+                        {% render_field form.reference_runreconstruction class="custom-select" style="color: green; font-weight:bold;" %}
                     </div>
                 </div>
-                <div class="col-sm-offset mt-4">
+<!--================================ DATASET ======================-->
+                <div class="row no-gutters mt-3 ml-4">
+                    <div class="col-sm-2 col-form-label" style="font-size: 18px;">
+                        {{ form.dataset.label}}:
+                    </div>
+                    <div class="col-sm-7">
+                        {% render_field form.dataset class="custom-select" %}
+                    </div>
+                    <div class="col-sm-1 input-group-btn text-right">
+                        <button class="btn btn-success"
+                                data-toggle="modal"
+                                data-target="#id_dataset_modal"
+                                type="button">
+                            <span style="font-weight: bold;">+</span>
+                        </button>
+                    </div>
+                </div>
+<!--================================ CHECKLISTS =========================-->
+                <div class="col-sm-offset mt-3 ml-4">
                     {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
                     {% render_checklist_checkbox form.checklists.trackermap not_required=checklist_not_required %}
                     {% render_checklist_checkbox form.checklists.pixel not_required=checklist_not_required%}
@@ -232,7 +251,7 @@
                     {% render_checklist_checkbox form.checklists.tracking not_required=checklist_not_required%}
                 </div>
             </div>
-            <div class="col-sm-5">
+            <div class="col-md-6 mb-3 mt-1">
 <!--================================ DATE ===============================-->
                 <div class="row no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right col-form-label" style="font-size: 18px;">
@@ -241,11 +260,11 @@
                         </label>
                     </div>
 
-                    <div class="col-sm-6 pl-4 d-flex justify-content-center">
+                    <div class="col-sm-5 pl-4 d-flex justify-content-center">
                         {% bootstrap_field form.date label="" %}
                     </div>
 
-                    <div class="col-sm-3 ml-3">
+                    <div class="col-sm-2">
                     </div>
                 </div>
 <!--================================ PIXEL ==============================-->
@@ -256,7 +275,7 @@
                         </label>
                     </div>
 
-                    <div class="col-sm-6 text-center">
+                    <div class="col-sm-5 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_pixel">
                                 {% for status in form.pixel.field.choices %}
@@ -270,7 +289,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3 text-left col-form-label ml-3">
+                    <div class="col-sm-2 text-left col-form-label">
                         {{form.pixel_lowstat}}
                         <label for="id_pixel_lowstat">
                             {{form.pixel_lowstat.label}}
@@ -285,7 +304,7 @@
                         </label>
                     </div>
 
-                    <div class="col-sm-6 text-center">
+                    <div class="col-sm-5 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_strip">
                                 {% for status in form.strip.field.choices %}
@@ -299,7 +318,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3 text-left col-form-label ml-3">
+                    <div class="col-sm-2 text-left col-form-label">
                         {{form.strip_lowstat}}
                         <label for="id_strip_lowstat">
                             {{form.strip_lowstat.label}}
@@ -314,7 +333,7 @@
                         </label>
                     </div>
 
-                    <div class="col-sm-6 text-center">
+                    <div class="col-sm-5 text-center">
                         <div data-toggle="buttons">
                             <ul class="list-inline" id="id_tracking">
                                 {% for status in form.tracking.field.choices|slice_last_elem %}
@@ -329,7 +348,7 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3 text-left col-form-label ml-3">
+                    <div class="col-sm-2 text-left col-form-label">
                         {{form.tracking_lowstat}}
                         <label for="id_tracking_lowstat">
                             {{form.tracking_lowstat.label}}
@@ -343,24 +362,16 @@
                             {{ form.trackermap.label}}:
                         </label>
                     </div>
-                    <div class="col-sm-6 text-center pl-5">
+                    <div class="col-sm-5 text-center pl-5">
                         {% render_field form.trackermap class="custom-select" %}
                     </div>
-                    <div class="col-sm-3 ml-3">
+                    <div class="col-sm-2">
                     </div>
-                </div>
-<!--================================ SUBMIT ==============================-->
-                <div class="row mt-4 justify-content-center">
-                    <div class="col-sm-2 ml-4"></div>
-                    <div class="col-sm-6 text-center">
-                        <input class="btn btn-primary btn-lg" type="submit" value="Submit">
-                    </div>
-                    <div class="col-sm-3"></div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-md-3 mb-3 mt-1">
 <!--================================ BAD REASON =========================-->
-                <div class="row">
+                <div class="row mr-4">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         Why bad?
                     </div>
@@ -371,7 +382,7 @@
                     </div>
                 </div>
 <!--================================ PROBLEMS ============================-->
-                <div class="row mt-4">
+                <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         {{ form.pixel_problems.label}}:
                     </div>
@@ -379,7 +390,7 @@
                         {% render_field form.pixel_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
-                <div class="row mt-4">
+                <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         {{ form.strip_problems.label}}:
                     </div>
@@ -387,7 +398,7 @@
                         {% render_field form.strip_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
-                <div class="row mt-4">
+                <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         {{ form.tracking_problems.label}}:
                     </div>
@@ -396,15 +407,23 @@
                     </div>
                 </div>
 <!--================================ COMMENT ============================-->
-                <div class="row mt-2">
+                <div class="row mt-2 mr-4">
                     <div class="col-sm-12 col-form-label" style="font-size: 18px">
                         {{ form.comment.label}}:
                     </div>
                     <div class="col-sm-12">
-                    {% render_field form.comment class="form-control" rows="4" %}
+                    {% render_field form.comment class="form-control" rows="3" %}
                     </div>
                 </div>
             </div>
+        </div>
+<!--================================ SUBMIT ==============================-->
+        <div class="row justify-content-center">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6 text-center">
+                <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+            </div>
+            <div class="col-sm-3"></div>
         </div>
     </form>
 </div>
@@ -437,9 +456,9 @@
 
     function radio_select_change(inputName){
         $('input[type=radio][name='+inputName+']').change(function() {
-            if( $("input[name='pixel']:checked")[0].value == "bad" ||
-                $("input[name='strip']:checked")[0].value == "bad" ||
-                $("input[name='tracking']:checked")[0].value == "bad" ) {
+            if( ($("input[name='pixel']:checked")[0] && $("input[name='pixel']:checked")[0].value == "bad") ||
+                ($("input[name='strip']:checked")[0] && $("input[name='strip']:checked")[0].value == "bad") ||
+                ($("input[name='tracking']:checked")[0] && $("input[name='tracking']:checked")[0].value == "bad") ) {
                 $("#id_bad_reason").attr("required", true);
             } else {
                 $("#id_bad_reason").removeAttr('required');
@@ -476,6 +495,7 @@
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
+        $("#includeDataset").load("../../createdataset");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
         });
