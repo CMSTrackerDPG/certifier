@@ -280,9 +280,9 @@
                             <ul class="list-inline" id="id_pixel">
                                 {% for status in form.pixel.field.choices %}
                                 <li class="list-inline-item">
-                                    <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <button for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                                    </label>
+                                    </button>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -309,9 +309,9 @@
                             <ul class="list-inline" id="id_strip">
                                 {% for status in form.strip.field.choices %}
                                 <li class="list-inline-item">
-                                    <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <button for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                                    </label>
+                                    </button>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -338,10 +338,10 @@
                             <ul class="list-inline" id="id_tracking">
                                 {% for status in form.tracking.field.choices|slice_last_elem %}
                                 <li class="list-inline-item">
-                                    <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <button for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
 
-                                    </label>
+                                    </button>
                                 </li>
                                 {% endfor %}
                             </ul>

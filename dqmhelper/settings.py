@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "listruns.apps.ListrunsConfig",
     "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
     "dqmgui.apps.DqmguiConfig",
@@ -63,6 +64,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'widget_tweaks',
     'django_extensions',
+    'django_tables2',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

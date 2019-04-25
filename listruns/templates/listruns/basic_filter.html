@@ -1,0 +1,86 @@
+{% load widget_tweaks %}
+
+<!-- relies on basic_filter.js -->
+<div class="container mb-4">
+    <div class="card border-light shadow p-3 mb-5 bg-white rounded" style="margin: 0 auto 10px; width: 800px; background-color: #F9F9F9;">
+        <form class="mt-4" method="get">
+            <div class="row form-inline">
+                <div class="col col-sm-2 vcenter text-right col-form-label">
+                    <strong>Date:</strong>
+                </div>
+                <div class="col col-sm-10 vcenter text-left no-gutters">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-light active">
+                            <input type="radio" name="options" id="radio_day" autocomplete="off" checked> Day
+                        </label>
+                        <label class="btn btn-light">
+                            <input type="radio" name="options" id="radio_range" autocomplete="off"> Range
+                        </label>
+                    </div>
+                    <span id="date_day">
+                        <button type="button" class="btn btn-light" data-toggle="buttons" onclick="setFilterDateToAll()">All</button>
+                        <button type="button" class="btn btn-light" data-toggle="buttons" onclick="setFilterDateToToday()">Today</button>
+                        {% render_field filter.form.date %}
+                    </span>
+
+                    <span id="date_range" style="display: none;">
+                        {% render_field filter.form.date_range %}
+                    </span>
+
+                    <span id="filter-button-top">
+                        <button type="submit" class="btn btn-primary">
+                            Filter
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div id="more">
+                <div class="row top-buffer">
+                    <div class="col col-sm-2 vcenter text-right">
+                        <strong>Category:</strong>
+                    </div><div class="col col-sm-10 vcenter text-left">
+                        {% render_field filter.form.problem_categories|add_class:"form-control" %}
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col col-sm-2 vcenter text-right">
+                        <strong>Run numbers:</strong>
+                    </div>
+                    <div class="col col-sm-5 form-inline vcenter text-left">
+                        {% render_field filter.form.runs %}
+                    </div>
+                </div>
+
+                <div class="row top-buffer">
+                    <div class="col col-sm-2 vcenter text-right">
+                        <strong>Dataset:</strong>
+                    </div><div class="col col-sm-10 vcenter text-left">
+                        {% render_field filter.form.dataset %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="filter-button-bottom"  class="row top-buffer" style="display: none">
+                <div class="col col-sm-6 text-left">
+                    <button type="button" class="btn btn-danger" id="clear-filters">
+                        Clear
+                    </button>
+                </div>
+                <div class="col col-sm-6 text-right">
+                    <button type="submit" class="btn btn-primary">
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <div class="row top-buffer">
+                <div class="col col-sm-12 text-center">
+                    <button type="button" id="show-filter-btn" class="btn btn-light" data-toggle="buttons">
+                        Show More
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

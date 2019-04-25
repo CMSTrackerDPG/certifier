@@ -1,0 +1,33 @@
+{% extends "certifier/base.html" %}
+
+{% block title %}
+    Restore Run Certification
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+    <h1 align="center">Restore Run</h1>
+    </br>
+    <h4 align="center">
+        Are you sure you want to restore that certification, created by
+        {% if run.userid.first_name %}
+            {{ run.userid.first_name }} {{ run.userid.last_name }} ({{ run.userid.username }})
+        {% else %}
+            {{ run.userid.username }}
+        {% endif %} ?
+    </h4>
+
+    <p>
+    <ul>
+        <li>Run Number: {{ run.run_number }}</li>
+        <li>Type: {{ run.type }}</li>
+        <li>Reference Run: {{ run.reference_run }}</li>
+    </ul>
+    </p>
+
+    <form action="" method="post" align="center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Yes</button>
+        <a href="{% url 'shiftleader' %}" class="btn btn-default">No</a>
+    </form>
+{% endblock %}
