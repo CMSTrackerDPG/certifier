@@ -5,7 +5,7 @@ from django.db import models
 from django.forms.widgets import SelectDateWidget
 from django.utils import timezone
 
-from certifier.models import TrackerCertification
+from certifier.models import TrackerCertification, Dataset
 
 class TrackerCertificationFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(
@@ -31,13 +31,18 @@ class TrackerCertificationFilter(django_filters.FilterSet):
     runs = django_filters.RangeFilter(
         'runreconstruction',
         widget=django_filters.widgets.RangeWidget(attrs={
-            'placeholder': 'runreconstruction',
+            'placeholder': 'run number',
             'class': 'form-control',
             'size': 7,
             'maxlength': 10,
         })
     )
 
+    dataset = django_filters.ModelChoiceFilter(queryset=Dataset.objects.all(),
+                                            widget=forms.Select(attrs={
+                                                'class': 'form-control',
+                                                'style': 'width: 500px;',
+                                            }))
     class Meta:
         model = TrackerCertification
         fields = ['date']

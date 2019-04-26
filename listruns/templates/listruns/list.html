@@ -32,21 +32,10 @@
 {% block style %}
     {% load static %}
     <link rel="stylesheet" href="{% static "listruns/css/list_table.css" %}" type="text/css">
-    <style>
-        .top-buffer {
-            margin-top: 20px;
-        }
-
-        .vcenter {
-            display: inline-block;
-            vertical-align: middle;
-            float: none;
-        }
-    </style>
 {% endblock %}
 
 
-{% block script %}
+{% block scripts %}
     {% load static %}
     <script src="{% static "listruns/js/basic_filter.js" %}"></script>
     <script>
@@ -76,7 +65,4 @@
             });
         });
     </script>
-{% endblock %}
-
-{% block scripts%}
 {% endblock %}

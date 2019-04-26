@@ -16,7 +16,7 @@ from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from certifier.models import TrackerCertification
 from certifier.forms import CertifyFormWithChecklistForm
 
-from listruns.tables import TrackerCertificationTable
+from listruns.tables import TrackerCertificationTable, SimpleTrackerCertificationTable
 
 from listruns.filters import (
     TrackerCertificationFilter,
@@ -72,3 +72,55 @@ def listruns(request):
     context["table"] = table
     context["filter"] = run_info_filter
     return render(request, "listruns/list.html", context)
+
+@method_decorator(login_required, name="dispatch")
+class UpdateRun(generic.UpdateView):
+    """
+    Updates a specific Run from the RunInfo table
+    """
+
+    model = TrackerCertification
+    form_class = CertifyFormWithChecklistForm
+    template_name = "certifier/certify.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Add extra data for the template
+        """
+        context = super().get_context_data(**kwargs)
+        context["checklist_not_required"] = True
+        return context
+
+    def same_user_or_shiftleader(self, user):
+        """
+        Checks if the user trying to edit the run is the same user
+        that created the run, has at least shift leader rights
+        or is a super user (admin)
+        """
+        try:
+            return (
+                self.get_object().userid == user
+                or user.is_superuser
+                or user.has_shift_leader_rights
+            )
+        except User.DoesNotExist:
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check if the user that tries to update the run has the necessary rights
+        """
+        if self.same_user_or_shiftleader(request.user):
+            return super(UpdateRun, self).dispatch(request, *args, **kwargs)
+        return redirect_to_login(
+            request.get_full_path(), login_url=reverse("admin:login")
+        )
+
+    def get_success_url(self):
+        """
+        return redirect url after updating a run
+        """
+        is_same_user = self.get_object().userid == self.request.user
+        return reverse("certifier:shiftleader") if not is_same_user else "/"
+
+

@@ -19,7 +19,7 @@ class SimpleTrackerCertificationTable(tables.Table):
     reference_run = tables.Column()
     trackermap = tables.Column()
     pixel = tables.Column()
-    sistrip = tables.Column(verbose_name="SiStrip")
+    strip = tables.Column()
     tracking = tables.Column()
     comment = tables.Column()
     date = tables.Column()
@@ -47,11 +47,11 @@ class SimpleTrackerCertificationTable(tables.Table):
         """
         return render_component(record.pixel, record.pixel_lowstat)
 
-    def render_sistrip(self, record):
+    def render_strip(self, record):
         """
-        :return: colored status of SiStrip
+        :return: colored status of Strip
         """
-        return render_component(record.sistrip, record.sistrip_lowstat)
+        return render_component(record.strip, record.strip_lowstat)
 
     def render_tracking(self, record):
         """
@@ -72,7 +72,7 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     """
 
     edit_run = tables.TemplateColumn(
-        '<div align="center"><a href="{% url \'update\' record.id%}">'
+            '<div align="center"><a href="{% url \'listruns:update\' user.id %}">'
         '<span class="glyphicon glyphicon-pencil"></a></div>',
         orderable=False,
         verbose_name="Edit",
