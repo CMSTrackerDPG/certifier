@@ -5,7 +5,7 @@ from django.db import models
 from django.forms.widgets import SelectDateWidget
 from django.utils import timezone
 
-from certifier.models import TrackerCertification, Dataset
+from certifier.models import TrackerCertification, Dataset, PixelProblem
 
 class TrackerCertificationFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(
@@ -29,7 +29,7 @@ class TrackerCertificationFilter(django_filters.FilterSet):
     )
 
     runs = django_filters.RangeFilter(
-        'runreconstruction',
+        'runreconstruction__run__run_number',
         widget=django_filters.widgets.RangeWidget(attrs={
             'placeholder': 'run number',
             'class': 'form-control',
@@ -38,14 +38,17 @@ class TrackerCertificationFilter(django_filters.FilterSet):
         })
     )
 
-    dataset = django_filters.ModelChoiceFilter(queryset=Dataset.objects.all(),
-                                            widget=forms.Select(attrs={
-                                                'class': 'form-control',
-                                                'style': 'width: 500px;',
-                                            }))
+    dataset = django_filters.ModelChoiceFilter(
+        queryset=Dataset.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'style': 'width: 500px;',
+        })
+    )
+
     class Meta:
         model = TrackerCertification
-        fields = ['date']
+        fields = ['pixel_problems', 'strip_problems', 'tracking_problems']
 
 
 class InFilter(django_filters.filters.BaseInFilter, django_filters.filters.CharFilter):
@@ -90,7 +93,7 @@ class ShiftLeaderTrackerCertificationFilter(django_filters.FilterSet):
         model = TrackerCertification
         fields = {
             'date': ['gte', 'lte', ],
-            'runreconstruction': ['gte', 'lte', ],
+            'runreconstruction__run__run_number': ['gte', 'lte', ],
         }
         filter_overrides = {
             models.DateField: {
@@ -106,19 +109,22 @@ class ComputeLuminosityTrackerCertificationFilter(django_filters.FilterSet):
     class Meta:
         model = TrackerCertification
         fields = {
-            'runreconstruction': ['gte', 'lte', ],
+            'runreconstruction__run__run_number': ['gte', 'lte', ],
             'date': ['gte', 'lte', ],
         }
 
 
 class RunsFilter(django_filters.FilterSet):
-    run_number__in = InFilter(field_name='runreconstruction', lookup_expr='in')
+    runreconstruction__run__run_number__in = InFilter(field_name='runreconstruction', lookup_expr='in')
 
     class Meta:
         model = TrackerCertification
         fields = {
             'date': ['gte', 'lte', ],
-            'runreconstruction': ['gte', 'lte', ],
+            'runreconstruction__run__run_number': ['gte', 'lte', ],
+            'reference_runreconstruction__run__run_number': ['gte', 'lte', ],
+            'trackermap': ['exact'],
+            'comment': ['exact'],
             'pixel': ['exact'],
             'strip': ['exact'],
             'tracking': ['exact'],

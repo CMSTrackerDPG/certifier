@@ -15,14 +15,17 @@ class SimpleTrackerCertificationTable(tables.Table):
     """
 
     user = tables.Column(verbose_name="Shifter")
-    run_number = tables.Column()
-    reference_run = tables.Column()
+    runreconstruction = tables.Column()
+    reference_runreconstruction = tables.Column()
     trackermap = tables.Column()
     pixel = tables.Column()
     strip = tables.Column()
     tracking = tables.Column()
     comment = tables.Column()
     date = tables.Column()
+    pixel_problems = tables.Column()
+    strip_problems = tables.Column()
+    tracking_problems = tables.Column()
 
     class Meta:
         model = TrackerCertification
@@ -33,7 +36,7 @@ class SimpleTrackerCertificationTable(tables.Table):
         """
         :return: run number of the reference run
         """
-        return value.reference_run
+        return value.reference_runreconstruction
 
     def render_int_luminosity(self, value):
         """
@@ -73,7 +76,7 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
 
     edit_run = tables.TemplateColumn(
             '<div align="center"><a href="{% url \'listruns:update\' user.id %}">'
-        '<span class="glyphicon glyphicon-pencil"></a></div>',
+        '<span>Edit</a></div>',
         orderable=False,
         verbose_name="Edit",
     )

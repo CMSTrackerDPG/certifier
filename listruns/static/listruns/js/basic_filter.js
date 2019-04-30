@@ -22,6 +22,11 @@ $(document).ready(function () {
         $('#id_date_year').val(0);
         $('#id_type').val("");
         $('#id_dataset').val("");
+        $('#id_runs_0').val("");
+        $('#id_runs_1').val("");
+        $('#id_pixel_problems').val("default").selectpicker("refresh");
+        $('#id_strip_problems').val("default").selectpicker("refresh");
+        $('#id_tracking_problems').val("default").selectpicker("refresh");
     });
 
     $("#radio_day").change(function () {
