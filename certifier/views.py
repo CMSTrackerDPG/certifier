@@ -9,18 +9,6 @@ from oms.models import OmsRun
 from users.models import User
 from django.http import HttpResponseRedirect
 
-def index(request):
-    run_number = request.GET.get("run_number", None)
-    reco = request.GET.get("reco", None)
-
-    from django.shortcuts import redirect
-
-    if run_number and reco:
-        response = redirect("/certify/{}/{}".format(run_number, reco))
-        return response
-
-    return render(request, "certifier/index.html")
-
 @login_required #WIP
 def createDataset(request):
     # if this is a POST request we need to process the form data
@@ -60,7 +48,7 @@ def certify(request, run_number, reco):
             runReconstruction = RunReconstruction.objects.create(
                     run=run, reconstruction=reco)
 
-        user = User.objects.get(username=request.user)
+        user = User.objects.get(pk=request.user.id)
 
         # create a form instance and populate it with data from the request:
         form = CertifyFormWithChecklistForm(request.POST)
@@ -78,7 +66,7 @@ def certify(request, run_number, reco):
                 formToSave.user=user
                 formToSave.save()
 
-            return redirect("/")
+            return redirect("listruns:list")
 
     # if a GET (or any other method) we'll create a blank form
     else:

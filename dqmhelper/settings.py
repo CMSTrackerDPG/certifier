@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "listruns.apps.ListrunsConfig",
     "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
     "dqmgui.apps.DqmguiConfig",
@@ -63,6 +64,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'widget_tweaks',
     'django_extensions',
+    'django_tables2',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -152,7 +155,7 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'))
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'), os.path.join(BASE_DIR, 'listruns/static'))
 STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
 
 AUTH_USER_MODEL = "users.User"
