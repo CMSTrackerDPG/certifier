@@ -5,13 +5,15 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseRedirect, Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.generic import TemplateView
 from django_filters.views import FilterView
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
+
+from oms.models import OmsRun
 
 from certifier.models import TrackerCertification
 from certifier.forms import CertifyFormWithChecklistForm
@@ -44,6 +46,15 @@ def listruns(request):
         return HttpResponseRedirect("/list/%s" % get_today_filter_parameter())
 
     context = {}
+
+    run_number = request.GET.get("run_number", None)
+    reco = request.GET.get("reco", None)
+
+    from django.shortcuts import redirect
+
+    if run_number and reco:
+        response = redirect("/certify/{}/{}".format(run_number, reco))
+        return response
 
     """
     Make sure that the logged in user can only see his own runs
@@ -78,7 +89,7 @@ class UpdateRun(generic.UpdateView):
     """
     Updates a specific Run from the RunInfo table
     """
-
+    print()
     model = TrackerCertification
     form_class = CertifyFormWithChecklistForm
     template_name = "certifier/certify.html"
@@ -87,8 +98,13 @@ class UpdateRun(generic.UpdateView):
         """
         Add extra data for the template
         """
+
         context = super().get_context_data(**kwargs)
         context["checklist_not_required"] = True
+        context["run_number"]=self.kwargs["run_number"]
+        context["reco"]=self.kwargs["reco"]
+        context["run"]=OmsRun.objects.get(run_number=self.kwargs["run_number"])
+        context["pixel"]="Good"
         return context
 
     def same_user_or_shiftleader(self, user):
@@ -99,7 +115,7 @@ class UpdateRun(generic.UpdateView):
         """
         try:
             return (
-                self.get_object().userid == user
+                self.get_object().user.id == user.id
                 or user.is_superuser
                 or user.has_shift_leader_rights
             )
@@ -120,7 +136,7 @@ class UpdateRun(generic.UpdateView):
         """
         return redirect url after updating a run
         """
-        is_same_user = self.get_object().userid == self.request.user
-        return reverse("certifier:shiftleader") if not is_same_user else "/"
+        is_same_user = self.get_object().user.id == self.request.user.id
+        return reverse("home:home") if not is_same_user else reverse("listruns:list")
 
 

@@ -280,11 +280,12 @@
                             <ul class="list-inline" id="id_pixel">
                                 {% for status in form.pixel.field.choices %}
                                 <li class="list-inline-item">
-                                    <button for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <label for="id_pixel_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="pixel" value={{status.0}} required id="id_pixel_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                                    </button>
+                                    </label>
                                 </li>
                                 {% endfor %}
+                                {% render_field form.pixel class="d-none"%}
                             </ul>
                         </div>
                     </div>
@@ -309,11 +310,12 @@
                             <ul class="list-inline" id="id_strip">
                                 {% for status in form.strip.field.choices %}
                                 <li class="list-inline-item">
-                                    <button for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <label for="id_strip_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="strip" value={{status.0}} required id="id_strip_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
-                                    </button>
+                                    </label>
                                 </li>
                                 {% endfor %}
+                                {% render_field form.strip class="d-none"%}
                             </ul>
                         </div>
                     </div>
@@ -338,12 +340,13 @@
                             <ul class="list-inline" id="id_tracking">
                                 {% for status in form.tracking.field.choices|slice_last_elem %}
                                 <li class="list-inline-item">
-                                    <button for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
+                                    <label for="id_tracking_{{forloop.counter0}}" class="btn btn-outline-{{ status.0|translate_to_button_state }} col mx-3">
                                         <input type="radio" name="tracking" value={{status.0}} required id="id_tracking_{{forloop.counter0}}" class="sr-only"> {{ status.1 }}
 
-                                    </button>
+                                    </label>
                                 </li>
                                 {% endfor %}
+                                {% render_field form.tracking class="d-none"%}
                             </ul>
                         </div>
                     </div>
@@ -421,7 +424,12 @@
         <div class="row justify-content-center">
             <div class="col-sm-3"></div>
             <div class="col-sm-6 text-center">
-                <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+                {% if object %}
+                    <input class="btn btn-primary btn-lg" type="submit" value="Update">
+                {% else %}
+                    <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+                {% endif %}
+                <button type="button" class="btn btn-secondary btn-lg" onclick="location.href='{% url 'listruns:list' %}'">Abort</button>
             </div>
             <div class="col-sm-3"></div>
         </div>
@@ -491,7 +499,7 @@
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
-        $("#includeDataset").load("../../createdataset");
+        $("#includeDataset").load("{% url 'createdataset' %}");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
         });

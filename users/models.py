@@ -127,8 +127,6 @@ class User(AbstractUser):
             or self.is_staff
             or self.is_superuser
         )
-'''
+
     def __str__(self):
         return self.get_full_name() + " (" + self.username + ")"
-'''
-

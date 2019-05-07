@@ -30,7 +30,7 @@ class SimpleTrackerCertificationTable(tables.Table):
     class Meta:
         model = TrackerCertification
         fields = ()
-        attrs = {"class": "table table-hover table-bordered"}
+        attrs = {"class": "table table-hover table-bordered table-fixed"}
 
     def render_reference_run(self, value):
         """
@@ -75,11 +75,11 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     """
 
     edit_run = tables.TemplateColumn(
-            '<div align="center"><a href="{% url \'listruns:update\' user.id %}">'
+        '<div align="center"><a href="{% url \'listruns:update\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
         '<span>Edit</a></div>',
         orderable=False,
         verbose_name="Edit",
     )
 
     class Meta:
-        attrs = {"class": "table table-hover table-bordered"}
+        attrs = {"class": "table table-hover table-bordered table-fixed"}
