@@ -1,10 +1,13 @@
 import types
 
 import pytest
+from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.test import RequestFactory
 from mixer.backend.django import mixer
+from django.test import Client
 
 from users.views import *
 
@@ -51,3 +54,16 @@ def get_view_response(view, req):
 
 def test_authentication():
     assert_view_requires_no_login(logout_status)
+
+def test_logout_view_auth():
+    req = RequestFactory().get(reverse("users:logout"))
+    client=Client()
+
+    req.user = mixer.blend(get_user_model(), username="test", password="test")
+    resp = client.post('accounts/login/', username=req.user.username, password=req.user.password , follow=True)
+
+    assert req.user.is_authenticated
+
+    resp = logout(req)
+
+
