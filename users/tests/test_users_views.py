@@ -55,15 +55,14 @@ def get_view_response(view, req):
 def test_authentication():
     assert_view_requires_no_login(logout_status)
 
-def test_logout_view_auth():
-    req = RequestFactory().get(reverse("users:logout"))
-    client=Client()
+def test_logout():
+    client = Client()
+    user = mixer.blend(get_user_model(), username="test", password="test")
+    client.login(username='test', password='test')
 
-    req.user = mixer.blend(get_user_model(), username="test", password="test")
-    resp = client.post('accounts/login/', username=req.user.username, password=req.user.password , follow=True)
+    req = RequestFactory().get("accounts/logout/", HTTP_HOST='example.com')
+    req.user=user
+    req.session=client.session
 
-    assert req.user.is_authenticated
-
-    resp = logout(req)
-
-
+    resp=logout_view(req)
+    assert 302 == resp.status_code

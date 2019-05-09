@@ -32,8 +32,6 @@ from listruns.utilities.utilities import (
     request_contains_filter_parameter,
     get_this_week_filter_parameter,
     get_today_filter_parameter,
-    get_runs_from_request_filters,
-    number_string_to_list,
     integer_or_none,
 )
 
@@ -85,9 +83,8 @@ def listruns(request):
 @method_decorator(login_required, name="dispatch")
 class UpdateRun(generic.UpdateView):
     """
-    Updates a specific Run from the RunInfo table
+    Updates a specific Run from the TrackerCertification table
     """
-    print()
     model = TrackerCertification
     form_class = CertifyFormWithChecklistForm
     template_name = "certifier/certify.html"
@@ -102,7 +99,6 @@ class UpdateRun(generic.UpdateView):
         context["run_number"]=self.kwargs["run_number"]
         context["reco"]=self.kwargs["reco"]
         context["run"]=OmsRun.objects.get(run_number=self.kwargs["run_number"])
-        context["pixel"]="Good"
         return context
 
     def same_user_or_shiftleader(self, user):
@@ -111,14 +107,11 @@ class UpdateRun(generic.UpdateView):
         that created the run, has at least shift leader rights
         or is a super user (admin)
         """
-        try:
-            return (
-                self.get_object().user.id == user.id
-                or user.is_superuser
-                or user.has_shift_leader_rights
-            )
-        except User.DoesNotExist:
-            return False
+        return (
+            self.get_object().user.id == user.id
+            or user.is_superuser
+            or user.has_shift_leader_rights
+        )
 
     def dispatch(self, request, *args, **kwargs):
         """

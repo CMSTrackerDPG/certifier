@@ -19,7 +19,7 @@
 }
 .scrollbar
 {
-    height: 435px;
+    height: 450px;
     background: #F5F5F5;
     overflow-y: scroll;
     overflow-x:auto;
@@ -59,6 +59,7 @@ th:after {
 #style-1::-webkit-scrollbar
 {
     width: 9px;
+    height: 9px;
     background-color: #F5F5F5;
 }
 
