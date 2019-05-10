@@ -3,7 +3,7 @@ from django import template
 register = template.Library()
 
 @register.inclusion_tag('checklists/checklists/checklist_checkbox.html')
-def render_checklist_checkbox(form_checklist, label="", not_required=False):
+def render_checklist_checkbox(form_checklist, label="", not_required=False): #pragma: no cover
     """"
     renders a Checklist checkbox with a label
 
@@ -30,7 +30,7 @@ def render_checklist_checkbox(form_checklist, label="", not_required=False):
 
 
 @register.inclusion_tag('checklists/checklists/checklist_modal.html')
-def render_checklist_modal(form_checklist, label=""):
+def render_checklist_modal(form_checklist, label=""): #pragma: no cover
     """"
     renders a Checkbox and a Modal
 

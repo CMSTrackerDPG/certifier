@@ -15,14 +15,14 @@ class ChecklistFormMixin(forms.Form):
     form.checklist_sistrip -> renders the SiStrip Checklist checkbox
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs): #pragma: no cover
         super(ChecklistFormMixin, self).__init__(*args, **kwargs)
         for checklist in Checklist.objects.all():
             field_name = "checklist_{}".format(checklist.identifier)
             # required in HTML field, not required in server-side form validation
             self.fields[field_name] = forms.BooleanField(required=False)
 
-    def checklists(self):
+    def checklists(self): #pragma: no cover
         """
         returns a dictionary containing the fields (checkboxes) created in the __init__
         method and the corresponding Checklist model instances
