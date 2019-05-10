@@ -12,15 +12,12 @@ def logout_view(request):
     """
     Logout current user (also from CERN)
     """
-    if request.user.is_authenticated:
-        logout(request)
-        callback_url = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0&ReturnUrl="
-        callback_url += "http%3A//"
-        callback_url += request.META["HTTP_HOST"]
-        callback_url += reverse("users:logout_status")
-        return HttpResponseRedirect(callback_url)
-    return HttpResponseRedirect("/")
-
+    logout(request)
+    callback_url = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0&ReturnUrl="
+    callback_url += "http%3A//"
+    callback_url += request.META["HTTP_HOST"]
+    callback_url += reverse("users:logout_status")
+    return HttpResponseRedirect(callback_url)
 
 def logout_status(request):
     """

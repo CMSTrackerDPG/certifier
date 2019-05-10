@@ -1,9 +1,9 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from wbmcrawlr import oms
 
 from oms.models import OmsFill, OmsRun
 
-
+'''
 def create_django_model_from_oms_meta(oms_meta_dict):
     fields = oms_meta_dict['meta']['fields']
 
@@ -34,7 +34,7 @@ def create_django_model_from_oms_meta(oms_meta_dict):
             raise NotImplementedError("Dont know how to handle : {}".format(field))
 
         print("{} = models.{}help_text='{}', verbose_name='{}')".format(field, django_model, description, title))
-
+'''
 
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
@@ -45,9 +45,12 @@ def retrieve_fill(fill_number):
     fill_kwargs = {key: value for key, value in response.items() if key not in exclude}
 
     try:
-        return OmsFill.objects.create(**fill_kwargs)
+        with transaction.atomic():
+            omsfill = OmsFill.objects.create(**fill_kwargs)
     except IntegrityError:
-        return OmsFill.objects.get(fill_number)
+        omsfill = OmsFill.objects.get(fill_number=fill_number)
+
+    return omsfill
 
 
 def retrieve_run(run_number):
@@ -64,6 +67,9 @@ def retrieve_run(run_number):
         fill = retrieve_fill(fill_number=fill_number)
 
     try:
-        return OmsRun.objects.create(fill=fill, **run_kwargs)
+        with transaction.atomic():
+            omsrun = OmsRun.objects.create(fill=fill, **run_kwargs)
     except IntegrityError:
-        return OmsRun.objects.get(run_number=run_number)
+        omsrun = OmsRun.objects.get(run_number=run_number)
+
+    return omsrun

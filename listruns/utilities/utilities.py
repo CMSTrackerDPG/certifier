@@ -39,14 +39,13 @@ def get_date_string(year, month, day):
 
 
 def get_filters_from_request_GET(request):
-    filter_candidates = ["date_range_0", "date_range_1", "runs_0", "runs_1", "type"]
+    filter_candidates = ["date_range_min", "date_range_max", "runs_min", "runs_max", "type"]
     applied_filters = {}
     for candidate in filter_candidates:
         tmp = request.GET.get(candidate, "")
         if tmp != "" and tmp != 0:
             if (
-                not candidate.startswith("date_range")
-                or candidate.startswith("date_range")
+                candidate.startswith("date_range")
                 and is_valid_date(tmp)
             ):
                 applied_filters[candidate] = tmp
@@ -121,6 +120,7 @@ def get_this_week_filter_parameter():
 def get_today_filter_parameter():
     return "?date={}".format(timezone.now().strftime("%Y-%m-%d"))
 
+'''
 def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filters):
     from certifier.models import TrackerCertification
 
@@ -187,10 +187,11 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filt
         )
 
     return runs
+'''
 
-def render_component(component, component_lowstat):
+def render_component(component, component_lowstat): # pragma: no cover
     """
-    Renders the component (Pixel/ SiStrip/ Tracking) for the RuninfoTable
+    Renders the component (Pixel/ SiStrip/ Tracking) for the TrackerCertificationTable
 
     If lowstat is checked then "Lowstat" is displayed instead of Good/Bad/Excluded
     If the Component is good, then the color will be green, otherwise red.
@@ -219,13 +220,13 @@ def render_component(component, component_lowstat):
     return component
 
 
-def render_trackermap(trackermap):
+def render_trackermap(trackermap): # pragma: no cover
     if trackermap == "Missing":
         return mark_safe('<div class="bad-component">{}</div>'.format(trackermap))
     return trackermap
 
 
-def render_boolean_cell(value):
+def render_boolean_cell(value): # pragma: no cover
     boolean_value = False if value is False or value == "0" or value == 0 else True
     print("{} {}".format(value, boolean_value))
     glyphicon = "ok" if boolean_value else "remove"
@@ -233,27 +234,6 @@ def render_boolean_cell(value):
     html = '<span class="glyphicon glyphicon-{}"></span>'.format(glyphicon, glyphicon)
 
     return mark_safe(html)
-
-def chunks(elements_list, n):
-    """
-    Split a list into sublists of fixed length n
-
-    Credit: https://stackoverflow.com/a/312464/9907540
-
-    :param elements_list: list of elements that needs to be split
-    :param n: chunk size of new lists
-    """
-    for index in range(0, len(elements_list), n):
-        yield elements_list[index : index + n]
-
-
-def number_string_to_list(number_string):
-    """
-    Converts a string of numbers to a list
-    """
-    new_list = re.sub("[^0-9]", " ", number_string).split()  # only integers
-    return sorted(set(new_list))  # remove duplicates
-
 
 def decimal_or_none(number):
     """

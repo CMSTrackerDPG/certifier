@@ -32,37 +32,37 @@ class SimpleTrackerCertificationTable(tables.Table):
         fields = ()
         attrs = {"class": "table table-hover table-bordered table-fixed"}
 
-    def render_reference_run(self, value):
+    def render_reference_run(self, value): # pragma: no cover
         """
         :return: run number of the reference run
         """
         return value.reference_runreconstruction
 
-    def render_int_luminosity(self, value):
+    def render_int_luminosity(self, value): # pragma: no cover
         """
         :return: unit aware integrated luminosity e.g. '1.321 µb⁻¹'
         """
         return format_integrated_luminosity(value)
 
-    def render_pixel(self, record):
+    def render_pixel(self, record): # pragma: no cover
         """
         :return: colored status of Pixel
         """
         return render_component(record.pixel, record.pixel_lowstat)
 
-    def render_strip(self, record):
+    def render_strip(self, record): # pragma: no cover
         """
         :return: colored status of Strip
         """
         return render_component(record.strip, record.strip_lowstat)
 
-    def render_tracking(self, record):
+    def render_tracking(self, record): # pragma: no cover
         """
         :return: colored status of Tracking
         """
         return render_component(record.tracking, record.tracking_lowstat)
 
-    def render_trackermap(self, value):
+    def render_trackermap(self, value): # pragma: no cover
         """
         :return: colored status of the tracker map
         """
