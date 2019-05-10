@@ -13,13 +13,6 @@ from users.utilities.utilities import update_user_extradata
 
 logger = get_configured_logger(loggername=__name__, filename="signals.log")
 
-@receiver(social_account_added)
-def update_newly_added_user(request, sociallogin, **kwargs):
-    logger.info("Updating User of newly added Social Account {}"
-                .format(sociallogin.user))
-    update_user_extradata(sociallogin.user)
-
-
 @receiver(django.contrib.auth.signals.user_logged_in)
 def update_users_on_login(sender, user, request, **kwargs):
     update_user_extradata(user)

@@ -1,0 +1,108 @@
+{% extends 'dqmhelper/base.html' %}
+{% block title %}List{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="mt-4 mb-4 col-lg-12 text-center">
+                <h1>Certify a new run</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-4">
+        <form method="get" class="justify-content-center align-items-center">
+            <div class="form-group">
+                <div class="row mb-3 justify-content-center">
+                    <div class="col"></div>
+                    <div class="col">
+                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <div class="row mb-3 justify-content-center">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-secondary disabled">
+                            <input type="radio" name="reco" value='online' id="id-reco-online" autocomplete="off" disabled="disabled" class="sr-only" required> Online
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='express' id="id-reco-express" autocomplete="off" class="sr-only" required> Express
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='prompt' id="id-reco-prompt" autocomplete="off" class="sr-only" required> Prompt
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='rereco' id="id-reco-rereco" autocomplete="off" class="sr-only" required> ReReco
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <button type="submit" class="btn btn-primary">Certify</button>
+            </div>
+        </form>
+    </div>
+
+    {% if filter %}
+        {% include "listruns/basic_filter.html" %}
+    {% else %}
+        <div class="alert alert-danger" role="alert">No Filter found.</div>
+    {% endif %}
+
+    {% if run_registry_online and mismatching_runs %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Warning!</strong> Your certified runs do not match the <a href="https://cmswbmoffshift.web.cern.ch/cmswbmoffshift/runregistry_offline/">Run Registry</a> entries! <br>
+            Please update the following runs before generating the summary: <b>{{ mismatching_runs|join:", " }}</b>
+        </div>
+
+    {% endif %}
+
+    {% if table %}
+    <div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1">
+        {% load render_table from django_tables2 %}
+        {% render_table table %}
+    </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">No Table found.</div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "listruns/js/basic_filter.js" %}"></script>
+    <script>
+        function setFilterDateToToday() {
+            var today = new Date();
+            var day = today.getDate();
+            var month = today.getMonth() + 1;
+            var year = today.getFullYear();
+            document.getElementById("id_date_day").value = day;
+            document.getElementById("id_date_month").value = month;
+            document.getElementById("id_date_year").value = year;
+        }
+
+        function setFilterDateToAll() {
+            document.getElementById("id_date_day").value = 0;
+            document.getElementById("id_date_month").value = 0;
+            document.getElementById("id_date_year").value = 0;
+        }
+
+        $(document).ready(function () {
+            //remove empty attributes from URL
+            $("form").submit(function () {
+                $(this).find(":input").filter(function () {
+                    return !this.value || this.value === "0";
+                }).attr("disabled", "disabled");
+                return true; // ensure form still submits
+            });
+        });
+    </script>
+{% endblock %}

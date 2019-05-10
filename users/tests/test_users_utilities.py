@@ -1,10 +1,11 @@
 from decimal import Decimal
 
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory, TestCase
 from mixer.backend.django import mixer
-
+from users.models import User
 from users.utilities.utilities import *
 
 pytestmark = pytest.mark.django_db
@@ -110,6 +111,18 @@ class TestUtilities:
 
         group = get_or_create_group("Shift leaders")
         assert group == Group.objects.get()
+
+    def test_update_user_error(self):
+        user = mixer.blend(get_user_model())
+        assert user.is_guest
+
+        user=None
+
+        extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        update_user_extradata(user)
+
+        assert True
+
 
     def test_update_user(self):
         user = mixer.blend(get_user_model())

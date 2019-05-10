@@ -69,7 +69,7 @@ def get_or_create_group(group_name):
     return g
 
 def update_user_extradata(user):
-    if user.pk:  # Only already existing users
+    if user:  # Only already existing users
         try:
             socialaccount = SocialAccount.objects.get(user=user)
             if user.extra_data != socialaccount.extra_data:

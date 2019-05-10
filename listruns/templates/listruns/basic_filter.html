@@ -1,0 +1,104 @@
+{% load widget_tweaks %}
+
+<!-- relies on basic_filter.js -->
+<div class="container mb-4">
+    <div class="card border-light shadow p-3 bg-white rounded" style="margin: 0 auto 10px; width: 980px; background-color: #F9F9F9;">
+        <form class="mt-4 justify-md-content-center" method="get">
+            <div class="row form-inline no-gutters">
+                <div class="col col-sm-3 text-right col-form-label pr-3">
+                    <strong>Date:</strong>
+                </div>
+                <div class="col col-sm-9 text-left">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-light active">
+                            <input type="radio" name="options" id="radio_day" autocomplete="off" checked> Day
+                        </label>
+                        <label class="btn btn-light">
+                            <input type="radio" name="options" id="radio_range" autocomplete="off"> Range
+                        </label>
+                    </div>
+                    <span id="date_day">
+                        <button type="button" class="btn btn-light" onclick="setFilterDateToAll()">All</button>
+                        <button type="button" class="btn btn-light" onclick="setFilterDateToToday()">Today</button>
+                        {% render_field filter.form.date %}
+                    </span>
+
+                    <span id="date_range" style="display: none;">
+                        {% render_field filter.form.date_range %}
+                    </span>
+
+                    <span id="filter-button-top">
+                        <button type="submit" class="btn btn-primary">
+                            Filter
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div id="more" class="collapse">
+                <div class="row mt-3 no-gutters">
+                    <div class="col col-sm-3 col-form-label text-right pr-3">
+                        <strong>{{filter.form.pixel_problems.label}}:</strong>
+                    </div>
+                    <div class="col col-sm-9 text-left">
+                        {% render_field filter.form.pixel_problems class="selectpicker" %}
+                    </div>
+                </div>
+                <div class="row mt-3 no-gutters">
+                    <div class="col col-sm-3 col-form-label text-right pr-3">
+                        <strong>{{filter.form.strip_problems.label}}:</strong>
+                    </div>
+                    <div class="col col-sm-9 text-left">
+                        {% render_field filter.form.strip_problems class="selectpicker" %}
+                    </div>
+                </div>
+                <div class="row mt-3 no-gutters">
+                    <div class="col col-sm-3 col-form-label text-right pr-3">
+                        <strong>{{filter.form.tracking_problems.label}}:</strong>
+                    </div>
+                    <div class="col col-sm-9 text-left">
+                        {% render_field filter.form.tracking_problems class="selectpicker" %}
+                    </div>
+                </div>
+                <div class="row mt-3 form-inline no-gutters">
+                    <div class="col col-sm-3 col-form-label text-right pr-3">
+                        <strong>Run numbers:</strong>
+                    </div>
+                    <div class="col col-sm-9 col-form-label text-left">
+                        <span>
+                        {% render_field filter.form.runs placeholder="run number" %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mt-3 no-gutters">
+                    <div class="col col-sm-3 col-form-label text-right pr-3">
+                        <strong>Dataset:</strong>
+                    </div><div class="col col-sm-9 text-left">
+                        {% render_field filter.form.dataset %}
+                    </div>
+                </div>
+                <div class="row mt-3 no-gutters" id="filter-button-bottom">
+                    <div class="col col-sm-6 text-left">
+                        <button type="button" class="btn btn-danger" id="clear-filters">
+                            Clear
+                        </button>
+                    </div>
+                    <div class="col col-sm-6 text-right">
+                        <button type="submit" class="btn btn-primary">
+                            Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col col-sm-12 text-center">
+                    <button type="button" id="show-filter-btn" class="btn btn-light" data-toggle="buttons">
+                        Show More
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

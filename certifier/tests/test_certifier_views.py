@@ -13,19 +13,6 @@ from django.urls import reverse
 pytestmark = pytest.mark.django_db
 
 class TestCertify:
-    def test_index(self):
-        req = RequestFactory().post(reverse("index"))
-        resp = views.index(req)
-        assert 200 == resp.status_code
-
-    def test_index_redirect(self):
-        req = RequestFactory().post(reverse("index"))
-        req.GET = req.GET.copy()
-        req.GET['run_number'] = 321123
-        req.GET['reco'] = "express"
-        resp = views.index(req)
-        assert 302 == resp.status_code
-
     def test_dataset_get(self):
         req = RequestFactory().get(reverse("createdataset"))
 
