@@ -1,6 +1,6 @@
 cernrequests==0.2.0
 certifi==2018.11.29
-Django>=2.1.7
+Django==2.1.7
 django-allauth==0.39.1
 django-bootstrap3==9.1.0
 django-filter==2.1.0
