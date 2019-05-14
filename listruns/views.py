@@ -18,7 +18,7 @@ from oms.models import OmsRun
 from certifier.models import TrackerCertification
 from certifier.forms import CertifyFormWithChecklistForm
 
-from listruns.tables import TrackerCertificationTable, SimpleTrackerCertificationTable
+from tables.tables import TrackerCertificationTable, SimpleTrackerCertificationTable
 
 from listruns.filters import (
     TrackerCertificationFilter,

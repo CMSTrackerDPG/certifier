@@ -1,0 +1,51 @@
+{% with 'monday tuesday wednesday thursday friday saturday sunday' as weekdays %}
+{% load myfilters %}
+
+    {% for key, val in slreport.day.items %}
+        <p><strong>key</strong>
+            {{ key }}
+        </p>
+        <p><strong>val</strong>
+            {{ val.items }}
+            for
+        </p>
+    {% endfor %}
+    <ul class="nav nav-tabs" xmlns="http://www.w3.org/1999/html">
+        <li><a data-toggle="tab" href="#slr-lhc-fills">LHC Fills</a></li>
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Day by day <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                {% for day in slreport.day_by_day %}
+                    <li><a data-toggle="tab" href="#slr-{{ day.date|yyyymmdd }}">{{ day.name }} ({{ day.date|yyyymmdd }})</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li class="active"><a data-toggle="tab" href="#slr-weekly-cert">Weekly Certification</a></li>
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                List of runs <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a data-toggle="tab" href="#slr-list-of-runs-all">All days</a></li>
+
+                {% for day in slreport.day_by_day %}
+                    <li><a data-toggle="tab" href="#slr-list-of-runs-{{ day.date|yyyymmdd }}">{{ day.name }} ({{ day.date|yyyymmdd }})</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+
+        <li><a data-toggle="tab" href="#slr-checklist">Checklist</a></li>
+    </ul>
+
+    <div class="tab-content">
+        {% include "certhelper/components/shiftleader/lhc-fills.html" %}
+        {% include "certhelper/components/shiftleader/day-by-day.html" %}
+        {% include "certhelper/components/shiftleader/weekly-cert.html" %}
+        {% include "certhelper/components/shiftleader/list-of-runs.html" %}
+        {% include "certhelper/components/shiftleader/checklist.html" %}
+    </div>
+{% endwith %}

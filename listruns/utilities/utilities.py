@@ -5,6 +5,14 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from certifier.models import TrackerCertification
 
+def get_ascii_table(column_description, data):
+    table = AsciiTable([column_description] + data)
+    table.inner_row_border = True
+    return table.table
+
+def to_weekdayname(date, formatstring="%Y-%m-%d"):
+    return to_date(date, formatstring).strftime("%A")
+
 def is_valid_date(date_text):
     try:
         datetime.datetime.strptime(date_text, "%Y-%m-%d")
@@ -82,7 +90,7 @@ def request_contains_filter_parameter(request):
         "runs",
         "type",
         "date",
-        "userid",
+        "user",
         "run_number",
         "problem_categories",
     ]:

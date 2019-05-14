@@ -39,6 +39,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "shiftleader.apps.ShiftleaderConfig",
+    "tables.apps.TablesConfig",
     "listruns.apps.ListrunsConfig",
     "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",

@@ -1,4 +1,4 @@
-{% extends "certifier/base.html" %}
+{% extends "dqmhelper/base.html" %}
 
 {% block title %}
     Hard Delete Run
@@ -10,10 +10,10 @@
     </br>
     <h4 align="center">
         Are you sure you want to irrevocably delete that run, created by
-        {% if run.userid.first_name %}
-            {{ run.userid.first_name }} {{ run.userid.last_name }} ({{ run.userid.username }})
+        {% if run.user.first_name %}
+            {{ run.user.first_name }} {{ run.user.last_name }} ({{ run.user.username }})
         {% else %}
-            {{ run.userid.username }}
+            {{ run.user.username }}
         {% endif %} ?
     </h4>
 

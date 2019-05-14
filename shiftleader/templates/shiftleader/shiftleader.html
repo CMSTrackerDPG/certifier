@@ -1,0 +1,183 @@
+{% extends 'dqmhelper/base.html' %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "shiftleader/css/shiftleader.css" %}" type="text/css">
+    <link rel="stylesheet" href="{% static "listruns/css/list_table.css" %}" type="text/css">
+{% endblock style %}
+{% block content %}
+    {% load render_table from django_tables2 %}
+    {% load bootstrap3 %}
+
+    <div class="container-fluid">
+        <h1 align="center">Shift Leader View</h1>
+        <div class="container">
+            {% if filter %}
+                {% include "shiftleader/filter.html" %}
+            {% else %}
+                <div class="alert alert-danger" role="alert">No Filter found.</div>
+            {% endif %}
+        </div>
+        <ul class="nav nav-tabs">
+            <li><a data-toggle="tab" href="#runtable">Certified Runs</a></li>
+            <li><a data-toggle="tab" href="#compare-runreg">Run Registry Comparison</a></li>
+            <li><a data-toggle="tab" href="#overview">Overview</a></li>
+            <li><a data-toggle="tab" href="#deleted-runs">Deleted Certifications</a></li>
+            <li><a data-toggle="tab" href="#summary">Summary</a></li>
+            <li class="active"><a data-toggle="tab" href="#shiftleader-report">Shift Leader Report</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="runtable" class="tab-pane fade">
+                <h3>List of Certified Runs</h3>
+                {% if table %}
+                    {% render_table table 'django_tables2/bootstrap.html' %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">No Table found.</div>
+                {% endif %}
+            </div>
+
+
+            <div id="compare-runreg" class="tab-pane fade">
+                <h2>Comparison of certified runs with Run Registry</h2>
+
+                {% if filter.qs %}
+                    {% if runinfo_comparison_table %}
+                        <div class="col-sm-6">
+                            <h3>Certification Helper:</h3>
+                            {% load render_table from django_tables2 %}
+                            {% render_table runinfo_comparison_table %}
+                        </div>
+                    {% endif %}
+                    {% if run_registry_comparison_table %}
+                        <div class="col-sm-6">
+                            <h3>Run Registry:</h3>
+                            {% load render_table from django_tables2 %}
+                            {% render_table run_registry_comparison_table %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        No runs have been certified in the specified filter criteria.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!--
+            <div id="overview" class="tab-pane fade">
+                {% if filter.qs %}
+                    {% include "shiftleader/overview.html" %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        No runs have been certified in the specified filter criteria.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div id="deleted-runs" class="tab-pane fade">
+                <h3>List of deleted certified runs</h3>
+                {% if deleted_runs %}
+                    {% render_table deleted_runs 'django_tables2/bootstrap.html' %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">No Table found.</div>
+                {% endif %}
+            </div>
+
+
+            <div id="summary" class="tab-pane fade">
+                <h3>Summary</h3>
+                {% if summary %}
+                    {% include "shiftleader/summary.html" %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">No Summary found.</div>
+                {% endif %}
+            </div>
+
+            <div id="shiftleader-report" class="tab-pane fade in active">
+                {% if filter.qs %}
+                    <div class="page-header">
+                        {% load myfilters %}
+                        {% load l10n %}
+                        <h3>Shift Leader Report - Week {{ filter.qs.week_number }} <small>{{ filter.qs.days|first|as_date|localize }} - {{ filter.qs.days|last|as_date|localize }}</small></h3>
+                    </div>
+                    {% if slreport %}
+                        {% include "shiftleader/shift-leader-report.html" %}
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        No runs have been certified in the specified filter criteria.
+                    </div>
+                {% endif %}
+            </div>
+            --!>
+        </div>
+    </div>
+{% endblock content %}
+
+
+{% block scripts %}
+    {% load static %}
+    <script src="{% static "shiftleader/js/shiftleader.js" %}"></script>
+    <script src="{% static "shiftleader/js/restore_selected_tabs.js" %}"></script>
+    <script src="{% static "shiftleader/js/filter.js" %}"></script>
+    <script src="{% static "shiftleader/js/runinfo_table.js" %}"></script>
+    <script>
+        {% if global_preferences.shiftleader__popup_enabled %}
+            const popupTimeInMilliseconds = 1000 * {{ global_preferences.shiftleader__popup_time_period }};
+            setTimeout(periodicallyPopupShiftleaderNotification,  popupTimeInMilliseconds);
+            /*
+            Pops up a alert box with text set in the global_preferences.shiftleader__popup_text.
+            Will be called periodically (every shiftleader__popup_interval seconds) if the
+            global_preferences.shiftleader__popup_enabled is set to true.
+
+            This should help shift leader to remind them every now and them to do certain
+            tasks (like daily checks).
+
+            Leave this function here, since outsourcing it to a dedicated .js file would
+            cause caching and you are not enable to have access to the global_preference
+            */
+            function periodicallyPopupShiftleaderNotification(){
+                alert("{{ global_preferences.shiftleader__popup_text }}");
+                setTimeout(periodicallyPopupShiftleaderNotification,  popupTimeInMilliseconds);
+            }
+        {% endif %}
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#sl-filter-form").submit(function () {
+                var form = $(this);
+                ignore_unwanted_filters(form);
+                simplify_date_filter_parameters(form); // shortens date GET parameters in URL
+                disable_empty_filter_fields(form); // simpliflies URL alot by removing unused fields
+                return true; // ensure form still submits
+            });
+
+            $(".ignore-other-filter-checkbox").change(function(){
+                if ($(this).is(":checked")){
+                    uncheck_all_ignore_other_filter_checkboxes();
+                    $(this).prop("checked", true);
+                }
+
+            });
+
+            $("#id_run_number__in").css("width", "525px");
+
+            $("#id_run_number__in").change(function(){
+                let run_numbers_list = $(this).val();
+                // Replace everything that is not a number with white space
+                run_numbers_list = run_numbers_list.replace(/[^0-9]/gmi, " ");
+                // Replace multiple whitespaces with single white space
+                run_numbers_list = run_numbers_list.replace(/\s+/g,' ');
+                // Remove whitespace at the end of string
+                run_numbers_list = run_numbers_list.trim();
+                // Separate run numbers with comma
+                run_numbers_list = run_numbers_list.replace(/\s+/g,', ');
+
+                $(this).val(run_numbers_list);
+            });
+
+            colorize_components();
+        });
+    </script>
+{% endblock scripts %}

@@ -1,0 +1,108 @@
+
+{% load myfilters %}
+{% load l10n %}
+
+<div class="page-header">
+    <h3>Overview Week {{ filter.qs.week_number }} <small>{{ filter.qs.days|first|as_date|localize }} - {{ filter.qs.days|last|as_date|localize }}</small></h3>
+</div>
+<p>
+<h4>Shifters:</h4>
+{% if filter.qs %}
+    <div style="max-width: 400px;">
+        <ul class="list-group">
+            {% for shifter in filter.qs.shifters %}
+                <li class="list-group-item"><span class="badge">{{ filter.qs|user:shifter|length }}</span>{{ shifter }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+</p>
+<p>
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Collisions Express</th>
+        <th>Collisions Prompt</th>
+        <th>Cosmics Express</th>
+        <th>Cosmics Prompt</th>
+        <th>All</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Run number range</td>
+        <td>{{ filter.qs.collisions.express.run_numbers|first }} - {{ filter.qs.collisions.express.run_numbers|last }}</td>
+        <td>{{ filter.qs.collisions.prompt.run_numbers|first }} -  {{ filter.qs.collisions.prompt.run_numbers|last }}</td>
+        <td>{{ filter.qs.cosmics.express.run_numbers|first }} - {{ filter.qs.cosmics.express.run_numbers|last }}</td>
+        <td>{{ filter.qs.cosmics.prompt.run_numbers|first }} - {{ filter.qs.cosmics.prompt.run_numbers|last }}</td>
+        <td>{{ filter.qs.run_numbers|first }} - {{ filter.qs.run_numbers|last }}</td>
+    </tr>
+    <tr>
+        <td>Number of runs</td>
+        <td>{{ filter.qs.collisions.express|length }}</td>
+        <td>{{ filter.qs.collisions.prompt|length }}</td>
+        <td>{{ filter.qs.cosmics.express|length }}</td>
+        <td>{{ filter.qs.cosmics.prompt|length }}</td>
+        <td>{{ filter.qs|length }}</td>
+    </tr>
+    <tr>
+        <td>Number of bad runs</td>
+        <td>{{ filter.qs.bad.collisions.express|length }}</td>
+        <td>{{ filter.qs.bad.collisions.prompt|length }}</td>
+        <td>{{ filter.qs.bad.cosmics.express|length }}</td>
+        <td>{{ filter.qs.bad.cosmics.prompt|length }}</td>
+        <td>{{ filter.qs.bad|length }}</td>
+    </tr>
+    <tr>
+        <td>Tracker maps missing</td>
+        <td>
+            {% with filter.qs.collisions.express.trackermap_missing|length as missing %}
+                {% if missing > 0 %}
+                    <span class="label label-warning">{{ missing }}</span>
+                {% else %}
+                    {{ missing }}
+                {% endif %}
+            {% endwith %}
+        </td>
+        <td>
+            {% with filter.qs.collisions.prompt.trackermap_missing|length as missing %}
+                {% if missing > 0 %}
+                    <span class="label label-warning">{{ missing }}</span>
+                {% else %}
+                    {{ missing }}
+                {% endif %}
+            {% endwith %}
+        </td>
+        <td>
+            {% with filter.qs.cosmics.express.trackermap_missing|length as missing %}
+                {% if missing > 0 %}
+                    <span class="label label-warning">{{ missing }}</span>
+                {% else %}
+                    {{ missing }}
+                {% endif %}
+            {% endwith %}
+        </td>
+        <td>
+            {% with filter.qs.cosmics.prompt.trackermap_missing|length as missing %}
+                {% if missing > 0 %}
+                    <span class="label label-warning">{{ missing }}</span>
+                {% else %}
+                    {{ missing }}
+                {% endif %}
+            {% endwith %}
+        </td>
+        <td>
+            {% with filter.qs.trackermap_missing|length as missing %}
+                {% if missing > 0 %}
+                    <span class="label label-warning">{{ missing }}</span>
+                {% else %}
+                    {{ missing }}
+                {% endif %}
+            {% endwith %}
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+</p>

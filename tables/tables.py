@@ -75,11 +75,65 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     """
 
     edit_run = tables.TemplateColumn(
-        '<div align="center"><a href="{% url \'listruns:update\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        '<span>Edit</a></div>',
+        '<div align="center">'
+            '<a href="{% url \'listruns:update\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+                'Edit'
+            '</a>'
+        '</div>',
         orderable=False,
         verbose_name="Edit",
     )
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered table-fixed"}
+
+class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
+    """
+    TrackerCertification table used by shift leaders
+    """
+
+    delete_run = tables.TemplateColumn(
+        '<div align="center">'
+            '<a href="{% url \'shiftleader:delete\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+                'Delete'
+            '</a>'
+        '</div>',
+        orderable=False,
+        verbose_name="Delete",
+    )
+
+    class Meta:
+        attrs = {"class": "table table-hover table-bordered"}
+
+
+class DeletedTrackerCertificationTable(tables.Table):
+    restore_run = tables.TemplateColumn(
+        '<div align="center">'
+            '<a href="{% url \'shiftleader:restore_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+                'Restore'
+            '</a>'
+        '</div>',
+        orderable=False,
+    )
+
+    delete_forever = tables.TemplateColumn(
+        '<div align="center">'
+            '<a href="{% url \'shiftleader:hard_delete_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+                'Hard Delete'
+            '</a>'
+        '</div>',
+        orderable=False,
+    )
+
+    class Meta:
+        model = TrackerCertification
+        fields = (
+            "pk",
+            "deleted_at",
+            "user",
+            "runreconstruction__run__run_number"
+            "runreconstruction__reconstruction"
+            "reference_runreconstruction__run__run_number"
+            "date",
+        )
+        attrs = {"class": "table table-hover table-bordered"}
