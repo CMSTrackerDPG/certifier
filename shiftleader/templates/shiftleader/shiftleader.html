@@ -10,7 +10,7 @@
     {% load bootstrap3 %}
 
     <div class="container-fluid">
-        <h1 align="center">Shift Leader View</h1>
+        <h1 class="my-3" align="center">Shift Leader View</h1>
         <div class="container">
             {% if filter %}
                 {% include "shiftleader/filter.html" %}
@@ -18,16 +18,16 @@
                 <div class="alert alert-danger" role="alert">No Filter found.</div>
             {% endif %}
         </div>
-        <ul class="nav nav-tabs">
-            <li><a data-toggle="tab" href="#runtable">Certified Runs</a></li>
-            <li><a data-toggle="tab" href="#compare-runreg">Run Registry Comparison</a></li>
-            <li><a data-toggle="tab" href="#overview">Overview</a></li>
-            <li><a data-toggle="tab" href="#deleted-runs">Deleted Certifications</a></li>
-            <li><a data-toggle="tab" href="#summary">Summary</a></li>
-            <li class="active"><a data-toggle="tab" href="#shiftleader-report">Shift Leader Report</a></li>
+        <ul class="nav nav-tabs mb-2">
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#runtable">Certified Runs</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#compare-runreg">Run Registry Comparison</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#overview">Overview</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#deleted-runs">Deleted Certifications</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#summary">Summary</a></li>
+            <li class="nav-item" class="active"><a class="nav-link" data-toggle="tab" href="#shiftleader-report">Shift Leader Report</a></li>
         </ul>
         <div class="tab-content">
-            <div id="runtable" class="tab-pane fade">
+            <div id="runtable" class="tab-pane fade in active">
                 <h3>List of Certified Runs</h3>
                 {% if table %}
                     {% render_table table 'django_tables2/bootstrap.html' %}

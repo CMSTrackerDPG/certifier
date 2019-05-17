@@ -11,21 +11,21 @@
 </style>
 
 <div class="container">
-    <div class="well" style="margin: 0 auto 10px; width: 800px;">
-        <form id="sl-filter-form" action="" method="get" class="form">
+    <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 800px;">
+        <form id="sl-filter-form" action="" method="get" class="form my-1">
 
             <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#menu-dates">Dates</a></li>
-                <li><a data-toggle="tab" href="#menu-run-numbers">Run Numbers</a></li>
-                <li><a data-toggle="tab" href="#menu-type">Type</a></li>
-                <li><a data-toggle="tab" href="#menu-categories">Categories</a></li>
-                <li><a data-toggle="tab" href="#menu-users">Shifters</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-dates">Dates</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-run-numbers">Run Numbers</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-type">Type</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-problems">Problems</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-users">Shifters</a></li>
             </ul>
             <div class="tab-content">
 
                 <div id="menu-dates" class="tab-pane fade in active">
 
-                    <div class="form-inline">
+                    <div class="form">
                         <div class="row top-buffer">
                             <div class="col-sm-3">
                             </div>
@@ -49,7 +49,7 @@
                                 <strong>to</strong>:
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row form-inline">
                             <div class="col-sm-1"></div>
                             <div class="col-sm-5">
                                 {% render_field filter.form.date__gte|add_class:"form-control" %}
@@ -59,25 +59,23 @@
                             </div>
                         </div>
 
-                        <div class="row top-buffer">
-                            <div style="text-align: center;">
-                                <button type="button" class="btn" onclick="set_week_to_previous()"> &lt;&lt; </button>
+                        <div class="top-buffer d-flex justify-content-center">
+                                <button type="button" class="btn btn-light" onclick="set_week_to_previous()"> &lt;&lt; </button>
                                 <span style='margin-right:1.25em;'></span>
-                                <button type="button" class="btn" onclick="set_date_range_filter_to_last_week()">Last Week</button>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_last_week()">Last Week</button>
                                 <span style='margin-right:1.25em;'></span>
-                                <button type="button" class="btn" onclick="set_date_range_filter_to_this_week()">This Week</button>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_this_week()">This Week</button>
                                 <span style='margin-right:1.25em;'></span>
-                                <button type="button" class="btn" onclick="set_date_range_filter_to_today()">Today</button>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_today()">Today</button>
                                 <span style='margin-right:1.25em;'></span>
-                                <button type="button" class="btn" onclick="set_week_to_next()"> &gt;&gt; </button>
-                            </div>
+                                <button type="button" class="btn btn-light" onclick="set_week_to_next()"> &gt;&gt; </button>
                         </div>
                     </div>
 
                 </div>
 
                 <div id="menu-run-numbers" class="tab-pane fade">
-                    <div class="form-inline">
+                    <div class="form from-inline">
                         <div class="row top-buffer">
                             <div class="col-sm-12 text-right">
                                 <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-run_number">
@@ -96,33 +94,30 @@
                                 <strong>to</strong>:
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-1"></div>
+                        <div class="row d-flex justify-content-center">
                             <div class="col-sm-5">
-                                {% render_field filter.form.run_number__gte|add_class:"form-control" %}
+                                {% render_field filter.form.runreconstruction__run__run_number__gte|add_class:"form-control" %}
                             </div>
-                            <div class="col-sm-6">
-                                {% render_field filter.form.run_number__lte|add_class:"form-control" %}
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__run_number__lte|add_class:"form-control" %}
                             </div>
                         </div>
 
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-11">
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-10">
                                 <strong>Comma-separated list</strong>:
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-11">
-                                {% render_field filter.form.run_number__in|add_class:"form-control"%}
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-10">
+                                {% render_field filter.form.runreconstruction__run__run_number__in|add_class:"form-control" %}
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="menu-type" class="tab-pane fade">
-                    <div class="form-inline">
+                    <div class="form">
                         <div class="row top-buffer">
                             <div class="col-sm-12 text-right">
                                 <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-type">
@@ -132,64 +127,50 @@
                             </div>
                         </div>
 
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__runtype.label_tag }}
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                {{ filter.form.dataset.label_tag }}
                             </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__runtype|add_class:"form-control" %}
-                            </div>
-                        </div>
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__reco.label_tag }}
-                            </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__reco|add_class:"form-control" %}
+                            <div class="col-sm-5">
+                                {% render_field filter.form.dataset|add_class:"form-control" %}
                             </div>
                         </div>
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__bfield.label_tag }}
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Reconstruction
                             </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__bfield|add_class:"form-control" %}
-                            </div>
-                        </div>
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__beamtype.label_tag }}
-                            </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__beamtype|add_class:"form-control" %}
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__reconstruction|add_class:"form-control" %}
                             </div>
                         </div>
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__beamenergy.label_tag }}
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                B Field
                             </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__beamenergy|add_class:"form-control" %}
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__b_field|add_class:"form-control" %}
                             </div>
                         </div>
-                        <div class="row top-buffer">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-3 text-right">
-                                {{ filter.form.type__dataset.label_tag }}
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Beam Type
                             </div>
-                            <div class="col-sm-8">
-                                {% render_field filter.form.type__dataset|add_class:"form-control" %}
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__fill__fill_type_runtime|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Beam Energy
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__energy|add_class:"form-control" %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="menu-categories" class="tab-pane fade">
+                <div id="menu-problems" class="tab-pane fade">
                     <div class="row top-buffer">
                         <div class="col-sm-12 text-right">
                             <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-problem_categories">
@@ -198,12 +179,28 @@
                     text-decoration: none;">{% bootstrap_icon "question-sign" %}</a>
                         </div>
                     </div>
-                    <div class="row top-buffer">
-                        <div class="col col-sm-2 vcenter text-right">
-                            <strong>Category:</strong>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.pixel_problems.label}}:</strong>
                         </div>
-                        <div class="col col-sm-10 vcenter text-left">
-                            {% render_field filter.form.problem_categories|add_class:"form-control" %}
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.pixel_problems|add_class:"selectpicker" %}
+                        </div>
+                    </div>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.strip_problems.label}}:</strong>
+                        </div>
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.strip_problems|add_class:"selectpicker" %}
+                        </div>
+                    </div>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.tracking_problems.label}}:</strong>
+                        </div>
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.tracking_problems|add_class:"selectpicker" %}
                         </div>
                     </div>
                 </div>

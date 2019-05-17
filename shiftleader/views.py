@@ -14,10 +14,10 @@ from listruns.utilities.utilities import (
 )
 from listruns.filters import (
     TrackerCertificationFilter,
-    ShiftLeaderTrackerCertificationFilter,
     ComputeLuminosityTrackerCertificationFilter,
     RunsFilter,
 )
+from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
 from shiftleader.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
@@ -44,7 +44,7 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
     table_class = ShiftleaderTrackerCertificationTable
     model = TrackerCertification
     template_name = "shiftleader/shiftleader.html"
-    #filterset_class = ShiftLeaderTrackerCertificationFilter
+    filterset_class = ShiftLeaderTrackerCertificationFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

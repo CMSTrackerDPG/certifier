@@ -1,0 +1,26 @@
+.good-runs {
+    color: green;
+}
+
+.bad-runs {
+    color: red;
+}
+
+.prompt-missing-runs {
+    color: purple;
+    text-decoration: underline;
+}
+
+.missing-runs {
+    color: orange;
+}
+
+.changed-good-runs {
+    color: darkgreen;
+    text-decoration: underline;
+}
+
+.changed-bad-runs {
+    color: darkred;
+    text-decoration: underline;
+}
