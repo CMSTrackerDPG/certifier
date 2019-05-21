@@ -1,0 +1,137 @@
+{% load myfilters %}
+
+<div id="slr-list-of-runs-all" class="tab-pane fade in">
+    <div id="id_list_of_runs_express">
+        <h3>List of runs certified StreamExpress</h3>
+        <p>
+        <ul>
+            <li>Collisions:
+                <ul>
+                {% for day in slreport.collisions.express.day_by_day %}
+                    <li>{{ day.name }}: <strong>
+                        {% for run_number in day.good.run_numbers %}
+                            <span class="good-runs">{{ run_number }}</span>,
+                        {% endfor %}
+
+                        {% for run_number in day.bad.run_numbers %}
+                            <span class="bad-runs">{{ run_number }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                {% endfor %}
+                </ul>
+            </li>
+            <li>Cosmics:
+                <ul>
+                {% for day in slreport.cosmics.express.day_by_day %}
+                    <li>{{ day.name }}: <strong>
+                        {% for run_number in day.good.run_numbers %}
+                            <span class="good-runs">{{ run_number }}</span>,
+                        {% endfor %}
+
+                        {% for run_number in day.bad.run_numbers %}
+                            <span class="bad-runs">{{ run_number }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                {% endfor %}
+                </ul>
+            </li>
+        </ul>
+        </p>
+    </div>
+
+
+    <div id="id_list_of_runs_prompt">
+        <h3>List of runs certified Prompt</h3>
+        <p>
+        <ul>
+            <li>Collisions:
+                <ul>
+                {% for day in slreport.collisions.prompt.day_by_day %}
+                    <li>{{ day.name }}: <strong>
+                        {% for run_number in day.good.run_numbers %}
+                            <span class="good-runs">{{ run_number }}</span>,
+                        {% endfor %}
+
+                        {% for run_number in day.bad.run_numbers %}
+                            <span class="bad-runs">{{ run_number }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                {% endfor %}
+                </ul>
+            </li>
+            <li>Cosmics:
+                <ul>
+                {% for day in slreport.cosmics.prompt.day_by_day %}
+                    <li>{{ day.name }}: <strong>
+                        {% for run_number in day.good.run_numbers %}
+                            <span class="good-runs">{{ run_number }}</span>,
+                        {% endfor %}
+
+                        {% for run_number in day.bad.run_numbers %}
+                            <span class="bad-runs">{{ run_number }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                {% endfor %}
+                </ul>
+            </li>
+        </ul>
+        </p>
+    </div>
+</div>
+
+
+{% for day in slreport.day_by_day %}
+    <div id="slr-list-of-runs-{{ day.date|yyyymmdd }}" class="tab-pane fade">
+        <h3>List of runs: {{ day.name|title }}, {{ day.date|yyyymmdd_to_ddmmyyyy }}</h3>
+        <p>
+        <ul>
+            <li>Collisions:
+                <ul>
+                    <li>Prompt-Reco: <strong>
+                        {% for run in day.collisions.prompt.good.run_numbers %}
+                            <span class="good-runs">{{ run }}</span>,
+                        {% endfor %}
+
+                        {% for run in day.collisions.prompt.bad.run_numbers %}
+                            <span class="bad-runs">{{ run }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                    <li>Stream-Express: <strong>
+                        {% for run in day.collisions.express.good.run_numbers %}
+                            <span class="good-runs">{{ run }}</span>,
+                        {% endfor %}
+
+                        {% for run in day.collisions.express.bad.run_numbers %}
+                            <span class="bad-runs">{{ run }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                </ul>
+            </li>
+            <li>Cosmics:
+                <ul>
+                    <li>Prompt-Reco:<strong>
+
+                        {% for run in day.cosmics.prompt.good.run_numbers %}
+                            <span class="good-runs">{{ run }}</span>,
+                        {% endfor %}
+
+                        {% for run in day.cosmics.prompt.bad.run_numbers %}
+                            <span class="bad-runs">{{ run }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                    <li>Stream-Express:<strong>
+
+                        {% for run in day.cosmics.express.good.run_numbers %}
+                            <span class="good-runs">{{ run }}</span>,
+                        {% endfor %}
+
+                        {% for run in day.cosmics.express.bad.run_numbers %}
+                            <span class="bad-runs">{{ run }}</span>,
+                        {% endfor %}
+                    </strong></li>
+                </ul>
+            </li>
+        </ul>
+        </p>
+    </div>
+{% endfor %}

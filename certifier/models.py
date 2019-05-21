@@ -1,8 +1,8 @@
 from django.db import models
 from users.models import User
-
+from certifier.manager import *
 from oms.models import OmsRun
-
+from shiftleader.models import SoftDeletionModel
 
 class RunReconstruction(models.Model):
     RECONSTRUCTION_CHOICES = (
@@ -61,7 +61,10 @@ class Dataset(models.Model):
         return self.dataset
 
 
-class TrackerCertification(models.Model):
+class TrackerCertification(SoftDeletionModel):
+    objects = TrackerCertificationManager()
+    all_objects = TrackerCertificationManager(alive_only=False)
+
     SUBCOMPONENT_STATUS_CHOICES = (
         ("good", "Good"),
         ("bad", "Bad"),

@@ -1,0 +1,28 @@
+{% if queryset.run_numbers %}
+    <div style="max-width: 700px;">
+        <h4>{{ caption }}</h4>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th class="col-sm-3">Fill Number</th>
+                {% comment %}
+                <th>Ini Lumi (1033 cm2/s)</th>
+                <th>End Lumi (1033 cm2/s)</th>
+                <th>N Bunches</th>
+                <th>N Colliding Bunches</th>
+                <th>Peak PU</th>
+                {% endcomment %}
+                <th class="col-sm-9">Certified Runs</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fill in queryset.fills %}
+                <tr>
+                    <td class="col-sm-3">{{ fill.fill_number}}</td>
+                    <td class="col-sm-9">{{ fill.run_number|join:", " }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

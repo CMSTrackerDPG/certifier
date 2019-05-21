@@ -48,7 +48,7 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        '''
+        print(self.filterset.qs)
         context["summary"] = SummaryReport(self.filterset.qs)
         context["slreport"] = ShiftLeaderReport(self.filterset.qs)
         context["deleted_runs"] = DeletedTrackerCertificationTable(
@@ -60,6 +60,7 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
             # shift leader checklist has not been created yet.
             pass
 
+        '''
         deviating, corresponding = self.filterset.qs.compare_with_run_registry()
 
         if deviating:

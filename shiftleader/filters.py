@@ -38,6 +38,11 @@ class ShiftLeaderTrackerCertificationFilter(django_filters.FilterSet):
                                                 'class': 'form-control',
                                             }))
 
+    runreconstruction__run__run_type = django_filters.ModelChoiceFilter(queryset=OmsRun.objects.values_list("run_type", flat=True).distinct(),
+                                            widget=forms.Select(attrs={
+                                                'class': 'form-control',
+                                            }))
+
     runreconstruction__run__run_number__in = InFilter(field_name='runreconstruction__run__run_number', lookup_expr='in')
 
     date__gte = django_filters.DateFilter(

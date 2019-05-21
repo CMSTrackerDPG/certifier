@@ -1,11 +1,5 @@
-{% extends 'dqmhelper/base.html' %}
-
-{% block title %}Summary{% endblock title %}
-
 {% block content %}
 {% load static %}
-{% include "certhelper/components/menu.html" %}
-<h1 align="center">Summary</h1>
 <a href="#comment_div" class="btn btn-link" onclick="show_special_comment_area()"><span class="glyphicon glyphicon-comment"></span> Add Special Comment</a>
 <a href="#links_div" class="btn btn-link" onclick="show_links_area()">
 	<span class="glyphicon glyphicon-globe"></span> Add Links
@@ -77,7 +71,7 @@ Depends on runtype:
 </pre>
 {% endblock content %}
 
-{% block script %}
+{% block scripts %}
 <script>
     function show_special_comment_area() {
         $('#comment_div').css('display', 'inline-block');
@@ -109,4 +103,4 @@ Depends on runtype:
        $('#links_text').css('display', 'inline-block');
    }
 </script>
-{% endblock script %}
+{% endblock scripts %}

@@ -1,0 +1,40 @@
+{% load myfilters %}
+
+<div id="slr-weekly-cert" class="tab-pane fade in active">
+    <div class="form-group">
+        <label for="cc-input">List of central certification runs:</label>
+        <input type="text" class="form-control" name="central-cert-in" size="30" id="id-cc-input" placeholder="e.g. 315539, 315546, 321234, 317509, 317684, 315545">
+    </div>
+
+    <h3>Weekly Certification</h3>
+    <p>
+    <ul>
+        <li>Collisions:
+            <ul>
+                <li>Prompt-Reco: total number=<strong>{{ slreport.collisions.prompt.total_number }}</strong>, Integrated lumi=<strong>{{ slreport.collisions.prompt.integrated_luminosity|format_luminosity }}</strong>
+                    <ul><li>BAD runs: total number=<strong>{{ slreport.bad.collisions.prompt.total_number }}</strong>, Integrated lumi=<strong>{{ slreport.bad.collisions.prompt.integrated_luminosity|format_luminosity }}</strong></li></ul>
+                </li>
+                <li>Stream-Express: total number=<strong>{{ slreport.collisions.express.total_number }}</strong>, Integrated lumi=<strong>{{ slreport.collisions.express.integrated_luminosity|format_luminosity }}</strong>
+                    <ul><li>BAD runs: total number=<strong>{{ slreport.bad.collisions.express.total_number }}</strong>, Integrated lumi=<strong>{{ slreport.bad.collisions.express.integrated_luminosity|format_luminosity }}</strong></li></ul>
+                </li>
+            </ul>
+        </li>
+        <li>Cosmics:
+            <ul>
+                <li>Prompt-Reco: total number=<strong>{{ slreport.cosmics.prompt.total_number }}</strong>
+                    <ul><li>BAD runs: total number=<strong>{{ slreport.bad.cosmics.prompt.total_number }}</strong></li></ul>
+                </li>
+                <li>Stream-Express: total number=<strong>{{ slreport.cosmics.express.total_number }}</strong>
+                    <ul><li>BAD runs: total number=<strong>{{ slreport.bad.cosmics.express.total_number }}</strong></li></ul>
+                </li>
+            </ul>
+        </li>
+        <li>Central certification:
+            <ul>
+                <li>list of runs: <span id="id-cc-span"><b>[insert above]</b></span><span id="id-cc-legend"></span></li>
+                <li>deadline has been met?</li>
+            </ul>
+        </li>
+    </ul>
+    </p>
+</div>

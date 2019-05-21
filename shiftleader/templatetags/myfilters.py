@@ -96,7 +96,7 @@ def user(value, arg):
     """
     filetrs the runinfo
     """
-    return value.filter(userid=arg)
+    return value.filter(user=arg)
 
 
 def join_by(items, separator):

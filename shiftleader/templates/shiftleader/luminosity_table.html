@@ -1,0 +1,48 @@
+{% if queryset %}
+    <div class="col-lg-6">
+        <div class="luminosity-div">
+            <table class="luminosity-table table table-striped table-bordered">
+                <caption>{{ caption }}</caption>
+                <tr>
+                    <th class="text-right">Run number range</th>
+                    <td align="center" colspan="3">{{ queryset.order_by_run_number.first.run_number }} - {{ queryset.order_by_run_number.last.run_number }}</td>
+                </tr>
+                <tr>
+                    <th class="text-right">Certification date range</th>
+                    <td align="center" colspan="3">{{ queryset.order_by_date.first.date }} - {{ queryset.order_by_date.last.date }}</td>
+                </tr>
+            </table>
+
+            <table class="luminosity-table table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-center">Total</th>
+                    <th class="text-center">Good</th>
+                    <th class="text-center">Bad</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th class="text-right">Number of Runs</th>
+                    <td align="center"><span class="badge">{{ queryset.count }}</span></td>
+                    <td align="center"><span class="badge">{{ queryset.good.count }}</span></td>
+                    <td align="center"><span class="badge">{{ queryset.bad.count }}</span></td>
+                </tr>
+                <tr>
+                    <th class="text-right">Lumi Sections</th>
+                    <td align="center">{{ queryset.lumisections }}</td>
+                    <td align="center">{{ queryset.good.lumisections }}</td>
+                    <td align="center">{{ queryset.bad.lumisections }}</td>
+                </tr>
+                <tr>
+                    <th class="text-right">Integrated Luminosity</th>
+                    <td align="center">{{ queryset.integrated_luminosity }}</td>
+                    <td align="center">{{ queryset.good.integrated_luminosity }}</td>
+                    <td align="center">{{ queryset.bad.integrated_luminosity }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}

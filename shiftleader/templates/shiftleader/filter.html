@@ -129,10 +129,10 @@
 
                         <div class="row top-buffer d-flex justify-content-center">
                             <div class="col-sm-3 col-form-label">
-                                {{ filter.form.dataset.label_tag }}
+                                Run Type
                             </div>
                             <div class="col-sm-5">
-                                {% render_field filter.form.dataset|add_class:"form-control" %}
+                                {% render_field filter.form.runreconstruction__run__run_type|add_class:"form-control" %}
                             </div>
                         </div>
                         <div class="row top-buffer d-flex justify-content-center">
@@ -165,6 +165,14 @@
                             </div>
                             <div class="col-sm-5">
                                 {% render_field filter.form.runreconstruction__run__energy|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                {{ filter.form.dataset.label_tag }}
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.dataset|add_class:"form-control" %}
                             </div>
                         </div>
                     </div>

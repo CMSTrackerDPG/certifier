@@ -1,0 +1,42 @@
+{% load myfilters %}
+
+{% for day in slreport.day_by_day %}
+    <div id="slr-{{ day.date|yyyymmdd }}" class="tab-pane fade">
+        <h3>Day by day notes: {{ day.name|title }}, {{ day.date|yyyymmdd_to_ddmmyyyy }}</h3>
+        <p>
+        <ul>
+            <li>Fills <strong>{{ day.collisions.express.fill_numbers|join:","  }}</strong>
+                <ul>
+                    <li>
+                        <strong>[insert here]</strong> colliding bunches, peak lumi <strong>[insert here]</strong> x 10³⁴ cm²/s
+                    </li>
+                </ul>
+            </li>
+            <li>Number of runs certified:
+                <ul>
+                    <li>Collisions: <strong>{{ day.collisions.express.total_number }}</strong> in Stream-Express (<strong>{{ day.collisions.express.integrated_luminosity|format_luminosity }}</strong>), <strong>{{ day.collisions.prompt.total_number }}</strong> in Prompt-Reco (<strong>{{ day.collisions.prompt.integrated_luminosity|format_luminosity }}</strong>)</li>
+                    <li>Cosmics: <strong>{{ day.cosmics.express.total_number }}</strong> in Stream Express, <strong>{{ day.cosmics.prompt.total_number }}</strong> in Prompt Reco</li>
+                </ul>
+            </li>
+            <li>
+                Total number of BAD runs = <strong>{{ day.bad.total_number }}</strong> (<strong>{{ day.bad.integrated_luminosity|format_luminosity }}</strong>) (see next slide for details)
+                <ul>
+                    <li>Number of changed flags from Express to Prompt=<strong>{{ day.flag_changed.total_number }}</strong>{% if day.flag_changed.total_number > 0 %} ({{ day.flag_changed.good.run_numbers|join_good_runs }} {{ day.flag_changed.bad.run_numbers|join_bad_runs }}){% endif %}</li>
+                </ul>
+            </li>
+            <li>
+                Conditions update:
+            </li>
+            <li>
+                Issues reported in the Elog and feedback to Online:
+            </li>
+            <li>
+                On-calls:
+            </li>
+        </ul>
+
+        Daily Shifter Summaries: <strong>link1</strong>, <strong>link2</strong>
+        Prompt Feedback plots: <strong>link1</strong>
+        </p>
+    </div>
+{% endfor %}

@@ -10,6 +10,13 @@ def get_ascii_table(column_description, data):
     table.inner_row_border = True
     return table.table
 
+def to_date(date, formatstring="%Y-%m-%d"):
+    if isinstance(date, datetime.datetime):
+        return date.date()
+    if isinstance(date, datetime.date):
+        return date
+    return datetime.datetime.strptime(date, formatstring).date()
+
 def to_weekdayname(date, formatstring="%Y-%m-%d"):
     return to_date(date, formatstring).strftime("%A")
 
