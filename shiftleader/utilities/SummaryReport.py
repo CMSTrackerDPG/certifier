@@ -19,6 +19,8 @@ class SummaryReport:
         runs_checked = []
 
         for idx, runs_with_specific_type in enumerate(self.runs_per_type):
+            print(str(idx)+"====="+str(runs_with_specific_type))
+        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
             column_description = [
                 "Run",
                 "Reference Run",
@@ -31,18 +33,18 @@ class SummaryReport:
             ]
 
             data = [[
-                run.run_number,
-                run.reference_run.reference_run,
-                run.number_of_ls,
-                format_integrated_luminosity(run.int_luminosity),
+                run.runreconstruction.run.run_number,
+                run.reference_runreconstruction.run.run_number,
+                run.runreconstruction.run.lumisections,
+                format_integrated_luminosity(run.runreconstruction.run.recorded_lumi),
                 run.pixel,
-                run.sistrip,
+                run.strip,
                 run.tracking,
                 run.comment
             ] for run in runs_with_specific_type]
 
             headline = "Type " + str(idx + 1) + ": " + str(
-                runs_with_specific_type[0].type)
+                runs_with_specific_type[0].runreconstruction.run.run_type)
             table = get_ascii_table(column_description, data)
             runs_checked.append(headline + '\n' + table + '\n')
 

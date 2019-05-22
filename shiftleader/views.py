@@ -11,6 +11,7 @@ from certifier.forms import CertifyForm
 from listruns.utilities.utilities import (
     request_contains_filter_parameter,
     get_this_week_filter_parameter,
+    get_runs_from_request_filters,
 )
 from listruns.filters import (
     TrackerCertificationFilter,
@@ -37,6 +38,36 @@ def shiftleader_view(request):
         return ShiftLeaderView.as_view()(request=request)
     return HttpResponseRedirect("/shiftleader/%s" % get_this_week_filter_parameter())
 
+@login_required
+def summaryView(request):
+    """
+    Accumulates information that is needed in the Run Summary
+    stores it in the 'context' object and passes that object to summary.html
+    where it is then displayed.
+    """
+
+    alert_errors = []
+    alert_infos = []
+    alert_filters = []
+
+    runs = get_runs_from_request_filters(
+        request, alert_errors, alert_infos, alert_filters
+    )
+
+    summary = SummaryReport(runs)
+
+    context = {
+        "refs": summary.reference_runs(),
+        "runs": summary.runs_checked_per_type(),
+        "tk_maps": summary.tracker_maps_per_type(),
+        "certified_runs": summary.certified_runs_per_type(),
+        "sums": summary.sum_of_quantities_per_type(),
+        "alert_errors": alert_errors,
+        "alert_infos": alert_infos,
+        "alert_filters": alert_filters,
+    }
+
+    return render(request, "shiftleader/summary.html", context)
 
 # TODO lazy load summary
 @method_decorator(login_required, name="dispatch")
@@ -48,7 +79,6 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.filterset.qs)
         context["summary"] = SummaryReport(self.filterset.qs)
         context["slreport"] = ShiftLeaderReport(self.filterset.qs)
         context["deleted_runs"] = DeletedTrackerCertificationTable(
@@ -81,3 +111,30 @@ class DeleteRun(generic.DeleteView):
     form_class = CertifyForm
     success_url = "/shiftleader/"
     template_name_suffix = "_delete_form"
+
+@login_required
+def restore_run_view(request, pk, run_number, reco):
+    try:
+        trackerCertification = TrackerCertification.all_objects.get(pk=pk)
+    except RunInfo.DoesNotExist:
+        raise Http404("The run with the id {} doesnt exist".format(pk))
+
+    if request.method == "POST":
+        trackerCertification.restore()
+        return HttpResponseRedirect("/shiftleader/")
+
+    return render(request, "shiftleader/restore.html", {"trackerCertification": trackerCertification})
+
+@login_required
+def hard_delete_run_view(request, pk, run_number, reco):
+    try:
+        trackerCertification = TrackerCertification.all_objects.get(pk=pk)
+    except RunInfo.DoesNotExist:
+        raise Http404("The run with the id {} doesnt exist".format(pk))
+
+    if request.method == "POST":
+        trackerCertification.hard_delete()
+        return HttpResponseRedirect("/shiftleader/")
+
+    return render(request, "shiftleader/hard_delete.html", {"trackerCertification": trackerCertification})
+

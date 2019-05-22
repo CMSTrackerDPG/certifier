@@ -4,6 +4,7 @@ import re
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from certifier.models import TrackerCertification
+from terminaltables import AsciiTable
 
 def get_ascii_table(column_description, data):
     table = AsciiTable([column_description] + data)
@@ -135,7 +136,6 @@ def get_this_week_filter_parameter():
 def get_today_filter_parameter():
     return "?date={}".format(timezone.now().strftime("%Y-%m-%d"))
 
-'''
 def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filters):
     from certifier.models import TrackerCertification
 
@@ -202,7 +202,6 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filt
         )
 
     return runs
-'''
 
 def render_component(component, component_lowstat): # pragma: no cover
     """

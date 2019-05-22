@@ -89,7 +89,6 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         if until:
             runs = runs.filter(date__lte=until)
 
-        print("'aici"+str(runs.annotate_status()))
         run_number_list = [
             run["runreconstruction__run__run_number"]
             for run in runs.annotate_status()
@@ -107,21 +106,21 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         return self.filter(runreconstruction__run__run_number__in=changed_flag_runs)
 
     def good(self):
-        good_criteria = ("Good", "Lowstat")
+        good_criteria = "good"
 
         return (
-            self.filter(strip__in=good_criteria)
-                .filter(tracking__in=good_criteria)
-                .filter(Q(runreconstruction__run__run_type="Cosmics") | Q(pixel__in=good_criteria))
-        )
+            self.filter(Q(strip=good_criteria) | Q(strip_lowstat=True))
+                .filter(Q(tracking=good_criteria) | Q(tracking_lowstat=True))
+                .filter(Q(runreconstruction__run__run_type="cosmics") | Q(pixel=good_criteria) | Q(pixel_lowstat=True))
+                )
 
     def bad(self):
-        bad_criteria = ["Bad", "Excluded"]
+        bad_criteria = ["bad", "excluded"]
 
         return self.filter(
             Q(strip__in=bad_criteria)
             | Q(tracking__in=bad_criteria)
-            | (Q(pixel__in=bad_criteria) & Q(runreconstruction__run__run_type="Collisions"))
+            | (Q(pixel__in=bad_criteria) & Q(runreconstruction__run__run_type="collisions"))
         )
 
     def summary(self):
@@ -133,7 +132,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 .values("runreconstruction__run__run_type", "runreconstruction__reconstruction")
                 .annotate(
                 runs_certified=Count("pk"),
-                int_luminosity=Sum("int_luminosity", output_field=FloatField()),
+                int_luminosity=Sum("runreconstruction__run__recorded_lumi", output_field=FloatField()),
                 number_of_ls=Sum("runreconstruction__run__lumisections"),
             )
         )
@@ -161,8 +160,8 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 .values("date", "runreconstruction__run__run_type", "runreconstruction__reconstruction")
                 .annotate(
                 runs_certified=Count("pk"),
-                int_luminosity=Sum("int_luminosity", output_field=FloatField()),
-                number_of_ls=Sum("runreconstruction__run_lumisections"),
+                int_luminosity=Sum("runreconstruction__run__recorded_lumi", output_field=FloatField()),
+                number_of_ls=Sum("runreconstruction__run__lumisections"),
                 day=(ExtractWeekDay("date")),
             )
         )
@@ -274,7 +273,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         :return: sorted list of run numbers (without duplicates)
         """
         return list(
-            self.values_list("runreconstruction__run__run_number", flat=True).order_by("runreconstruction__run__run_number").distinct()
+            self.values_list("runreconstruction__run__run_number", flat=True).order_by("runreconstruction__run__run_number")
         )
 
     def fill_numbers(self):
@@ -295,7 +294,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def integrated_luminosity(self):
         if len(self) == 0:
             return 0
-        return float(self.aggregate(Sum("int_luminosity"))["int_luminosity__sum"])
+        return float(self.aggregate(Sum("runreconstruction__run__recorded_lumi"))["runreconstruction__run__recorded_lumi__sum"])
 
     def lumisections(self):
         if len(self) == 0:
@@ -322,16 +321,16 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def reference_runs(self):
         from certifier.models import RunReconstruction
-        from oms.models import OmsRun
 
         ref_ids = self.values_list("reference_runreconstruction", flat=True).order_by("reference_runreconstruction")
-        return OmsRun.objects.filter(pk__in=ref_ids)
+        return RunReconstruction.objects.filter(pk__in=ref_ids)
 
     def types(self):
-        from oms.models import OmsRun
+        from certifier.models import TrackerCertification
 
-        type_ids = self.values_list("runreconstruction__run__run_type", flat=True).order_by("runreconstruction__run__run_type")
-        return OmsRun.objects.filter(pk__in=type_ids)
+        type_ids = self.values_list("runreconstruction__run__run_type", flat=True).order_by("runreconstruction__run__run_type").distinct()
+
+        return type_ids
 
     def per_day(self):
         """values_list
@@ -347,7 +346,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         :return: list of querysets with one type per queryset
         """
-        return [self.filter(type=t) for t in self.types()]
+        return [self.filter(runreconstruction__run__run_type=t) for t in self.types()]
 
     def trackermap_missing(self):
         return self.filter(trackermap="Missing")

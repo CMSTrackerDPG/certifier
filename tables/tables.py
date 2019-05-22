@@ -131,9 +131,9 @@ class DeletedTrackerCertificationTable(tables.Table):
             "pk",
             "deleted_at",
             "user",
-            "runreconstruction__run__run_number"
-            "runreconstruction__reconstruction"
-            "reference_runreconstruction__run__run_number"
+            "run_number",
+            "reconstruction",
+            "reference_runreconstruction",
             "date",
         )
         attrs = {"class": "table table-hover table-bordered"}
