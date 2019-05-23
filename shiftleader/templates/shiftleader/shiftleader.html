@@ -39,7 +39,7 @@
 
             <div id="compare-runreg" class="tab-pane fade">
                 <h2>Comparison of certified runs with Run Registry</h2>
-
+                <div class="row">
                 {% if filter.qs %}
                     {% if runinfo_comparison_table %}
                         <div class="col-sm-6">
@@ -60,6 +60,7 @@
                         No runs have been certified in the specified filter criteria.
                     </div>
                 {% endif %}
+                </div>
             </div>
 
             <div id="overview" class="tab-pane fade">

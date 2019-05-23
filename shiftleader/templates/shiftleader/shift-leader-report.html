@@ -30,7 +30,7 @@
                 List of runs <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li class="dropdown-item"><a data-toggle="tab" href="#slr-list-of-runs-all">All days</a></li>
+                <li class="dropdown-item"><a data-toggle="tab" data-target="#slr-list-of-runs-all">All days</a></li>
 
                 {% for day in slreport.day_by_day %}
                     <li class="dropdown-item"><a data-toggle="tab" href="#slr-list-of-runs-{{ day.date|yyyymmdd }}">{{ day.name }} ({{ day.date|yyyymmdd }})</a></li>

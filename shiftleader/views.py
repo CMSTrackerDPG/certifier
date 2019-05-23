@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from certifier.models import TrackerCertification
 from django_tables2 import SingleTableMixin
-from tables.tables import ShiftleaderTrackerCertificationTable, DeletedTrackerCertificationTable
+from tables.tables import ShiftleaderTrackerCertificationTable, DeletedTrackerCertificationTable, RunRegistryComparisonTable
 from django_filters.views import FilterView
 from certifier.forms import CertifyForm
 from listruns.utilities.utilities import (
@@ -90,7 +90,6 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
             # shift leader checklist has not been created yet.
             pass
 
-        '''
         deviating, corresponding = self.filterset.qs.compare_with_run_registry()
 
         if deviating:
@@ -98,7 +97,7 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
             context["run_registry_comparison_table"] = RunRegistryComparisonTable(
                 corresponding
             )
-        '''
+
         return context
 
 @method_decorator(login_required, name="dispatch")

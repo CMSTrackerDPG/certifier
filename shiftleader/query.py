@@ -254,19 +254,22 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         pass
 
     def collisions(self):
-        return self.filter(runreconstruction__run__run_type="Collisions")
+        return self.filter(runreconstruction__run__run_type="collisions")
 
     def cosmics(self):
-        return self.filter(runreconstruction__run__run_type="Cosmics")
+        return self.filter(runreconstruction__run__run_type="cosmics")
 
     def express(self):
-        return self.filter(runreconstruction__reconstruction="Express")
+        return self.filter(runreconstruction__reconstruction="express")
 
     def prompt(self):
-        return self.filter(runreconstruction__reconstruction="Prompt")
+        return self.filter(runreconstruction__reconstruction="prompt")
 
     def rereco(self):
-        return self.filter(runreconstruction__reconstruction="reReco")
+        return self.filter(runreconstruction__reconstruction="rereco")
+
+    def online(self):
+        return self.filter(runreconstruction__reconstruction="online")
 
     def run_numbers(self):
         """
@@ -478,6 +481,8 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_registry = TrackerRunRegistryClient()
         keys = [
             "runreconstruction__run__run_number",
+            "runreconstruction__run__run_type",
+            "runreconstruction__reconstruction",
             "pixel",
             "strip",
             "tracking",

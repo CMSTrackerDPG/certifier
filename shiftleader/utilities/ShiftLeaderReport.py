@@ -6,6 +6,8 @@ class ShiftLeaderReportBase:
     Base class for the shift leader report
     Just wraps the RunInfoQuerySet filter functions
     """
+    def online(self):
+        return type(self)(self.runs.online())
 
     def prompt(self):
         return type(self)(self.runs.prompt())
