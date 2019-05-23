@@ -27,7 +27,7 @@
             <li class="nav-item" class="active"><a class="nav-link" data-toggle="tab" href="#shiftleader-report">Shift Leader Report</a></li>
         </ul>
         <div class="tab-content">
-            <div id="runtable" class="tab-pane fade in active">
+            <div id="runtable" class="tab-pane fade in active show">
                 <h3>List of Certified Runs</h3>
                 {% if table %}
                     {% render_table table 'django_tables2/bootstrap.html' %}
@@ -39,8 +39,8 @@
 
             <div id="compare-runreg" class="tab-pane fade">
                 <h2>Comparison of certified runs with Run Registry</h2>
-                <div class="row">
                 {% if filter.qs %}
+                    <div class="row">
                     {% if runinfo_comparison_table %}
                         <div class="col-sm-6">
                             <h3>Certification Helper:</h3>
@@ -55,12 +55,12 @@
                             {% render_table run_registry_comparison_table %}
                         </div>
                     {% endif %}
+                    </div>
                 {% else %}
                     <div class="alert alert-danger" role="alert">
                         No runs have been certified in the specified filter criteria.
                     </div>
                 {% endif %}
-                </div>
             </div>
 
             <div id="overview" class="tab-pane fade">
