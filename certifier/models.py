@@ -2,7 +2,7 @@ from django.db import models
 from users.models import User
 from certifier.manager import *
 from oms.models import OmsRun
-from shiftleader.models import SoftDeletionModel
+from delete.models import SoftDeletionModel
 
 class RunReconstruction(models.Model):
     RECONSTRUCTION_CHOICES = (

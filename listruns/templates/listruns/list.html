@@ -67,7 +67,8 @@
     {% endif %}
 
     {% if table %}
-    <div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1">
+    <!-- div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1"-->
+    <div class="overflow-auto bg-white" id="style-1">
         {% load render_table from django_tables2 %}
         {% render_table table %}
     </div>

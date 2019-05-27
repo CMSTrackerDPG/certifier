@@ -8,11 +8,9 @@ from django_tables2 import SingleTableMixin
 from tables.tables import ShiftleaderTrackerCertificationTable, DeletedTrackerCertificationTable, RunRegistryComparisonTable
 from django_filters.views import FilterView
 from certifier.forms import CertifyForm
-from listruns.utilities.utilities import (
-    request_contains_filter_parameter,
-    get_this_week_filter_parameter,
-    get_runs_from_request_filters,
-)
+from listruns.utilities.utilities import request_contains_filter_parameter
+from shiftleader.utilities.utilities import get_this_week_filter_parameter
+
 from listruns.filters import (
     TrackerCertificationFilter,
     ComputeLuminosityTrackerCertificationFilter,
@@ -20,7 +18,7 @@ from listruns.filters import (
 )
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
-from shiftleader.utilities.SummaryReport import SummaryReport
+from summary.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
 # Create your views here.
 
@@ -37,37 +35,6 @@ def shiftleader_view(request):
     if request_contains_filter_parameter(request):
         return ShiftLeaderView.as_view()(request=request)
     return HttpResponseRedirect("/shiftleader/%s" % get_this_week_filter_parameter())
-
-@login_required
-def summaryView(request):
-    """
-    Accumulates information that is needed in the Run Summary
-    stores it in the 'context' object and passes that object to summary.html
-    where it is then displayed.
-    """
-
-    alert_errors = []
-    alert_infos = []
-    alert_filters = []
-
-    runs = get_runs_from_request_filters(
-        request, alert_errors, alert_infos, alert_filters
-    )
-
-    summary = SummaryReport(runs)
-
-    context = {
-        "refs": summary.reference_runs(),
-        "runs": summary.runs_checked_per_type(),
-        "tk_maps": summary.tracker_maps_per_type(),
-        "certified_runs": summary.certified_runs_per_type(),
-        "sums": summary.sum_of_quantities_per_type(),
-        "alert_errors": alert_errors,
-        "alert_infos": alert_infos,
-        "alert_filters": alert_filters,
-    }
-
-    return render(request, "shiftleader/summary.html", context)
 
 # TODO lazy load summary
 @method_decorator(login_required, name="dispatch")
@@ -93,47 +60,9 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
         deviating, corresponding = self.filterset.qs.compare_with_run_registry()
 
         if deviating:
-            context["runinfo_comparison_table"] = RunRegistryComparisonTable(deviating)
+            context["trackercertification_comparison_table"] = RunRegistryComparisonTable(deviating)
             context["run_registry_comparison_table"] = RunRegistryComparisonTable(
                 corresponding
             )
 
         return context
-
-@method_decorator(login_required, name="dispatch")
-class DeleteRun(generic.DeleteView):
-    """
-    Deletes a specific Run from the RunInfo table
-    """
-
-    model = TrackerCertification
-    form_class = CertifyForm
-    success_url = "/shiftleader/"
-    template_name_suffix = "_delete_form"
-
-@login_required
-def restore_run_view(request, pk, run_number, reco):
-    try:
-        trackerCertification = TrackerCertification.all_objects.get(pk=pk)
-    except RunInfo.DoesNotExist:
-        raise Http404("The run with the id {} doesnt exist".format(pk))
-
-    if request.method == "POST":
-        trackerCertification.restore()
-        return HttpResponseRedirect("/shiftleader/")
-
-    return render(request, "shiftleader/restore.html", {"trackerCertification": trackerCertification})
-
-@login_required
-def hard_delete_run_view(request, pk, run_number, reco):
-    try:
-        trackerCertification = TrackerCertification.all_objects.get(pk=pk)
-    except RunInfo.DoesNotExist:
-        raise Http404("The run with the id {} doesnt exist".format(pk))
-
-    if request.method == "POST":
-        trackerCertification.hard_delete()
-        return HttpResponseRedirect("/shiftleader/")
-
-    return render(request, "shiftleader/hard_delete.html", {"trackerCertification": trackerCertification})
-

@@ -30,7 +30,6 @@ from users.models import User
 from listruns.utilities.utilities import (
     get_filters_from_request_GET,
     request_contains_filter_parameter,
-    get_this_week_filter_parameter,
     get_today_filter_parameter,
     integer_or_none,
 )

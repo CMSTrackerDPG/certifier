@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from listruns.utilities.utilities import (
+from tables.utilities.utilities import (
     render_component,
     render_trackermap,
     render_boolean_cell,
@@ -94,7 +94,7 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
 
     delete_run = tables.TemplateColumn(
         '<div align="center">'
-            '<a href="{% url \'shiftleader:delete\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+            '<a href="{% url \'delete:delete\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
                 'Delete'
             '</a>'
         '</div>',
@@ -109,7 +109,7 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
 class DeletedTrackerCertificationTable(tables.Table):
     restore_run = tables.TemplateColumn(
         '<div align="center">'
-            '<a href="{% url \'shiftleader:restore_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+            '<a href="{% url \'restore:restore_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
                 'Restore'
             '</a>'
         '</div>',
@@ -118,7 +118,7 @@ class DeletedTrackerCertificationTable(tables.Table):
 
     delete_forever = tables.TemplateColumn(
         '<div align="center">'
-            '<a href="{% url \'shiftleader:hard_delete_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+            '<a href="{% url \'delete:hard_delete_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
                 'Hard Delete'
             '</a>'
         '</div>',

@@ -1,4 +1,4 @@
-from shiftleader.manager import SoftDeletionManager
+from certifier.manager import SoftDeletionManager
 from django.db import models
 from django.utils import timezone
 

@@ -1,4 +1,4 @@
-from listruns.utilities.utilities import to_weekdayname
+from shiftleader.utilities.utilities import to_weekdayname
 
 
 class ShiftLeaderReportBase:

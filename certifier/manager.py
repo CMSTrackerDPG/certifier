@@ -2,40 +2,9 @@ from decimal import Decimal
 
 from django.db import models
 
-from shiftleader.query import SoftDeletionQuerySet, TrackerCertificationQuerySet
-from shiftleader.utilities.utilities import uniquely_sorted
-
-
-class SoftDeletionManager(models.Manager):
-    use_in_migrations = True
-
-    def __init__(self, *args, **kwargs):
-        self.alive_only = kwargs.pop('alive_only', True)
-        super(SoftDeletionManager, self).__init__(*args, **kwargs)
-
-    def get_queryset(self):
-        """
-        :return:
-        * QuerySet with the list of all objects that are not marked as deleted
-        * QuerySet with all objects (including deleted) when alive_only argument is
-          set to False on SoftDeletionManager
-        """
-        if self.alive_only:
-            return SoftDeletionQuerySet(self.model).filter(deleted_at=None)
-        return SoftDeletionQuerySet(self.model)
-
-    def dead(self):
-        """
-        :return: QuerySet containing all instances that have been deleted
-        """
-        return self.get_queryset().dead()
-
-    def alive(self):
-        """
-        :return: QuerySet containing all instances that have not been deleted
-        """
-        return self.get_queryset().alive()
-
+from shiftleader.query import TrackerCertificationQuerySet
+from certifier.utilities.utilities import uniquely_sorted
+from delete.manager import SoftDeletionManager
 
 class TrackerCertificationManager(SoftDeletionManager):
     def get_queryset(self):
@@ -126,7 +95,7 @@ class TrackerCertificationManager(SoftDeletionManager):
 
         return check_dictionary
 
-    def check_integrity_of_run(self, run):
+    def check_integrity_of_run(self, trackerCertification):
         """
         Checks if the given run is consistent with existing runs.
 
@@ -143,24 +112,26 @@ class TrackerCertificationManager(SoftDeletionManager):
         empty means no mismatch.
         """
 
-        from .models import RunInfo, Type
+        from certifier.models import TrackerCertification
         try:
-            if run.type.reco == "reReco":
+            if trackerCertification.runreconstruction.reconstruction == "reReco":
                 return {}
         except Type.DoesNotExist:
             # No Type selected yet
             return {}
 
         type_attributes_to_be_checked = [
-            "runtype", "bfield", "beamtype",  # "beamenergy",
+            "runreconstruction__run__run_type",
+            "runreconstruction__run__b_field",
+            "runreconstruction__run__fill__fill_type_runtime",  # "beamenergy",
         ]
         run_attributes_to_be_checked = [
-            "number_of_ls",
+            "runreconstruction__run__lumisections",
             "pixel",
-            "sistrip",
+            "strip",
             "tracking",
             "pixel_lowstat",
-            "sistrip_lowstat",
+            "strip_lowstat",
             "tracking_lowstat"
         ]
         decimal_attributes_to_be_checked = [
@@ -170,15 +141,15 @@ class TrackerCertificationManager(SoftDeletionManager):
         mismatches = {}
 
         try:
-            counterpart_reco = "Express" if run.type.reco == "Prompt" else "Prompt"
+            counterpart_reco = "Express" if trackerCertification.runreconstruction.reconstruction == "Prompt" else "Prompt"
 
             counterpart_run = self.get_queryset().get(
-                run_number=run.run_number,
-                type__reco=counterpart_reco
+                run_number=trackerCertification.runreconstruction.run_number,
+                runreconstruction__reconstruction=counterpart_reco
             )
 
-            counterpart_type = counterpart_run.type
-            assert counterpart_run.type.reco != run.type.reco
+            counterpart_type = counterpart_run.run.run_type
+            assert counterpart_run.reconstruction != run.type.reco
 
             mismatches.update({
                 attribute: getattr(counterpart_type, attribute)
@@ -204,6 +175,6 @@ class TrackerCertificationManager(SoftDeletionManager):
             })
 
             return mismatches
-        except RunInfo.DoesNotExist:
+        except TrackerCertification.DoesNotExist:
             # No counterpart means no mismatch
             return {}

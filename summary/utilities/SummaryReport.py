@@ -1,4 +1,4 @@
-from listruns.utilities.utilities import get_ascii_table
+from summary.utilities.utilities import get_ascii_table
 from listruns.utilities.luminosity import format_integrated_luminosity
 
 
@@ -18,8 +18,6 @@ class SummaryReport:
     def runs_checked_per_type(self):
         runs_checked = []
 
-        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
-            print(str(idx)+"====="+str(runs_with_specific_type))
         for idx, runs_with_specific_type in enumerate(self.runs_per_type):
             column_description = [
                 "Run",

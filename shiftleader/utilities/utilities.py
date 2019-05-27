@@ -1,7 +1,39 @@
-def uniquely_sorted(list_of_elements):
-    new_list = list(set(extract_numbers_from_list(list_of_elements)))
-    new_list.sort()
-    return new_list
+from django.utils import timezone
+import datetime
+
+def to_date(date, formatstring="%Y-%m-%d"):
+    if isinstance(date, datetime.datetime):
+        return date.date()
+    if isinstance(date, datetime.date):
+        return date
+    return datetime.datetime.strptime(date, formatstring).date()
+
+def to_weekdayname(date, formatstring="%Y-%m-%d"):
+    return to_date(date, formatstring).strftime("%A")
+
+def get_this_week_filter_parameter():
+    start_of_week = timezone.now() - timezone.timedelta(timezone.now().weekday())
+    end_of_week = start_of_week + timezone.timedelta(6)
+
+    date_gte = (
+        str(start_of_week.year)
+        + "-"
+        + str(start_of_week.month)
+        + "-"
+        + str(start_of_week.day)
+    )
+    date_lte = (
+        str(end_of_week.year)
+        + "-"
+        + str(end_of_week.month)
+        + "-"
+        + str(end_of_week.day)
+    )
+
+    get_parameters = "?date__gte=" + str(date_gte)
+    get_parameters += "&date__lte=" + str(date_lte)
+
+    return get_parameters
 
 def convert_run_registry_to_runinfo(list_of_dictionaries):
     """
