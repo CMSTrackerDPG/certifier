@@ -65,6 +65,7 @@ def certify(request, run_number, reco):
                 formToSave.runreconstruction=runReconstruction
                 formToSave.user=user
                 formToSave.save()
+                form.save_m2m()
 
             return redirect("listruns:list")
 

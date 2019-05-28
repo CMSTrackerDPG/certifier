@@ -23,9 +23,6 @@ class SimpleTrackerCertificationTable(tables.Table):
     tracking = tables.Column()
     comment = tables.Column()
     date = tables.Column()
-    pixel_problems = tables.Column()
-    strip_problems = tables.Column()
-    tracking_problems = tables.Column()
 
     class Meta:
         model = TrackerCertification
