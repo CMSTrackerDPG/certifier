@@ -1,5 +1,16 @@
 from certifier.models import TrackerCertification
 from terminaltables import AsciiTable
+from shiftleader.utilities.utilities import to_date
+
+def get_from_summary(summary, runtype=None, reco=None, date=None):
+    filtered = summary
+    if runtype:
+        filtered = [item for item in filtered if item["runreconstruction__run__run_type"] == runtype]
+    if reco:
+        filtered = [item for item in filtered if item["runreconstruction__reconstruction"] == reco]
+    if date:
+        filtered = [item for item in filtered if item["date"] == to_date(date)]
+    return filtered
 
 def get_ascii_table(column_description, data):
     table = AsciiTable([column_description] + data)

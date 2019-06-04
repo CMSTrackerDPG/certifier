@@ -107,6 +107,24 @@ class TrackerCertification(SoftDeletionModel):
     comment = models.TextField()
 
     @property
+    def is_good(self):
+        assert self.runreconstruction.run.run_type in ["cosmics", "collisions"]
+        good_criteria = "good"
+        candidates = [self.strip, self.tracking]
+        candidates_lowstat = [self.strip_lowstat, self.tracking_lowstat]
+        if self.runreconstruction.run.run_type == "collisions":
+            candidates.append(self.pixel)
+
+        for i in range(0,len(candidates)):
+            if candidates[i] != good_criteria and candidates_lowstat[i] != "lowstat":
+                return False
+        return True
+
+    @property
+    def is_bad(self):
+        return not self.is_good
+
+    @property
     def run_number(self):
         return self.runreconstruction.run.run_number
 

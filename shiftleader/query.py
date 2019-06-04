@@ -96,12 +96,13 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 number_of_ls=Sum("runreconstruction__run__lumisections"),
             )
         )
+
         """
         Add List of run_numbers per type to the summary
         """
         for d in summary_dict:
             runs_per_type = self.filter(
-                type__runtype=d.get("runreconstruction__run__run_type"), type__reco=d.get("runreconstruction__reconstruction")
+                runreconstruction__run__run_type=d.get("runreconstruction__run__run_type"), runreconstruction__reconstruction=d.get("runreconstruction__reconstruction")
             ).order_by("runreconstruction__run__run_number")
 
             good_run_numbers = [r.run_number for r in runs_per_type.good()]
@@ -132,8 +133,8 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         for d in summary_dict:
             runs = self.filter(
                 date=d.get("date"),
-                type__runtype=d.get("runreconstruction__run__run_type"),
-                type__reco=d.get("runreconstruction__reconstruction"),
+                runreconstruction__run__run_type=d.get("runreconstruction__run__run_type"),
+                runreconstruction__reconstruction=d.get("runreconstruction__reconstruction"),
             ).order_by("runreconstruction__run__run_number")
             run_numbers = [run.run_number for run in runs]
             d.update({"run_numbers": self.compare_list_if_certified(run_numbers)})
@@ -157,12 +158,12 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         ]
 
         changed_flag_runs = runs.filter(
-            run_number__in=cleaned_run_number_list
+            runreconstruction__run__run_number__in=cleaned_run_number_list
         ).filter_flag_changed()
 
         for run_number in list_of_run_numbers:
             try:
-                run = runs.get(run_number=run_number)
+                run = runs.get(runreconstruction__run__run_number=run_number)
                 d["{}".format(run.status)].append(run_number)
             except (ObjectDoesNotExist, ValueError):
                 d["missing"].append(run_number)

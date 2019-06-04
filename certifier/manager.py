@@ -23,7 +23,7 @@ class TrackerCertificationManager(SoftDeletionManager):
 
         # TODO use self.get_queryset() instead of TrackerCertificationQuerySet(self.model).filter
         runs = TrackerCertificationQuerySet(self.model).filter(deleted_at=None)
-        runs = runs.filter(run_number__in=list_of_run_numbers).annotate_status()
+        runs = runs.filter(runreconstruction__run__run_number__in=list_of_run_numbers).annotate_status()
 
         def do_check(runs):
             flags = {
@@ -43,23 +43,23 @@ class TrackerCertificationManager(SoftDeletionManager):
             flags["bad"] = bad_runs.run_numbers()
 
             non_missing_prompt_run_numbers = [
-                run["run_number"] for run in prompt_runs
-                    .order_by("run_number")
-                    .values("run_number")
+                run["runreconstruction__run__run_number"] for run in prompt_runs
+                    .order_by("runreconstruction__run__run_number")
+                    .values("runreconstruction__run__run_number")
                     .distinct()
             ]
 
             non_missing_run_numbers = [
-                run["run_number"] for run in runs
-                    .order_by("run_number")
-                    .values("run_number")
+                run["runreconstruction__run__run_number"] for run in runs
+                    .order_by("runreconstruction__run__run_number")
+                    .values("runreconstruction__run__run_number")
                     .distinct()
             ]
 
             flags["prompt_missing"] = list(
                 set(non_missing_run_numbers) - set(non_missing_prompt_run_numbers))
 
-            express_runs = runs.express().filter(run_number__in=non_missing_run_numbers)
+            express_runs = runs.express().filter(runreconstruction__run__run_number__in=non_missing_run_numbers)
             good_express = express_runs.good().run_numbers()
             bad_express = express_runs.bad().run_numbers()
 
@@ -112,21 +112,21 @@ class TrackerCertificationManager(SoftDeletionManager):
         empty means no mismatch.
         """
 
-        from certifier.models import TrackerCertification
+        from certifier.models import TrackerCertification, RunReconstruction
         try:
-            if trackerCertification.runreconstruction.reconstruction == "reReco":
+            if trackerCertification.runreconstruction.reconstruction == "rereco":
                 return {}
-        except Type.DoesNotExist:
+        except TrackerCertification.DoesNotExist and RunReconstruction.DoesNotExist:
             # No Type selected yet
             return {}
 
         type_attributes_to_be_checked = [
-            "runreconstruction__run__run_type",
-            "runreconstruction__run__b_field",
-            "runreconstruction__run__fill__fill_type_runtime",  # "beamenergy",
+            "run_type",
+            "b_field",
+            "fill_type_party1",  # "beamenergy",
+            "lumisections",
         ]
         run_attributes_to_be_checked = [
-            "runreconstruction__run__lumisections",
             "pixel",
             "strip",
             "tracking",
@@ -135,43 +135,41 @@ class TrackerCertificationManager(SoftDeletionManager):
             "tracking_lowstat"
         ]
         decimal_attributes_to_be_checked = [
-            "int_luminosity",
+            "recorded_lumi",
         ]
 
         mismatches = {}
 
         try:
-            counterpart_reco = "Express" if trackerCertification.runreconstruction.reconstruction == "Prompt" else "Prompt"
+            counterpart_reco = "express" if trackerCertification.runreconstruction.reconstruction == "prompt" else "prompt"
 
             counterpart_run = self.get_queryset().get(
-                run_number=trackerCertification.runreconstruction.run_number,
+                runreconstruction__run__run_number=trackerCertification.runreconstruction.run.run_number,
                 runreconstruction__reconstruction=counterpart_reco
             )
+            counterpart_oms_run = counterpart_run.runreconstruction.run
 
-            counterpart_type = counterpart_run.run.run_type
-            assert counterpart_run.reconstruction != run.type.reco
+            assert counterpart_run.runreconstruction.reconstruction != trackerCertification.runreconstruction.reconstruction
 
             mismatches.update({
-                attribute: getattr(counterpart_type, attribute)
+                attribute: getattr(counterpart_oms_run, attribute)
                 for attribute in type_attributes_to_be_checked
-                if getattr(run.type, attribute) is not None and
-                   getattr(counterpart_type, attribute) != getattr(run.type, attribute)
+                if getattr(trackerCertification.runreconstruction.run, attribute) is not None and
+                   getattr(counterpart_oms_run, attribute) != getattr(trackerCertification.runreconstruction.run, attribute)
             })
 
             mismatches.update({
                 attribute: getattr(counterpart_run, attribute)
                 for attribute in run_attributes_to_be_checked
-                if getattr(run, attribute) is not None and
-                   getattr(counterpart_run, attribute) != getattr(run, attribute)
+                if getattr(trackerCertification, attribute) is not None and
+                   getattr(counterpart_run, attribute) != getattr(trackerCertification, attribute)
             })
 
             mismatches.update({
-                attribute: getattr(counterpart_run, attribute)
+                attribute: getattr(counterpart_oms_run, attribute)
                 for attribute in decimal_attributes_to_be_checked
-                if getattr(run, attribute) is not None and
-                    abs(
-                        getattr(counterpart_run, attribute) - getattr(run, attribute)
-                    ) > Decimal("0.1")
+                if getattr(trackerCertification.runreconstruction.run, attribute) is not None and
+                abs(Decimal(getattr(counterpart_oms_run, attribute)) - Decimal(getattr(trackerCertification.runreconstruction.run, attribute))) > Decimal("0.11")
             })
 
             return mismatches

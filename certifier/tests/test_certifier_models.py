@@ -72,3 +72,10 @@ class TestTrackerCertification:
         referenceRunReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
         trackerCertification = mixer.blend(TrackerCertification, reference_runreconstruction=referenceRunReconstruction, runreconstruction=runReconstruction)
         assert str(trackerCertification) == "{} {} {}".format(runReconstruction, referenceRunReconstruction, trackerCertification.get_tracking_display())
+
+    def test_is_bad(self):
+        test_number=323444
+        runReconstruction = mixer.blend(RunReconstruction, run=mixer.blend(OmsRun, run_number=test_number))
+        trackerCertification = mixer.blend(TrackerCertification, runreconstruction=runReconstruction, strip="bad")
+        assert True == trackerCertification.is_bad
+
