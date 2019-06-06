@@ -348,10 +348,9 @@ class OmsRun(models.Model):
     energy_unit = models.CharField(max_length=50)
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            physics_or_special = (
-                "/cdaq/physics" in self.hlt_key or "/cdaq/special" in self.hlt_key
-            )
-            is_collisions = physics_or_special and self.stable_beam
-            self.run_type = "collisions" if is_collisions else "cosmics"
+        physics_or_special = (
+            "/cdaq/physics" in self.hlt_key or "/cdaq/special" in self.hlt_key
+        )
+        is_collisions = physics_or_special and self.stable_beam
+        self.run_type = "collisions" if is_collisions else "cosmics"
         super(OmsRun, self).save(*args, **kwargs)

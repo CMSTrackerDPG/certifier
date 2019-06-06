@@ -21,14 +21,12 @@ from runregistry.client import TrackerRunRegistryClient
 
 class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def annotate_status(self):
-        good_criteria = ("Good", "Lowstat")
-
         return self.annotate(
             status=Case(
                 When(
-                    (Q(runreconstruction__run__run_type="Cosmics") | Q(pixel__in=good_criteria))
-                    & Q(strip__in=good_criteria)
-                    & Q(tracking__in=good_criteria),
+                    (Q(runreconstruction__run__run_type="cosmics") | Q(pixel="good") | Q(pixel_lowstat=True))
+                    & (Q(strip="good") | Q(strip_lowstat=True))
+                    & (Q(tracking="good") | Q(tracking_lowstat=True)),
                     then=Value("good"),
                 ),
                 default=Value("bad"),
@@ -168,11 +166,11 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             except (ObjectDoesNotExist, ValueError):
                 d["missing"].append(run_number)
             except MultipleObjectsReturned:
-                run_pair = changed_flag_runs.filter(run_number=run_number)
+                run_pair = changed_flag_runs.filter(runreconstruction__run__run_number=run_number)
                 if run_pair.exists():
                     d["different_flags"].append(run_number)
                 else:
-                    r = runs.filter(run_number=run_number)
+                    r = runs.filter(runreconstruction__run__run_number=run_number)
                     d["{}".format(r[0].status)].append(run_number)
 
         return d
@@ -184,7 +182,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         Example: Run was certified good in express and bad promptreco
         """
-        return list(set([runreconstruction.run.run_number for run in self.filter_flag_changed()]))
+        return list(set([run.runreconstruction.run.run_number for run in self.filter_flag_changed()]))
 
     def today(self):
         pass
@@ -276,7 +274,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def reference_run_numbers(self):
         ref_dict = (
-            self.order_by("reference_runreconstrction__run__run_number")
+            self.order_by("reference_runreconstruction__run__run_number")
                 .values("reference_runreconstruction__run__run_number")
                 .distinct()
         )

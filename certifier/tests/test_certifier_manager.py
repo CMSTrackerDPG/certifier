@@ -37,21 +37,21 @@ class TestTrackerCertificationManager:
 
         run = mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions")),
+            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
             strip="bad",
         )
         assert run.is_good is False
 
         run = mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions")),
+            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
             pixel="bad",
         )
         assert run.is_good is False
 
         run = mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions")),
+            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
             tracking="bad",
         )
         assert run.is_good is False
@@ -232,40 +232,6 @@ class TestTrackerCertificationManager:
         assert get_from_summary(summary, date="2018-05-18")[0]["number_of_ls"] == 144
         assert get_from_summary(summary, date="2018-05-14")[2]["int_luminosity"] == 0.1234
 
-    def test_get_queryset(self):
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=123456)))
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=234567)))
-
-        assert len(TrackerCertification.objects.all()) == 2
-        assert len(TrackerCertification.all_objects.all()) == 2
-        TrackerCertification.objects.all().delete()
-        assert TrackerCertification.objects.exists() is False
-        assert TrackerCertification.all_objects.exists() is True
-
-    def test_alive_only(self):
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=123456)))
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=234567)))
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=345678)))
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=456789)))
-        mixer.blend("certifier.TrackerCertification", runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=567890)))
-
-        assert len(TrackerCertification.objects.all()) == 5
-
-        TrackerCertification.objects.filter(runreconstruction__run__run_number__gt=300000).delete()
-
-        assert len(TrackerCertification.objects.all()) == 2
-        assert len(TrackerCertification.objects.all().alive()) == 2
-        assert len(TrackerCertification.objects.all().dead()) == 0
-        assert len(TrackerCertification.all_objects.all()) == 5
-        assert len(TrackerCertification.all_objects.all().alive()) == 2
-        assert len(TrackerCertification.all_objects.all().dead()) == 3
-
-        TrackerCertification.all_objects.filter(runreconstruction__run__run_number__gt=300000).dead().restore()
-        assert len(TrackerCertification.objects.all()) == 5
-        assert len(TrackerCertification.all_objects.all()) == 5
-        assert len(TrackerCertification.all_objects.all().alive()) == 5
-        assert len(TrackerCertification.all_objects.all().dead()) == 0
-
     def test_check_if_certified(self, some_certified_runs):
         check = TrackerCertification.objects.check_if_certified(
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15]
@@ -398,11 +364,11 @@ class TestTrackerCertificationManager:
         check = TrackerCertification.objects.check_integrity_of_run(prompt_run)
         assert {} == check
 
-        prompt_run.runreconstruction = mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=121322))
+        prompt_run.runreconstruction = mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=121322), reconstruction="express")
+        prompt_run.runreconstruction.save()
         check = TrackerCertification.objects.check_integrity_of_run(prompt_run)
         assert {} == check
 
         prompt_run.runreconstruction = None
         check = TrackerCertification.objects.check_integrity_of_run(prompt_run)
         assert {} == check
-

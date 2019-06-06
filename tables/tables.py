@@ -146,11 +146,11 @@ class RunRegistryComparisonTable(tables.Table):
     class Meta:
         attrs = {"class": "table table-hover table-bordered"}
 
-    def render_pixel(self, record):
+    def render_pixel(self, record):  # pragma: no cover
         return render_component(record.get("pixel"), record.get("pixel_lowstat"))
 
-    def render_strip(self, record):
+    def render_strip(self, record):  # pragma: no cover
         return render_component(record.get("strip"), record.get("strip_lowstat"))
 
-    def render_tracking(self, record):
+    def render_tracking(self, record):  # pragma: no cover
         return render_component(record.get("tracking"), record.get("tracking_lowstat"))
