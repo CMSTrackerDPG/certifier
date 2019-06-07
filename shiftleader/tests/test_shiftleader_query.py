@@ -334,6 +334,13 @@ class TestTrackerCertificationQuerySet:
         assert RunReconstruction.objects.get(run__run_number=2) == refs[1]
         assert RunReconstruction.objects.get(run__run_number=3) == refs[2]
 
+    def test_runs(self, runs_with_three_refs):
+        refs = TrackerCertification.objects.all().runs().order_by("run__run_number")
+        assert 3 == len(refs)
+        assert RunReconstruction.objects.get(run__run_number=1) == refs[0]
+        assert RunReconstruction.objects.get(run__run_number=2) == refs[1]
+        assert RunReconstruction.objects.get(run__run_number=3) == refs[2]
+
     def test_types(self):
         t1 = runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True))
         t2 = runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="cosmics"))
@@ -407,10 +414,11 @@ class TestTrackerCertificationQuerySet:
 
         assert len(runs)
         assert len(runs.trackermap_missing()) == 2
-    '''
+
     def test_print_verbose(self, shifter, runs_for_summary_report):
         print()
-        for t in RunReconstruction.objects.get(is_reference=True):
+        for t in RunReconstruction.objects.filter(is_reference=True):
             print(t)
-        TrackerCertification.objects.all().order_by("run_number").print_verbose()
-    '''
+        TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_verbose()
+        TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_reference_runs()
+        TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_runs()

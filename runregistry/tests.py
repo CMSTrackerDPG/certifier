@@ -2,11 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from runregistry.client import RunRegistryClient
-from runregistry.utilities import (
-    transform_lowstat_to_boolean,
-    list_as_comma_separated_string,
-    list_to_dict,
-)
+from runregistry.utilities import *
 
 
 class TestRunRegistryClient(unittest.TestCase):
@@ -80,3 +76,16 @@ class TestUtilities(unittest.TestCase):
         ]
 
         self.assertEqual(expected_dict_list, list_of_dicts)
+
+    def test_build_list_where_clause(self):
+        run_list = ["123", 4234, "-1"]
+        attribute = "123"
+        list_where_clause = build_list_where_clause(run_list, attribute)
+        self.assertEqual("123 in ('123', '4234', '-1')", list_where_clause)
+
+    def test_build_range_where_clause(self):
+        attribute = "123"
+        range_from = "100"
+        range_to = "200"
+        range_where_clause = build_range_where_clause(range_from, range_to, attribute)
+        self.assertEqual("123 >= '100' and 123 <= '200'", range_where_clause)

@@ -16,7 +16,7 @@ from django.db.models import (
 )
 from django.db.models.functions import ExtractWeekDay
 from delete.query import SoftDeletionQuerySet
-from shiftleader.utilities.utilities import convert_run_registry_to_runinfo, chunks
+from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification, chunks
 from runregistry.client import TrackerRunRegistryClient
 
 class TrackerCertificationQuerySet(SoftDeletionQuerySet):
@@ -60,7 +60,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             for run, count in collections.Counter(run_number_list).items()
             if count > 1
         ]
-
+        print(changed_flag_runs)
         return self.filter(runreconstruction__run__run_number__in=changed_flag_runs)
 
     def good(self):
@@ -184,24 +184,24 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         return list(set([run.runreconstruction.run.run_number for run in self.filter_flag_changed()]))
 
-    def today(self):
+    def today(self): # pragma: no cover
         pass
 
-    def this_week(self):
+    def this_week(self): # pragma: no cover
         """
         filters QuerySet to only show runs of the current week
         week starts on monday at 00:00:00 and ends on sunday at 23:59:59
         """
         pass
 
-    def last_week(self):
+    def last_week(self): # pragma: no cover
         """
         filters QuerySet to only show runs of the current week
         week starts on monday at 00:00:00 and ends on sunday at 23:59:59
         """
         pass
 
-    def calendar_week(self, week_number):
+    def calendar_week(self, week_number): # pragma: no cover
         """
         filters QuerySet to only show runs of the specified calendar week
 
@@ -227,7 +227,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def rereco(self):
         return self.filter(runreconstruction__reconstruction="rereco")
 
-    def online(self):
+    def online(self): # pragma: no cover
         return self.filter(runreconstruction__reconstruction="online")
 
     def run_numbers(self):
@@ -281,11 +281,17 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         return [ref["reference_runreconstruction__run__run_number"] for ref in ref_dict]
 
-    def reference_runs(self):
+    def runs(self):
         from certifier.models import RunReconstruction
 
         ref_ids = self.values_list("reference_runreconstruction", flat=True).order_by("reference_runreconstruction")
         return RunReconstruction.objects.filter(pk__in=ref_ids)
+
+    def reference_runs(self):
+        from certifier.models import RunReconstruction
+
+        ref_ids = self.values_list("reference_runreconstruction", flat=True).order_by("reference_runreconstruction")
+        return RunReconstruction.objects.filter(Q(pk__in=ref_ids) & Q(is_reference=True))
 
     def types(self):
         from certifier.models import TrackerCertification
@@ -389,49 +395,47 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             print(
                 "{:<10} {:<10} {:<10} {:<30} {:<10} {:<10} {:<10} {:<10} {:<10} "
                 "{:<10} {} {}".format(
-                    run.run_number,
-                    run.type.runtype,
-                    run.type.reco,
+                    run.runreconstruction.run.run_number,
+                    run.runreconstruction.run.run_type,
+                    run.runreconstruction.reconstruction,
                     "{} {} ({})".format(
-                        run.reference_run.runtype,
-                        run.reference_run.reco,
-                        run.reference_run.reference_run,
+                        run.reference_runreconstruction.run.run_type,
+                        run.reference_runreconstruction.reconstruction,
+                        run.reference_runreconstruction.run.run_number,
                     ),
                     run.trackermap,
-                    run.number_of_ls,
-                    run.int_luminosity,
+                    run.runreconstruction.run.lumisections,
+                    run.runreconstruction.run.recorded_lumi,
                     run.pixel,
-                    run.sistrip,
+                    run.strip,
                     run.tracking,
                     run.date,
                     run.user,
                 )
             )
 
-    def print_types(self):
-        for run_type in self.types():
+    def print_runs(self):
+        for run in self.runs():
             print(
-                "{:10} {:10} {:10} {:10} {:10} {:10}".format(
-                    run_type.runtype,
-                    run_type.reco,
-                    run_type.bfield,
-                    run_type.beamtype,
-                    run_type.beamenergy,
-                    run_type.dataset,
+                "{:10} {:10} {:10} {:10} {:10}".format(
+                    run.run.run_type,
+                    run.reconstruction,
+                    run.run.b_field,
+                    run.run.fill_type_party1,
+                    run.run.energy,
                 )
             )
 
     def print_reference_runs(self):
         for ref in self.reference_runs():
             print(
-                "{:10} {:10} {:10} {:10} {:10} {:10} {:10}".format(
-                    ref.reference_run,
-                    ref.runtype,
-                    ref.reco,
-                    ref.bfield,
-                    ref.beamtype,
-                    ref.beamenergy,
-                    ref.dataset,
+                "{:10} {:10} {:10} {:10} {:10} {:10}".format(
+                    ref.run.run_number,
+                    ref.run.run_type,
+                    ref.reconstruction,
+                    ref.run.b_field,
+                    ref.run.fill_type_party1,
+                    ref.run.energy,
                 )
             )
 
@@ -461,7 +465,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 new_entries = run_registry.get_runs_by_list(run_number_list)
                 run_registry_entries.extend(new_entries)
 
-        convert_run_registry_to_runinfo(run_registry_entries)
+        convert_run_registry_to_trackercertification(run_registry_entries)
         run_registry_tuple_set = {
             tuple(d[key] for key in keys) for d in run_registry_entries
         }
