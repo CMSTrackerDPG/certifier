@@ -37,9 +37,7 @@ def get_this_week_filter_parameter():
 
 def convert_run_registry_to_trackercertification(list_of_dictionaries):
     """
-    Converts the list of JSON dictionaries into a RunInfo compatible format, i.e.:
-    run_class => type__runtype
-    dataset => type__dataset
+    Converts the list of JSON dictionaries into a TrackerCertification compatible format, i.e.:
 
     :param list_of_dictionaries:
     :return:

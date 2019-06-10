@@ -557,7 +557,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         user=user,
         runreconstruction=mixer.blend(
             "certifier.RunReconstruction",
-            run=mixer.blend("oms.OmsRun", run_number=300001, lumisections="834", recorded_lumi="840.18", run_type="collisions", stable_beam=True, hlt_key="/cdaq/physics", b_field="3.8", energy="13", fill_type_party1="Proton-Proton"),
+            run=mixer.blend("oms.OmsRun", run_number=300025, lumisections="834", recorded_lumi="840.18", run_type="collisions", stable_beam=True, hlt_key="/cdaq/physics", b_field="3.8", energy="13", fill_type_party1="Proton-Proton"),
             reconstruction="prompt",
         ),
         reference_runreconstruction=r2,

@@ -359,8 +359,8 @@ class TestTrackerCertificationQuerySet:
         runs = TrackerCertification.objects.all()
         types = runs.types()
         assert 2 == len(types)
-        assert t1.run.run_type in types
-        assert t2.run.run_type in types
+        assert t1.run.run_type in str(types)
+        assert t2.run.run_type in str(types)
 
         per_type = runs.per_type()
         assert r5 in per_type[0]

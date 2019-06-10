@@ -46,6 +46,7 @@ class TestTrackerCertificationManager:
             "certifier.TrackerCertification",
             runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
             pixel="bad",
+            pixel_lowstat=False,
         )
         assert run.is_good is False
 

@@ -5,7 +5,7 @@ from summary.utilities.SummaryReport import SummaryReport
 
 pytestmark = pytest.mark.django_db
 
-class SummaryReport:
+class TestSummaryReport:
     def test_summaryreport(self, shifter, runs_for_summary_report):
         summary = SummaryReport(TrackerCertification.objects.all())
 
@@ -16,24 +16,23 @@ class SummaryReport:
         assert 300150 == refs[1].run_number
         assert 300100 == refs[0].run_number
 
-        print(refs)
         runs_checked = summary.runs_checked_per_type()
-        
+
         assert 4 == len(runs_checked)
         assert (
-            "Type 1: Express Collisions 3.8 T Proton-Proton 13 TeV /StreamExpress/Run2018A-Express-v1/DQMIO"
+            "Type 1: express collisions 3.8 T Proton-Proton 13 TeV /StreamExpress/Run2018A-Express-v1/DQMIO"
             in runs_checked[0]
         )
         assert (
-            "Type 2: Prompt Collisions 3.8 T Proton-Proton 13 TeV /ZeroBias/Run2018D-PromptReco-v2/DQMIO"
+            "Type 2: prompt collisions 3.8 T Proton-Proton 13 TeV /ZeroBias/Run2018D-PromptReco-v2/DQMIO"
             in runs_checked[1]
         )
         assert (
-            "Type 3: Express Cosmics 3.8 T Cosmics Cosmics /StreamExpressCosmics/Run2018D-Express-v1/DQMIO"
+            "Type 3: express cosmics 3.8 T Cosmics 0 TeV /StreamExpressCosmics/Run2018D-Express-v1/DQMIO"
             in runs_checked[2]
         )
         assert (
-            "Type 4: Prompt Cosmics 3.8 T Cosmics Cosmics /Cosmics/Run2018D-PromptReco-v2/DQMIO"
+            "Type 4: prompt cosmics 3.8 T Cosmics 0 TeV /Cosmics/Run2018D-PromptReco-v2/DQMIO"
             in runs_checked[3]
         )
 
@@ -49,7 +48,7 @@ class SummaryReport:
 
         assert (
             """Type 2
- Exists: 300001 300002 300014 300016 300020
+ Exists: 300002 300014 300016 300020 300025
  Missing: 300006 300013 300015 300019 300022\n"""
             == tracker_maps[1]
         )
@@ -74,7 +73,7 @@ class SummaryReport:
 
         assert "Type 2" in certified_runs[1]
         assert (
-            "Bad: 300001 300002 300006 300013 300014 300016 300019 300020 300022"
+            "Bad: 300002 300006 300013 300014 300016 300019 300020 300022 300025"
             in certified_runs[1]
         )
         assert "Good: 300015" in certified_runs[1]
@@ -89,7 +88,6 @@ class SummaryReport:
 
         sums = summary.sum_of_quantities_per_type()
 
-        print(sums)
         assert 4 == len(sums)
 
         assert "| Type 1 | Sum of LS | Sum of int. luminosity |" in sums[0]

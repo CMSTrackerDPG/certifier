@@ -60,7 +60,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             for run, count in collections.Counter(run_number_list).items()
             if count > 1
         ]
-        print(changed_flag_runs)
+
         return self.filter(runreconstruction__run__run_number__in=changed_flag_runs)
 
     def good(self):
@@ -76,9 +76,9 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         bad_criteria = ["bad", "excluded"]
 
         return self.filter(
-            Q(strip__in=bad_criteria)
-            | Q(tracking__in=bad_criteria)
-            | (Q(pixel__in=bad_criteria) & Q(runreconstruction__run__run_type="collisions"))
+            (Q(strip__in=bad_criteria) & Q(strip_lowstat=False) )
+            | (Q(tracking__in=bad_criteria) & Q(tracking_lowstat=False))
+            | (Q(pixel__in=bad_criteria) & Q(pixel_lowstat=False) & Q(runreconstruction__run__run_type="collisions"))
         )
 
     def summary(self):
@@ -296,7 +296,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def types(self):
         from certifier.models import TrackerCertification
 
-        type_ids = self.values_list("runreconstruction__run__run_type", flat=True).order_by("runreconstruction__run__run_type").distinct()
+        type_ids = self.values("runreconstruction__run__run_type", "runreconstruction__reconstruction").order_by("runreconstruction__run__run_type").distinct()
 
         return type_ids
 
@@ -314,7 +314,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         :return: list of querysets with one type per queryset
         """
-        return [self.filter(runreconstruction__run__run_type=t) for t in self.types()]
+        return [self.filter(Q(runreconstruction__run__run_type=t["runreconstruction__run__run_type"]) & Q(runreconstruction__reconstruction=t["runreconstruction__reconstruction"])) for t in self.types()]
 
     def trackermap_missing(self):
         return self.filter(trackermap="Missing")

@@ -1,6 +1,6 @@
 from summary.utilities.utilities import get_ascii_table
 from listruns.utilities.luminosity import format_integrated_luminosity
-
+from certifier.models import TrackerCertification
 
 class SummaryReport:
     """
@@ -41,8 +41,8 @@ class SummaryReport:
                 run.comment
             ] for run in runs_with_specific_type]
 
-            headline = "Type " + str(idx + 1) + ": " + str(
-                runs_with_specific_type[0].runreconstruction.run.run_type)
+            headline = "Type " + str(idx + 1) + ": " + str(runs_with_specific_type[0].runreconstruction.reconstruction) + " " + str(runs_with_specific_type[0].runreconstruction.run.run_type) + " " + str(runs_with_specific_type[0].runreconstruction.run.b_field) + " T " + str(runs_with_specific_type[0].runreconstruction.run.fill_type_party1) + " " + str(runs_with_specific_type[0].runreconstruction.run.energy) + " TeV " + str(TrackerCertification.objects.get(runreconstruction=runs_with_specific_type[0]).dataset)
+
             table = get_ascii_table(column_description, data)
             runs_checked.append(headline + '\n' + table + '\n')
 
@@ -52,13 +52,13 @@ class SummaryReport:
         tracker_maps = []
         for idx, runs_with_specific_type in enumerate(self.runs_per_type):
             text = "Type {}".format(idx + 1)
-            tk_map_exists_runs = runs_with_specific_type.filter(trackermap="Exists")
+            tk_map_exists_runs = runs_with_specific_type.filter(trackermap="exists")
             if tk_map_exists_runs.exists():
                 run_numbers = tk_map_exists_runs.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
                 text += "\n Exists: {}".format(joined)
 
-            tk_map_missing_runs = runs_with_specific_type.filter(trackermap="Missing")
+            tk_map_missing_runs = runs_with_specific_type.filter(trackermap="missing")
             if tk_map_missing_runs.exists():
                 run_numbers = tk_map_missing_runs.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
