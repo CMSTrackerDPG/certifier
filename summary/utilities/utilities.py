@@ -1,6 +1,7 @@
 from certifier.models import TrackerCertification
 from terminaltables import AsciiTable
 from shiftleader.utilities.utilities import to_date
+from listruns.utilities.utilities import is_valid_date
 
 def get_from_summary(summary, runtype=None, reco=None, date=None):
     filtered = summary
@@ -58,7 +59,7 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filt
 
     if runs_from:
         try:
-            runs = runs.filter(run_number__gte=runs_from)
+            runs = runs.filter(runreconstruction__run__run_number__gte=runs_from)
             alert_filters.append("Runs from: " + str(runs_from))
         except:
             alert_errors.append("Invalid Run Number: " + str(runs_from))
@@ -66,7 +67,7 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos, alert_filt
 
     if runs_to:
         try:
-            runs = runs.filter(run_number__lte=runs_to)
+            runs = runs.filter(runreconstruction__run__run_number__lte=runs_to)
             alert_filters.append("Runs to: " + str(runs_to))
         except:
             alert_errors.append("Invalid Run Number: " + str(runs_to))

@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_view_requires_login():
-    req = RequestFactory().get("shiftleader/")
+    req = RequestFactory().get("summary/")
     req.user = AnonymousUser()
     resp = summaryView(req)
     assert resp.status_code == 302

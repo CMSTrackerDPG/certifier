@@ -7,10 +7,19 @@ from certifier.models import TrackerCertification, RunReconstruction
 from shiftleader.utilities.utilities import to_date, to_weekdayname
 from certifier.utilities.utilities import uniquely_sorted
 from utilities.utilities import create_runs
+from utilities.credentials import SHIFTER1_USERNAME
 
 pytestmark = pytest.mark.django_db
 
 class TestTrackerCertificationQuerySet:
+    def test_fill_numbers_empty(self):
+        runs = TrackerCertification.objects.all()
+        assert [] == runs.fill_numbers()
+
+    def test_lumisections_empty(self):
+        runs = TrackerCertification.objects.all()
+        assert 0 == runs.lumisections()
+
     def test_compare_list_if_certified(self):
         mixer.blend(
             "certifier.TrackerCertification",
@@ -422,3 +431,49 @@ class TestTrackerCertificationQuerySet:
         TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_verbose()
         TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_reference_runs()
         TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print_runs()
+        TrackerCertification.objects.all().order_by("runreconstruction__run__run_number").print()
+
+    def test_shifters(self, shifter, runs_for_summary_report):
+        runs=TrackerCertification.objects.all()
+        assert SHIFTER1_USERNAME == runs.shifters()[0].username
+
+    def test_week_number(self):
+        runs=TrackerCertification.objects.all()
+        ret = runs.week_number()
+        assert "" == ret
+
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_number=1234, run_type="cosmics"), reconstruction="express"),
+            pixel="good",
+            strip="good",
+            tracking="good",
+            date="2019-6-10"
+        )
+
+        runs=TrackerCertification.objects.all()
+        ret = runs.week_number()
+        assert 24 == ret
+
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend(OmsRun, run_number=1274, run_type="cosmics"), reconstruction="express"),
+            pixel="good",
+            strip="good",
+            tracking="good",
+            date="2019-7-10"
+        )
+
+        runs=TrackerCertification.objects.all()
+        ret = runs.week_number()
+        assert "24-28" == ret
+
+    def test_order_by_run_number(self, shifter, runs_for_summary_report):
+        runs=TrackerCertification.objects.all().order_by_run_number()
+        assert 300000 == runs[0].runreconstruction.run.run_number
+        assert 300024 == runs[len(runs)-1].runreconstruction.run.run_number
+
+    def test_order_by_date(self, runs_for_slr):
+        runs=TrackerCertification.objects.all().order_by_date()
+        assert 1 == runs[0].runreconstruction.run.run_number
+        assert 15 == runs[len(runs)-1].runreconstruction.run.run_number

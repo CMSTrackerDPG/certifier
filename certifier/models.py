@@ -114,6 +114,7 @@ class TrackerCertification(SoftDeletionModel):
         candidates_lowstat = [self.strip_lowstat, self.tracking_lowstat]
         if self.runreconstruction.run.run_type == "collisions":
             candidates.append(self.pixel)
+            candidates_lowstat.append(self.pixel_lowstat)
 
         for i in range(0,len(candidates)):
             if candidates[i] != good_criteria and candidates_lowstat[i] != "lowstat":

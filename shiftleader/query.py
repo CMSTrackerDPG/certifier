@@ -360,10 +360,10 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         for run in self.annotate_status()[:50]:
             print(
                 "{:10} {:10} {:10} {:10} {} {:10}".format(
-                    run.run_number,
-                    run.type.runtype,
-                    run.type.reco,
-                    run.int_luminosity,
+                    run.runreconstruction.run.run_number,
+                    run.runreconstruction.run.run_type,
+                    run.runreconstruction.reconstruction,
+                    run.runreconstruction.run.recorded_lumi,
                     run.date,
                     run.status,
                 )

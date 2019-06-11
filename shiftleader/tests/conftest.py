@@ -47,31 +47,31 @@ def runs_for_slr():
     Certified runs used to test the shift leader report
     """
     conditions = [
-        ["cosmics", "express", 0.1234, 72, "2018-05-14", "good", "/cdaq/dsdadasphysics"],
-        ["collisions", "prompt", 1.234, 5432, "2018-05-14", "bad", "/cdaq/physics"],  #######
-        ["cosmics", "prompt", 0, 25, "2018-05-14", "bad", "/cdaq/phydasdsics"],  ########
-        ["collisions", "express", 423.24, 2, "2018-05-15", "good", "/cdaq/physics"],
-        ["collisions", "express", 0, 72, "2018-05-14", "good", "/cdaq/physics"],
-        ["cosmics", "express", 0, 12, "2018-05-17", "good", "/cdaq/pdsadashysics"],
-        ["cosmics", "express", 0, 72, "2018-05-17", "bad", "/cdaq/phdasdsysics"],
-        ["cosmics", "express", 0, 42, "2018-05-14", "bad", "/cdaq/phydsdassics"],  #######
-        ["collisions", "express", 124.123, 72, "2018-05-18", "good", "/cdaq/physics"],
-        ["cosmics", "express", 0, 1242, "2018-05-14", "good", "/cdaq/phydsdassics"],
-        ["cosmics", "express", 0, 72, "2018-05-20", "good", "/cdaq/physdsadsaics"],
-        ["collisions", "express", 999, 142, "2018-05-20", "good", "/cdaq/physics"],
-        ["collisions", "prompt", 0, 72, "2018-05-20", "bad", "/cdaq/physics"],  #######
-        ["collisions", "prompt", 123132.32, 4522, "2018-05-20", "bad", "/cdaq/physics"],  #######
-        ["collisions", "express", 0, 72, "2018-05-20", "good", "/cdaq/physics"],
-        ["collisions", "express", -1, 71232, "2018-05-14", "good", "/cdaq/physics"],
-        ["cosmics", "express", 0, 712, "2018-05-17", "good", "/cdaq/phdsadasysics"],
-        ["collisions", "express", 5213, 142, "2018-05-14", "good", "/cdaq/physics"],
-        ["collisions", "express", 154543, 72, "2018-05-18", "good", "/cdaq/physics"],
+        ["cosmics", "express", 0.1234, 72, "2018-05-14", "good", "/cdaq/dsdadasphysics", 1],
+        ["collisions", "prompt", 1.234, 5432, "2018-05-14", "bad", "/cdaq/physics", 2],  #######
+        ["cosmics", "prompt", 0, 25, "2018-05-14", "bad", "/cdaq/phydasdsics", 3],  ########
+        ["collisions", "express", 423.24, 2, "2018-05-15", "good", "/cdaq/physics", 4],
+        ["collisions", "express", 0, 72, "2018-05-14", "good", "/cdaq/physics", 5],
+        ["cosmics", "express", 0, 12, "2018-05-17", "good", "/cdaq/pdsadashysics", 6],
+        ["cosmics", "express", 0, 72, "2018-05-17", "bad", "/cdaq/phdasdsysics", 7],
+        ["cosmics", "express", 0, 42, "2018-05-14", "bad", "/cdaq/phydsdassics", 8],  #######
+        ["collisions", "express", 124.123, 72, "2018-05-18", "good", "/cdaq/physics", 9],
+        ["cosmics", "express", 0, 1242, "2018-05-14", "good", "/cdaq/phydsdassics", 10],
+        ["cosmics", "express", 0, 72, "2018-05-20", "good", "/cdaq/physdsadsaics", 11],
+        ["collisions", "express", 999, 142, "2018-05-20", "good", "/cdaq/physics", 12],
+        ["collisions", "prompt", 0, 72, "2018-05-20", "bad", "/cdaq/physics", 13],  #######
+        ["collisions", "prompt", 123132.32, 4522, "2018-05-20", "bad", "/cdaq/physics", 14],  #######
+        ["collisions", "express", 0, 72, "2018-05-20", "good", "/cdaq/physics", 15],
+        ["collisions", "express", -1, 71232, "2018-05-14", "good", "/cdaq/physics", 16],
+        ["cosmics", "express", 0, 712, "2018-05-17", "good", "/cdaq/phdsadasysics", 17],
+        ["collisions", "express", 5213, 142, "2018-05-14", "good", "/cdaq/physics", 18],
+        ["collisions", "express", 154543, 72, "2018-05-18", "good", "/cdaq/physics", 19],
     ]
 
     for condition in conditions:
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=condition[1], run=mixer.blend("oms.OmsRun", run_type=condition[0], recorded_lumi=condition[2], lumisections=condition[3], hlt_key=condition[6], stable_beam=True)),
+            runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=condition[1], run=mixer.blend("oms.OmsRun", run_number=condition[7], run_type=condition[0], recorded_lumi=condition[2], lumisections=condition[3], hlt_key=condition[6], stable_beam=True)),
             date=condition[4],
             pixel=condition[5],
             strip=condition[5],
