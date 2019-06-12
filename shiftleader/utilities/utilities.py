@@ -49,20 +49,20 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
         entry["runreconstruction__run__run_number"] = entry.pop("run_number")
 
         if "collision" in run_class:
-            entry["runreconstruction__run__run_type"] = "Collisions"
+            entry["runreconstruction__run__run_type"] = "collisions"
         elif "cosmic" in run_class:
-            entry["runreconstruction__run__run_type"] = "Cosmics"
+            entry["runreconstruction__run__run_type"] = "cosmics"
         elif "collision" in dataset:  # When run_class is e.g. Commissioning18
-            entry["runreconstruction__run__run_type"] = "Collisions"
+            entry["runreconstruction__run__run_type"] = "collisions"
         elif "cosmic" in dataset:
-            entry["runreconstruction__run__run_type"] = "Cosmics"
+            entry["runreconstruction__run__run_type"] = "cosmics"
 
         if "express" in dataset:
-            entry["runreconstruction__reconstruction"] = "Express"
+            entry["runreconstruction__reconstruction"] = "express"
         elif "prompt" in dataset:
-            entry["runreconstruction__reconstruction"] = "Prompt"
+            entry["runreconstruction__reconstruction"] = "prompt"
         elif "rereco" in dataset:
-            entry["runreconstruction__reconstruction"] = "ReReco"
+            entry["runreconstruction__reconstruction"] = "rereco"
 
         entry["pixel"] = entry["pixel"].title()
         entry["strip"] = entry["sistrip"].title()

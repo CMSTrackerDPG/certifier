@@ -477,3 +477,28 @@ class TestTrackerCertificationQuerySet:
         runs=TrackerCertification.objects.all().order_by_date()
         assert 1 == runs[0].runreconstruction.run.run_number
         assert 15 == runs[len(runs)-1].runreconstruction.run.run_number
+
+    def test_compare_with_run_registry_above_500(self):
+        create_runs(501, 1, "collisions", "express")
+        runs=TrackerCertification.objects.all()
+        deviating, corresponding = runs.compare_with_run_registry()
+        assert 501 == len(deviating)
+        assert 501 == len(corresponding)
+
+    def test_compare_with_run_registry(self):
+        create_runs(3, 1, "collisions", "express")
+        runs=TrackerCertification.objects.all()
+        deviating, corresponding = runs.compare_with_run_registry()
+        assert 3 == len(deviating)
+        assert 3 == len(corresponding)
+
+    def test_matches_with_run_registry(self):
+        create_runs(2, 1, "collisions", "express")
+        runs=TrackerCertification.objects.all()
+        ret = runs.matches_with_run_registry()
+        assert False == ret
+
+    def test_annotate_fill_number(self, shifter, runs_for_summary_report):
+        runs=TrackerCertification.objects.all()
+        runs.annotate_fill_number()
+        assert 6016 == runs[8].fill_number

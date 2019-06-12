@@ -506,9 +506,11 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_registry = TrackerRunRegistryClient()
         fills = run_registry.get_fill_number_by_run_number(self.run_numbers())
         for run in self:
-            run.fill_number = list(
+            fills_list=list(
                 filter(lambda x: x["run_number"] == run.run_number, fills)
-            )[0]["fill_number"]
+            )
+            if(fills_list):
+                run.fill_number = fills_list[0]["fill_number"]
 
     def group_run_numbers_by_fill_number(self):
         run_registry = TrackerRunRegistryClient()

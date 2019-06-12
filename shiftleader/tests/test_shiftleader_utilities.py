@@ -5,7 +5,7 @@ from mixer.backend.django import mixer
 from shiftleader.utilities.utilities import *
 
 from unittest.mock import MagicMock
-from runregistry.client import RunRegistryClient
+from runregistry.client import RunRegistryClient, TrackerRunRegistryClient
 pytestmark = pytest.mark.django_db
 
 class TestUtilities:
@@ -18,22 +18,10 @@ class TestUtilities:
         assert [range(10, 20), range(20, 29)] == list(chunks(range(10, 29), 10))
 
     def test_convert_run_registry_to_trackercertification(self):
-        runregistry = RunRegistryClient()
+        input=[{'run_number': 319449, 'run_class': '', 'dataset': '/Express/Collisions2018/DQM', 'state': 'COMPLETED', 'shifter': 'Franco Ligabue', 'pixel': 'GOOD', 'sistrip': 'GOOD', 'tracking': 'GOOD', 'pixel_lowstat': False, 'sistrip_lowstat': False, 'tracking_lowstat': False}, {'run_number': 319449, 'run_class': 'Collisions18', 'dataset': '/ReReco/Run2018C_17Sept2018/DQM', 'state': 'COMPLETED', 'shifter': 'Subir Sarkar', 'pixel': 'GOOD', 'sistrip': 'GOOD', 'tracking': 'GOOD', 'pixel_lowstat': False, 'sistrip_lowstat': False, 'tracking_lowstat': False}, {'run_number': 327589, 'run_class': '', 'dataset': '/Express/HICosmics2018/DQM', 'state': 'COMPLETED', 'shifter': 'Roberval Walsh Bastos Rangel', 'pixel': 'EXCLUDED', 'sistrip': 'GOOD', 'tracking': 'GOOD', 'pixel_lowstat': False, 'sistrip_lowstat': False, 'tracking_lowstat': False}, {'run_number': 327589, 'run_class': 'Cosmics18', 'dataset': '/PromptReco/HICosmics18A/DQM', 'state': 'COMPLETED', 'shifter': 'Suchandra Dutta', 'pixel': 'EXCLUDED', 'sistrip': 'GOOD', 'tracking': 'GOOD', 'pixel_lowstat': False, 'sistrip_lowstat': False, 'tracking_lowstat': False}]
 
-        runregistry._get_query_id = MagicMock(return_value="o1662d3e8bb1")
-        runregistry._get_json_response = MagicMock(
-            return_value={"data": [[247073], [247076], [247077], [247078], [247079]]}
-        )
+        ret = convert_run_registry_to_trackercertification(input)
 
-        runregistry.connection_possible = MagicMock(return_value=True)
+        assert [{'state': 'COMPLETED', 'shifter': 'Franco Ligabue', 'pixel': 'Good', 'sistrip': 'GOOD', 'tracking': 'Good', 'pixel_lowstat': False, 'tracking_lowstat': False, 'dataset': '/Express/Collisions2018/DQM', 'runreconstruction__run__run_number': 319449, 'runreconstruction__run__run_type': 'collisions', 'runreconstruction__reconstruction': 'express', 'strip': 'Good', 'strip_lowstat': False}, {'state': 'COMPLETED', 'shifter': 'Subir Sarkar', 'pixel': 'Good', 'sistrip': 'GOOD', 'tracking': 'Good', 'pixel_lowstat': False, 'tracking_lowstat': False, 'dataset': '/ReReco/Run2018C_17Sept2018/DQM', 'runreconstruction__run__run_number': 319449, 'runreconstruction__run__run_type': 'collisions', 'runreconstruction__reconstruction': 'rereco', 'strip': 'Good', 'strip_lowstat': False}, {'state': 'COMPLETED', 'shifter': 'Roberval Walsh Bastos Rangel', 'pixel': 'Excluded', 'sistrip': 'GOOD', 'tracking': 'Good', 'pixel_lowstat': False, 'tracking_lowstat': False, 'dataset': '/Express/HICosmics2018/DQM', 'runreconstruction__run__run_number': 327589, 'runreconstruction__run__run_type': 'cosmics', 'runreconstruction__reconstruction': 'express', 'strip': 'Good', 'strip_lowstat': False}, {'state': 'COMPLETED', 'shifter': 'Suchandra Dutta', 'pixel': 'Excluded', 'sistrip': 'GOOD', 'tracking': 'Good', 'pixel_lowstat': False, 'tracking_lowstat': False, 'dataset': '/PromptReco/HICosmics18A/DQM', 'runreconstruction__run__run_number': 327589, 'runreconstruction__run__run_type': 'cosmics', 'runreconstruction__reconstruction': 'prompt', 'strip': 'Good', 'strip_lowstat': False}] == ret
 
-        query = (
-            "select r.runnumber r.run_class r.dataset from runreg_global.runs r "
-            "where r.run_class_name = 'Collisions15' "
-            "and r.runnumber > 247070 and r.runnumber < 247081"
-        )
-
-        response = runregistry.execute_query(query)
-
-        print(response)
 
