@@ -240,6 +240,7 @@ class TestShiftLeaderReport:
         assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
         assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
 
+    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
     def test_fill_numbers(self):
         create_runs(1, 321177, "cosmics", "express")
         create_runs(1, 321178, "cosmics", "express")
@@ -251,6 +252,7 @@ class TestShiftLeaderReport:
 
         assert [7048, 7052] == report.cosmics().express().good().fill_numbers()
 
+    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
     def test_fills(self):
         create_runs(1, 321171, "cosmics", "express")
         create_runs(1, 321179, "cosmics", "express")

@@ -307,7 +307,7 @@ def legitimate_reference_runs():
 
     mixer.blend(
         "certifier.RunReconstruction",
-        is_reference=True,
+        is_reference=False,
         run=mixer.blend("oms.OmsRun", run_number=300101, run_type="collisions", stable_beam=True, hlt_key="/cdaq/physics", b_field="3.8", energy="13", fill_type_party1="Proton-Proton"),
         reconstruction="express",
         dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
@@ -349,10 +349,10 @@ def runs_for_summary_report(legitimate_reference_runs):
     """
 
     ref_runs = RunReconstruction.objects.all()
-    r1 = ref_runs.filter(run__run_type="collisions", reconstruction="express", is_reference=True)[0]
-    r2 = ref_runs.filter(run__run_type="collisions", reconstruction="prompt", is_reference=True)[0]
-    r3 = ref_runs.filter(run__run_type="cosmics", reconstruction="express", is_reference=True)[0]
-    r4 = ref_runs.filter(run__run_type="cosmics", reconstruction="prompt", is_reference=True)[0]
+    r1 = ref_runs.filter(run__run_type="collisions", reconstruction="express", is_reference=True, run__run_number="300100")[0]
+    r2 = ref_runs.filter(run__run_type="collisions", reconstruction="prompt", is_reference=True, run__run_number="300150")[0]
+    r3 = ref_runs.filter(run__run_type="cosmics", reconstruction="express", is_reference=True, run__run_number="300200")[0]
+    r4 = ref_runs.filter(run__run_type="cosmics", reconstruction="prompt", is_reference=True, run__run_number="300250")[0]
 
     today = timezone.now().date
 

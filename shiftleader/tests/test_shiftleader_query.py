@@ -498,6 +498,7 @@ class TestTrackerCertificationQuerySet:
         ret = runs.matches_with_run_registry()
         assert False == ret
 
+    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
     def test_annotate_fill_number(self, shifter, runs_for_summary_report):
         runs=TrackerCertification.objects.all()
         runs.annotate_fill_number()

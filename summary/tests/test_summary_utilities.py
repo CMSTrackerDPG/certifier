@@ -30,7 +30,7 @@ def test_get_runs_from_request_filters():
     req.GET['runs_1']="321126"
     req.user = user
 
-    resp = get_runs_from_request_filters(req, alert_errors, alert_infos, alert_filters)
+    resp = get_runs_from_request_filters(req, alert_errors, alert_infos, alert_filters).order_by("runreconstruction__run__run_number")
     assert run_number1 == resp[0].runreconstruction.run.run_number
     assert run_number2 == resp[1].runreconstruction.run.run_number
 

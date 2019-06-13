@@ -7,9 +7,9 @@ pytestmark = pytest.mark.django_db
 
 class TestSummaryReport:
     def test_summaryreport(self, shifter, runs_for_summary_report):
-        summary = SummaryReport(TrackerCertification.objects.all())
+        summary = SummaryReport(TrackerCertification.objects.all().order_by("runreconstruction__run__run_number"))
 
-        refs = summary.reference_runs()
+        refs = summary.reference_runs().order_by("run__run_number")
         assert 4 == len(refs)
         assert 300250 == refs[3].run_number
         assert 300200 == refs[2].run_number
