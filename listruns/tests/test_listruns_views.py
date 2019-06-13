@@ -53,7 +53,7 @@ class TestListRuns:
         resp = views.listruns(req)
         assert 200 == resp.status_code
 
-    def test_listrunsi_not_authenticated_filters(self):
+    def test_listruns_not_authenticated_filters(self):
         req = RequestFactory().post("list/?options=on&date_range_min=1990-12-07&date_range_max=2019-12-07")
         req.user=AnonymousUser()
         resp = views.listruns(req)

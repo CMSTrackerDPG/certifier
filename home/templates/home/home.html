@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="card h-50">
-                <div class="btn btn-dark">
+                <div class="btn btn-dark" onclick="location.href='{% url 'summary:summary' %}'">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Daily Shift Report</h4>
                     </div>
@@ -42,7 +42,7 @@
 
             {% if user.has_shift_leader_rights %}
             <div class="card h-50">
-                <div class="btn btn-dark">
+                <div class="btn btn-dark" onclick="location.href='{% url 'shiftleader:shiftleader' %}'">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Shift Leader Report</h4>
                     </div>

@@ -1,0 +1,8 @@
+SUPERUSER_USERNAME = "superuser"
+SHIFTER1_USERNAME = "shifter1"
+SHIFTER2_USERNAME = "shifter2"
+SHIFTLEADER_USERNAME = "shiftleader1"
+EXPERT_USERNAME = "expert1"
+ADMIN_USERNAME = "admin"
+
+PASSWORD = "VerySecurePasswort"

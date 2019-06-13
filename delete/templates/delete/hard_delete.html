@@ -1,0 +1,35 @@
+{% extends "dqmhelper/base.html" %}
+
+{% block title %}
+    Hard Delete Run
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+    <h1 align="center">Hard Delete Run</h1>
+    </br>
+    <h4 align="center">
+        Are you sure you want to irrevocably delete that run, created by
+        {% if trackerCertification.user.first_name %}
+            {{ trackerCertification.user.first_name }} {{ trackerCertification.user.last_name }} ({{ trackerCertification.user.username }})
+        {% else %}
+            {{ trackerCertification.user.username }}
+        {% endif %} ?
+    </h4>
+
+    <p>
+    <ul>
+        <li>Run Number: {{ trackerCertification.runreconstruction.run.run_number }}</li>
+        <li>Type: {{ trackerCertification.runreconstruction.run.run_type }}</li>
+        <li>Reference Run: {{ trackerCertification.reference_runreconstruction }}</li>
+    </ul>
+    </p>
+
+    <form action="" method="post" align="center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes</button>
+        <a href="{% url 'shiftleader:shiftleader' %}" class="btn btn-default">No</a>
+    </form>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
