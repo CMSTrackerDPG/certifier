@@ -16,12 +16,12 @@ from runregistry.utilities import (
 
 
 class Singleton(type):
-    _instances = {}
+    instance = None
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+    def __new__(cls, *args, **kwargs):
+        if cls != isinstance(cls.instance, cls):
+            cls.instance = type.__new__(cls, *args, **kwargs)
+        return cls.instance
 
 
 class RunRegistryClient(metaclass=Singleton):
@@ -68,7 +68,7 @@ class RunRegistryClient(metaclass=Singleton):
 
         :return: True when connection to Run Registry was successful
         """
-        if self._connection_successful is None:
+        if self._connection_successful is None or self._connection_successful is False:
             self.retry_connection()
         return self._connection_successful
 
@@ -84,7 +84,7 @@ class RunRegistryClient(metaclass=Singleton):
         try:
             response = requests.get(self.url + resource)
             return response.json()
-        except JSONDecodeError:
+        except JSONDecodeError: #pragma: no cover
             return {}
 
     def _get_query_id(self, query):
@@ -225,7 +225,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
 
         return run_dicts
 
-    def __get_dataset_lumis_runs(self, where_clause):
+    def _get_dataset_lumis_runs(self, where_clause):
         query = (
             "select r.rdr_run_number, r.lhcfill, r.rdr_rda_name, r.rdr_section_from, "
             "r.rdr_section_to, r.rdr_section_count, "
@@ -264,7 +264,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
 
         return list_to_dict(run_list, keys)
 
-    def __get_dataset_runs_with_active_lumis(self, where_clause):
+    def _get_dataset_runs_with_active_lumis(self, where_clause):
         query = (
             "select r.run_number, r.run_class_name, r.rda_name, "
             "sum(l.rdr_section_count) as lumi_sections, "
@@ -366,7 +366,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
         :return:
         """
         where_clause = build_list_where_clause(list_of_run_numbers, "r.rdr_run_number")
-        return self.__get_dataset_lumis_runs(where_clause)
+        return self._get_dataset_lumis_runs(where_clause)
 
     def get_lumi_sections_by_range(self, min_run_number, max_run_number):
         """
@@ -385,7 +385,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
         where_clause = build_range_where_clause(
             min_run_number, max_run_number, "r.rdr_run_number"
         )
-        return self.__get_dataset_lumis_runs(where_clause)
+        return self._get_dataset_lumis_runs(where_clause)
 
     def get_active_lumi_runs_by_list(self, list_of_run_numbers):
         """
@@ -398,7 +398,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
         279
         """
         where_clause = build_list_where_clause(list_of_run_numbers, "r.run_number")
-        return self.__get_dataset_runs_with_active_lumis(where_clause)
+        return self._get_dataset_runs_with_active_lumis(where_clause)
 
     def get_active_lumi_runs_by_range(self, min_run_number, max_run_number):
         """
@@ -413,7 +413,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
         where_clause = build_range_where_clause(
             min_run_number, max_run_number, "r.run_number"
         )
-        return self.__get_dataset_runs_with_active_lumis(where_clause)
+        return self._get_dataset_runs_with_active_lumis(where_clause)
 
     def get_fill_number_by_run_number(self, list_of_run_numbers):
         """
