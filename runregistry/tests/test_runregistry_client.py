@@ -89,11 +89,13 @@ class TestRunRegistryClient(unittest.TestCase):
     def test_get_queries(self):
         runregistry = RunRegistryClient()
         response = runregistry.get_queries()
-        assert "http://vocms00170:2113/query/o16b4e6f4af5" in response["o16b4e6f4af5"]
+        assert {} != response
 
     def test_get_query_description(self):
         runregistry = RunRegistryClient()
-        response = runregistry.get_query_description("o16b4e6f4af5")
+        response = runregistry.get_queries()
+        query_keys=list(response.keys())
+        response = runregistry.get_query_description(query_keys[0])
         assert {} != response
 
     def test_get_info(self):
