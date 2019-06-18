@@ -104,7 +104,7 @@ class TrackerCertification(SoftDeletionModel):
 
     date = models.DateField()
 
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
 
     @property
     def is_good(self):
