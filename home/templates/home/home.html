@@ -55,6 +55,23 @@
             {% endif %}
             {% endif %}
         </div>
+        <div class="card-deck pt-4">
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'addrefrun:addrefrun' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">Add Reference Run</h4>
+                    </div>
+                    <img class="card-img-top img" src="{% static "home/img/shiftreport.jpg" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Tool for adding new reference runs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card h-50 invisible">
+            </div>
+            <div class="card h-50 invisible">
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}

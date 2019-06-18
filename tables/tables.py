@@ -6,8 +6,34 @@ from tables.utilities.utilities import (
     render_boolean_cell,
 )
 from listruns.utilities.luminosity import format_integrated_luminosity
-from certifier.models import TrackerCertification
+from certifier.models import TrackerCertification, RunReconstruction
 
+class SimpleRunReconstructionTable(tables.Table):
+    run = tables.Column(verbose_name="Run Number")
+    reconstruction = tables.Column()
+    run_type = tables.Column(accessor="run.run_type")
+    is_reference = tables.Column()
+
+    delete_run = tables.TemplateColumn(
+        '<div align="center">'
+        '<a href="{% url \'delete:delete_reference\' run_number=record.run.run_number reco=record.reconstruction%}">'
+                'Delete'
+            '</a>'
+        '</div>',
+        orderable=False,
+        verbose_name="Delete",
+    )
+
+    class Meta:
+        model = RunReconstruction
+        fields = ()
+        attrs = {"class": "table table-hover table-bordered table-fixed"}
+
+    def render_run(self, value): # pragma: no cover
+        """
+        :return: run number of the reference run
+        """
+        return value.run_number
 
 class SimpleTrackerCertificationTable(tables.Table):
     """

@@ -29,5 +29,6 @@ urlpatterns = [
     path("plot/", include("plot.urls")),
     path("accounts/", include('allauth.urls')),
     path("users/", include('users.urls')),
+    path("reference/", include('addrefrun.urls')),
     path("admin/", admin.site.urls),
 ]
