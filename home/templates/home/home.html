@@ -12,8 +12,8 @@
 
 <div class="album py-4 bg-light">
     <div class="container">
+        {% if user.is_authenticated %}
         <div class="card-deck">
-            {% if user.is_authenticated %}
 
             {% if user.has_shifter_rights %}
             <div class="card h-50">
@@ -53,9 +53,9 @@
                 </div>
             </div>
             {% endif %}
-            {% endif %}
         </div>
         <div class="card-deck pt-4">
+            {% if user.has_shift_leader_rights %}
             <div class="card h-50">
                 <div class="btn btn-dark" onclick="location.href='{% url 'addrefrun:addrefrun' %}'">
                     <div class="card-header">
@@ -67,11 +67,13 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
             <div class="card h-50 invisible">
             </div>
             <div class="card h-50 invisible">
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}
