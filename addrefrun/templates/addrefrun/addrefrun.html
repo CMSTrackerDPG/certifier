@@ -48,6 +48,17 @@
             </div>
         </form>
     </div>
+    {% if add_reference_failed %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Warning!</strong> Reference run: <b>{{run_number}}({{reco}})</b> already exists
+        </div>
+
+    {% endif %}
+
+
     {% if table %}
     <!-- div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1"-->
     <div class="overflow-auto px-3 bg-white" id="style-1">

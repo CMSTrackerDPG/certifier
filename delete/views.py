@@ -36,8 +36,8 @@ def hard_delete_run_view(request, pk, run_number, reco):
 def hard_delete_reference_run(request, run_number, reco):
     try:
         runReconstruction = RunReconstruction.objects.get(run__run_number=run_number, reconstruction=reco)
-    except TrackerCertification.DoesNotExist:
-        raise Http404("The run with the id {} doesnt exist".format(pk))
+    except RunReconstruction.DoesNotExist:
+        raise Http404("The run  {} doesnt exist".format(run_number))
 
     if request.method == "POST":
         runReconstruction.delete()
