@@ -2,6 +2,7 @@ from django.shortcuts import render
 from summary.utilities.SummaryReport import SummaryReport
 from summary.utilities.utilities import get_runs_from_request_filters
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 # Create your views here.
 
@@ -17,6 +18,8 @@ def summaryView(request):
     alert_infos = []
     alert_filters = []
 
+    request.GET = request.GET.copy()
+    request.GET["date"]=datetime.now().strftime("%Y-%m-%d")
     runs = get_runs_from_request_filters(
         request, alert_errors, alert_infos, alert_filters
     )

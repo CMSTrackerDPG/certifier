@@ -81,7 +81,7 @@ class TrackerCertification(SoftDeletionModel):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
     reference_runreconstruction = models.ForeignKey(
-        RunReconstruction, on_delete=models.CASCADE, related_name="ref"
+        RunReconstruction, on_delete=models.CASCADE, related_name="ref", limit_choices_to={'is_reference': True}
     )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
@@ -104,7 +104,7 @@ class TrackerCertification(SoftDeletionModel):
 
     date = models.DateField()
 
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
 
     @property
     def is_good(self):

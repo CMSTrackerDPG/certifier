@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import generic
-from certifier.models import TrackerCertification
+from certifier.models import TrackerCertification, RunReconstruction
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -31,3 +31,16 @@ def hard_delete_run_view(request, pk, run_number, reco):
 
     return render(request, "delete/hard_delete.html", {"trackerCertification": trackerCertification})
 
+
+@login_required
+def hard_delete_reference_run(request, run_number, reco):
+    try:
+        runReconstruction = RunReconstruction.objects.get(run__run_number=run_number, reconstruction=reco)
+    except RunReconstruction.DoesNotExist:
+        raise Http404("The run  {} doesnt exist".format(run_number))
+
+    if request.method == "POST":
+        runReconstruction.delete()
+        return HttpResponseRedirect("/reference/")
+
+    return render(request, "delete/hard_delete_reference_run.html", {"runReconstruction": runReconstruction})

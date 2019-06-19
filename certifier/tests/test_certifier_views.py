@@ -76,7 +76,7 @@ class TestCertify:
     def test_certify_valid(self):
         run_number = 321123
         reco = "express"
-        ref_runReconstruction = mixer.blend(RunReconstruction)
+        ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
         arguments={'run_number': run_number, 'reco': reco }
@@ -109,7 +109,7 @@ class TestCertify:
     def test_certify_invalid_bad_run_number(self):
         run_number = 999999999
         reco = "express"
-        ref_runReconstruction = mixer.blend(RunReconstruction)
+        ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
         arguments={'run_number': run_number, 'reco': reco }

@@ -1,0 +1,73 @@
+{% extends 'dqmhelper/base.html' %}
+{% block title %}Add Reference Run{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="mt-4 mb-4 col-lg-12 text-center">
+                <h1>Add a new reference run</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-4">
+        <form method="get" class="justify-content-center align-items-center">
+            <div class="form-group">
+                <div class="row mb-3 justify-content-center">
+                    <div class="col"></div>
+                    <div class="col">
+                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <div class="row mb-3 justify-content-center">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-secondary disabled">
+                            <input type="radio" name="reco" value='online' id="id-reco-online" autocomplete="off" disabled="disabled" class="sr-only" required> Online
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='express' id="id-reco-express" autocomplete="off" class="sr-only" required> Express
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='prompt' id="id-reco-prompt" autocomplete="off" class="sr-only" required> Prompt
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='rereco' id="id-reco-rereco" autocomplete="off" class="sr-only" required> ReReco
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+    {% if add_reference_failed %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Warning!</strong> Reference run: <b>{{run_number}}({{reco}})</b> already exists
+        </div>
+
+    {% endif %}
+
+
+    {% if table %}
+    <!-- div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1"-->
+    <div class="overflow-auto px-3 bg-white" id="style-1">
+        {% load render_table from django_tables2 %}
+        {% render_table table %}
+    </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">No Table found.</div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+{% endblock %}
