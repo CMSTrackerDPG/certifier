@@ -39,6 +39,13 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "addrefrun.apps.AddrefrunConfig",
+    "summary.apps.SummaryConfig",
+    "restore.apps.RestoreConfig",
+    "delete.apps.DeleteConfig",
+    "runregistry.apps.RunregistryConfig",
+    "shiftleader.apps.ShiftleaderConfig",
+    "tables.apps.TablesConfig",
     "listruns.apps.ListrunsConfig",
     "checklists.apps.ChecklistsConfig",
     "users.apps.UsersConfig",
@@ -71,6 +78,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

@@ -415,7 +415,7 @@
                         {{ form.comment.label}}:
                     </div>
                     <div class="col-sm-12">
-                    {% render_field form.comment class="form-control" rows="3" %}
+                        {% render_field form.comment class="form-control" rows="3" %}
                     </div>
                 </div>
             </div>
@@ -464,8 +464,10 @@
                 ($("input[name='strip']:checked")[0] && $("input[name='strip']:checked")[0].value == "bad") ||
                 ($("input[name='tracking']:checked")[0] && $("input[name='tracking']:checked")[0].value == "bad") ) {
                 $("#id_bad_reason").attr("required", true);
+                $("#id_comment").attr("required", true);
             } else {
                 $("#id_bad_reason").removeAttr('required');
+                $("#id_comment").removeAttr('required');
             }
         });
     }

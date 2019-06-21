@@ -1,8 +1,8 @@
 from django.db import models
 from users.models import User
-
+from certifier.manager import *
 from oms.models import OmsRun
-
+from delete.models import SoftDeletionModel
 
 class RunReconstruction(models.Model):
     RECONSTRUCTION_CHOICES = (
@@ -61,7 +61,10 @@ class Dataset(models.Model):
         return self.dataset
 
 
-class TrackerCertification(models.Model):
+class TrackerCertification(SoftDeletionModel):
+    objects = TrackerCertificationManager()
+    all_objects = TrackerCertificationManager(alive_only=False)
+
     SUBCOMPONENT_STATUS_CHOICES = (
         ("good", "Good"),
         ("bad", "Bad"),
@@ -78,7 +81,7 @@ class TrackerCertification(models.Model):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
     reference_runreconstruction = models.ForeignKey(
-        RunReconstruction, on_delete=models.CASCADE, related_name="ref"
+        RunReconstruction, on_delete=models.CASCADE, related_name="ref", limit_choices_to={'is_reference': True}
     )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
@@ -101,7 +104,26 @@ class TrackerCertification(models.Model):
 
     date = models.DateField()
 
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
+
+    @property
+    def is_good(self):
+        assert self.runreconstruction.run.run_type in ["cosmics", "collisions"]
+        good_criteria = "good"
+        candidates = [self.strip, self.tracking]
+        candidates_lowstat = [self.strip_lowstat, self.tracking_lowstat]
+        if self.runreconstruction.run.run_type == "collisions":
+            candidates.append(self.pixel)
+            candidates_lowstat.append(self.pixel_lowstat)
+
+        for i in range(0,len(candidates)):
+            if candidates[i] != good_criteria and candidates_lowstat[i] != "lowstat":
+                return False
+        return True
+
+    @property
+    def is_bad(self):
+        return not self.is_good
 
     @property
     def run_number(self):

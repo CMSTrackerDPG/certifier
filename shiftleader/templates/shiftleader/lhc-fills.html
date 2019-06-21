@@ -1,0 +1,8 @@
+<div id="slr-lhc-fills" class="tab-pane fade">
+    <h3>List of LHC Fills</h3>
+    {% load shiftleadertags %}
+    {% render_lhc_fill_table slreport.collisions.express "Collisions Express" %}
+    {% render_lhc_fill_table slreport.collisions.prompt "Collisions Prompt" %}
+    {% render_lhc_fill_table slreport.cosmics.express "Cosmics Express" %}
+    {% render_lhc_fill_table slreport.cosmics.prompt "Cosmics Prompt" %}
+</div>

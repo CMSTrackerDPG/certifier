@@ -1,0 +1,36 @@
+{% load shiftleaderfilters %}
+
+<div id="slr-checklist" class="tab-pane fade">
+
+    {% if slchecklist %}
+        <h2>
+            {{ slchecklist.title }}
+        </h2>
+        <div>
+            <p>{{ slchecklist.description|safe }}</p>
+            {% for itemgroup in slchecklist.checklistitemgroup_set.all %}
+                <h3>{{ itemgroup.name }}</h3>
+                <p>{{ itemgroup.description|safe }}</p>
+                <p>
+                <ul>
+                    {% for item in itemgroup.checklistitem_set.all %}
+                        <li>
+                            {{ item.text|safe }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                </p>
+            {% endfor %}
+            <p>{{ slchecklist.additional_description|safe }}</p>
+        </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            No shift leader checklist found. <br/>
+            Please <a href="/admin/certifier/checklist/add/?identifier=shiftleader">create</a> one in the Admin Settings.
+            Make sure to set the Checklist "Identifier" to "shiftleader".
+        </div>
+    {% endif %}
+</div>
+
+
+

@@ -1,0 +1,255 @@
+{% load widget_tweaks %}
+<style>
+    .filter-label{
+        font-weight: bold;
+    }
+    .top-buffer {
+        margin-top: 15px;
+    }
+
+</style>
+
+<div class="container">
+    <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 800px;">
+        <form id="sl-filter-form" action="" method="get" class="form my-1">
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#menu-dates">Dates</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-run-numbers">Run Numbers</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-type">Type</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-problems">Problems</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#menu-users">Shifters</a></li>
+            </ul>
+            <div class="tab-content">
+
+                <div id="menu-dates" class="tab-pane fade in active show">
+
+                    <div class="form">
+                        <div class="row top-buffer">
+                            <div class="col-sm-3">
+                            </div>
+                            <div class="col-sm-6 text-center">
+                                <h3 id="id_filter_week_display"></h3>
+                            </div>
+                            <div class="col-sm-3 text-right">
+                                <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-date">
+                                <label class="form-check-label no-bold-label" for="id-ignore-date">Ignore other filters</label>
+                                <a href="#" data-toggle="tooltip" title="Check if you do not want to apply multiple filters at once (for example a run number range within a specific date range)" style="color:black;
+    text-decoration: none;"></a>
+                            </div>
+                        </div>
+
+                        <div class="row top-buffer">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-5">
+                                <strong>from</strong>:
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>to</strong>:
+                            </div>
+                        </div>
+                        <div class="row form-inline">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.date__gte|add_class:"form-control" %}
+                            </div>
+                            <div class="col-sm-6">
+                                {% render_field filter.form.date__lte|add_class:"form-control" %}
+                            </div>
+                        </div>
+
+                        <div class="top-buffer d-flex justify-content-center">
+                                <button type="button" class="btn btn-light" onclick="set_week_to_previous()"> &lt;&lt; </button>
+                                <span style='margin-right:1.25em;'></span>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_last_week()">Last Week</button>
+                                <span style='margin-right:1.25em;'></span>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_this_week()">This Week</button>
+                                <span style='margin-right:1.25em;'></span>
+                                <button type="button" class="btn btn-light" onclick="set_date_range_filter_to_today()">Today</button>
+                                <span style='margin-right:1.25em;'></span>
+                                <button type="button" class="btn btn-light" onclick="set_week_to_next()"> &gt;&gt; </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="menu-run-numbers" class="tab-pane fade">
+                    <div class="form from-inline">
+                        <div class="row top-buffer">
+                            <div class="col-sm-12 text-right">
+                                <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-run_number">
+                                <label class="form-check-label no-bold-label" for="id-ignore-run_number">Ignore other filters</label>
+                                <a href="#" data-toggle="tooltip" title="Check if you do not want to apply multiple filters at once (for example a run number range within a specific date range)" style="color:black;
+    text-decoration: none;"></a>
+                            </div>
+                        </div>
+
+                        <div class="row top-buffer">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-5">
+                                <strong>from</strong>:
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>to</strong>:
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__run_number__gte|add_class:"form-control" %}
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__run_number__lte|add_class:"form-control" %}
+                            </div>
+                        </div>
+
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-10">
+                                <strong>Comma-separated list</strong>:
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-10">
+                                {% render_field filter.form.runreconstruction__run__run_number__in|add_class:"form-control" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-type" class="tab-pane fade">
+                    <div class="form">
+                        <div class="row top-buffer">
+                            <div class="col-sm-12 text-right">
+                                <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-type">
+                                <label class="form-check-label no-bold-label" for="id-ignore-type">Ignore other filters</label>
+                                <a href="#" data-toggle="tooltip" title="Check if you do not want to apply multiple filters at once (for example a run number range within a specific date range)" style="color:black;
+    text-decoration: none;"></a>
+                            </div>
+                        </div>
+
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Run Type
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__run_type|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Reconstruction
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__reconstruction|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                B Field
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__b_field|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Beam Type
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__fill__fill_type_runtime|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                Beam Energy
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.runreconstruction__run__energy|add_class:"form-control" %}
+                            </div>
+                        </div>
+                        <div class="row top-buffer d-flex justify-content-center">
+                            <div class="col-sm-3 col-form-label">
+                                {{ filter.form.dataset.label_tag }}
+                            </div>
+                            <div class="col-sm-5">
+                                {% render_field filter.form.dataset|add_class:"form-control" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-problems" class="tab-pane fade">
+                    <div class="row top-buffer">
+                        <div class="col-sm-12 text-right">
+                            <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-problem_categories">
+                            <label class="form-check-label no-bold-label" for="id-ignore-problem_categories">Ignore other filters</label>
+                            <a href="#" data-toggle="tooltip" title="Check if you do not want to apply multiple filters at once (for example a run number range within a specific date range)" style="color:black;
+                    text-decoration: none;"></a>
+                        </div>
+                    </div>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.pixel_problems.label}}:</strong>
+                        </div>
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.pixel_problems|add_class:"selectpicker" %}
+                        </div>
+                    </div>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.strip_problems.label}}:</strong>
+                        </div>
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.strip_problems|add_class:"selectpicker" %}
+                        </div>
+                    </div>
+                    <div class="row top-buffer d-flex justify-content-center">
+                        <div class="col col-sm-3 col-form-label text-right">
+                            <strong>{{filter.form.tracking_problems.label}}:</strong>
+                        </div>
+                        <div class="col col-sm-6 text-left">
+                            {% render_field filter.form.tracking_problems|add_class:"selectpicker" %}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-users" class="tab-pane fade">
+                    <div class="row top-buffer">
+                        <div class="col-sm-12 text-right">
+                            <input type="checkbox" class="form-check-input ignore-other-filter-checkbox" id="id-ignore-userid">
+                            <label class="form-check-label no-bold-label" for="id-ignore-userid">Ignore other filters</label>
+                            <a href="#" data-toggle="tooltip" title="Check if you do not want to apply multiple filters at once (for example a run number range within a specific date range)" style="color:black;
+text-decoration: none;"></a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Use only following Shifters:</h4>
+                        </div>
+                        <div class="col-sm-6 text-right" style="margin-top: 10px">
+                            <a href="#" data-toggle="tooltip" title="use CTRL + Click to select and deselect multiple users" style="color:black;
+    text-decoration: none;">Help</a>
+                        </div>
+                    </div>
+                    {% render_field filter.form.user|add_class:"form-control" %}
+                </div>
+
+            </div>
+            <div class="row">
+                <hr style="width: 95%; color: lightgray; height: 1px; background-color:lightgray;" />
+            </div>
+            <div class="row">
+                <div class="col col-sm-6 text-left">
+                    <a href="{% url 'shiftleader:shiftleader' %}" class="btn btn-danger" id="clear-filters">
+                        <span class="glyphicon glyphicon-remove"></span> Reset
+                    </a>
+                </div>
+                <div class="col col-sm-6 text-right">
+                    <button type="submit" id="id_btn_filter" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-filter"></span> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

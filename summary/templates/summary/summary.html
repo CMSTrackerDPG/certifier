@@ -1,0 +1,109 @@
+
+{% extends 'dqmhelper/base.html' %}
+
+{% block content %}
+{% load static %}
+<a href="#comment_div" class="btn btn-link" onclick="show_special_comment_area()"><span class="glyphicon glyphicon-comment"></span> Add Special Comment</a>
+<a href="#links_div" class="btn btn-link" onclick="show_links_area()">
+	<span class="glyphicon glyphicon-globe"></span> Add Links
+</a><br>
+
+<!-- **INFO** When is a RUN marked as 'Good'?
+Depends on runtype:
+| - - - - - - - - - - - - - - - - - - - - - - - - - - |
+|-(Collisions) pixel    = (Good OR Lowstat)   AND     |
+|              sistrip  = (Good OR Lowstat)   AND     |
+|              tracking = (Good OR Lowstat)           |
+| - - - - - - - - - - - - - - - - - - - - - - - - - - |
+|-(Cosmics)    sistrip  = (Good OR Lowstat)   AND     |
+|              tracking = (Good OR Lowstat)           |
+ - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+{% if alert_infos %}
+    {% for info in alert_infos %}
+        <div class="alert alert-info">
+            <strong>Info:</strong> {{ info }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if alert_filters %}
+    <div class="alert alert-info">
+        <strong>Applied filters:</strong>
+        <ul>
+        {% for item in alert_filters %}
+             <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
+{% if alert_errors %}
+    {% for error in alert_errors %}
+        <div class="alert alert-danger">
+            <strong>Error!</strong> {{ error }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<pre id=summary>
+=============Reference Runs===============
+{% for ref in refs %}{{ ref }}
+{% endfor %}
+=============Runs Checked================
+{% for run in runs %}{{ run }}
+{% endfor %}
+=============Tracker Maps=================
+{% for tk_map in tk_maps %}{{ tk_map }}
+{% endfor %}
+=============HDQM Trends==================
+=============Certified Runs===============
+{% for certified_run in certified_runs %}{{ certified_run }}
+{% endfor %}
+=============Sum of Quantities============
+{% for sum in sums %}{{ sum }}
+{% endfor %}<div id=comment_div style="display: none;">
+=============Special Comments=============
+<p id=specialcomment_text></p><div id=formarea><textarea rows="4" cols="40" id=special_comment_textarea form="usrform" placeholder="Enter text here" ></textarea>
+<div align="center"><button type="button" class="btn btn-default" onclick="write_to_comment_area()"><span class="glyphicon glyphicon-ok"></span> Apply</button> <button type="button" class="btn btn-default" onclick="hide_comment_area()"><span class="glyphicon glyphicon-remove"></span> Remove</button></div></div></div>
+============= Link to the Prompt Feedback plots============
+<p id=links_text>Please add the link</p>
+<div id=links_div style="display: none;"><div id=linksarea><textarea rows="4" cols="40" id=links_textarea form="usrform" placeholder="Enter text here" ></textarea>
+<div align="center"><button type="button" class="btn btn-default" onclick="write_to_text_area()"><span class="glyphicon glyphicon-ok"></span>OK</button></div></div></div>
+</pre>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function show_special_comment_area() {
+        $('#comment_div').css('display', 'inline-block');
+        $('#formarea').css('display', 'inline-block');
+        $('#specialcomment_text').css('display', 'None');
+    }
+
+    function write_to_comment_area() {
+        let t = $('#special_comment_textarea').val();
+        $('#specialcomment_text').html(t);
+        $('#formarea').css('display', 'None');
+        $('#specialcomment_text').css('display', 'inline-block');
+    }
+
+    function hide_comment_area() {
+        $('#comment_div').css('display', 'None');
+    }
+
+    function show_links_area() {
+       $('#links_div').css('display', 'inline-block');
+       $('#linksarea').css('display', 'inline-block');
+       $('#links_text').css('display', 'None');
+   }
+
+   function write_to_text_area() {
+       let t = $('#links_textarea').val();
+       $('#links_text').html(t);
+       $('#linksarea').css('display', 'None');
+       $('#links_text').css('display', 'inline-block');
+   }
+</script>
+{% endblock scripts %}

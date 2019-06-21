@@ -1,0 +1,7 @@
+{% load widget_tweaks %}
+<label class="col-sm-3 control-label" for="id_{{ field.name }}">
+    {{ field.label }}
+</label>
+<div class="col-sm-6">
+    {% render_field field class="form-control" %}
+</div>

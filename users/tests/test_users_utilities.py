@@ -10,7 +10,6 @@ from users.utilities.utilities import *
 
 pytestmark = pytest.mark.django_db
 
-
 class TestUtilities:
     def test_extract_egroups(self):
         egroups = extract_egroups({})

@@ -1,0 +1,19 @@
+{% load static %}
+<link rel="shortcut icon" type="image/png" href="{% static "img/favicon.png" %}"/>
+<title>TkDQM Doc: Delete Run</title>
+
+<script src="{% static "jquery/jquery.min.js" %}"></script>
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+
+<h1 align="center">Delete Run</h1>
+</br>
+<h4 align="center">
+Are you sure you want to delete that run?
+</h4>
+
+<form action="" method="post" align="center">
+        {% csrf_token %}        
+        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> Yes</button>
+        <button type="button" class="btn btn-default "onclick="location.href='{% url 'shiftleader:shiftleader' %}'"><span class="glyphicon glyphicon-remove"></span> No</button>
+</form>

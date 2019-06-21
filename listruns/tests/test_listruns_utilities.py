@@ -5,6 +5,7 @@ from users.models import User
 from django.test import RequestFactory, TestCase
 from mixer.backend.django import mixer
 
+from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from listruns.utilities.utilities import *
 from listruns.utilities.manip import *
 from listruns.utilities.luminosity import *
