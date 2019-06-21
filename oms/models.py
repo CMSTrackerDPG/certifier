@@ -247,7 +247,7 @@ class OmsRun(models.Model):
     hlt_key = models.CharField(
         max_length=256, help_text="HLT configuration key", verbose_name="HLT Key"
     )
-    hlt_physics_counter = models.PositiveIntegerField(
+    hlt_physics_counter = models.BigIntegerField(
         help_text="HLT triggers  for Physics streams",
         verbose_name="HLT Triggers Physics Streams",
         null=True,
@@ -305,7 +305,7 @@ class OmsRun(models.Model):
         max_length=256, help_text="L1 menu name", verbose_name="L1 Menu", null=True
     )
     l1_rate = models.FloatField(help_text="L1 rate", verbose_name="L1 Rate", null=True)
-    l1_triggers_counter = models.PositiveIntegerField(
+    l1_triggers_counter = models.BigIntegerField(
         help_text="Number of L1 triggers", verbose_name="L1 Triggers", null=True
     )
 
