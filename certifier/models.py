@@ -70,7 +70,7 @@ class TrackerCertification(SoftDeletionModel):
         ("bad", "Bad"),
         ("excluded", "Excluded"),
     )
-    TRACKERMAP_CHOICES = (("Exists", "Exists"), ("Missing", "Missing"))
+    TRACKERMAP_CHOICES = (("exists", "Exists"), ("missing", "Missing"))
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
