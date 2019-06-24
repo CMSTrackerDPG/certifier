@@ -2,6 +2,7 @@ import collections
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db.models.functions import Coalesce
 from django.db.models import (
     Q,
     Count,
@@ -256,7 +257,8 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def integrated_luminosity(self):
         if len(self) == 0:
             return 0
-        return float(self.aggregate(Sum("runreconstruction__run__recorded_lumi"))["runreconstruction__run__recorded_lumi__sum"])
+        print()
+        return float(self.aggregate(runreconstruction__run__recorded_lumi__sum=Coalesce(Sum("runreconstruction__run__recorded_lumi"),0))["runreconstruction__run__recorded_lumi__sum"])
 
     def lumisections(self):
         if len(self) == 0:

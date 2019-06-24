@@ -13,7 +13,7 @@ class SimpleRunReconstructionTable(tables.Table):
     reconstruction = tables.Column()
     run_type = tables.Column(accessor="run.run_type")
     is_reference = tables.Column()
-
+    '''
     delete_run = tables.TemplateColumn(
         '<div align="center">'
         '<a href="{% url \'delete:delete_reference\' run_number=record.run.run_number reco=record.reconstruction%}">'
@@ -23,7 +23,7 @@ class SimpleRunReconstructionTable(tables.Table):
         orderable=False,
         verbose_name="Delete",
     )
-
+    '''
     class Meta:
         model = RunReconstruction
         fields = ()
