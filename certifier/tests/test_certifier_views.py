@@ -89,7 +89,7 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
-            "trackermap": "Exists",
+            "trackermap": "exists",
             "date": "2018-01-01",
         }
 
@@ -122,7 +122,7 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
-            "trackermap": "Exists",
+            "trackermap": "exists",
             "date": "2018-01-01",
         }
 
