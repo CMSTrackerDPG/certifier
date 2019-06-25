@@ -14,6 +14,8 @@ def format_integrated_luminosity(int_luminosity):
     :param int_luminosity: integrated luminosity value in 1/pb^-1
     :return: Formatted luminosity with 3 decimal points precision
     """
+    if int_luminosity == None:
+        int_luminosity = 0
     value = Decimal(int_luminosity)
     if '{:.3f}'.format(value) == "0.000":
         value = Decimal("1E6") * value
