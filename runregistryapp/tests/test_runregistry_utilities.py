@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from runregistry.utilities import *
+from runregistryapp.utilities import *
 
 class TestUtilities(unittest.TestCase):
     def test_transform_lowstat_to_boolean(self):

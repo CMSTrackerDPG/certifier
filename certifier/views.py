@@ -34,7 +34,7 @@ def createDataset(request):
 def certify(request, run_number, reco):
     try:
         run = retrieve_run(run_number)
-    except IndexError:
+    except IndexError or ConnectionError:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
 

@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "summary.apps.SummaryConfig",
     "restore.apps.RestoreConfig",
     "delete.apps.DeleteConfig",
-    "runregistry.apps.RunregistryConfig",
+    "runregistryapp.apps.RunregistryappConfig",
     "shiftleader.apps.ShiftleaderConfig",
     "tables.apps.TablesConfig",
     "listruns.apps.ListrunsConfig",

@@ -2,8 +2,8 @@ import unittest
 import pytest
 from unittest.mock import MagicMock
 
-from runregistry.client import RunRegistryClient, TrackerRunRegistryClient
-from runregistry.utilities import *
+from runregistryapp.client import RunRegistryClient, TrackerRunRegistryClient
+from runregistryapp.utilities import *
 
 
 class TestRunRegistryClient(unittest.TestCase):

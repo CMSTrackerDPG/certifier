@@ -7,7 +7,7 @@ from operator import itemgetter
 
 import requests
 
-from runregistry.utilities import (
+from runregistryapp.utilities import (
     transform_lowstat_to_boolean,
     list_to_dict,
     build_range_where_clause,

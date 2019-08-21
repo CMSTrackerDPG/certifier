@@ -5,7 +5,7 @@ from mixer.backend.django import mixer
 from shiftleader.utilities.utilities import *
 
 from unittest.mock import MagicMock
-from runregistry.client import RunRegistryClient, TrackerRunRegistryClient
+from runregistryapp.client import RunRegistryClient, TrackerRunRegistryClient
 pytestmark = pytest.mark.django_db
 
 class TestUtilities:
