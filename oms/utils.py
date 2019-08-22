@@ -39,7 +39,7 @@ def create_django_model_from_oms_meta(oms_meta_dict):
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
 
-    exclude = ["dump_ready_to_dump_time", "end_stable_beam", "end_time",
+    exclude = ["dump_ready_to_dump_time", "end_stable_beam", "end_time", "stable_beams",
                "start_stable_beam", "start_time", "to_dump_ready_time", "to_ready_time"]
 
     fill_kwargs = {key: value for key, value in response.items() if key not in exclude}
@@ -55,6 +55,10 @@ def retrieve_fill(fill_number):
 
 def retrieve_run(run_number):
     response = oms.get_runs(run_number, run_number)[0]
+
+    if response == None:
+        raise IndexError
+
     fill_number = response.pop("fill_number")
 
     exclude = ["start_time", "last_update", "end_time"]

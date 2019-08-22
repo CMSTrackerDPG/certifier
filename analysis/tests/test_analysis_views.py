@@ -11,12 +11,12 @@ pytestmark = pytest.mark.django_db
 class TestChartData:
     def test_get(self):
         req = RequestFactory().get(reverse("get"))
-        chartData=ChartData()
+        chartData=views.ChartData()
         resp = chartData.get(request=req)
 
         assert resp.status_code == 200
 
-    def test_analyse():
+    def test_analyse(self):
         run_number = 321123
         reco = "express"
         arguments={'run_number': run_number, 'reco': reco }

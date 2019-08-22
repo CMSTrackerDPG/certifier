@@ -76,7 +76,7 @@ def analyse(request, run_number, reco):
 
     try:
         run = OmsRun.objects.get(run_number=run_number)
-    except OmsRun.DoesNotExists:
+    except OmsRun.DoesNotExist:
         run = retrieve_run(run_number)
 
     try:
