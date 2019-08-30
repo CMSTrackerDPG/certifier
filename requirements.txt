@@ -21,7 +21,7 @@ git+https://github.com/CMSTrackerDPG/wbmcrawlr
 git+https://github.com/CMSTrackerDPG/runregistryclient
 git+https://github.com/ptrstn/cms-tracker-studies
 matplotlib
-pandas
+pandas==0.24.2
 seaborn
 scipy
 scikit-learn
