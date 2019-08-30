@@ -11,7 +11,7 @@ import json
 from django.utils.safestring import mark_safe
 from pandas.compat import StringIO
 import pandas as pd
-from .jobs.chart_data_load_job import Job
+from .jobs.chart_data_load_job import update_data
 
 class ChartData(APIView):
     authentication_classes = []
@@ -82,7 +82,7 @@ def analyse(request, run_number, reco):
     try:
         chart_data_instance = ChartDataModel.objects.get()
     except ChartDataModel.DoesNotExist:
-        Job.execute(Job())
+        update_data()
 
     chart_data_instance = ChartDataModel.objects.get()
     pca_data = pd.read_csv(StringIO(chart_data_instance.pca_data))
