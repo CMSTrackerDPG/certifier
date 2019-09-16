@@ -2,7 +2,8 @@ from trackerstudies.utils import load_runs
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.covariance import EllipticEnvelope
-from MulticoreTSNE import MulticoreTSNE as TSNE
+#from MulticoreTSNE import MulticoreTSNE as TSNE
+from sklearn.manifold import TSNE
 from sklearn import svm
 import pandas
 import seaborn as sns

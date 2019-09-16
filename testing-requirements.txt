@@ -27,6 +27,6 @@ pandas==0.24.2
 seaborn
 scipy
 scikit-learn
-MulticoreTSNE
+#MulticoreTSNE
 umap-learn
 runregistry
