@@ -10,7 +10,7 @@ djangorestframework==3.9.1
 psycopg2-binary>=2.8.3
 python-decouple==3.1
 requests==2.21.0
-git+https://github.com/ptrstn/wbmcrawlr
+git+https://github.com/CMSTrackerDPG/wbmcrawlr
 terminaltables==3.1.0
 django-widget-tweaks>=1.4.3
 django-extensions>=2.1.6
