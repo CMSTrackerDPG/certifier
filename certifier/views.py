@@ -3,7 +3,7 @@ from django.shortcuts import render
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
 # Create your views here.
 from django.shortcuts import redirect
-from oms.utils import retrieve_run
+from oms.utils import retrieve_run, retrieve_dataset
 from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
@@ -55,6 +55,7 @@ def createDataset(request):
 def certify(request, run_number, reco):
     try:
         run = retrieve_run(run_number)
+        dataset = retrieve_dataset(run_number)
     except IndexError or ConnectionError:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
@@ -68,6 +69,11 @@ def certify(request, run_number, reco):
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
                     run=run, reconstruction=reco)
+
+        try:
+            dataset = Dataset.objects.get(dataset=dataset)
+        except Dataset.DoesNotExist:
+            dataset = Dataset.objects.create(dataset=dataset)
 
         user = User.objects.get(pk=request.user.id)
 
@@ -84,6 +90,7 @@ def certify(request, run_number, reco):
             except TrackerCertification.DoesNotExist:
                 formToSave = form.save(commit=False)
                 formToSave.runreconstruction=runReconstruction
+                formToSave.dataset = dataset
                 formToSave.user=user
                 formToSave.save()
                 form.save_m2m()
@@ -94,6 +101,6 @@ def certify(request, run_number, reco):
     else:
         form = CertifyFormWithChecklistForm()
 
-    context = {"run_number": run_number, "reco": reco, "run": run, "form": form}
+    context = {"run_number": run_number, "reco": reco, "run": run, "dataset": dataset, "form": form}
 
     return render(request, "certifier/certify.html", context)

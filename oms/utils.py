@@ -1,6 +1,7 @@
 from django.db import IntegrityError, transaction
 from wbmcrawlr import oms
 
+import runregistry
 from oms.models import OmsFill, OmsRun
 
 '''
@@ -35,6 +36,16 @@ def create_django_model_from_oms_meta(oms_meta_dict):
 
         print("{} = models.{}help_text='{}', verbose_name='{}')".format(field, django_model, description, title))
 '''
+
+def retrieve_dataset(run_number):
+    dataset = runregistry.get_datasets(
+            filter={
+                'run_number': {
+                    '=': run_number
+                }
+            })
+
+    return dataset[0]["name"]
 
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]

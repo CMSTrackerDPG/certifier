@@ -34,7 +34,6 @@ class CertifyForm(ModelForm):
             'reference_runreconstruction',
             'date',
             'trackermap',
-            'dataset',
         ]
 
 class DatasetForm(ModelForm):
