@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from .models import TrackerCertification, BadReason, PixelProblem, StripProblem, TrackingProblem, Dataset
-from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField, TextInput
+from django.forms import ModelForm, RadioSelect, CheckboxSelectMultiple, ModelMultipleChoiceField, TextInput, Textarea
 from checklists.forms import ChecklistFormMixin
 
 class CertifyForm(ModelForm):
@@ -45,6 +45,20 @@ class DatasetForm(ModelForm):
             'dataset': TextInput(
                 attrs={'placeholder': "e.g. /Cosmics/Run2017F-PromptReco-v1/DQMIO",
                        'class': "form-control"}),
+        }
+
+class BadReasonForm(ModelForm):
+    class Meta:
+        model = BadReason
+        fields = ["name", "description"]
+        widgets = {
+            'name': TextInput(
+                attrs={'placeholder': "e.g. Timing Problem",
+                       'class': "form-control"}),
+            'description': Textarea(
+                attrs={'placeholder': "e.g. The problem consists in...",
+                       'class': "form-control",
+                       'rows' : "3"}),
         }
 
 class CertifyFormWithChecklistForm(CertifyForm, ChecklistFormMixin):
