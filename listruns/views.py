@@ -97,6 +97,9 @@ class UpdateRun(generic.UpdateView):
         context["checklist_not_required"] = True
         context["run_number"]=self.kwargs["run_number"]
         context["reco"]=self.kwargs["reco"]
+        context["dataset"]=TrackerCertification.objects.get(
+                runreconstruction__run__run_number=self.kwargs["run_number"],
+                runreconstruction__reconstruction=self.kwargs["reco"]).dataset
         context["run"]=OmsRun.objects.get(run_number=self.kwargs["run_number"])
         return context
 

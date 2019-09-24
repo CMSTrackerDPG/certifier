@@ -26,6 +26,7 @@
                     <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
                 {% endif %}
                 <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
+                <span class="badge badge-pill badge-info">{{ dataset }}</span>
             </h1>
         </div>
     </div>
@@ -211,7 +212,7 @@
 
 <!--================================ FORM ===============================-->
 <div class="container-fluid">
-    <div id="includeDataset"></div>
+    <!--<div id="includeDataset"></div>-->
     <div id="addBadReason"></div>
     <form method="POST" action="" id="id_certifier_form" >
         {% csrf_token %}
@@ -226,7 +227,7 @@
                         {% render_field form.reference_runreconstruction class="custom-select" style="color: green; font-weight:bold;" %}
                     </div>
                 </div>
-<!--================================ DATASET ======================-->
+<!--================================ DATASET ======================
                 <div class="row no-gutters mt-3 ml-4">
                     <div class="col-sm-2 col-form-label" style="font-size: 18px;">
                         {{ form.dataset.label}}:
@@ -243,6 +244,7 @@
                         </button>
                     </div>
                 </div>
+-->
 <!--================================ CHECKLISTS =========================-->
                 <div class="col-sm-offset mt-3 ml-4">
                     {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
@@ -511,7 +513,7 @@
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
-        $("#includeDataset").load("{% url 'createdataset' %}");
+        /*$("#includeDataset").load("{% url 'createdataset' %}");*/
         $("#addBadReason").load("{% url 'addbadreason' %}");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
