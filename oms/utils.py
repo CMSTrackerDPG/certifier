@@ -46,12 +46,11 @@ def retrieve_fill(fill_number):
 
     try:
         with transaction.atomic():
-            omsfill = OmsFill.objects.create(**fill_kwargs)
+            OmsFill.objects.create(**fill_kwargs)
     except IntegrityError:
-        omsfill = OmsFill.objects.get(fill_number=fill_number)
+        OmsFill.objects.filter(fill_number=fill_number).update(**fill_kwargs)
 
-    return omsfill
-
+    return OmsFill.objects.get(fill_number=fill_number)
 
 def retrieve_run(run_number):
     response = oms.get_runs(run_number, run_number)[0]
@@ -65,15 +64,12 @@ def retrieve_run(run_number):
     run_kwargs = {key: value for key, value in response.items() if key not in exclude}
     run_kwargs["lumisections"] = oms.get_lumisection_count(run_number)
 
-    try:
-        fill = OmsFill.objects.get(fill_number=fill_number)
-    except OmsFill.DoesNotExist:
-        fill = retrieve_fill(fill_number=fill_number)
+    fill = retrieve_fill(fill_number=fill_number)
 
     try:
         with transaction.atomic():
-            omsrun = OmsRun.objects.create(fill=fill, **run_kwargs)
+            OmsRun.objects.create(fill=fill, **run_kwargs)
     except IntegrityError:
-        omsrun = OmsRun.objects.get(run_number=run_number)
+        OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
 
-    return omsrun
+    return OmsRun.objects.get(run_number=run_number)
