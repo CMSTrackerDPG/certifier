@@ -1,0 +1,37 @@
+<form method="POST" action="{% url 'addbadreason' %}" id="id_badreason_form"> {% csrf_token %}
+    <!-- Modal -->
+    <div class="modal fade" id="id_badreason_modal" tabindex="-1" role="dialog" aria-labelledby="Add new reason" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal_badreason_label">Add new reason</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-form-label" style="font-size: 18px">
+                            {{ form.name.label }}:
+                        </div>
+                        <div class="col-sm-12">
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-12 col-form-label" style="font-size: 18px">
+                            {{ form.description.label }}:
+                        </div>
+                        <div class="col-sm-12">
+                            {{ form.description }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Add">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

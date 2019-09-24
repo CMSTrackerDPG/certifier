@@ -1,13 +1,34 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from certifier.models import TrackerCertification, RunReconstruction, Dataset
+from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
 # Create your views here.
 from django.shortcuts import redirect
 from oms.utils import retrieve_run
-from .forms import CertifyFormWithChecklistForm, DatasetForm
+from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
 from django.http import HttpResponseRedirect
+
+@login_required #WIP
+def addBadReason(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = BadReasonForm(request.POST)
+
+        # check whether it's valid:
+        if form.is_valid():
+            try:
+                name = BadReason.objects.get(
+                        name=request.POST.get("name"))
+            except BadReason.DoesNotExist:
+                form.save()
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        form = BadReasonForm()
+
+    return render(request, "certifier/badreason.html", {"form": form})
 
 @login_required #WIP
 def createDataset(request):
