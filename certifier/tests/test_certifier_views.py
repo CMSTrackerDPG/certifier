@@ -62,24 +62,22 @@ class TestCertify:
 
     def test_certify_get(self):
         run_number = 321123
-        reco = "express"
-        arguments={'run_number': run_number, 'reco': reco }
+        arguments={'run_number': run_number }
 
         req = RequestFactory().get(reverse("certify", kwargs=arguments))
 
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number, reco)
+        resp = views.certify(req, run_number)
 
         assert 200 == resp.status_code
 
     def test_certify_valid(self):
         run_number = 321123
-        reco = "express"
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
-        arguments={'run_number': run_number, 'reco': reco }
+        arguments={'run_number': run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -101,18 +99,17 @@ class TestCertify:
         req = RequestFactory().post(reverse("certify", kwargs=arguments), data=form.data)
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number, reco)
+        resp = views.certify(req, run_number)
 
         assert 302 == resp.status_code, "should redirect to success view"
         assert TrackerCertification.objects.exists()
 
     def test_certify_invalid_bad_run_number(self):
         run_number = 999999999
-        reco = "express"
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
-        arguments={'run_number': run_number, 'reco': reco }
+        arguments={'run_number': run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -135,17 +132,16 @@ class TestCertify:
 
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number, reco)
+        resp = views.certify(req, run_number)
 
         assert 200 == resp.status_code, "should not redirect to success view"
         assert TrackerCertification.objects.exists() == False
 
     def test_certify_invalid_no_selection(self):
         run_number = 321123
-        reco = "express"
         ref_runReconstruction = mixer.blend(RunReconstruction)
         bad_reason = mixer.blend(BadReason)
-        arguments={'run_number': run_number, 'reco': reco }
+        arguments={'run_number': run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -163,7 +159,7 @@ class TestCertify:
         req = RequestFactory().post(reverse("certify", kwargs=arguments), data=form.data)
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number, reco)
+        resp = views.certify(req, run_number)
 
         assert 200 == resp.status_code, "should not redirect to success view"
         assert TrackerCertification.objects.exists() == False

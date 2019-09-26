@@ -45,10 +45,9 @@ def listruns(request):
     context = {}
 
     run_number = request.GET.get("run_number", None)
-    reco = request.GET.get("reco", None)
 
-    if run_number and reco:
-        response = redirect("/certify/{}/{}".format(run_number, reco))
+    if run_number:
+        response = redirect("/certify/{}".format(run_number))
         return response
 
     """

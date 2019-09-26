@@ -3,6 +3,7 @@ from wbmcrawlr import oms
 
 import runregistry
 from oms.models import OmsFill, OmsRun
+from certifier.models import TrackerCertification
 
 '''
 def create_django_model_from_oms_meta(oms_meta_dict):
@@ -37,15 +38,27 @@ def create_django_model_from_oms_meta(oms_meta_dict):
         print("{} = models.{}help_text='{}', verbose_name='{}')".format(field, django_model, description, title))
 '''
 
+def get_reco_from_dataset(dataset):
+    lowcase_dataset=dataset.lower()
+    if "express" in lowcase_dataset:
+        return "express"
+    elif "prompt" in lowcase_dataset:
+        return "prompt"
+    elif "rereco" in  lowcase_dataset:
+        return "rereco"
+
 def retrieve_dataset(run_number):
-    dataset = runregistry.get_datasets(
+    datasets = runregistry.get_datasets(
             filter={
                 'run_number': {
                     '=': run_number
                 }
             })
 
-    return dataset[0]["name"]
+    for dataset in datasets:
+        if "online" not in dataset["name"]:
+            if not TrackerCertification.all_objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
+                return dataset["name"]
 
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
