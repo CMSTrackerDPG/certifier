@@ -26,6 +26,7 @@
                     <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
                 {% endif %}
                 <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
+                <span class="badge badge-pill badge-info">{{ dataset }}</span>
             </h1>
         </div>
     </div>
@@ -191,7 +192,7 @@
     </div>
 </div>
 
-<!--================================ ANALYSIS BUTTONS =====================-->
+<!--================================ ANALYSIS BUTTONS =====================
 <div class="container mt-5 mb-5">
     <div class="text-center" id="id-analyze-spinner">
         <div class="spinner-border" role="status">
@@ -207,11 +208,12 @@
             Open Plots
         </a>
     </div>
-</div>
+</div>-->
 
 <!--================================ FORM ===============================-->
 <div class="container-fluid">
-    <div id="includeDataset"></div>
+    <!--<div id="includeDataset"></div>-->
+    <div id="addBadReason"></div>
     <form method="POST" action="" id="id_certifier_form" >
         {% csrf_token %}
         <div class="row justify-content-md-center no-gutters">
@@ -225,7 +227,7 @@
                         {% render_field form.reference_runreconstruction class="custom-select" style="color: green; font-weight:bold;" %}
                     </div>
                 </div>
-<!--================================ DATASET ======================-->
+<!--================================ DATASET ======================
                 <div class="row no-gutters mt-3 ml-4">
                     <div class="col-sm-2 col-form-label" style="font-size: 18px;">
                         {{ form.dataset.label}}:
@@ -242,6 +244,7 @@
                         </button>
                     </div>
                 </div>
+-->
 <!--================================ CHECKLISTS =========================-->
                 <div class="col-sm-offset mt-3 ml-4">
                     {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
@@ -374,14 +377,22 @@
             </div>
             <div class="col-md-3 mb-3 mt-1">
 <!--================================ BAD REASON =========================-->
-                <div class="row mr-4">
+                <div class="row mr-4 no-gutters">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         Why bad?
                     </div>
-                    <div class="col-sm-7">
+                    <div class="col-sm-6">
                         <div class="input-group">
                             {% render_field form.bad_reason class="custom-select" %}
                         </div>
+                    </div>
+                    <div class="col-sm-1 input-group-btn text-right">
+                        <button class="btn btn-success"
+                                data-toggle="modal"
+                                data-target="#id_badreason_modal"
+                                type="button">
+                            <span style="font-weight: bold;">+</span>
+                        </button>
                     </div>
                 </div>
 <!--================================ PROBLEMS ============================-->
@@ -429,7 +440,7 @@
                     <button class="btn btn-secondary btn-lg" onclick="location.href='{% url 'shiftleader:shiftleader' %}'">Abort</button>
                 {% else %}
                     <input class="btn btn-primary btn-lg" type="submit" value="Submit">
-                    <button class="btn btn-secondary btn-lg" onclick="location.href='{% url 'listruns:list' %}'">Abort</button>
+                    <button class="btn btn-secondary btn-lg" onclick="location.href='{% url 'openruns:openruns' %}'">Abort</button>
                 {% endif %}
             </div>
             <div class="col-sm-3"></div>
@@ -502,7 +513,8 @@
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
-        $("#includeDataset").load("{% url 'createdataset' %}");
+        /*$("#includeDataset").load("{% url 'createdataset' %}");*/
+        $("#addBadReason").load("{% url 'addbadreason' %}");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
         });

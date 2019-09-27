@@ -2,10 +2,12 @@ import unittest
 import pytest
 from unittest.mock import MagicMock
 
-from runregistry.client import RunRegistryClient, TrackerRunRegistryClient
-from runregistry.utilities import *
+from runregistryapp.client import RunRegistryClient, TrackerRunRegistryClient
+from runregistryapp.utilities import *
 
+pytestmark = pytest.mark.django_db
 
+@pytest.mark.skip(reason="old runregistry is not working anymore")
 class TestRunRegistryClient(unittest.TestCase):
     def test_get_json_response(self):
         runregistry = RunRegistryClient("http://vocms00170:4367")
@@ -103,6 +105,7 @@ class TestRunRegistryClient(unittest.TestCase):
         response = runregistry.get_info()
         assert {} != response
 
+@pytest.mark.skip(reason="old runregistry is not working anymore")
 class TestTrackerRunRegistryClient(unittest.TestCase):
     def test_get_dataset_lumis_runs(self):
         runregistry=TrackerRunRegistryClient()

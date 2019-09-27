@@ -1,7 +1,9 @@
 from django.db import IntegrityError, transaction
 from wbmcrawlr import oms
 
+import runregistry
 from oms.models import OmsFill, OmsRun
+from certifier.models import TrackerCertification
 
 '''
 def create_django_model_from_oms_meta(oms_meta_dict):
@@ -36,40 +38,64 @@ def create_django_model_from_oms_meta(oms_meta_dict):
         print("{} = models.{}help_text='{}', verbose_name='{}')".format(field, django_model, description, title))
 '''
 
+def get_reco_from_dataset(dataset):
+    lowcase_dataset=dataset.lower()
+    if "express" in lowcase_dataset:
+        return "express"
+    elif "prompt" in lowcase_dataset:
+        return "prompt"
+    elif "rereco" in  lowcase_dataset:
+        return "rereco"
+
+def retrieve_dataset(run_number):
+    datasets = runregistry.get_datasets(
+            filter={
+                'run_number': {
+                    '=': run_number
+                }
+            })
+
+    for dataset in datasets:
+        if "online" not in dataset["name"]:
+            if not TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
+                return dataset["name"]
+
+    raise Exception("Run fully certified")
+
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
 
-    exclude = ["dump_ready_to_dump_time", "end_stable_beam", "end_time",
+    exclude = ["dump_ready_to_dump_time", "end_stable_beam", "end_time", "stable_beams",
                "start_stable_beam", "start_time", "to_dump_ready_time", "to_ready_time"]
 
     fill_kwargs = {key: value for key, value in response.items() if key not in exclude}
 
     try:
         with transaction.atomic():
-            omsfill = OmsFill.objects.create(**fill_kwargs)
+            OmsFill.objects.create(**fill_kwargs)
     except IntegrityError:
-        omsfill = OmsFill.objects.get(fill_number=fill_number)
+        OmsFill.objects.filter(fill_number=fill_number).update(**fill_kwargs)
 
-    return omsfill
-
+    return OmsFill.objects.get(fill_number=fill_number)
 
 def retrieve_run(run_number):
     response = oms.get_runs(run_number, run_number)[0]
+
+    if response == None:
+        raise IndexError
+
     fill_number = response.pop("fill_number")
 
     exclude = ["start_time", "last_update", "end_time"]
     run_kwargs = {key: value for key, value in response.items() if key not in exclude}
     run_kwargs["lumisections"] = oms.get_lumisection_count(run_number)
 
-    try:
-        fill = OmsFill.objects.get(fill_number=fill_number)
-    except OmsFill.DoesNotExist:
-        fill = retrieve_fill(fill_number=fill_number)
+    fill = retrieve_fill(fill_number=fill_number)
 
     try:
         with transaction.atomic():
-            omsrun = OmsRun.objects.create(fill=fill, **run_kwargs)
+            OmsRun.objects.create(fill=fill, **run_kwargs)
     except IntegrityError:
-        omsrun = OmsRun.objects.get(run_number=run_number)
+        OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
 
-    return omsrun
+    return OmsRun.objects.get(run_number=run_number)

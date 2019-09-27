@@ -16,7 +16,7 @@ class TestHardDeleteReferenceView:
         run_number = 321123
         reco = "express"
 
-        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number))
+        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number), is_reference=True)
 
         assert RunReconstruction.objects.filter(run__run_number=run_number, reconstruction=reco).exists() is True
 
@@ -35,7 +35,7 @@ class TestHardDeleteReferenceView:
         run_number = 321123
         reco = "express"
 
-        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number))
+        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number), is_reference=True)
 
         assert RunReconstruction.objects.filter(run__run_number=run_number, reconstruction=reco).exists() is True
 
@@ -54,7 +54,7 @@ class TestHardDeleteReferenceView:
         run_number = 321123
         reco = "express"
 
-        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number))
+        runReconstruction = mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=run_number), is_reference=True)
 
         assert RunReconstruction.objects.filter(run__run_number=run_number, reconstruction=reco).exists() is True
 

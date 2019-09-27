@@ -1,4 +1,6 @@
 from django.utils.safestring import mark_safe
+from certifier.models import TrackerCertification
+
 
 def render_component(component, component_lowstat): # pragma: no cover
     """
@@ -29,6 +31,44 @@ def render_component(component, component_lowstat): # pragma: no cover
             '<div class="{}">{}</div>'.format(css_class, component_value.title())
         )
     return component
+
+def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_rereco):
+    css_class = None
+
+    if TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="express").exists()\
+    and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="prompt").exists()\
+    and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="rereco").exists():
+        return mark_safe(
+            '<div align="center">'
+                    '<button class="btn btn-info" disabled>{}</button>'
+            '</div>'.format("Certified")
+            )
+    else:
+        return mark_safe(
+            '<div align="center">'
+                '<a href="\certify\{}">'
+                    '<button class="btn btn-info">'
+                        'Certify'
+                    '</button>'
+                '</a>'
+            '</div>'.format(run_number)
+                )
+
+
+def render_dataset(run_number, dataset, reco): # pragma: no cover
+    css_class = None
+
+    if TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=reco).exists():
+        css_class = "good-dataset"
+
+    if css_class:
+        return mark_safe(
+            '<div class="{}">{}</div>'.format(css_class, dataset)
+        )
+
+    return mark_safe(
+        '<div>{}</div'.format(dataset)
+    )
 
 
 def render_trackermap(trackermap): # pragma: no cover
