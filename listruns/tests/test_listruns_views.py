@@ -28,6 +28,7 @@ def setup_view(view, request, *args, **kwargs):
     return view
 
 class TestListRuns:
+    '''
     def test_certify(self):
         req = RequestFactory().post(reverse("listruns:list"))
         resp = views.listruns(req)
@@ -40,14 +41,14 @@ class TestListRuns:
         req.GET['reco'] = "express"
         resp = views.listruns(req)
         assert 302 == resp.status_code
-
+    '''
     def test_listruns_authenticated(self):
         req = RequestFactory().post("/list/%s" % get_today_filter_parameter())
         req.user=mixer.blend(get_user_model())
         resp = views.listruns(req)
         assert 200 == resp.status_code
 
-    def test_listrunsi_not_authenticated(self):
+    def test_listruns_not_authenticated(self):
         req = RequestFactory().post("/list/%s" % get_today_filter_parameter())
         req.user=AnonymousUser()
         resp = views.listruns(req)

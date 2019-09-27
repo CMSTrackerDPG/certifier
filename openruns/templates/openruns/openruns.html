@@ -1,0 +1,71 @@
+{% extends 'dqmhelper/base.html' %}
+{% block title %}List{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="mt-4 mb-4 col-lg-12 text-center">
+                <h1>Certify a new run</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-4">
+        <form method="get" class="justify-content-center align-items-center">
+            <div class="form-group">
+                <div class="row mb-3 justify-content-center">
+                    <div class="col"></div>
+                    <div class="col">
+                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <button type="submit" class="btn btn-primary">Certify</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mb-4">
+        <form method="get" class="justify-content-center align-items-center">
+            <div class="form-group">
+                <div class="row mb-3 justify-content-center">
+                    <div class="col"></div>
+                    <div class="col">
+                        <b>from:</b>
+                        <input type="number" class="form-control" name='min' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                    </div>
+                    <div class="col">
+                        <b>to:</b>
+                        <input type="number" class="form-control" name='max' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <button type="submit" class="btn btn-primary">Get Open Runs</button>
+            </div>
+        </form>
+    </div>
+
+    {% if openruns_table %}
+        <div class="overflow-auto px-3 bg-white" id="style-1">
+            {% load render_table from django_tables2 %}
+            {% render_table openruns_table %}
+        </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">No Table found.</div>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+

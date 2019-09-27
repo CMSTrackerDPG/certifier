@@ -44,12 +44,6 @@ def listruns(request):
 
     context = {}
 
-    run_number = request.GET.get("run_number", None)
-
-    if run_number:
-        response = redirect("/certify/{}".format(run_number))
-        return response
-
     """
     Make sure that the logged in user can only see his own runs
     In case the user is not logged in show all objects,

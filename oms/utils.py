@@ -57,8 +57,10 @@ def retrieve_dataset(run_number):
 
     for dataset in datasets:
         if "online" not in dataset["name"]:
-            if not TrackerCertification.all_objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
+            if not TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
                 return dataset["name"]
+
+    raise Exception("Run fully certified")
 
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
