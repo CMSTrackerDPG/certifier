@@ -5,7 +5,7 @@ from oms.utils import get_reco_from_dataset
 
 def get_open_runs(start, end, user):
     runs = runregistry.get_runs(filter={
-        #'state':'OPEN',
+        'state':'OPEN',
         'run_number': {'and': [{'>': start}, {'<': end}]},
     })
 

@@ -23,7 +23,7 @@ def openruns(request):
     else:
         openruns = OpenRuns.objects.all()
 
-    openruns_table = OpenRunsTable(openruns, order_by="run_number")
+    openruns_table = OpenRunsTable(openruns, order_by="-run_number")
 
     RequestConfig(request).configure(openruns_table)
 
