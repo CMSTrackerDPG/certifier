@@ -18,7 +18,7 @@ from django.db.models import (
 from django.db.models.functions import ExtractWeekDay
 from delete.query import SoftDeletionQuerySet
 from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification, chunks
-from runregistry.client import TrackerRunRegistryClient
+from runregistryapp.client import TrackerRunRegistryClient
 
 class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def annotate_status(self):

@@ -4,16 +4,18 @@ from tables.utilities.utilities import (
     render_component,
     render_trackermap,
     render_boolean_cell,
+    render_dataset,
+    render_certify_button,
 )
 from listruns.utilities.luminosity import format_integrated_luminosity
 from certifier.models import TrackerCertification, RunReconstruction
+from openruns.models import OpenRuns
 
 class SimpleRunReconstructionTable(tables.Table):
     run = tables.Column(verbose_name="Run Number")
     reconstruction = tables.Column()
     run_type = tables.Column(accessor="run.run_type")
     is_reference = tables.Column()
-    '''
     delete_run = tables.TemplateColumn(
         '<div align="center">'
         '<a href="{% url \'delete:delete_reference\' run_number=record.run.run_number reco=record.reconstruction%}">'
@@ -23,7 +25,7 @@ class SimpleRunReconstructionTable(tables.Table):
         orderable=False,
         verbose_name="Delete",
     )
-    '''
+
     class Meta:
         model = RunReconstruction
         fields = ()
@@ -180,3 +182,44 @@ class RunRegistryComparisonTable(tables.Table):
 
     def render_tracking(self, record):  # pragma: no cover
         return render_component(record.get("tracking"), record.get("tracking_lowstat"))
+
+class OpenRunsTable(tables.Table):
+    run_number = tables.Column(verbose_name="Run Number")
+
+    dataset_express = tables.Column(verbose_name="Express")
+    dataset_prompt = tables.Column(verbose_name="Prompt")
+    dataset_rereco = tables.Column(verbose_name="ReReco")
+
+    certify = tables.TemplateColumn(
+        '<div></div>',
+        verbose_name=""
+    )
+
+    def render_dataset_express(self, record): # pragma: no cover
+        """
+        :return: colored status of Dataset
+        """
+        return render_dataset(record.run_number ,record.dataset_express, "express")
+
+    def render_dataset_prompt(self, record): # pragma: no cover
+        """
+        :return: colored status of Dataset
+        """
+        return render_dataset(record.run_number, record.dataset_prompt, "prompt")
+
+    def render_dataset_rereco(self, record): # pragma: no cover
+        """
+        :return: colored status of Dataset
+        """
+        return render_dataset(record.run_number, record.dataset_rereco, "rereco")
+
+    def render_certify(self, record): # pragma: no cover
+        """
+        :return: colored Certify button
+        """
+        return render_certify_button(record.run_number, record.dataset_express, record.dataset_prompt, record.dataset_rereco)
+
+    class Meta:
+        attrs = {
+            "class": "table table-hover table-stripped"
+            }

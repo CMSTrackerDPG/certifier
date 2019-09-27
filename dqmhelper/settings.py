@@ -39,11 +39,12 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
     "summary.apps.SummaryConfig",
     "restore.apps.RestoreConfig",
     "delete.apps.DeleteConfig",
-    "runregistry.apps.RunregistryConfig",
+    "runregistryapp.apps.RunregistryappConfig",
     "shiftleader.apps.ShiftleaderConfig",
     "tables.apps.TablesConfig",
     "listruns.apps.ListrunsConfig",

@@ -17,13 +17,24 @@
 
             {% if user.has_shifter_rights %}
             <div class="card h-50">
-                <div class="btn btn-dark" onclick="location.href='{% url 'listruns:list' %}'">
+                <div class="btn btn-dark" onclick="location.href='{% url 'openruns:openruns' %}'">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Certification</h4>
                     </div>
                     <img class="card-img-top img" src="{% static "home/img/certify.png" %}" alt="Card image cap">
                     <div class="card-body">
                         <p class="card-text text-center" style="font-size: 18px">Tool for the certification of the runs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'listruns:list' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">List Runs</h4>
+                    </div>
+                    <img class="card-img-top img" src="{% static "home/img/listruns.png" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Tool for listing the certified runs</p>
                     </div>
                 </div>
             </div>
@@ -40,6 +51,8 @@
             </div>
             {% endif %}
 
+        </div>
+        <div class="card-deck pt-4">
             {% if user.has_shift_leader_rights %}
             <div class="card h-50">
                 <div class="btn btn-dark" onclick="location.href='{% url 'shiftleader:shiftleader' %}'">
@@ -52,10 +65,6 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-        </div>
-        <div class="card-deck pt-4">
-            {% if user.has_shift_leader_rights %}
             <div class="card h-50">
                 <div class="btn btn-dark" onclick="location.href='{% url 'addrefrun:addrefrun' %}'">
                     <div class="card-header">
@@ -68,8 +77,6 @@
                 </div>
             </div>
             {% endif %}
-            <div class="card h-50 invisible">
-            </div>
             <div class="card h-50 invisible">
             </div>
         </div>
