@@ -8,31 +8,6 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="mt-4 mb-4 col-lg-12 text-center">
-                <h1>Certify a new run</h1>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mb-4">
-        <form method="get" class="justify-content-center align-items-center">
-            <div class="form-group">
-                <div class="row mb-3 justify-content-center">
-                    <div class="col"></div>
-                    <div class="col">
-                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
-                    </div>
-                    <div class="col"></div>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary">Certify</button>
-            </div>
-        </form>
-    </div>
-
     {% if filter %}
         {% include "listruns/basic_filter.html" %}
     {% else %}

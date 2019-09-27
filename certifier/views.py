@@ -56,7 +56,7 @@ def certify(request, run_number):
     try:
         run = retrieve_run(run_number)
         dataset = retrieve_dataset(run_number)
-    except IndexError or ConnectionError:
+    except (IndexError, ConnectionError, Exception) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
 
@@ -97,7 +97,7 @@ def certify(request, run_number):
                 formToSave.save()
                 form.save_m2m()
 
-            return redirect("listruns:list")
+            return redirect("openruns:openruns")
 
     # if a GET (or any other method) we'll create a blank form
     else:

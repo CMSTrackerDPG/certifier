@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
     "summary.apps.SummaryConfig",
     "restore.apps.RestoreConfig",
