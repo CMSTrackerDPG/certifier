@@ -8,8 +8,8 @@ def openruns(request):
     context = {}
 
     run_number = request.GET.get("run_number", None)
-    min_run_number = request.GET.get("min", None)
-    max_run_number = request.GET.get("max", None)
+    min_run_number = request.POST.get("min", None)
+    max_run_number = request.POST.get("max", None)
 
     if run_number:
         response = redirect("/certify/{}".format(run_number))
