@@ -34,7 +34,8 @@
     </div>
 
     <div class="container mb-4">
-        <form method="get" class="justify-content-center align-items-center">
+        <form method="post" class="justify-content-center align-items-center">
+            {% csrf_token %}
             <div class="form-group">
                 <div class="row mb-3 justify-content-center">
                     <div class="col"></div>
