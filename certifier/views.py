@@ -53,11 +53,16 @@ def createDataset(request):
 
 @login_required
 def certify(request, run_number):
+
+
     try:
         run = retrieve_run(run_number)
         dataset = retrieve_dataset(run_number)
-    except (IndexError, ConnectionError, Exception) as e:
+    except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
+        return render(request, "certifier/404.html", context)
+    except Exception:
+        context = {"message": "Run {} has been fully certified".format(run_number)}
         return render(request, "certifier/404.html", context)
 
     reco = get_reco_from_dataset(dataset)
