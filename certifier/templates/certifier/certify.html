@@ -506,6 +506,13 @@
         document.getElementById("id-analyze-spinner").style.display = "none";
         document.getElementById("id-analyse-content").style.display = "block";
     }
+
+    var $myForm = $("#id_certifier_form");
+    $myForm.submit(function(){
+        $myForm.submit(function(){
+            return false;
+        });
+    });
 </script>
 
 <script>
