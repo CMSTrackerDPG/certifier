@@ -15,207 +15,224 @@
 {% load filters %}
 
 {% block content %}
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<div class="container">
-    <div class="row">
-        <div class="mt-4 mb-4 col-lg-12 text-center">
-            <h1>
-                {{ run_number }}
-                {% if user.is_superuser %}
-                    <!-- super secret button for developers -->
-                    <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
-                {% endif %}
-                <span class="badge badge-pill badge-info">{{ reco|capfirst }}</span>
-                <span class="badge badge-pill badge-info">{{ dataset }}</span>
-            </h1>
-        </div>
-    </div>
-</div>
-
-<!--================================ TYPE ===============================-->
-<div class="container-fluid">
-    <div class="row mb-2">
-        <div class="col-md-4">
-            <div class="card shadow-sm bg-white">
-                <div class="card-body">
-
-                    <h6 class="card-title text-primary">Type</h6>
-
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            <strong>Run type</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ run.run_type|capfirst }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            <strong>B field</strong>
-                        </div>
-                        <div class="col-md-8">
-                            \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            <strong>Energy</strong>
-                        </div>
-                        <div class="col-md-8">
-                            \({{ run.energy }}\) \({{ run.energy_unit }}\)
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            <strong>Particle</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ run.fill.fill_type_runtime }}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            <strong>Era</strong>
-                        </div>
-                        <div class="col-md-8">
-                            {{ run.fill.era|capfirst }}
-                        </div>
+<div id="addBadReason"></div>
+<form method="POST" action="" id="id_certifier_form" >
+    {% csrf_token %}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <div class="container-fluid mx-4">
+        <div class="row my-4">
+            <div class="col-sm-6">
+                <div class="row">
+                    <div class="text-left">
+                        <h1>
+                            <span class="badge badge-pill badge-success"> {{ run_number }} </span>
+                            <span class="badge badge-pill badge-success">{{ reco|capfirst }}</span>
+                            <span class="badge badge-pill badge-success">{{ dataset }}</span>
+                            {% if user.is_superuser %}
+                                <!-- super secret button for developers -->
+                                <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
+                            {% endif %}
+                        </h1>
                     </div>
                 </div>
             </div>
-        </div>
-
-
-<!--================================ LUMI ===============================-->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-
-                    <h6 class="card-title text-success">Lumi</h6>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Lumisections</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.lumisections }}\)
-                        </div>
+        <!--================================ DATE ===============================-->
+            <div class="col-sm-6">
+                <div class="row mt-2">
+                    <div class="col-sm-8 text-right" style="font-size: 18px; font-weight: bold;">
+                        <label for="id_date_month" class="col-form-label">
+                            {{ form.date.label }}:
+                        </label>
                     </div>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Recorded lumi</strong>
-                        </div>
-                        <div class="col-md-6">
-                            \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Delivered lumi</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Initial lumi</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>End lumi</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-<!--================================ Fill ===============================-->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6 class="card-title text-info">Fill</h6>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Fill number</strong>
-                        </div>
-                        <div class="col-md-7">
-                            {{ run.fill.fill_number }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Bunches</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.fill.bunches_colliding }}\)
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Initial lumi</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Peak lumi</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-5 text-right">
-                            <strong>Peak pileup</strong>
-                        </div>
-                        <div class="col-md-7">
-                            \({{ run.fill.peak_pileup|floatformat:3 }}\)
-                        </div>
+                    <div class="col-sm-4">
+                        {% bootstrap_field form.date label="" %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!--================================ ANALYSIS BUTTONS =====================
-<div class="container mt-5 mb-5">
-    <div class="text-center" id="id-analyze-spinner">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Running analysis...</span> Analyzing...
+    <!--================================ TYPE ===============================-->
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm bg-white">
+                    <div class="card-body">
+
+                        <h6 class="card-title text-primary">Type</h6>
+
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <strong>Run type</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ run.run_type|capfirst }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <strong>B field</strong>
+                            </div>
+                            <div class="col-md-8">
+                                \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <strong>Energy</strong>
+                            </div>
+                            <div class="col-md-8">
+                                \({{ run.energy }}\) \({{ run.energy_unit }}\)
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <strong>Particle</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ run.fill.fill_type_runtime }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <strong>Era</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ run.fill.era|capfirst }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+    <!--================================ LUMI ===============================-->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h6 class="card-title text-success">Lumi</h6>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Lumisections</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.lumisections }}\)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Recorded lumi</strong>
+                            </div>
+                            <div class="col-md-6">
+                                \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Delivered lumi</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Initial lumi</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>End lumi</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    <!--================================ Fill ===============================-->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title text-info">Fill</h6>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Fill number</strong>
+                            </div>
+                            <div class="col-md-7">
+                                {{ run.fill.fill_number }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Bunches</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.fill.bunches_colliding }}\)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Initial lumi</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Peak lumi</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 text-right">
+                                <strong>Peak pileup</strong>
+                            </div>
+                            <div class="col-md-7">
+                                \({{ run.fill.peak_pileup|floatformat:3 }}\)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="text-center" id="id-analyse-content" style="display:none;">
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info ml-2">
-            Open Analysis
-        </a>
-        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2">
-            Open Plots
-        </a>
-    </div>
-</div>-->
+    <!--================================ ANALYSIS BUTTONS =====================
+    <div class="container mt-5 mb-5">
+        <div class="text-center" id="id-analyze-spinner">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Running analysis...</span> Analyzing...
+            </div>
+        </div>
 
-<!--================================ FORM ===============================-->
-<div class="container-fluid">
-    <!--<div id="includeDataset"></div>-->
-    <div id="addBadReason"></div>
-    <form method="POST" action="" id="id_certifier_form" >
-        {% csrf_token %}
+        <div class="text-center" id="id-analyse-content" style="display:none;">
+            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info ml-2">
+                Open Analysis
+            </a>
+            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2">
+                Open Plots
+            </a>
+        </div>
+    </div>-->
+
+    <!--================================ FORM ===============================-->
+    <div class="container-fluid">
+        <!--<div id="includeDataset"></div>-->
         <div class="row justify-content-md-center no-gutters">
             <div class="col-md-3 mb-3">
 <!--================================ REFERENCE RUN ======================-->
@@ -255,21 +272,6 @@
                 </div>
             </div>
             <div class="col-md-6 mb-3 mt-1">
-<!--================================ DATE ===============================-->
-                <div class="row no-gutters justify-content-md-center">
-                    <div class="col-sm-2 text-right col-form-label" style="font-size: 18px;">
-                        <label for="id_date_month" >
-                            {{ form.date.label }}:
-                        </label>
-                    </div>
-
-                    <div class="col-sm-5 pl-4 d-flex justify-content-center">
-                        {% bootstrap_field form.date label="" %}
-                    </div>
-
-                    <div class="col-sm-2">
-                    </div>
-                </div>
 <!--================================ PIXEL ==============================-->
                 <div class="row mt-3 no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
@@ -445,8 +447,8 @@
             </div>
             <div class="col-sm-3"></div>
         </div>
-    </form>
-</div>
+    </div>
+</form>
     {% render_checklist_modal form.checklists.general %}
     {% render_checklist_modal form.checklists.trackermap %}
     {% render_checklist_modal form.checklists.pixel %}
