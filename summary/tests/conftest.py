@@ -3,7 +3,7 @@ from mixer.backend.django import mixer
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from certifier.models import TrackerCertification, RunReconstruction
+from certifier.models import TrackerCertification, RunReconstruction, Dataset
 from utilities.credentials import (
     SUPERUSER_USERNAME,
     PASSWORD,
@@ -29,20 +29,22 @@ def legitimate_reference_runs():
     """
     Reference runs as they might be used in production
     """
+    dataset1=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+
     mixer.blend(
         "certifier.RunReconstruction",
         is_reference=True,
         run=mixer.blend("oms.OmsRun", run_number=300100, run_type="collisions", stable_beam=True, hlt_key="/cdaq/physics", b_field="3.8", energy="13", fill_type_party1="Proton-Proton"),
         reconstruction="express",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
         "certifier.RunReconstruction",
-        is_reference=True,
+        is_reference=False,
         run=mixer.blend("oms.OmsRun", run_number=300101, run_type="collisions", stable_beam=True, hlt_key="/cdaq/physics", b_field="3.8", energy="13", fill_type_party1="Proton-Proton"),
         reconstruction="express",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -90,6 +92,11 @@ def runs_for_summary_report(legitimate_reference_runs):
 
     user = get_user_model().objects.first()
 
+    dataset1 = Dataset.objects.get(dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+    dataset2 = Dataset.objects.get(dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+    dataset3 = Dataset.objects.get(dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+    dataset4 = Dataset.objects.get(dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+
     mixer.blend(
         "certifier.TrackerCertification",
         user=user,
@@ -107,7 +114,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Water specific forget carry week. Likely 
                 friend claim marriage. White long design. Drop daughter free free 
                 analysis hang what run. Hospital administration one while the call.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -126,7 +133,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         date=today,
         comment="""Her arrive course management training probably anyone.
     Thank cut right manage enough state lose.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+        dataset=dataset2
     )
 
     mixer.blend(
@@ -147,7 +154,7 @@ def runs_for_summary_report(legitimate_reference_runs):
                 away finish anything voice. Turn worker success rather argue. Animal 
                 right music material. Development clear suddenly bank send central 
                 wall.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -167,7 +174,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Still a usually member quite many cause. Summer now finish 
                 may anything. Best hang light spend happen. Accept idea if should 
                 possible ball official.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+        dataset=dataset2
     )
 
     mixer.blend(
@@ -189,7 +196,7 @@ def runs_for_summary_report(legitimate_reference_runs):
 
                 Apply around seem win dog. Walk shot far record decade 
                 message trouble.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -209,7 +216,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Nor particular them win share fire agree. Job kind offer 
                 war lawyer couple card. Young degree go thus whether including away 
                 on.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -229,7 +236,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Attack strategy raise smile and. West but alone position 
                 ago finish change. Another message computer blood provide else 
                 hard.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset4
     )
 
     mixer.blend(
@@ -248,7 +255,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         date=today,
         comment="""Employee hard hard cost near enter recent. Remember plan 
                 hang.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -268,7 +275,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Why before work contain these indicate seem. None clear 
                 pass near minute once. Surface floor focus car number high still. 
                 Western trial collection evidence prepare.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -288,7 +295,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Better private while allow example style. Activity along 
                 me effort. Exactly thing commercial hang. Course shake red son source 
                 anything.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -309,7 +316,7 @@ def runs_for_summary_report(legitimate_reference_runs):
                 Factor pretty or sign benefit ten. Stock study nation bill. Use image 
                 kitchen establish explain eye north still. Anyone news fight huge 
                 region.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -329,7 +336,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Bill suggest success new citizen. Clear apply already rich 
                 cultural mouth support. Parent their case some win your news. Garden 
                 wear body into character. Age security including later involve.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -349,7 +356,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Care agree might TV paper response. Future support 
                 certainly follow thousand network. Positive cell raise no property 
                 science. Economic suffer market trade politics region huge.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -370,7 +377,7 @@ def runs_for_summary_report(legitimate_reference_runs):
                 different. Understand heart civil main sit. Best set baby. 
                 Traditional person picture create love maybe. Another his compare 
                 gas.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset4
     )
 
     mixer.blend(
@@ -390,7 +397,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Contain many the into television. Finally age little 
                 treat. Note PM mention how oh assume wrong. Inside listen health. Off 
                 degree how economy scientist.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset4
     )
 
     mixer.blend(
@@ -410,7 +417,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Turn drug science practice. Drop four budget section. Into 
                 draw more rock create pretty democratic. Really clear determine 
                 agreement foreign already him.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+        dataset=dataset2
     )
 
     mixer.blend(
@@ -431,7 +438,7 @@ def runs_for_summary_report(legitimate_reference_runs):
                 major. Test anyone much either exactly candidate east. Hit force oh 
                 professional network wide during fear. Pick figure young 
                 television.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -450,7 +457,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         date=today,
         comment="""Yard central myself leg sit. Consumer remember fund 
                 control then. Even near see girl hit season.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
 
     mixer.blend(
@@ -470,7 +477,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Training adult impact treatment die military. Glass cost 
                 experience various rather anything human. Either gas area may and 
                 any.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -489,7 +496,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         date=today,
         comment="""Enter quality material once rule with bill wind. Far whole 
                 give run. Government authority many wish sport.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset4
     )
 
     mixer.blend(
@@ -509,7 +516,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Notice in affect information value carry. Great success 
                 which on. Nation join doctor event. Actually local economy positive. 
                 Left woman effort technology reality. Military you it.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+        dataset=dataset2
     )
 
     mixer.blend(
@@ -529,7 +536,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Ball west movie pain enough. Child tonight guy hotel 
                 knowledge. Of everything past language heavy general. Goal option 
                 probably prevent. Wonder general difference design test.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpressCosmics/Run2018D-Express-v1/DQMIO")
+        dataset=dataset2
     )
 
     mixer.blend(
@@ -549,7 +556,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Important front more because nation check. Shoot accept 
                 seem detail stand under. Poor shoot next admit close conference. Put 
                 research watch mind.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -568,7 +575,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         date=today,
         comment="""Vote kind rule loss dark course. Across difficult people shoot.
     Thought real yeah improve. Explain media book yes business east.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/ZeroBias/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset3
     )
 
     mixer.blend(
@@ -588,7 +595,7 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Develop should across truth prevent single. Thus this much 
                 method child. Population impact accept black drop say. Game thought 
                 senior.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/StreamExpress/Run2018A-Express-v1/DQMIO")
+        dataset=dataset4
     )
 
     mixer.blend(
@@ -608,5 +615,5 @@ def runs_for_summary_report(legitimate_reference_runs):
         comment="""Notice this resource center. Interest remain throughout 
                 condition contain save problem. Town treatment magazine environmental 
                 report all rule.""",
-        dataset=mixer.blend("certifier.Dataset", dataset="/Cosmics/Run2018D-PromptReco-v2/DQMIO")
+        dataset=dataset1
     )
