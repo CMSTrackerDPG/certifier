@@ -55,7 +55,7 @@ class BadReason(models.Model):
         return self.name
 
 class Dataset(models.Model):
-    dataset = models.CharField(max_length=150)
+    dataset = models.CharField(max_length=150, unique=True)
 
     def __str__(self):
         return self.dataset
