@@ -40,14 +40,14 @@ def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_r
     and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="rereco").exists():
         return mark_safe(
             '<div align="center">'
-                    '<button class="btn btn-info" disabled>{}</button>'
+                    '<button class="btn btn-info" disabled id="id_table_certify">{}</button>'
             '</div>'.format("Certified")
             )
     else:
         return mark_safe(
             '<div align="center">'
                 '<a href="\certify\{}">'
-                    '<button class="btn btn-info">'
+                    '<button class="btn btn-info" id="id_table_certify">'
                         'Certify'
                     '</button>'
                 '</a>'
