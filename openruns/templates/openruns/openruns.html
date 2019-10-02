@@ -17,7 +17,7 @@
     </div>
 
     <div class="container mb-4">
-        <form method="get" class="justify-content-center align-items-center">
+        <form method="get" class="justify-content-center align-items-center" id="id_form_certify">
             <div class="form-group">
                 <div class="row mb-3 justify-content-center">
                     <div class="col"></div>
@@ -28,13 +28,13 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary">Certify</button>
+                <button type="submit" class="btn btn-primary" id="id_certify">Certify</button>
             </div>
         </form>
     </div>
 
     <div class="container mb-4">
-        <form method="post" class="justify-content-center align-items-center">
+        <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
             {% csrf_token %}
             <div class="form-group">
                 <div class="row mb-3 justify-content-center">
@@ -51,8 +51,10 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary">Get Open Runs</button>
-            </div>
+                <button type="submit" class="btn btn-primary" id="id_get_open_runs">
+                    Get Open Runs
+                </button>
+            </div> 
         </form>
     </div>
 
@@ -68,5 +70,39 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+var $myForm = $("#id_form_get_open_runs");
+$myForm.submit(function(){
+    $myForm.submit(function(){
+        return false;
+    });
+});
+var $myForm = $("#id_form_certify");
+$myForm.submit(function(){
+    $myForm.submit(function(){
+        return false;
+    });
+});
+$(document).ready(function() {
+    $("#id_get_open_runs").click(function() {
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+    });
+    $("#id_certify").click(function() {
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+    });
+    $("[id=id_table_certify]").click(function() {
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+    });
+});
+</script>
 {% endblock %}
 
