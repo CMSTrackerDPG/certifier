@@ -22,7 +22,7 @@
                 <div class="row mb-3 justify-content-center">
                     <div class="col"></div>
                     <div class="col">
-                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
                     </div>
                     <div class="col"></div>
                 </div>
@@ -41,11 +41,11 @@
                     <div class="col"></div>
                     <div class="col">
                         <b>from:</b>
-                        <input type="number" class="form-control" name='min' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                        <input type="number" class="form-control" name='min' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required >
                     </div>
                     <div class="col">
                         <b>to:</b>
-                        <input type="number" class="form-control" name='max' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                        <input type="number" class="form-control" name='max' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required >
                     </div>
                     <div class="col"></div>
                 </div>
@@ -73,34 +73,41 @@
 <script>
 var $myForm = $("#id_form_get_open_runs");
 $myForm.submit(function(){
+    $(this).find(':input[type=submit]').prop('disabled', true);
     $myForm.submit(function(){
         return false;
     });
 });
 var $myForm = $("#id_form_certify");
 $myForm.submit(function(){
+    $(this).find(':input[type=submit]').prop('disabled', true);
     $myForm.submit(function(){
         return false;
     });
 });
 $(document).ready(function() {
     $("#id_get_open_runs").click(function() {
-      // add spinner to button
-      $(this).html(
-        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-      );
+        // add spinner to button
+        if ($("#id_form_get_open_runs")[0].checkValidity()) {
+            $(this).html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+            );
+        }
     });
     $("#id_certify").click(function() {
-      // add spinner to button
-      $(this).html(
-        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-      );
+        // add spinner to button
+        if ($("#id_form_certify")[0].checkValidity()) {
+            $(this).html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+            );
+        }
     });
     $("[id=id_table_certify]").click(function() {
       // add spinner to button
       $(this).html(
         `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
       );
+       $(this).prop('disabled', true);
     });
 });
 </script>
