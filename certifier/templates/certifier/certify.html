@@ -439,11 +439,10 @@
             <div class="col-sm-6 text-center">
                 {% if object %}
                     <input class="btn btn-primary btn-lg" type="submit" value="Update">
-                    <button class="btn btn-secondary btn-lg" onclick="location.href='{% url 'shiftleader:shiftleader' %}'">Abort</button>
                 {% else %}
                     <input class="btn btn-primary btn-lg" type="submit" value="Submit">
-                    <button class="btn btn-secondary btn-lg" onclick="location.href='{% url 'openruns:openruns' %}'">Abort</button>
                 {% endif %}
+                <input class="btn btn-secondary btn-lg" type="button" value="Abort" onclick="history.back()">
             </div>
             <div class="col-sm-3"></div>
         </div>
