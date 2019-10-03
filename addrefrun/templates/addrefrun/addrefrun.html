@@ -17,12 +17,12 @@
     </div>
 
     <div class="container mb-4">
-        <form method="get" class="justify-content-center align-items-center">
+        <form method="get" class="justify-content-center align-items-center" id="id_form_add_reference">
             <div class="form-group">
                 <div class="row mb-3 justify-content-center">
                     <div class="col"></div>
                     <div class="col">
-                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" >
+                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required >
                     </div>
                     <div class="col"></div>
                 </div>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="submit" class="btn btn-primary" id="id_add_reference">Add Reference Run</button>
             </div>
         </form>
     </div>
@@ -70,4 +70,23 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
+<script>
+var $myForm = $("#id_form_add_reference");
+$myForm.submit(function(){
+    $(this).find(':input[type=submit]').prop('disabled', true);
+    $myForm.submit(function(){
+        return false;
+    });
+});
+$(document).ready(function() {
+    $("#id_add_reference").click(function() {
+        // add spinner to button
+        if ($("#id_form_add_reference")[0].checkValidity()) {
+            $(this).html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+            );
+        }
+    });
+});
+</script>
 {% endblock %}
