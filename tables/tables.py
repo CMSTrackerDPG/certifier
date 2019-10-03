@@ -189,6 +189,7 @@ class OpenRunsTable(tables.Table):
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
     dataset_rereco = tables.Column(verbose_name="ReReco")
+    date_retrieved = tables.Column(verbose_name="Date Retrieved")
 
     certify = tables.TemplateColumn(
         '<div></div>',

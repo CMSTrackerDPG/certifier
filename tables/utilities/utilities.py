@@ -63,12 +63,20 @@ def render_dataset(run_number, dataset, reco): # pragma: no cover
 
     if css_class:
         return mark_safe(
-            '<div class="{}">{}</div>'.format(css_class, dataset)
+            '<div align="center">'
+                '<button class="btn btn-block btn-success" id="id_table_certify" disabled>'
+                '<font color="black">{}</font>'
+                '</button>'
+            '</div>'.format(dataset)
         )
 
     return mark_safe(
-        '<div>{}</div'.format(dataset)
-    )
+        '<div align="center">'
+            '<button onclick="setGETParameter({0},\'{1}\')" class="btn btn-block btn-warning" id="id_table_certify">'
+                '{1}'
+            '</button>'
+        '</div>'.format(run_number, dataset)
+        )
 
 
 def render_trackermap(trackermap): # pragma: no cover
