@@ -15,5 +15,7 @@ class OpenRuns(models.Model):
     dataset_prompt = models.CharField(max_length=150, null=True, blank=True)
     dataset_rereco = models.CharField(max_length=150, null=True, blank=True)
 
+    date_retrieved = models.DateField()
+
     def __str__(self):
         return "{}".format(self.run_number)
