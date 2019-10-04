@@ -77,20 +77,6 @@
 
 {% block scripts %}
 <script>
-function setGETParameter(run_number, dataset){
-    $.ajax({
-        type: "GET",
-        url: {% url 'openruns:openruns' %},
-        data: {
-           'dataset': dataset,
-           'run_number' : run_number,
-        },
-        success: function(result){
-            window.location = result.url;
-        }
-    });
-}
-
 var $myForm = $("#id_form_get_open_runs");
 $myForm.submit(function(){
     $(this).find(':input[type=submit]').prop('disabled', true);
