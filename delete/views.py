@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from certifier.forms import CertifyForm
+from openruns.models import OpenRuns
 
 # Create your views here.
 @method_decorator(login_required, name="dispatch")
@@ -44,3 +45,13 @@ def hard_delete_reference_run(request, run_number, reco):
         return HttpResponseRedirect("/reference/")
 
     return render(request, "delete/hard_delete_reference_run.html", {"runReconstruction": runReconstruction})
+
+@login_required
+def hard_delete_open_run(request, run_number):
+    try:
+        openrun = OpenRuns.objects.get(run_number=run_number)
+    except OpenRuns.DoesNotExist:
+        raise Http404("The run  {} doesnt exist".format(run_number))
+
+    openrun.delete()
+    return HttpResponseRedirect("/openruns/")
