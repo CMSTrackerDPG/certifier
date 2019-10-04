@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.utils.safestring import mark_safe
 
 from tables.utilities.utilities import (
     render_component,
@@ -194,6 +195,13 @@ class OpenRunsTable(tables.Table):
         '<div></div>',
         verbose_name=""
     )
+
+    def render_run_number(self, record): # pagman: no cover
+        return mark_safe(
+            '<div>'
+                '<span class="align-middle">{}</span>'
+            '</div>'.format(record.run_number),
+        )
 
     def render_dataset_express(self, record): # pragma: no cover
         """

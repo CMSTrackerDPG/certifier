@@ -22,7 +22,7 @@
                 <div class="row mb-3 justify-content-center">
                     <div class="col"></div>
                     <div class="col">
-                        <input type="number" class="form-control" name='run_number' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
+                        <input type="number" class="form-control" name='run_number' id='id_run_number_certify' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
                     </div>
                     <div class="col"></div>
                 </div>
@@ -34,28 +34,34 @@
     </div>
 
     <div class="container mb-4">
-        <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
-            {% csrf_token %}
-            <div class="form-group">
-                <div class="row mb-3 justify-content-center">
-                    <div class="col"></div>
-                    <div class="col">
-                        <b>from:</b>
-                        <input type="number" class="form-control" name='min' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required >
+        <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 600px;">
+            <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-sm-5">
+                            <b>from:</b>
+                            <input type="number" class="form-control" name='min' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp">
+                        </div>
+                        <div class="col-sm-5">
+                            <b>to:</b>
+                            <input type="number" class="form-control" name='max' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp">
+                        </div>
                     </div>
-                    <div class="col">
-                        <b>to:</b>
-                        <input type="number" class="form-control" name='max' id='id-run-number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required >
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-sm-10">
+                            <b>Comma-separated list:</b>
+                            <input type="text" class="form-control" name="list" placeholder="Comma separated list of run numbers" id="id_run_number_list">
+                        </div>
                     </div>
-                    <div class="col"></div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary" id="id_get_open_runs">
-                    Get Open Runs
-                </button>
-            </div> 
-        </form>
+                <div class="row justify-content-center">
+                    <button type="submit" class="btn btn-primary" id="id_get_open_runs">
+                        Get Open Runs
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {% if openruns_table %}
@@ -78,6 +84,7 @@ $myForm.submit(function(){
         return false;
     });
 });
+
 var $myForm = $("#id_form_certify");
 $myForm.submit(function(){
     $(this).find(':input[type=submit]').prop('disabled', true);
@@ -85,6 +92,7 @@ $myForm.submit(function(){
         return false;
     });
 });
+
 $(document).ready(function() {
     $("#id_get_open_runs").click(function() {
         // add spinner to button
@@ -109,6 +117,22 @@ $(document).ready(function() {
       );
        $(this).prop('disabled', true);
     });
+
+$(function() {
+    $('[id=id_run_number]').focus(function(){
+      $('#id_run_number_list').val('');
+      $('#id_run_number_list').prop('disabled', 'disabled');
+    }).blur(function(){
+     $('#id_run_number_list').prop('disabled', '');
+    });
+
+    $('#id_run_number_list').focus(function(){
+      $('[id=id_run_number]').val('');
+      $('[id=id_run_number]').prop('disabled', 'disabled');
+    }).blur(function(){
+     $('[id=id_run_number]').prop('disabled', '');
+    });
+});
 });
 </script>
 {% endblock %}

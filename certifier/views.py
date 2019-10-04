@@ -54,10 +54,16 @@ def createDataset(request):
 @login_required
 def certify(request, run_number):
 
+    dataset = request.GET.get('dataset',None)
 
     try:
         run = retrieve_run(run_number)
-        dataset = retrieve_dataset(run_number)
+
+        if not dataset:
+            dataset = retrieve_dataset(run_number)
+        else:
+            dataset=dataset
+
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
