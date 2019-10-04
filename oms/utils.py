@@ -44,6 +44,8 @@ def get_reco_from_dataset(dataset):
         return "express"
     elif "prompt" in lowcase_dataset:
         return "prompt"
+    elif "rereco" in  lowcase_dataset and "UL" in dataset:
+        return "rerecoul"
     elif "rereco" in  lowcase_dataset:
         return "rereco"
 

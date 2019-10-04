@@ -6,7 +6,7 @@ from oms.utils import get_reco_from_dataset
 
 def get_specific_open_runs(runs_list, user):
     runs = runregistry.get_runs(filter={
-        'state':'OPEN',
+        #'state':'OPEN',
         'run_number': {'or': runs_list},
     })
 
@@ -14,7 +14,7 @@ def get_specific_open_runs(runs_list, user):
 
 def get_open_runs(start, end, user):
     runs = runregistry.get_runs(filter={
-        'state':'OPEN',
+        #'state':'OPEN',
         'run_number': {'and': [{'>': start}, {'<': end}]},
     })
 
@@ -37,18 +37,22 @@ def get_datasets_of_runs(runs, user):
             dataset_express=""
             dataset_prompt=""
             dataset_rereco=""
+            dataset_rereco_ul=""
 
             for dataset in datasets:
                 if "express" in dataset["name"].lower():
                     dataset_express=dataset["name"]
-                if "prompt" in dataset["name"].lower():
+                elif "prompt" in dataset["name"].lower():
                     dataset_prompt=dataset["name"]
-                if "rereco" in dataset["name"].lower():
+                elif "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
+                    dataset_rereco_ul=dataset["name"]
+                elif "rereco" in dataset["name"].lower():
                     dataset_rereco=dataset["name"]
 
             if dataset_express!="":
                 OpenRuns.objects.create(run_number=run["run_number"], dataset_express=dataset_express, user=user, date_retrieved=today)
                 OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_prompt=dataset_prompt)
                 OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco=dataset_rereco)
+                OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco_ul=dataset_rereco_ul)
         else:
             run_check.update(date_retrieved=today)

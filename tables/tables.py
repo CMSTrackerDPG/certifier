@@ -190,9 +190,23 @@ class OpenRunsTable(tables.Table):
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
     dataset_rereco = tables.Column(verbose_name="ReReco")
+    dataset_rereco_ul = tables.Column(verbose_name="ReRecoUL")
 
     certify = tables.TemplateColumn(
         '<div></div>',
+        orderable=False,
+        verbose_name=""
+    )
+
+    delete = tables.TemplateColumn(
+        '<div align="center">'
+            '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
+                '<button class="btn btn-block btn-danger">'
+                'Delete'
+                '</button>'
+            '</a>'
+        '</div>',
+        orderable=False,
         verbose_name=""
     )
 
@@ -220,6 +234,12 @@ class OpenRunsTable(tables.Table):
         :return: colored status of Dataset
         """
         return render_dataset(record.run_number, record.dataset_rereco, "rereco")
+
+    def render_dataset_rereco_ul(self, record): # pragma: no cover
+        """
+        :return: colored status of Dataset
+        """
+        return render_dataset(record.run_number, record.dataset_rereco_ul, "rerecoul")
 
     def render_certify(self, record): # pragma: no cover
         """
