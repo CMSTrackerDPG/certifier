@@ -10,21 +10,8 @@ import json
 def openruns(request):
     context = {}
 
-    if request.is_ajax():
-        dataset = request.GET.get("dataset", None)
-        run_number = request.GET.get("run_number", None)
-
-        if run_number and dataset:
-            response = {'status': 0, 'message': ("OK"), 'url':"/certify/{}/?dataset={}".format(run_number, dataset)} 
-            return HttpResponse(json.dumps(response), content_type='application/json')
-
     if request.method == 'GET':
-        dataset = request.GET.get("dataset", None)
         run_number = request.GET.get("run_number", None)
-
-        if run_number and dataset:
-            response = redirect("/certify/{}/?dataset={}".format(run_number, dataset))
-            return response
 
         if run_number:
             response = redirect("/certify/{}".format(run_number))

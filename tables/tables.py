@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.utils.safestring import mark_safe
 
 from tables.utilities.utilities import (
     render_component,
@@ -189,12 +190,18 @@ class OpenRunsTable(tables.Table):
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
     dataset_rereco = tables.Column(verbose_name="ReReco")
-    date_retrieved = tables.Column(verbose_name="Date Retrieved")
 
     certify = tables.TemplateColumn(
         '<div></div>',
         verbose_name=""
     )
+
+    def render_run_number(self, record): # pagman: no cover
+        return mark_safe(
+            '<div>'
+                '<span class="align-middle">{}</span>'
+            '</div>'.format(record.run_number),
+        )
 
     def render_dataset_express(self, record): # pragma: no cover
         """
