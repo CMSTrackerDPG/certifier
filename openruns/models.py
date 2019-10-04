@@ -14,6 +14,7 @@ class OpenRuns(models.Model):
     dataset_express = models.CharField(max_length=150)
     dataset_prompt = models.CharField(max_length=150, null=True, blank=True)
     dataset_rereco = models.CharField(max_length=150, null=True, blank=True)
+    dataset_rereco_ul = models.CharField(max_length=150, null=True, blank=True)
 
     date_retrieved = models.DateField()
 

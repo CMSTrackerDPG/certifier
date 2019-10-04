@@ -37,7 +37,8 @@ def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_r
 
     if TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="express").exists()\
     and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="prompt").exists()\
-    and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="rereco").exists():
+    and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="rereco").exists()\
+    and TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction="rerecoul").exists():
         return mark_safe(
             '<div align="center">'
                     '<button class="btn btn-block btn-info" disabled id="id_table_certify">{}</button>'

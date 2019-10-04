@@ -10,6 +10,7 @@ class RunReconstruction(models.Model):
         ("express", "Express"),
         ("prompt", "Prompt"),
         ("rereco", "ReReco"),
+        ("rerecoul", "ReRecoUL"),
     )
     run = models.ForeignKey(OmsRun, on_delete=models.CASCADE)
     reconstruction = models.CharField(max_length=8, choices=RECONSTRUCTION_CHOICES)
