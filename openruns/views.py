@@ -26,7 +26,7 @@ def openruns(request):
         runs_list = request.POST.get("list", None)
         if runs_list:
             try:
-                runs_list = list(map(int, re.split(",| ", runs_list)))
+                runs_list = list(map(int, re.split(" , | ,|, |,| ", re.sub('\s+', ' ', runs_list).lstrip().rstrip())))
             except ValueError:
                 context = {"message": "Run list should contains only numbers of runs separated by comma or space"}
                 return render(request, "certifier/404.html", context)

@@ -201,7 +201,7 @@ class OpenRunsTable(tables.Table):
     delete = tables.TemplateColumn(
         '<div align="center">'
             '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
-                '<button class="btn btn-block btn-danger">'
+                '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
                 'Delete'
                 '</button>'
             '</a>'
