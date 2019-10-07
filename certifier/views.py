@@ -67,8 +67,8 @@ def certify(request, run_number):
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
-    except Exception:
-        context = {"message": "Run {} has been fully certified".format(run_number)}
+    except Exception as e:
+        context = {"message": e}
         return render(request, "certifier/404.html", context)
 
     reco = get_reco_from_dataset(dataset)
