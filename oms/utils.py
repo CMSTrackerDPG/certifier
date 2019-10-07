@@ -62,7 +62,7 @@ def retrieve_dataset(run_number):
             if not TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
                 return dataset["name"]
 
-    raise Exception("Run fully certified")
+    raise Exception("Run {} has been fully certified".format(run_number))
 
 def retrieve_fill(fill_number):
     response = oms.get_fills(fill_number, fill_number)[0]
