@@ -176,3 +176,5 @@ EMAIL_HOST_USER = config('DJANGO_EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('DJANGO_EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('DJANGO_EMAIL_USE_TLS', default=False, cast=bool)
 SERVER_EMAIL = config('DJANGO_SERVER_EMAIL', default='root@localhost')
+
+CERN_CERTIFICATE_PATH = config('CERN_CERTIFICATE_PATH', default='')

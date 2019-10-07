@@ -6,6 +6,7 @@ from openruns.utilities import get_open_runs, get_specific_open_runs
 from django_tables2 import RequestConfig
 from django.http import HttpResponse
 import json
+import re
 
 def openruns(request):
     context = {}
@@ -24,7 +25,12 @@ def openruns(request):
 
         runs_list = request.POST.get("list", None)
         if runs_list:
-            runs_list = list(map(int, runs_list.replace(" ","").split(",")))
+            try:
+                runs_list = list(map(int, re.split(",| ", runs_list)))
+            except ValueError:
+                context = {"message": "Run list should contains only numbers of runs separated by comma or space"}
+                return render(request, "certifier/404.html", context)
+
 
         if min_run_number and max_run_number and not runs_list:
             get_open_runs(min_run_number,max_run_number, request.user)
