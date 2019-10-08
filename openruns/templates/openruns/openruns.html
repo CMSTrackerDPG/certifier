@@ -117,6 +117,13 @@ $(document).ready(function() {
       );
        $(this).prop('disabled', true);
     });
+    $("[id=id_openruns_delete]").click(function() {
+      // add spinner to button
+      $(this).html(
+        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+      );
+       $(this).prop('disabled', true);
+    });
 
 $(function() {
     $('[id=id_run_number]').focus(function(){
