@@ -8,7 +8,7 @@ class OpenRuns(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     run_number = models.PositiveIntegerField(
-        help_text="Run number", verbose_name="Run", unique=True, primary_key=True
+        help_text="Run number", verbose_name="Run"
     )
 
     dataset_express = models.CharField(max_length=150)
@@ -17,6 +17,9 @@ class OpenRuns(models.Model):
     dataset_rereco_ul = models.CharField(max_length=150, null=True, blank=True)
 
     date_retrieved = models.DateField()
+
+    class Meta:
+        unique_together = ("run_number", "user")
 
     def __str__(self):
         return "{}".format(self.run_number)

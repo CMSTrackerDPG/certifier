@@ -32,7 +32,7 @@ def get_datasets_of_runs(runs, user):
 
         today = timezone.now().strftime("%Y-%m-%d")
 
-        run_check = OpenRuns.objects.filter(run_number=run["run_number"])
+        run_check = OpenRuns.objects.filter(run_number=run["run_number"], user=user)
         if not run_check.exists():
             dataset_express=""
             dataset_prompt=""
