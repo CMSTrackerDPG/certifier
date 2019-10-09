@@ -26,6 +26,23 @@
                     </div>
                     <div class="col"></div>
                 </div>
+                <div class="row mb-3 justify-content-center">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='express' id="id-reco-express" autocomplete="off" class="sr-only"> Express
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='prompt' id="id-reco-prompt" autocomplete="off" class="sr-only"> Prompt
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='rereco' id="id-reco-rereco" autocomplete="off" class="sr-only"> ReReco
+                        </label>
+                        <label class="btn btn-outline-secondary">
+                            <input type="radio" name="reco" value='rerecoul' id="id-reco-rereco-ul" autocomplete="off" class="sr-only"> ReRecoUL
+                        </label>
+                    </div>
+                </div>
+
             </div>
             <div class="row justify-content-center">
                 <button type="submit" class="btn btn-primary" id="id_certify">Certify</button>
@@ -51,7 +68,7 @@
                     <div class="row mb-3 justify-content-center">
                         <div class="col-sm-10">
                             <b>list:</b>
-                            <input type="text" class="form-control" name="list" placeholder="Separated list of run numbers (comma or space)" id="id_run_number_list">
+                            <input type="text" class="form-control" name="list" placeholder="Separated list of run numbers (comma or space)" id="id_run_number_list" required>
                         </div>
                     </div>
                 </div>
@@ -96,6 +113,10 @@ $myForm.submit(function(){
 $(document).ready(function() {
     $("#id_get_open_runs").click(function() {
         // add spinner to button
+        if ($('[id=id_run_number]').val() != '') {
+            console.log($('[id=id_run_number]').val())
+          $('#id_run_number_list').removeAttr('required');
+        }
         if ($("#id_form_get_open_runs")[0].checkValidity()) {
             $(this).html(
                 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
@@ -130,14 +151,14 @@ $(function() {
       $('#id_run_number_list').val('');
       $('#id_run_number_list').prop('disabled', 'disabled');
     }).blur(function(){
-     $('#id_run_number_list').prop('disabled', '');
+      $('#id_run_number_list').prop('disabled', '');
     });
 
     $('#id_run_number_list').focus(function(){
       $('[id=id_run_number]').val('');
       $('[id=id_run_number]').prop('disabled', 'disabled');
     }).blur(function(){
-     $('[id=id_run_number]').prop('disabled', '');
+      $('[id=id_run_number]').prop('disabled', '');
     });
 });
 });
