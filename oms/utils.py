@@ -49,6 +49,28 @@ def get_reco_from_dataset(dataset):
     elif "rereco" in  lowcase_dataset:
         return "rereco"
 
+def retrieve_dataset_by_reco(run_number, reco):
+    datasets = runregistry.get_datasets(
+            filter={
+                'run_number': {
+                    '=': run_number
+                }
+            })
+
+    for dataset in datasets:
+        if reco in dataset["name"].lower():
+            return dataset["name"]
+
+        if reco == "rereco":
+            if reco in dataset["name"].lower() and "UL" not in dataset["name"]:
+                return dataset["name"]
+
+        if reco == "rerecoul":
+            if "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
+                return dataset["name"]
+
+    raise Exception("Could not find reconstruction:{} for run {}".format(reco, run_number))
+
 def retrieve_dataset(run_number):
     datasets = runregistry.get_datasets(
             filter={

@@ -195,14 +195,15 @@ class OpenRunsTable(tables.Table):
     certify = tables.TemplateColumn(
         '<div></div>',
         orderable=False,
-        verbose_name=""
+        verbose_name="",
+        visible=False
     )
 
     delete = tables.TemplateColumn(
         '<div align="center">'
             '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
                 '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
-                'Delete'
+                'Remove Entry'
                 '</button>'
             '</a>'
         '</div>',
