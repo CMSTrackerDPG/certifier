@@ -3,7 +3,7 @@ from django.shortcuts import render
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
 # Create your views here.
 from django.shortcuts import redirect
-from oms.utils import retrieve_run, retrieve_dataset, get_reco_from_dataset
+from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
 from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
@@ -52,7 +52,7 @@ def createDataset(request):
     return render(request, "certifier/dataset.html", {"form": form})
 
 @login_required
-def certify(request, run_number):
+def certify(request, run_number, reco=None):
 
     dataset = request.GET.get('dataset',None)
 
@@ -60,7 +60,10 @@ def certify(request, run_number):
         run = retrieve_run(run_number)
 
         if not dataset:
-            dataset = retrieve_dataset(run_number)
+            if not reco:
+                dataset = retrieve_dataset(run_number)
+            else:
+                dataset = retrieve_dataset_by_reco(run_number, reco)
         else:
             dataset=dataset
 
