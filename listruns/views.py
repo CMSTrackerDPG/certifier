@@ -52,12 +52,12 @@ def listruns(request):
     if request.user.is_authenticated:
         run_info_list = TrackerCertification.objects.filter(user=request.user)
         run_info_filter = TrackerCertificationFilter(request.GET, queryset=run_info_list)
-        table = TrackerCertificationTable(run_info_filter.qs)
+        table = TrackerCertificationTable(run_info_filter.qs, order_by="-date")
 
     else:
         run_info_list = TrackerCertification.objects.all()
         run_info_filter = TrackerCertificationFilter(request.GET, queryset=run_info_list)
-        table = SimpleTrackerCertificationTable(run_info_filter.qs)
+        table = SimpleTrackerCertificationTable(run_info_filter.qs, order_by="-date")
 
     RequestConfig(request).configure(table)
 
