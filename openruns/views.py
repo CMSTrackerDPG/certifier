@@ -2,12 +2,13 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from openruns.models import OpenRuns
 from tables.tables import OpenRunsTable
-from openruns.utilities import get_open_runs, get_specific_open_runs
+from openruns.tasks import get_open_runs, get_specific_open_runs
 from django_tables2 import RequestConfig
 from django.http import HttpResponse
 from django.db.models import Case, When
 import json
 import re
+from django.forms.models import model_to_dict
 
 def openruns(request):
     context = {}
@@ -39,9 +40,9 @@ def openruns(request):
 
 
         if min_run_number and max_run_number and not runs_list:
-            get_open_runs(min_run_number,max_run_number, request.user)
+            result = get_open_runs.delay(min_run_number,max_run_number, request.user.get_username())
         else:
-            get_specific_open_runs(runs_list, request.user)
+            result = get_specific_open_runs.delay(runs_list, request.user.get_username())
 
     today = timezone.now().strftime("%Y-%m-%d")
 

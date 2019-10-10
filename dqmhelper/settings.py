@@ -17,7 +17,6 @@ from decouple import config
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -39,6 +38,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_beat',
+    'django_celery_results',
     "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
     "summary.apps.SummaryConfig",
@@ -117,7 +118,6 @@ LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = "dqmhelper.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -178,3 +178,7 @@ EMAIL_USE_TLS = config('DJANGO_EMAIL_USE_TLS', default=False, cast=bool)
 SERVER_EMAIL = config('DJANGO_SERVER_EMAIL', default='root@localhost')
 
 CERN_CERTIFICATE_PATH = config('CERN_CERTIFICATE_PATH', default='')
+
+# Celery Backend
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
