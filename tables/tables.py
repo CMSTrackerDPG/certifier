@@ -50,7 +50,11 @@ class SimpleTrackerCertificationTable(tables.Table):
     pixel = tables.Column()
     strip = tables.Column()
     tracking = tables.Column()
-    comment = tables.Column()
+    comment = tables.TemplateColumn(
+        '<div id="id_comment">'
+            '{{record.comment}}'
+        '</div>',
+    )
     date = tables.Column()
 
     class Meta:
