@@ -29,14 +29,14 @@
                             <span class="badge badge-pill badge-success">{{ reco|capfirst }}</span>
                             <span class="badge badge-pill badge-success">{{ dataset }}</span>
                             {% if user.is_superuser %}
-                                <!-- super secret button for developers -->
-                                <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
+                            <!-- super secret button for developers -->
+                            <span style="cursor: pointer;" onclick="checkAllChecklists();">&nbsp;</span>
                             {% endif %}
                         </h1>
                     </div>
                 </div>
             </div>
-        <!--================================ DATE ===============================-->
+            <!--================================ DATE ===============================-->
             <div class="col-sm-6">
                 <div class="row mt-2">
                     <div class="col-sm-8 text-right" style="font-size: 18px; font-weight: bold;">
@@ -54,7 +54,7 @@
 
     <!--================================ TYPE ===============================-->
     <div class="container-fluid">
-        <div class="row mb-4">
+        <div class="row">
             <div class="col-md-4">
                 <div class="card shadow-sm bg-white">
                     <div class="card-body">
@@ -108,7 +108,7 @@
             </div>
 
 
-    <!--================================ LUMI ===============================-->
+            <!--================================ LUMI ===============================-->
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -159,7 +159,7 @@
                 </div>
             </div>
 
-    <!--================================ Fill ===============================-->
+            <!--================================ Fill ===============================-->
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -230,21 +230,20 @@
         </div>
     </div>-->
 
-    <!--================================ FORM ===============================-->
-    <div class="container-fluid">
+    <div class="container-fluid mt-4">
         <!--<div id="includeDataset"></div>-->
         <div class="row justify-content-md-center no-gutters">
-            <div class="col-md-3 mb-3">
-<!--================================ REFERENCE RUN ======================-->
+            <div class="col-md-3">
+                <!--================================ REFERENCE RUN ======================-->
                 <div class="row no-gutters ml-4">
-                    <div class="col-sm-10" style="font-size: 24px; font-weight: bold;">
+                    <div class="col-sm-10" style="font-size: 24px;">
                         {{ form.reference_runreconstruction.label}}:
                     </div>
                     <div class="col-sm-12">
                         {% render_field form.reference_runreconstruction class="custom-select" style="color: green; font-weight:bold;" %}
                     </div>
                 </div>
-<!--================================ DATASET ======================
+                <!--================================ DATASET ======================
                 <div class="row no-gutters mt-3 ml-4">
                     <div class="col-sm-2 col-form-label" style="font-size: 18px;">
                         {{ form.dataset.label}}:
@@ -261,9 +260,9 @@
                         </button>
                     </div>
                 </div>
--->
-<!--================================ CHECKLISTS =========================-->
-                <div class="col-sm-offset mt-3 ml-4">
+                -->
+                <!--================================ CHECKLISTS =========================-->
+                <div class="col-sm mt-3">
                     {% render_checklist_checkbox form.checklists.general not_required=checklist_not_required %}
                     {% render_checklist_checkbox form.checklists.trackermap not_required=checklist_not_required %}
                     {% render_checklist_checkbox form.checklists.pixel not_required=checklist_not_required%}
@@ -271,9 +270,9 @@
                     {% render_checklist_checkbox form.checklists.tracking not_required=checklist_not_required%}
                 </div>
             </div>
-            <div class="col-md-6 mb-3 mt-1">
-<!--================================ PIXEL ==============================-->
-                <div class="row mt-3 no-gutters justify-content-md-center">
+            <div class="col-md-6 mt-2 pt-2">
+                <!--================================ PIXEL ==============================-->
+                <div class="row no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
                         <label for="id_pixel" style="font-size: 24px;">
                             {{ form.pixel.label }}:
@@ -302,7 +301,7 @@
                         </label>
                     </div>
                 </div>
-<!--================================ STRIP ==============================-->
+                <!--================================ STRIP ==============================-->
                 <div class="row mt-2 no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
                         <label for="id_strip" style="font-size: 24px;">
@@ -332,7 +331,7 @@
                         </label>
                     </div>
                 </div>
-<!--================================ TRACKING ===========================-->
+                <!--================================ TRACKING ===========================-->
                 <div class="row mt-2 no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
                         <label for="id_tracking" style="font-size: 24px;">
@@ -363,7 +362,7 @@
                         </label>
                     </div>
                 </div>
-<!--================================ TRACKERMAP =========================-->
+                <!--================================ TRACKERMAP =========================-->
                 <div class="row mt-2 no-gutters justify-content-md-center">
                     <div class="col-sm-2 text-right">
                         <label for="id_trackermap" style="font-size: 18px;">
@@ -377,8 +376,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3 mt-1">
-<!--================================ BAD REASON =========================-->
+            <div class="col-md-3 mb-3 mt-2 pt-2">
+                <!--================================ BAD REASON =========================-->
                 <div class="row mr-4 no-gutters">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         Why bad?
@@ -397,7 +396,7 @@
                         </button>
                     </div>
                 </div>
-<!--================================ PROBLEMS ============================-->
+                <!--================================ PROBLEMS ============================-->
                 <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
                         {{ form.pixel_problems.label}}:
@@ -422,25 +421,27 @@
                         {% render_field form.tracking_problems class="selectpicker col-sm-12" multiple="" data-selected-text-format="count > 2"%}
                     </div>
                 </div>
-<!--================================ COMMENT ============================-->
-                <div class="row mt-2 mr-4">
-                    <div class="col-sm-12 col-form-label" style="font-size: 18px">
-                        {{ form.comment.label}}:
-                    </div>
-                    <div class="col-sm-12">
-                        {% render_field form.comment class="form-control" rows="3" %}
-                    </div>
+            </div>
+        </div>
+        <!--================================ COMMENT ============================-->
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-sm-12 col-form-label" style="font-size: 18px">
+                    {{ form.comment.label}}:
+                </div>
+                <div class="col-sm-12 overflow">
+                    {% render_field form.comment class="form-control" style="height: 90px;" id="id_comment_box"%}
                 </div>
             </div>
         </div>
-<!--================================ SUBMIT ==============================-->
+        <!--================================ SUBMIT ==============================-->
         <div class="row justify-content-center">
             <div class="col-sm-3"></div>
             <div class="col-sm-6 text-center">
                 {% if object %}
-                    <input class="btn btn-primary btn-lg" type="submit" value="Update">
+                <input class="btn btn-primary btn-lg" type="submit" value="Update">
                 {% else %}
-                    <input class="btn btn-primary btn-lg" type="submit" value="Submit">
+                <input class="btn btn-primary btn-lg" type="submit" value="Submit">
                 {% endif %}
                 <input class="btn btn-secondary btn-lg" type="button" value="Abort" onclick="history.back()">
             </div>
@@ -458,7 +459,20 @@
 <!--================================ SCRIPTS ==============================-->
 {% block scripts %}
 <script src="{% static "checklists/js/checklist.js" %}"></script>
+<script>
+function expandTextarea(id, initial_height) {
+    document.getElementById(id).addEventListener('keyup', function() {
+        this.style.overflow = 'hidden';
+        this.style.height = 0;
+        if (this.scrollHeight > initial_height)
+            this.style.height = this.scrollHeight + 'px';
+        else
+            this.style.height = initial_height + 'px';
+    }, false);
+}
 
+expandTextarea('id_comment_box', 90);
+</script>
 <script type="text/javascript">
     function label_highlight(inputName){
         $(document).ready(function(){

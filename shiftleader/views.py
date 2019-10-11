@@ -31,7 +31,6 @@ def shiftleader_view(request):
     if someone wants to list all runs form all users then he has to specify that explicitly
     in the filter (setting everything to nothing)
     """
-    print(request)
     if request_contains_filter_parameter(request):
         return ShiftLeaderView.as_view()(request=request)
     return HttpResponseRedirect("/shiftleader/%s" % get_this_week_filter_parameter())
