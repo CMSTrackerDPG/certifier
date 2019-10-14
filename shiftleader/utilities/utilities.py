@@ -61,6 +61,8 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
             entry["runreconstruction__reconstruction"] = "express"
         elif "prompt" in dataset:
             entry["runreconstruction__reconstruction"] = "prompt"
+        elif "rereco" in dataset and "UL" in entry["dataset"]:
+            entry["runreconstruction__reconstruction"] = "rerecoul"
         elif "rereco" in dataset:
             entry["runreconstruction__reconstruction"] = "rereco"
 
