@@ -53,11 +53,13 @@ class BadReasonForm(ModelForm):
         widgets = {
             'name': TextInput(
                 attrs={'placeholder': "e.g. Timing Problem",
-                       'class': "form-control"}),
+                        'class': "form-control",
+                        'id':"id_bad_reason_name"}),
             'description': Textarea(
                 attrs={'placeholder': "e.g. The problem consists in...",
-                       'class': "form-control",
-                       'rows' : "3"}),
+                        'class': "form-control",
+                        'rows' : "3",
+                        'id':"id_bad_reason_desc"}),
         }
 
 class CertifyFormWithChecklistForm(CertifyForm, ChecklistFormMixin):
