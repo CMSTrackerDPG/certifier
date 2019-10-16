@@ -1,8 +1,8 @@
-<form method="POST" action="{% url 'addbadreason' %}" id="id_badreason_form"> {% csrf_token %}
-    <!-- Modal -->
-    <div class="modal fade" id="id_badreason_modal" tabindex="-1" role="dialog" aria-labelledby="Add new reason" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+<!-- Modal -->
+<div class="modal fade" id="id_badreason_modal" tabindex="-1" role="dialog" aria-labelledby="Add new reason" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="id_badreason_form"> {% csrf_token %}
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal_badreason_label">Add new reason</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -29,9 +29,22 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="Add">
+                    <input type="submit" class="btn btn-primary" value="Add" id="id_bad_reason_submit">
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-</form>
+</div>
+<script>
+$( "#id_badreason_modal" ).on('shown.bs.modal', function(){
+    $('#id_bad_reason_submit').removeAttr("disabled");
+});
+var $myForm = $("#id_badreason_form");
+$myForm.submit(function(e){
+    e.preventDefault()
+    add_bad_reason()
+    $('#id_badreason_modal').modal('hide');
+    $('#id_bad_reason_submit').attr("disabled", true);
+    return false;
+});
+</script>
