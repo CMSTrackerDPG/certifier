@@ -12,21 +12,7 @@ from django.http import HttpResponseRedirect
 @login_required #WIP
 def addBadReason(request):
     # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = BadReasonForm(request.POST)
-
-        # check whether it's valid:
-        if form.is_valid():
-            try:
-                name = BadReason.objects.get(
-                        name=request.POST.get("name"))
-            except BadReason.DoesNotExist:
-                form.save()
-
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    else:
-        form = BadReasonForm()
+    form = BadReasonForm()
 
     return render(request, "certifier/badreason.html", {"form": form})
 
@@ -54,6 +40,25 @@ def createDataset(request):
 @login_required
 def certify(request, run_number, reco=None):
 
+    if request.is_ajax():
+        name = request.POST.get("name", None)
+        dataset = request.POST.get("dataset", None)
+        description = request.POST.get("description", None)
+        run = OmsRun.objects.get(run_number=run_number)
+
+        if name and description and dataset:
+
+            try:
+                BadReason.objects.get(name=name)
+            except BadReason.DoesNotExist:
+                BadReason.objects.create(name=name, description=description)
+
+            form = CertifyFormWithChecklistForm()
+
+            context = {"run_number": run_number, "reco": reco, "run": run, "dataset": dataset, "form": form}
+
+            return render(request, "certifier/certify.html", context)
+
     dataset = request.GET.get('dataset',None)
 
     try:
@@ -74,11 +79,11 @@ def certify(request, run_number, reco=None):
         context = {"message": e}
         return render(request, "certifier/404.html", context)
 
-    reco = get_reco_from_dataset(dataset)
+    if not reco:
+        reco = get_reco_from_dataset(dataset)
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-
         try:
             runReconstruction = RunReconstruction.objects.get(
                     run__run_number=run_number,reconstruction=reco)
@@ -114,7 +119,7 @@ def certify(request, run_number, reco=None):
             return redirect("openruns:openruns")
 
     # if a GET (or any other method) we'll create a blank form
-    else:
+    if request.method == "GET":
         form = CertifyFormWithChecklistForm()
 
     context = {"run_number": run_number, "reco": reco, "run": run, "dataset": dataset, "form": form}

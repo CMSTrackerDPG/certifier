@@ -542,4 +542,46 @@ expandTextarea('id_comment_box', 90);
         });
     });
 </script>
+<script>
+function getNextIndex(s, v) {
+    var max = 0;
+    for ( var i = 0; i < s.options.length; i++ ) {
+        if ( parseInt(s.options[i].value) > max ) {
+            max = s.options[i].value
+        }
+    }
+    return String(parseInt(max)+1);
+}
+function add_bad_reason(){
+    $.ajax({
+        headers: { "X-CSRFToken": '{{csrf_token}}' },
+        type: "POST",
+        url: "{% url 'certify' run_number=run_number reco=reco %}",
+        data: {
+           'name': $('#id_bad_reason_name').val(),
+           'description' : $('#id_bad_reason_desc').val(),
+           'dataset' : "{{ dataset }}"
+        },
+        success: function() {
+            if ($('#id_bad_reason option').length == 0) {
+                var $lastValue = 1
+            }else{
+                var $value = $('#id_bad_reason option').filter(function() {
+                  return $(this).text() === $('#id_bad_reason_name').val();
+                }).first().attr('value');
+
+                if (!$value) {
+                    var $nextValue = getNextIndex(document.getElementById('id_bad_reason'),$('#id_bad_reason_name').val());
+                    $('#id_bad_reason').append(new Option($('#id_bad_reason_name').val(),$nextValue, true, true));
+                    $('#id_bad_reason input[name="bad_reason"]').val($nextValue);
+                }else{
+                    $('#id_bad_reason').val($value).change();
+                    $('#id_bad_reason input[name="bad_reason"]').val($value);
+                    alert("Bad reason already exists!");
+                }
+            }
+        }
+    });
+};
+</script>
 {% endblock scripts %}
