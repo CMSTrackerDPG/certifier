@@ -55,13 +55,13 @@ class SummaryReport:
             tk_map_exists_runs = runs_with_specific_type.filter(trackermap="exists")
             if tk_map_exists_runs.exists():
                 run_numbers = tk_map_exists_runs.run_numbers()
-                joined = " ".join(str(run_number) for run_number in run_numbers)
+                joined = " ".join(str(run_number[0]) for run_number in run_numbers)
                 text += "\n Exists: {}".format(joined)
 
             tk_map_missing_runs = runs_with_specific_type.filter(trackermap="missing")
             if tk_map_missing_runs.exists():
                 run_numbers = tk_map_missing_runs.run_numbers()
-                joined = " ".join(str(run_number) for run_number in run_numbers)
+                joined = " ".join(str(run_number[0]) for run_number in run_numbers)
                 text += "\n Missing: {}".format(joined)
             tracker_maps.append(text + "\n")
         return tracker_maps
@@ -73,13 +73,13 @@ class SummaryReport:
             good = runs_with_specific_type.good()
             if good.exists():
                 run_numbers = good.run_numbers()
-                joined = " ".join(str(run_number) for run_number in run_numbers)
+                joined = " ".join(str(run_number[0]) for run_number in run_numbers)
                 text += "\n Good: {}".format(joined)
 
             bad = runs_with_specific_type.bad()
             if bad.exists():
                 run_numbers = bad.run_numbers()
-                joined = " ".join(str(run_number) for run_number in run_numbers)
+                joined = " ".join(str(run_number[0]) for run_number in run_numbers)
                 text += "\n Bad: {}".format(joined)
             certified_run_numbers.append(text + "\n")
         return certified_run_numbers

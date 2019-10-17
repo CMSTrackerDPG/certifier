@@ -6,6 +6,7 @@ from json import JSONDecodeError
 from operator import itemgetter
 
 import requests
+import runregistry
 
 from runregistryapp.utilities import (
     transform_lowstat_to_boolean,
@@ -314,7 +315,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
 
         return run_dict
 
-    def get_runs_by_list(self, list_of_run_numbers):
+    def get_runs_by_list(self, list_of_runs):
         """
         Get list of run dictionaries from the Tracker workspace in the Run Registry
 
@@ -327,11 +328,18 @@ class TrackerRunRegistryClient(RunRegistryClient):
         :param list_of_run_numbers: list of run numbers
         :return: dictionary containing the queryset
         """
-        if not list_of_run_numbers:
+        if not list_of_runs:
             return []
 
-        where_clause = build_list_where_clause(list_of_run_numbers, "r.run_number")
-        return self.__get_dataset_runs(where_clause)
+        runs = []
+
+        for run in list_of_runs:
+            runs.append(runregistry.get_dataset(
+                run_number=run[0],
+                dataset_name=run[1]
+            ))
+        print(runs)
+        return runs
 
     def get_runs_by_range(self, min_run_number, max_run_number):
         """

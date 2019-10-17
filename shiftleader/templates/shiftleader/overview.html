@@ -31,11 +31,11 @@
     <tbody>
     <tr>
         <td>Run number range</td>
-        <td>{{ filter.qs.collisions.express.run_numbers|first }} - {{ filter.qs.collisions.express.run_numbers|last }}</td>
-        <td>{{ filter.qs.collisions.prompt.run_numbers|first }} -  {{ filter.qs.collisions.prompt.run_numbers|last }}</td>
-        <td>{{ filter.qs.cosmics.express.run_numbers|first }} - {{ filter.qs.cosmics.express.run_numbers|last }}</td>
-        <td>{{ filter.qs.cosmics.prompt.run_numbers|first }} - {{ filter.qs.cosmics.prompt.run_numbers|last }}</td>
-        <td>{{ filter.qs.run_numbers|first }} - {{ filter.qs.run_numbers|last }}</td>
+        <td>{{ filter.qs.collisions.express.run_numbers|first|first }} - {{ filter.qs.collisions.express.run_numbers|last|first }}</td>
+        <td>{{ filter.qs.collisions.prompt.run_numbers|first|first }} -  {{ filter.qs.collisions.prompt.run_numbers|last|first }}</td>
+        <td>{{ filter.qs.cosmics.express.run_numbers|first|first }} - {{ filter.qs.cosmics.express.run_numbers|last|first }}</td>
+        <td>{{ filter.qs.cosmics.prompt.run_numbers|first|first }} - {{ filter.qs.cosmics.prompt.run_numbers|last|first }}</td>
+        <td>{{ filter.qs.run_numbers|first|first }} - {{ filter.qs.run_numbers|last|first }}</td>
     </tr>
     <tr>
         <td>Number of runs</td>
