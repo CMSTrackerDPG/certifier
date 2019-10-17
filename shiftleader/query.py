@@ -236,7 +236,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         :return: sorted list of run numbers (without duplicates)
         """
         return list(
-            self.values_list("runreconstruction__run__run_number", flat=True).order_by("runreconstruction__run__run_number")
+            self.values_list("runreconstruction__run__run_number", "dataset__dataset").order_by("runreconstruction__run__run_number")
         )
 
     def fill_numbers(self):
@@ -246,7 +246,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         if not self.run_numbers():
             return []
         client = TrackerRunRegistryClient()
-        return client.get_unique_fill_numbers_by_run_number(self.run_numbers())
+        return client.get_unique_fill_numbers_by_run_number([run[0] for run in self.run_numbers()])
 
     def pks(self):
         """
@@ -451,8 +451,6 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             "pixel",
             "strip",
             "tracking",
-            "pixel_lowstat",
-            "strip_lowstat",
         ]
 
         run_info_tuple_set = set(self.values_list(*keys))
@@ -506,7 +504,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         :return: QuerySet with added LHC fill number
         """
         run_registry = TrackerRunRegistryClient()
-        fills = run_registry.get_fill_number_by_run_number(self.run_numbers())
+        fills = run_registry.get_fill_number_by_run_number([run[0] for run in self.run_numbers()])
         for run in self:
             fills_list=list(
                 filter(lambda x: x["run_number"] == run.run_number, fills)
@@ -516,4 +514,4 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def group_run_numbers_by_fill_number(self):
         run_registry = TrackerRunRegistryClient()
-        return run_registry.get_grouped_fill_numbers_by_run_number(self.run_numbers())
+        return run_registry.get_grouped_fill_numbers_by_run_number([run[0] for run in self.run_numbers()])

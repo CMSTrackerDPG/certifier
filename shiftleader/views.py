@@ -44,6 +44,7 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
     filterset_class = ShiftLeaderTrackerCertificationFilter
 
     def get_context_data(self, **kwargs):
+        print(self.filterset.qs)
         context = super().get_context_data(**kwargs)
         context["summary"] = SummaryReport(self.filterset.qs)
         context["slreport"] = ShiftLeaderReport(self.filterset.qs)

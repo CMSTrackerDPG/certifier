@@ -57,7 +57,7 @@ def join_good_runs(list_of_run_numbers): # pragma: no cover
     """
     if list_of_run_numbers:
         rendered_string = '<span class="good-runs">'
-        rendered_string += ", ".join(str(x) for x in list_of_run_numbers)
+        rendered_string += ", ".join(str(x[0]) for x in list_of_run_numbers)
         rendered_string += '</span>'
         return mark_safe(rendered_string)
     return ""
@@ -70,7 +70,7 @@ def join_bad_runs(list_of_run_numbers): # pragma: no cover
     """
     if list_of_run_numbers:
         rendered_string = '<span class="bad-runs">'
-        rendered_string += ", ".join(str(x) for x in list_of_run_numbers)
+        rendered_string += ", ".join(str(x[0]) for x in list_of_run_numbers)
         rendered_string += '</span>'
         return mark_safe(rendered_string)
     return ""

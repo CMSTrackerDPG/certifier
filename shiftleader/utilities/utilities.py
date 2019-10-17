@@ -35,6 +35,14 @@ def get_this_week_filter_parameter():
 
     return get_parameters
 
+def get_certification_status(detector_type):
+    if "GOOD" in detector_type.keys():
+        return "Good"
+    if "BAD" in detector_type.keys():
+        return "Bad"
+    if "EXCLUDED" in detector_type.keys():
+        return "Excluded"
+
 def convert_run_registry_to_trackercertification(list_of_dictionaries):
     """
     Converts the list of JSON dictionaries into a TrackerCertification compatible format, i.e.:
@@ -43,8 +51,8 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
     :return:
     """
     for entry in list_of_dictionaries:
-        run_class = entry.pop("run_class").lower()
-        entry["dataset"] = entry.pop("dataset")
+        run_class = entry.pop("class").lower()
+        entry["dataset"] = entry.pop("name")
         dataset = entry["dataset"].lower()
         entry["runreconstruction__run__run_number"] = entry.pop("run_number")
 
@@ -66,10 +74,9 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
         elif "rereco" in dataset:
             entry["runreconstruction__reconstruction"] = "rereco"
 
-        entry["pixel"] = entry["pixel"].title()
-        entry["strip"] = entry["sistrip"].title()
-        entry["tracking"] = entry["tracking"].title()
-        entry["strip_lowstat"] = entry.pop("sistrip_lowstat")
+        entry["pixel"] = get_certification_status(entry["lumisections"]["tracker-pixel"])
+        entry["strip"] = get_certification_status(entry["lumisections"]["tracker-strip"])
+        entry["tracking"] = get_certification_status(entry["lumisections"]["tracker-track"])
 
     return list_of_dictionaries
 
