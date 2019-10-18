@@ -231,6 +231,14 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def online(self): # pragma: no cover
         return self.filter(runreconstruction__reconstruction="online")
 
+    def run_numbers_and_datasets(self):
+        """
+        :return: sorted list of run numbers (without duplicates)
+        """
+        return list(
+            self.values_list("runreconstruction__run__run_number", "dataset__dataset").order_by("runreconstruction__run__run_number")
+        )
+
     def run_numbers(self):
         """
         :return: sorted list of run numbers (without duplicates)
@@ -442,7 +450,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             )
 
     def compare_with_run_registry(self):
-        run_numbers = self.run_numbers()
+        run_numbers = self.run_numbers_and_datasets()
         run_registry = TrackerRunRegistryClient()
         keys = [
             "runreconstruction__run__run_number",

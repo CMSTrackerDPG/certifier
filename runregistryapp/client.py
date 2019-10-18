@@ -338,7 +338,6 @@ class TrackerRunRegistryClient(RunRegistryClient):
                 run_number=run[0],
                 dataset_name=run[1]
             ))
-        print(runs)
         return runs
 
     def get_runs_by_range(self, min_run_number, max_run_number):
