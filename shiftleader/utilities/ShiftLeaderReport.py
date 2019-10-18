@@ -33,6 +33,9 @@ class ShiftLeaderReportBase:
     def run_numbers(self):
         return self.runs.run_numbers()
 
+    def run_numbers_and_datasets(self):
+        return self.runs.run_numbers_and_datasets()
+
     def fill_numbers(self):
         return self.runs.fill_numbers()
 
