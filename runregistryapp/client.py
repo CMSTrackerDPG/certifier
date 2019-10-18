@@ -330,7 +330,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
         """
         if not list_of_run_numbers:
             return []
-        print(list_of_run_numbers)
+
         runs = runregistry.get_datasets(
             filter={
                     'run_number': {'or': list_of_run_numbers},
