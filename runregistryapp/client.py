@@ -315,7 +315,7 @@ class TrackerRunRegistryClient(RunRegistryClient):
 
         return run_dict
 
-    def get_runs_by_list(self, list_of_runs):
+    def get_runs_by_list(self, list_of_run_numbers):
         """
         Get list of run dictionaries from the Tracker workspace in the Run Registry
 
@@ -328,16 +328,16 @@ class TrackerRunRegistryClient(RunRegistryClient):
         :param list_of_run_numbers: list of run numbers
         :return: dictionary containing the queryset
         """
-        if not list_of_runs:
+        if not list_of_run_numbers:
             return []
+        print(list_of_run_numbers)
+        runs = runregistry.get_datasets(
+            filter={
+                    'run_number': {'or': list_of_run_numbers},
+                    'dataset_name': { 'notlike': '%online%'}
+                }
+            )
 
-        runs = []
-
-        for run in list_of_runs:
-            runs.append(runregistry.get_dataset(
-                run_number=run[0],
-                dataset_name=run[1]
-            ))
         return runs
 
     def get_runs_by_range(self, min_run_number, max_run_number):
