@@ -1,5 +1,6 @@
 import math
 import pytest
+import os
 from mixer.backend.django import mixer
 
 from oms.models import OmsRun
@@ -478,7 +479,7 @@ class TestTrackerCertificationQuerySet:
         assert 1 == runs[0].runreconstruction.run.run_number
         assert 15 == runs[len(runs)-1].runreconstruction.run.run_number
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_compare_with_run_registry_above_500(self):
         create_runs(501, 1, "collisions", "express")
         runs=TrackerCertification.objects.all()
@@ -486,7 +487,7 @@ class TestTrackerCertificationQuerySet:
         assert 501 == len(deviating)
         assert 501 == len(corresponding)
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_compare_with_run_registry(self):
         create_runs(3, 1, "collisions", "express")
         runs=TrackerCertification.objects.all()
@@ -494,14 +495,14 @@ class TestTrackerCertificationQuerySet:
         assert 3 == len(deviating)
         assert 3 == len(corresponding)
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_matches_with_run_registry(self):
         create_runs(2, 1, "collisions", "express")
         runs=TrackerCertification.objects.all()
         ret = runs.matches_with_run_registry()
         assert False == ret
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_annotate_fill_number(self, shifter, runs_for_summary_report):
         runs=TrackerCertification.objects.all()
         runs.annotate_fill_number()
