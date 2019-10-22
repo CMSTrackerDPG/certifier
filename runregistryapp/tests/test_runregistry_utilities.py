@@ -1,12 +1,13 @@
 import pytest
 import unittest
+import os
 from unittest.mock import MagicMock
 
 from runregistryapp.utilities import *
 
 pytestmark = pytest.mark.django_db
 
-@pytest.mark.skip(reason="old runregistry is not working anymore")
+@pytest.mark.skipif('TRAVIS' in os.environ, reason="old runregistry is not working anymore")
 class TestUtilities(unittest.TestCase):
     def test_transform_lowstat_to_boolean(self):
         run_dict = {

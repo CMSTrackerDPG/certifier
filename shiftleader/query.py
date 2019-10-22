@@ -451,8 +451,6 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             "pixel",
             "strip",
             "tracking",
-            "pixel_lowstat",
-            "strip_lowstat",
         ]
 
         run_info_tuple_set = set(self.values_list(*keys))
