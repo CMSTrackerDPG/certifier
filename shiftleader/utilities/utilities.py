@@ -74,9 +74,10 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
         elif "rereco" in dataset:
             entry["runreconstruction__reconstruction"] = "rereco"
 
-        entry["pixel"] = get_certification_status(entry["lumisections"]["tracker-pixel"])
-        entry["strip"] = get_certification_status(entry["lumisections"]["tracker-strip"])
-        entry["tracking"] = get_certification_status(entry["lumisections"]["tracker-track"])
+        entry["pixel"] = get_certification_status(entry["lumisections"]["tracker-pixel"]) if "tracker-pixel" in entry["lumisections"]  else None
+        entry["strip"] = get_certification_status(entry["lumisections"]["tracker-strip"]) if "tracker-strip" in entry["lumisections"]  else None
+        entry["tracking"] = get_certification_status(entry["lumisections"]["tracker-track"]) if "tracker-track" in entry["lumisections"]  else None
+
 
     return list_of_dictionaries
 

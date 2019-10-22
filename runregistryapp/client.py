@@ -458,15 +458,13 @@ class TrackerRunRegistryClient(RunRegistryClient):
         :return: list of dictionaries containing run number and corresponding fill number
         """
 
-        where_clause = build_list_where_clause(list_of_run_numbers, "r.runnumber")
-        query = (
-            "select r.lhcfill "
-            "from runreg_tracker.runs r "
-            "where {} "
-            "order by r.runnumber".format(where_clause)
-        )
-        runs = self.execute_query(query).get("data", [])
-        return sorted({run[0] for run in runs if run[0] is not None})
+        runs = runregistry.get_runs(filter={
+           'run_number':{
+              'or': list_of_run_numbers
+            }
+        })
+
+        return sorted(set({run["oms_attributes"]["fill_number"] for run in runs if run["oms_attributes"]["fill_number"] is not None}))
 
     def get_run_numbers_by_fill_number(self, list_of_fill_numbers):
         """
@@ -501,14 +499,17 @@ class TrackerRunRegistryClient(RunRegistryClient):
         >>> client.get_grouped_fill_numbers_by_run_number([321171, 321179, 321181, 321182, 321185])
         [{'fill_number': 7048, 'run_number': [321171, 321179, 321181]}, {'fill_number': 7049, 'run_number': [321182, 321185]}]
         """
-        where_clause = build_list_where_clause(list_of_run_numbers, "r.runnumber")
-        query = (
-            "select r.lhcfill, r.runnumber "
-            "from runreg_tracker.runs r "
-            "where {} "
-            "order by r.runnumber".format(where_clause)
-        )
-        response = self.execute_query(query).get("data", [])
+        response = []
+
+        runs = runregistry.get_runs(filter={
+           'run_number':{
+              'or': list_of_run_numbers
+            }
+        })
+
+        for run in runs:
+            response.append([run["oms_attributes"]["fill_number"],run["run_number"]])
+
         groups = groupby(response, itemgetter(0))
         items = [(key, [item[1] for item in value]) for key, value in groups]
         keys = ["fill_number", "run_number"]
