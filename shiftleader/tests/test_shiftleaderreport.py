@@ -1,6 +1,6 @@
 import math
 import pytest
-
+import os
 from django.utils import timezone
 from certifier.models import TrackerCertification
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport, ShiftLeaderReportDay
@@ -240,7 +240,7 @@ class TestShiftLeaderReport:
         assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
         assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_fill_numbers(self):
         create_runs(1, 321177, "cosmics", "express")
         create_runs(1, 321178, "cosmics", "express")
@@ -252,7 +252,7 @@ class TestShiftLeaderReport:
 
         assert [7048, 7052] == report.cosmics().express().good().fill_numbers()
 
-    @pytest.mark.skip(reason="skipped due to travis not being able to run it")
+    @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
     def test_fills(self):
         create_runs(1, 321171, "cosmics", "express")
         create_runs(1, 321179, "cosmics", "express")
@@ -263,7 +263,7 @@ class TestShiftLeaderReport:
         runs = TrackerCertification.objects.all().order_by("run_number")
         report = ShiftLeaderReport(runs)
 
-        assert [{'fill_number': 7048, 'run_number': [321171, 321179, 321181]}, {'fill_number': 7049, 'run_number': [321182, 321185]}] == report.cosmics().express().good().fills()
+        assert [{'fill_number': 7049, 'run_number': [321185, 321182]}, {'fill_number': 7048, 'run_number': [321181, 321179, 321171]}] == report.cosmics().express().good().fills()
 
     def test_flag_changed(self):
         today = timezone.now().date
