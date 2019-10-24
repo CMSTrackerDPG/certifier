@@ -5,6 +5,11 @@
 
 {% block style %}
     <link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
+    <style>
+        .table-hover > tbody > tr:hover {
+          background-color: #D2D2D2;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -83,7 +88,7 @@
 
     {% if openruns_table %}
         <div class="overflow-auto px-3 bg-white" id="style-1">
-            {% load render_table from django_tables2 %}
+            {% load render_table from django_tables2%}
             {% render_table openruns_table %}
         </div>
     {% else %}
@@ -108,6 +113,14 @@ $myForm.submit(function(){
     $myForm.submit(function(){
         return false;
     });
+});
+
+var $rows = $('#openruns_table tbody tr');
+$rows.each(function(i, item) {
+    $this = $(item);
+    if("{{user.username}}"!=$this.attr("user_row")){
+        $this.addClass('table-secondary');
+    }
 });
 
 $(document).ready(function() {
