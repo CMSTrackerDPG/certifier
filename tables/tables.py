@@ -190,6 +190,7 @@ class RunRegistryComparisonTable(tables.Table):
 
 class OpenRunsTable(tables.Table):
     run_number = tables.Column(verbose_name="Run Number")
+    user = tables.Column(verbose_name="User")
 
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
@@ -206,7 +207,11 @@ class OpenRunsTable(tables.Table):
     delete = tables.TemplateColumn(
         '<div align="center">'
             '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
+            '{% if user == record.user %}'
                 '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
+            '{% else %}'
+                '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
+            '{% endif %}'
                 'Remove Entry'
                 '</button>'
             '</a>'
@@ -226,25 +231,25 @@ class OpenRunsTable(tables.Table):
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number ,record.dataset_express, "express")
+        return render_dataset(record.run_number ,record.dataset_express, record.state_express, "express", record.user, self.request.user)
 
     def render_dataset_prompt(self, record): # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_prompt, "prompt")
+        return render_dataset(record.run_number, record.dataset_prompt, record.state_prompt, "prompt", record.user, self.request.user)
 
     def render_dataset_rereco(self, record): # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_rereco, "rereco")
+        return render_dataset(record.run_number, record.dataset_rereco, record.state_rereco, "rereco", record.user, self.request.user)
 
     def render_dataset_rereco_ul(self, record): # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_rereco_ul, "rerecoul")
+        return render_dataset(record.run_number, record.dataset_rereco_ul, record.state_rereco_ul, "rerecoul", record.user, self.request.user)
 
     def render_certify(self, record): # pragma: no cover
         """
@@ -254,5 +259,9 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {
-            "class": "table table-hover table-stripped"
+            "class": "table table-stripped",
+            "id": "openruns_table"
+            }
+        row_attrs = {
+                'user_row': lambda record: record.user.username
             }
