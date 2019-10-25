@@ -57,9 +57,10 @@ def get_datasets_of_runs(runs, user):
                     dataset_rereco=dataset["name"]
                     state_rereco=dataset["dataset_attributes"]["global_state"] if "global_state" in dataset["dataset_attributes"] else "SIGNOFF"
 
-            OpenRuns.objects.create(run_number=run["run_number"], dataset_express=dataset_express, user=user, state_express=state_express, date_retrieved=today)
-            OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_prompt=dataset_prompt, state_prompt=state_prompt)
-            OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco=dataset_rereco, state_rereco=state_rereco)
-            OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco_ul=dataset_rereco_ul, state_rereco_ul=state_rereco_ul)
+            if dataset_express!="" or dataset_prompt!="" or dataset_rereco!="" or dataset_rereco_ul!="":
+                OpenRuns.objects.create(run_number=run["run_number"], dataset_express=dataset_express, user=user, state_express=state_express, date_retrieved=today)
+                OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_prompt=dataset_prompt, state_prompt=state_prompt)
+                OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco=dataset_rereco, state_rereco=state_rereco)
+                OpenRuns.objects.filter(run_number=run["run_number"]).update(dataset_rereco_ul=dataset_rereco_ul, state_rereco_ul=state_rereco_ul)
         else:
             run_check.update(date_retrieved=today)
