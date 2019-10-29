@@ -20,6 +20,7 @@ class CertifyForm(ModelForm):
     class Meta:
         model = TrackerCertification
         fields = [
+            'user',
             'pixel',
             'strip',
             'tracking',
