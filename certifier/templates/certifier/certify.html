@@ -41,15 +41,33 @@
                     </div>
                 </div>
             </div>
+            <!--================================ USER ===============================-->
+            {% if user.has_shift_leader_rights and object%}
+            <div class="col-sm-3">
+                <div class="row mt-2 d-flex justify-content-start">
+                    <div class="col-sm-2" style="font-size: 18px; font-weight: bold;">
+                        <label class="col-form-label">
+                            {{ form.user.label }}:
+                        </label>
+                    </div>
+                    <div class="col-sm-10">
+                        {% bootstrap_field form.user label="" %}
+                    </div>
+                </div>
+            </div>
+            {%else%}
+            <div class=col-sm-3>
+            </div>
+            {% endif %}
             <!--================================ DATE ===============================-->
-            <div class="col-sm-6">
-                <div class="row mt-2">
-                    <div class="col-sm-8 text-right" style="font-size: 18px; font-weight: bold;">
+            <div class="col-sm-3">
+                <div class="row mt-2 d-flex justify-content-end">
+                    <div class="col-sm-2" style="font-size: 18px; font-weight: bold;">
                         <label for="id_date_month" class="col-form-label">
                             {{ form.date.label }}:
                         </label>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-8">
                         {% bootstrap_field form.date label="" %}
                     </div>
                 </div>
