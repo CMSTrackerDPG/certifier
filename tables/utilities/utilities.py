@@ -60,7 +60,7 @@ def render_dataset(run_number, dataset, state, reco, user, auth_user): # pragma:
     exists = TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=reco).exists()
 
     if state!="OPEN" or exists:
-        if exists:
+        if exists and auth_user == user:
             return mark_safe(
                 '<div align="center">'
                     '<a href="/list/{0}/update/{1}/{2}">'
@@ -92,11 +92,9 @@ def render_dataset(run_number, dataset, state, reco, user, auth_user): # pragma:
     else:
         return mark_safe(
             '<div align="center">'
-                '<a href="/certify/{0}/?dataset={1}">'
-                    '<button class="btn btn-block btn-warning" id="id_table_certify" disabled>'
-                        '{1}'
-                    '</button>'
-                '</a>'
+                '<button class="btn btn-block btn-warning" id="id_table_certify" disabled>'
+                    '{1}'
+                '</button>'
             '</div>'.format(run_number, dataset)
             )
 
