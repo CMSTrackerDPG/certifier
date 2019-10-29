@@ -13,53 +13,6 @@ from django.urls import reverse
 pytestmark = pytest.mark.django_db
 
 class TestCertify:
-    def test_dataset_get(self):
-        req = RequestFactory().get(reverse("createdataset"))
-
-        req.user = mixer.blend(User)
-
-        resp = views.createDataset(req)
-
-        assert 200 == resp.status_code
-
-    def test_dataset_valid(self):
-        data = {
-            "dataset": "/test/test",
-            }
-
-        form = DatasetForm(data=data)
-
-        assert {} == form.errors
-        assert form.is_valid()
-
-        req = RequestFactory().post(reverse("createdataset"), data=form.data)
-
-        req.user = mixer.blend(User)
-
-        resp = views.createDataset(req)
-
-        assert 302 == resp.status_code
-        assert Dataset.objects.exists()
-
-    def test_dataset_invalid(self):
-        data = {
-            "dataset": "",
-            }
-
-        form = DatasetForm(data=data)
-
-        assert {} != form.errors
-        assert form.is_valid() == False
-
-        req = RequestFactory().post(reverse("createdataset"), data=form.data)
-
-        req.user = mixer.blend(User)
-
-        resp = views.createDataset(req)
-
-        assert 200 == resp.status_code
-        assert Dataset.objects.exists() == False
-
     def test_certify_get(self):
         run_number = 321123
         arguments={'run_number': run_number }
