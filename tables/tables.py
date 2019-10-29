@@ -103,6 +103,7 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     """
     TrackerCertification table used by shifters
     """
+    is_reference = tables.Column(verbose_name="Is Reference", accessor="runreconstruction.is_reference")
 
     edit_run = tables.TemplateColumn(
         '<div align="center">'
@@ -132,9 +133,18 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
         verbose_name="Delete",
     )
 
+    promote_run = tables.TemplateColumn(
+        '<div align="center">'
+            '<a href="{% url \'promote\' run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+                'Promote'
+            '</a>'
+        '</div>',
+        orderable=False,
+        verbose_name="Promote to Reference",
+    )
+
     class Meta:
         attrs = {"class": "table table-hover table-bordered"}
-
 
 class DeletedTrackerCertificationTable(tables.Table):
     restore_run = tables.TemplateColumn(
