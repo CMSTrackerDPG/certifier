@@ -7,35 +7,28 @@ from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, 
 from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
-@login_required #WIP
+@login_required
 def addBadReason(request):
     # if this is a POST request we need to process the form data
     form = BadReasonForm()
 
     return render(request, "certifier/badreason.html", {"form": form})
 
-@login_required #WIP
-def createDataset(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = DatasetForm(request.POST)
+@login_required
+def promoteToReference(request, run_number, reco):
+    try:
+        runReconstruction = RunReconstruction.objects.get(run__run_number=run_number, reconstruction=reco)
+    except RunReconstruction.DoesNotExist:
+        raise Http404("The run  {} doesnt exist".format(run_number))
 
-        # check whether it's valid:
-        if form.is_valid():
-            try:
-                dataset = Dataset.objects.get(
-                        dataset=request.POST.get("dataset"))
-            except Dataset.DoesNotExist:
-                form.save()
+    if request.method == "POST":
+        runReconstruction.is_reference = True
+        runReconstruction.save()
+        return HttpResponseRedirect("/shiftleader/")
 
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    else:
-        form = DatasetForm()
-
-    return render(request, "certifier/dataset.html", {"form": form})
+    return render(request, "certifier/promote.html", {"runReconstruction": runReconstruction})
 
 @login_required
 def certify(request, run_number, reco=None):
