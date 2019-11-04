@@ -56,30 +56,47 @@ def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_r
                 )
 
 
-def render_dataset(run_number, dataset, reco): # pragma: no cover
-    css_class = None
+def render_dataset(run_number, dataset, state, reco, user, auth_user): # pragma: no cover
+    exists = TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=reco).exists()
 
-    if TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=reco).exists():
-        css_class = "good-dataset"
+    if state!="OPEN" or exists:
+        if exists and auth_user == user:
+            return mark_safe(
+                '<div align="center">'
+                    '<a href="/list/{0}/update/{1}/{2}">'
+                        '<button class="btn btn-block btn-success" id="id_table_certify">'
+                        '{3}'
+                        '</button>'
+                    '</a>'
+                '</div>'.format(TrackerCertification.objects.get(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=reco).pk, run_number, reco, dataset)
+            )
+        else:
+            return mark_safe(
+                '<div align="center">'
+                    '<button class="btn btn-block btn-success" id="id_table_certify" disabled>'
+                    '<font color="black">{}</font>'
+                    '</button>'
+                '</div>'.format(dataset)
+            )
 
-    if css_class:
+    if auth_user == user:
         return mark_safe(
             '<div align="center">'
-                '<button class="btn btn-block btn-success" id="id_table_certify" disabled>'
-                '<font color="black">{}</font>'
-                '</button>'
-            '</div>'.format(dataset)
-        )
-
-    return mark_safe(
-        '<div align="center">'
-            '<a href="\certify\{0}\?dataset={1}">'
-                '<button class="btn btn-block btn-warning" id="id_table_certify">'
+                '<a href="/certify/{0}/?dataset={1}">'
+                    '<button class="btn btn-block btn-warning" id="id_table_certify">'
+                        '{1}'
+                    '</button>'
+                '</a>'
+            '</div>'.format(run_number, dataset)
+            )
+    else:
+        return mark_safe(
+            '<div align="center">'
+                '<button class="btn btn-block btn-warning" id="id_table_certify" disabled>'
                     '{1}'
                 '</button>'
-            '</a>'
-        '</div>'.format(run_number, dataset)
-        )
+            '</div>'.format(run_number, dataset)
+            )
 
 
 def render_trackermap(trackermap): # pragma: no cover

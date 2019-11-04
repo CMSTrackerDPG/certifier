@@ -6,6 +6,6 @@ urlpatterns = [
     re_path("<int:run_number>/(?P<dataset>.+)/$", views.certify, name="certify"),
     path("<int:run_number>/", views.certify, name="certify"),
     path("<int:run_number>/<reco>/", views.certify, name="certify"),
-    path("createdataset/", views.createDataset, name='createdataset'),
+    path("promote/<int:run_number>/<reco>/", views.promoteToReference, name='promote'),
     path("addbadreason/", views.addBadReason, name='addbadreason'),
 ]

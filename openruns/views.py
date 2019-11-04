@@ -5,6 +5,7 @@ from tables.tables import OpenRunsTable
 from openruns.utilities import get_open_runs, get_specific_open_runs
 from django_tables2 import RequestConfig
 from django.http import HttpResponse
+from django.db.models import Case, When
 import json
 import re
 
@@ -44,12 +45,17 @@ def openruns(request):
 
     today = timezone.now().strftime("%Y-%m-%d")
 
-    if request.user.is_authenticated:
-        show_openruns = OpenRuns.objects.filter(user=request.user, date_retrieved=today)
-    else:
-        show_openruns = OpenRuns.objects.all(date_retrieved=today)
+    show_openruns = OpenRuns.objects.filter(date_retrieved=today).order_by("-run_number")
+    '''
+                    .order_by(
+                        Case(When(user=request.user, then=0), default=1),
+                        'user',
+                        '-run_number'
+                    )
+    '''
 
-    openruns_table = OpenRunsTable(show_openruns, order_by="-run_number")
+    openruns_table = OpenRunsTable(show_openruns)
+    openruns_table.request = request
 
     RequestConfig(request).configure(openruns_table)
 

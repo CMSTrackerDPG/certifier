@@ -1,0 +1,30 @@
+{% extends "dqmhelper/base.html" %}
+
+{% block title %}
+    Promote to Reference Run
+{% endblock %}
+{% block content %}
+    {% load static %}
+
+    <h1 align="center">Promote to Reference Run</h1>
+    </br>
+    <h4 align="center">
+        Are you sure you want to promote this run to reference?
+    </h4>
+
+    <p>
+    <ul>
+        <li>Run Number: {{ runReconstruction.run.run_number }}</li>
+        <li>Reco: {{ runReconstruction.reconstruction }}</li>
+        <li>Type: {{ runReconstruction.run.run_type }}</li>
+    </ul>
+    </p>
+
+    <form action="" method="post" align="center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes</button>
+        <input class="btn btn-secondary" type="button" value="No" onclick="history.back()">
+    </form>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
