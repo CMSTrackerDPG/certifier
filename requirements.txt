@@ -1,5 +1,7 @@
+asgi_redis
 cernrequests==0.2.0
 certifi==2018.11.29
+channels_redis
 django-allauth>=0.40.0
 django-bootstrap3==9.1.0
 django-filter>=2.2.0
@@ -11,6 +13,7 @@ psycopg2-binary>=2.8.3
 python-decouple==3.1
 requests==2.21.0
 terminaltables==3.1.0
+daphne
 django-widget-tweaks>=1.4.5
 django-extensions>=2.1.6
 numpy>=1.16.3
@@ -22,6 +25,7 @@ git+https://github.com/CMSTrackerDPG/runregistryclient
 git+https://github.com/ptrstn/cms-tracker-studies
 matplotlib
 pandas==0.24.2
+paramiko
 seaborn
 scipy
 scikit-learn
