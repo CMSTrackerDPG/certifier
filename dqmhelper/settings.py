@@ -23,6 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
+DJANGO_SECRET_ACC = config('DJANGO_SECRET_ACC', default='admin')
+DJANGO_SECRET_PASS = config('DJANGO_SECRET_PASS', default='admin')
+
+# Redis Server Hostname
+REDIS_HOST = config('REDIS_HOST', default='localhost')
+REDIS_PASSWORD = config('REDIS_PASSWORD', default='')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
@@ -124,7 +130,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("redis://:"+REDIS_PASSWORD+"@"+REDIS_HOST+":6379/0")],
         },
     },
 }
