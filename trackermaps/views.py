@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.conf import settings
 import subprocess
 import re
 import os
@@ -21,7 +22,7 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect("vocms066", username="", password="")
+    ssh.connect("vocms066", username=settings.DJANGO_SECRET_ACC, password=settings.DJANGO_SECRET_PASS)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(tracker_maps_command, get_pty=True)
 
     for line in iter(ssh_stdout.readline, ""):
@@ -29,6 +30,9 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
     send_channel_message("output_group", "PROCESS HAS ENDED")
 
     if ssh_stderr:
+        for line in iter(ssh_stderr.readline, ""):
+            send_channel_message("output_group",">_: " + line)
+        send_channel_message("output_group", "PROCESS HAS ENDED")
         return False
     return True
 
