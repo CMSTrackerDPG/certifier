@@ -157,7 +157,7 @@ $(document).ready(function() {
 });
 
 var command_output_socket = new WebSocket(
-    'ws://' + window.location.host +
+    'wss://' + window.location.host +
     '/ws/output/');
 
 command_output_socket.onmessage = function(e) {
