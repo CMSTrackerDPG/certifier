@@ -23,6 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
+DJANGO_SECRET_ACC = config('DJANGO_SECRET_ACC', default='admin')
+DJANGO_SECRET_PASS = config('DJANGO_SECRET_PASS', default='admin')
+
+# Redis Server Hostname
+REDIS_HOST = config('REDIS_HOST', default='localhost')
+REDIS_PASSWORD = config('REDIS_PASSWORD', default='')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
@@ -39,6 +45,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    "trackermaps.apps.TrackermapsConfig",
     "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
     "summary.apps.SummaryConfig",
@@ -115,8 +123,17 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = '/'
 
-WSGI_APPLICATION = "dqmhelper.wsgi.application"
+#WSGI_APPLICATION = "dqmhelper.wsgi.application"
+ASGI_APPLICATION = "dqmhelper.routing.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis://:"+REDIS_PASSWORD+"@"+REDIS_HOST+":6379/0")],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -165,7 +182,8 @@ SITE_ID = 1
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'), os.path.join(BASE_DIR, 'listruns/static'))
-STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'asgi/static')
 
 AUTH_USER_MODEL = "users.User"
 
