@@ -45,19 +45,9 @@
                     </div>
                 </div>
                 <div class="row mb-3 justify-content-center">
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="type" value='StreamExpress' id="id-reco-express" autocomplete="off" class="sr-only"> StreamExpress
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="type" value='ZeroBias' id="id-reco-prompt" autocomplete="off" class="sr-only"> ZeroBias
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="type" value='StreamHIExpress' id="id-reco-prompt" autocomplete="off" class="sr-only"> StreamHIExpress
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="type" value='StreamExpressCosmics' id="id-reco-prompt" autocomplete="off" class="sr-only"> StreamExpressCosmics
-                        </label>
+                    <div>
+                        <b>Type:</b>
+                        <input type="text" class="form-control" name='type' placeholder="StreamExpress/ZeroBias/StreamHIExpress" size="32" required>
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -68,7 +58,7 @@
             </form>
         </div>
     </div>
-    <div class="container-fluid overflow-auto mb-4">
+    <div class="container overflow-auto mb-4">
         <div class="card border-light shadow p-2 bg-dark rounded mb-4">
             <textarea class="text-light bg-dark" style="border: none; height: 480px" cols="150" id="id_command_output"></textarea>
         </div>
@@ -110,35 +100,6 @@ $myForm.submit(function(){
 });
 
 $(document).ready(function() {
-    /*
-    $("#id_generate_maps").click(function() {
-        // add spinner to button
-        if ($('[id=id_run_number]').val() != '') {
-          $('#id_run_number_list').removeAttr('required');
-        }
-        if ($("#id_form_generate_maps")[0].checkValidity()) {
-            $(this).html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        }
-        $.ajax({
-            headers: { "X-CSRFToken": '{{csrf_token}}' },
-            type: "POST",
-            url: "{% url 'trackermaps:maps' %}",
-            data: {
-               'min': $('#id_form_generate_maps [name="min"]').val(),
-               'max' : $('#id_form_generate_maps [name="max"]').val(),
-               'type' : $('#id_form_generate_maps [name="type"]').val()
-            },
-            success: function() {
-                $("#id_generate_maps").html(
-                    'Generate Tracker Maps'
-                );
-            }
-        });
-    });
-    */
-
     $(function() {
         $('[id=id_run_number]').focus(function(){
           $('#id_run_number_list').val('');
