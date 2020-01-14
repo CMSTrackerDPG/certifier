@@ -25,16 +25,12 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
     ssh.connect("vocms066", username=settings.DJANGO_SECRET_ACC, password=settings.DJANGO_SECRET_PASS)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(tracker_maps_command, get_pty=True)
 
-    if ssh_stdout.channel.recv_exit_status():
-        for line in iter(ssh_stderr.readline, ""):
-            send_channel_message("output_group",">_ " + line)
-        send_channel_message("output_group", ">_ GENERATION ENDED")
-        return False
-
     for line in iter(ssh_stdout.readline, ""):
-        send_channel_message("output_group",">_ " + line)
-    send_channel_message("output_group", ">_ GENERATION ENDED")
+        send_channel_message("output_group",line)
+    send_channel_message("output_group", "                    GENERATION ENDED")
 
+    if ssh_stdout.channel.recv_exit_status():
+        return False
     return True
 
 def maps(request):
