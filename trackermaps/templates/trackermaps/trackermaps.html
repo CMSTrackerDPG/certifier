@@ -25,11 +25,11 @@
                             <div class="row mb-3 justify-content-center">
                                 <div class="col-sm-6">
                                     <b>from:</b>
-                                    <input type="number" class="form-control" name='min' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp">
+                                    <input type="number" class="form-control" name='min' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <b>to:</b>
-                                    <input type="number" class="form-control" name='max' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp">
+                                    <input type="number" class="form-control" name='max' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
                                 </div>
                             </div>
                         </div>
@@ -58,9 +58,10 @@
             </form>
         </div>
     </div>
-    <div class="container overflow-auto mb-4">
-        <div class="card border-light shadow p-2 bg-dark rounded mb-4">
-            <textarea class="text-light bg-dark" style="border: none; height: 480px" cols="150" id="id_command_output"></textarea>
+    <div class="container overflow-auto">
+        <div class="card border-light shadow p-2 bg-dark rounded">
+            <button class="btn btn-primary" onClick="clearOutput()" style="position:absolute;top:16px;right:30px;" >Clear</button>
+            <textarea class="text-light bg-dark" style="border: none; height: 450px" cols="150" id="id_command_output"></textarea>
         </div>
     </div>
 
@@ -117,9 +118,21 @@ $(document).ready(function() {
     });
 });
 
-var command_output_socket = new WebSocket(
-    'wss://' + window.location.host +
-    '/ws/output/');
+if (location.protocol === 'https:') {
+    // page is secure
+    var command_output_socket = new WebSocket(
+        'wss://' + window.location.host +
+        '/ws/output/');
+}
+else{
+    var command_output_socket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/output/');
+}
+
+function clearOutput(){
+    $('#id_command_output').val("");
+}
 
 command_output_socket.onmessage = function(e) {
     var data = JSON.parse(e.data);
