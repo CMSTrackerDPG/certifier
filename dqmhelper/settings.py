@@ -35,11 +35,7 @@ DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     config('DJANGO_ALLOWED_HOSTS', default='localhost'),
-    'tkdqmdoctor.web.cern.ch',
-    'dev-tkdqmdoctor.web.cern.ch',
-    'test-tkdqmdoctor.web.cern.ch',
     '127.0.0.1',
-    "test-tracker-certifer.web.cern.ch",
 ]
 
 # Application definition
@@ -86,6 +82,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     'django.middleware.locale.LocaleMiddleware',
     "django.middleware.common.CommonMiddleware",
