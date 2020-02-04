@@ -27,7 +27,7 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
 
     for line in iter(ssh_stdout.readline, ""):
         send_channel_message("output_group",line)
-    send_channel_message("output_group", "                    GENERATION ENDED")
+    send_channel_message("output_group","GENERATION ENDED\n")
 
     if ssh_stdout.channel.recv_exit_status():
         return False

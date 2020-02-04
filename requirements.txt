@@ -30,3 +30,4 @@ scikit-learn
 umap-learn
 runregistry
 apscheduler
+whitenoise
