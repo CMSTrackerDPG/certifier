@@ -8,7 +8,7 @@ The primary goals of this tool are to improve the quality of data certification 
 Features
 --------
 
-The features of the TkDQMDoctor include:
+The features of the Certification Helper include:
 
 - Validation of certified data
 - Provision of Checklists
