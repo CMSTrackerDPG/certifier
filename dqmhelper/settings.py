@@ -180,7 +180,7 @@ SITE_ID = 1
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'), os.path.join(BASE_DIR, 'listruns/static'))
 #STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
-STATIC_ROOT = os.path.join(BASE_DIR, 'asgi/static')
+STATIC_ROOT = os.path.join(BASE_DIR, '/sock/asgi/static')
 
 AUTH_USER_MODEL = "users.User"
 

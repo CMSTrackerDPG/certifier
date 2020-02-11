@@ -4,5 +4,7 @@ python manage.py makemigrations --noinput
 
 python manage.py migrate --noinput
 
-daphne dqmhelper.asgi:application -u /tmp/daphne.sock
+python manage.py collectstatic --noinput
+
+daphne dqmhelper.asgi:application -u /sock/daphne.sock
 
