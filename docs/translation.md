@@ -1,6 +1,6 @@
 # Translation of old field to new fields:
 
-This page gives an overview of the fields from the TkDQMDoctor have looked like in the old certification helper website and how the are called in the new version.
+This page gives an overview of how the fields from the TkDQMDoctor have looked like in the old certification helper website and how the are called in the new version.
 
 ```python
 translations = {

@@ -16,7 +16,7 @@ The unit tests (without selenium/ functional tests) can be run using
     ============================= test session starts =============================
     platform win32 -- Python 3.6.5, pytest-3.7.1, py-1.5.4, pluggy-0.7.1
     Django settings: dqmsite.test_settings (from ini file)
-    rootdir: C:\Users\keepingitsecret\workspace\CERN\TkDQMDoctor, inifile: pytest.ini
+    rootdir: C:\Users\keepingitsecret\workspace\CERN\certifier, inifile: pytest.ini
     plugins: mock-1.10.0, django-3.3.3, cov-2.5.1
     collected 118 items                                                            
 
@@ -169,7 +169,7 @@ Coverage Reports
 If the all tests pass a coverage report is automatically uploaded to
 codecov and can be viewed on:
 
--  https://codecov.io/gh/CMSTrackerDPG/TkDQMDoctor
+-  https://codecov.io/gh/CMSTrackerDPG/certifier
 
 The Report shows which files need further testing and how good the
 overall test coverage is.
