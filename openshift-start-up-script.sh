@@ -2,5 +2,5 @@
 
 python manage.py collectstatic --noinput
 
-daphne dqmhelper.asgi:application -u /sock/daphne.sock
+daphne -u /sock/daphne.sock dqmhelper.asgi:application
 
