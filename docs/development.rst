@@ -86,7 +86,7 @@ the correct package versions and avoid conflicts with other projects.
 .. code:: bash
 
     python -m venv venv
-    source venv/bin/active
+    source venv/bin/activate
 
 After executing these commands a ``(venv)`` should precede the command
 line.
