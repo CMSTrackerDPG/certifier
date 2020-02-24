@@ -43,7 +43,6 @@ def maps(request):
         min_run_number = request.POST.get("min", None)
         max_run_number = request.POST.get("max", None)
         run_type = request.POST.get("type", None)
-        print(min_run_number + " " + max_run_number + " " + run_type)
         runs_list = request.POST.get("list", None)
         if runs_list:
             try:
