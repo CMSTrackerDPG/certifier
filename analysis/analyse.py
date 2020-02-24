@@ -159,5 +159,5 @@ def run_umap(runs):
 
     big_df = pandas.concat([runs, umap_df], axis=1)
 
-    return big_df 
+    return big_df
 

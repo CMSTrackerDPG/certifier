@@ -56,7 +56,15 @@
                 </div>
             </div>
             {%else%}
-            <div class=col-sm-3>
+            <!--================================ ANALYSIS BUTTONS =====================-->
+            <div class="col-sm-3">
+                <div class="row mt-2 d-flex justify-content-start">
+                    <div class="text-center" id="id-analyse-content">
+                        <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info">
+                            Open Analysis
+                        </a>
+                    </div>
+                </div>
             </div>
             {% endif %}
             <!--================================ DATE ===============================-->
@@ -236,24 +244,6 @@
             </div>
         </div>
     </div>
-
-    <!--================================ ANALYSIS BUTTONS =====================
-    <div class="container mt-5 mb-5">
-        <div class="text-center" id="id-analyze-spinner">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Running analysis...</span> Analyzing...
-            </div>
-        </div>
-
-        <div class="text-center" id="id-analyse-content" style="display:none;">
-            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info ml-2">
-                Open Analysis
-            </a>
-            <a id='id-analyse-link' href="/analyse/{{ run_number }}/{{ reco }}/" target="_blank" class="btn btn-info mr-2">
-                Open Plots
-            </a>
-        </div>
-    </div>-->
 
     <div class="container-fluid mt-4">
         <!--<div id="includeDataset"></div>-->
@@ -535,17 +525,7 @@ expandTextarea('id_comment_box', 90);
 </script>
 
 <script>
-    myFunction();
     var myVar;
-
-    function myFunction() {
-        myVar = setTimeout(showPage, 1000);
-    }
-
-    function showPage() {
-        document.getElementById("id-analyze-spinner").style.display = "none";
-        document.getElementById("id-analyse-content").style.display = "block";
-    }
 
     var $myForm = $("#id_certifier_form");
     $myForm.submit(function(){
