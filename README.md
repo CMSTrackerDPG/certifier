@@ -3,3 +3,6 @@
 [![codecov](https://codecov.io/gh/ptrstn/certifier/branch/master/graph/badge.svg)](https://codecov.io/gh/ptrstn/certifier)
 
 # Tracker Data Certification Helper
+
+
+Documentation can be found here: https://certifier.readthedocs.io/en/latest/
