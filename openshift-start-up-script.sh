@@ -2,4 +2,4 @@
 
 python manage.py collectstatic --noinput
 
-daphne -u /sock/daphne.sock dqmhelper.asgi:application
+daphne -b 127.0.0.1 -p 8080 dqmhelper.asgi:application
