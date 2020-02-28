@@ -52,15 +52,18 @@ configure the web application with the GitHub repository:
     "master"
 11. add GitHub credentials at "Source Secret" if the repository is
     private
-12. uncheck "Secure route"
-13. click on "CREATE"
-14. click on your name in the top right corner and click on ``Copy Login Command`` and login in your terminal by pasting it.
-15. select Project
+12. check "Secure route"
+13. set "TLS Termination" to "Edge"
+14. set "Insecure Traffic" to "Redirect"
+15. click on "CREATE"
+16. click on your name in the top right corner and click on ``Copy Login Command`` and login in your terminal by pasting it.
+17. select Project
 
 .. code:: bash
 
    $ oc project <your-project-name>
-16. create Secrets
+
+18. create Secrets
 
 First you have to create the secrets in Openshift for all accounts needed below:
 
@@ -69,7 +72,7 @@ First you have to create the secrets in Openshift for all accounts needed below:
    $ oc create secret generic <secret-name> --type=kubernetes.io/basic-auth --from-literal=username=<account-username> --from-literal=password=<account-password>
 
 
-17. under "Build"->Your project->Environment use the "Add Value | Add Value from Config Map or Secret" buttons to add the variables:
+19. under "Build"->Your project->Environment use the "Add Value | Add Value from Config Map or Secret" buttons to add the variables:
 
 Accounts/Secrets environment variables(added using "Add Value from Config Map or Secret" button):
 
@@ -229,8 +232,8 @@ The username-id can be found by going to Application->Pods-><Your Project>->Term
 
 Install
 
-Add NGINX Server
-~~~~~~~~~~~~~~~~~
+Add NGINX Server(not working for now)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1.  go to https://openshift.cern.ch/console/
 2.  choose "Nginx HTTP server and a reverse proxy (nginx)"
@@ -245,9 +248,8 @@ Add NGINX Server
 
     oc set volume dc/<your-chosen-name> --add --name=<volume-name> --type=persistentVolumeClaim --mount-path=<path> --claim-name=<volume-name> --claim-class=cephfs-no-backup --claim-size=1
 
-9.  go to Application->Routes-><nginx-server-route>->Actions->Edit
-10. set "TLS Termination" to "Edge"
-11. set "Insecure Traffic" to "Redirect"
+9.  go to Application->Routes
+10. replace the dev-certhelper route with an one for nginx-server
 
 Deployment
 ~~~~~~~~~~
