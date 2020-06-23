@@ -98,7 +98,7 @@ $myForm.submit(function(){
         data: {
            'min': $('#id_form_generate_maps [name="min"]').val(),
            'max' : $('#id_form_generate_maps [name="max"]').val(),
-           'type' : $('#id_form_generate_maps [name="type"]:checked').val()
+           'type' : $('#id_form_generate_maps [name="type"]').val()
         },
         success: function() {
             $("#id_generate_maps").html(
