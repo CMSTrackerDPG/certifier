@@ -32,7 +32,9 @@ def promoteToReference(request, run_number, reco):
 
 @login_required
 def certify(request, run_number, reco=None):
-
+    
+    print(request)
+    
     if request.is_ajax():
         name = request.POST.get("name", None)
         dataset = request.POST.get("dataset", None)
