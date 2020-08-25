@@ -4,5 +4,4 @@
 
 # Tracker Data Certification Helper
 
-
 Documentation can be found here: https://certifier.readthedocs.io/en/latest/

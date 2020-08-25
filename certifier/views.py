@@ -32,7 +32,9 @@ def promoteToReference(request, run_number, reco):
 
 @login_required
 def certify(request, run_number, reco=None):
-
+    
+    print(request)
+    
     if request.is_ajax():
         name = request.POST.get("name", None)
         dataset = request.POST.get("dataset", None)
@@ -55,6 +57,7 @@ def certify(request, run_number, reco=None):
     dataset = request.GET.get('dataset',None)
 
     try:
+        
         run = retrieve_run(run_number)
 
         if not dataset:
@@ -64,7 +67,8 @@ def certify(request, run_number, reco=None):
                 dataset = retrieve_dataset_by_reco(run_number, reco)
         else:
             dataset=dataset
-
+    
+        print(request)
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         return render(request, "certifier/404.html", context)
