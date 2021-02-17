@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
-DJANGO_SECRET_ACC = config('DJANGO_SECRET_ACC', default='admin')
-DJANGO_SECRET_PASS = config('DJANGO_SECRET_PASS', default='admin')
+DJANGO_SECRET_ACC = config('DJANGO_SECRET_ACC')
+DJANGO_SECRET_PASS = config('DJANGO_SECRET_PASS')
 
 # Redis Server Hostname
 REDIS_HOST = config('REDIS_HOST', default='localhost')

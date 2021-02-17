@@ -22,6 +22,9 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    
+    print("printing django secrets", settings.DJANGO_SECRET_ACC, settings.DJANGO_SECRET_PASS)
+   
     ssh.connect("vocms066", username=settings.DJANGO_SECRET_ACC, password=settings.DJANGO_SECRET_PASS)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(tracker_maps_command, get_pty=True)
 
