@@ -13,7 +13,7 @@ def get_specific_open_runs(runs_list, user):
 
 def get_open_runs(start, end, user):
     runs = runregistry.get_runs(filter={
-        'run_number': {'and': [{'>': start}, {'<': end}]},
+        'run_number': {'and': [{'>': start}, {'<': end}]}
     })
 
     get_datasets_of_runs(runs, user)
