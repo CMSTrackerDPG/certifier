@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'channels',
+    "mldatasets.apps.MldatasetsConfig",
     "trackermaps.apps.TrackermapsConfig",
     "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
