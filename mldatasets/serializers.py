@@ -20,10 +20,10 @@ class RunReferenceRunSerializer(serializers.ModelSerializer):
     #     return obj.reference_run_number
 
 
-class RunReconstructionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RunReconstruction
-        fields =  '__all__'
+# class RunSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RunReconstruction
+#         fields =  ['']
 
 
 
