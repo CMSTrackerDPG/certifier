@@ -258,7 +258,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         if len(self) == 0:
             return 0
         print()
-        return float(self.aggregate(runreconstruction__run__recorded_lumi__sum=Coalesce(Sum("runreconstruction__run__recorded_lumi"),0))["runreconstruction__run__recorded_lumi__sum"])
+        return float(self.aggregate(runreconstruction__run__recorded_lumi__sum=Coalesce(Sum("runreconstruction__run__recorded_lumi"),0.0))["runreconstruction__run__recorded_lumi__sum"])
 
     def lumisections(self):
         if len(self) == 0:
