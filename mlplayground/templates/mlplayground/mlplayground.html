@@ -1,0 +1,63 @@
+{% extends 'dqmhelper/base.html' %}
+
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static "mlplayground/css/style.css" %}">
+{% endblock style %}
+
+{% block content %}
+<div class="album py-4 bg-light">
+    <div class="container">
+        <div class="card-deck">
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'openruns:openruns' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">ML Datasets</h4>
+                    </div>
+                    <img class="card-img-top embed-responsive-item img" src="{% static "mlplayground/img/mldataset.png" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Datasets for training and benchamarking</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'listruns:list' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">ML Models</h4>
+                    </div>
+                    <img class="card-img-top embed-responsive-item img" src="{% static "mlplayground/img/mlmodel.png" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Trained models to test and deploy</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'summary:summary' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">ML Notebooks</h4>
+                    </div>
+                    <img class="card-img-top embed-responsive-item img" src="{% static "mlplayground/img/mlnotebooks.png" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Jupyer notebooks containing scripts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card h-50">
+                <div class="btn btn-dark" onclick="location.href='{% url 'trackermaps:maps' %}'">
+                    <div class="card-header">
+                        <h4 class="text-center font-weight-bold mt-1 mb-1">ML Reports</h4>
+                    </div>
+                    <img class="card-img-top embed-responsive-item img" src="{% static "mlplayground/img/mlreports.png" %}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text text-center" style="font-size: 18px">Reports of all ML models, comparisons</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% endblock scripts %}
