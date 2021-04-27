@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "dqmgui.apps.DqmguiConfig",
     "plot.apps.PlotConfig",
-    "analysis.apps.AnalysisConfig",
     "home.apps.HomeConfig",
     "certifier.apps.CertifierConfig",
     "oms.apps.OmsConfig",
