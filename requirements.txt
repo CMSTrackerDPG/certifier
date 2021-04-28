@@ -1,7 +1,5 @@
-llvmlite==0.31.0
 numba==0.48.0
-pynndescent==0.4.8
-
+llvmlite==0.31.0
 asgiref>=3.2.0
 cernrequests>=0.3.0
 certifi==2018.11.29
@@ -20,19 +18,11 @@ terminaltables==3.1.0
 daphne>=2.4.1
 django-widget-tweaks>=1.4.5
 django-extensions>=2.1.6
-numpy>=1.16.3
 git+https://github.com/CMSTrackerDPG/runregcrawlr
 git+https://github.com/CMSTrackerDPG/dqmcrawlr
 git+https://github.com/CMSTrackerDPG/wbmcrawlr
-git+https://github.com/ptrstn/cms-tracker-studies
-pandas==0.24.2
 paramiko
 
-seaborn
-scipy
-scikit-learn
-#MulticoreTSNE
-umap-learn
 runregistry
 apscheduler
 whitenoise

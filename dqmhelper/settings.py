@@ -180,8 +180,8 @@ SITE_ID = 1
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'home/static'), os.path.join(BASE_DIR, 'checklists/static'), os.path.join(BASE_DIR, 'listruns/static'))
-STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
-#STATIC_ROOT = os.path.join(BASE_DIR, '/sock/asgi/static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
+STATIC_ROOT = os.path.join(BASE_DIR, '/sock/asgi/static')
 
 AUTH_USER_MODEL = "users.User"
 
@@ -194,3 +194,6 @@ EMAIL_USE_TLS = config('DJANGO_EMAIL_USE_TLS', default=False, cast=bool)
 SERVER_EMAIL = config('DJANGO_SERVER_EMAIL', default='root@localhost')
 
 CERN_CERTIFICATE_PATH = config('CERN_CERTIFICATE_PATH', default='')
+
+# When Upgraded to Django 3.2 - RELEASE 06.04.2021
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
