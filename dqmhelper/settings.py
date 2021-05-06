@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'channels',
+    "cablingmap.apps.CablingmapConfig",
     "mlplayground.apps.MlplaygroundConfig",
     "mldatasets.apps.MldatasetsConfig",
     "trackermaps.apps.TrackermapsConfig",

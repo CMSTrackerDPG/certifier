@@ -34,4 +34,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("mldatasets/", include('mldatasets.urls')),
     path("mlplayground/", include('mlplayground.urls')),
+    path("cablingmap/", include('cablingmap.urls')),
 ]
