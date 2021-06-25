@@ -92,7 +92,7 @@
         <div class="card-deck pt-3">
             {% if user.has_shifter_rights %}
             <div class="card h-50">
-                <div class="btn btn-dark" onclick="location.href='{% url 'shiftleader:shiftleader' %}'">
+                <div class="btn btn-dark" onclick="parent.open('https://twiki.cern.ch/twiki/bin/view/CMS/TrackerDQMShift')">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">Tutorials & Twikis</h4>
                     </div>
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="card h-50">
-                <div class="btn btn-dark" onclick="location.href='{% url 'trackermaps:maps' %}'">
+                <div class="btn btn-dark" onclick="location.href='{% url 'mlplayground:mlplaygroundHome' %}'">
                     <div class="card-header">
                         <h4 class="text-center font-weight-bold mt-1 mb-1">ML Playground</h4>
                     </div>
