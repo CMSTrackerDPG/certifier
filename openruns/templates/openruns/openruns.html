@@ -60,7 +60,8 @@
             <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
                 {% csrf_token %}
                 <div class="form-group">
-                    <div class="row mb-3 justify-content-center">
+                <div style="color:#0A61FE">Note - You can search for maximum 20 Runs</div> 
+                    <div class="row mb-3 justify-content-center">   
                         <div class="col-sm-5">
                             <b>from:</b>
                             <input type="number" class="form-control" name='min' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp">
