@@ -104,7 +104,7 @@ def retrieve_run(run_number):
         if response == None:
             raise IndexError
 
-        fill_number = response.pop("fill_number")
+        fill_number = response['attributes'].pop("fill_number")
         fill = retrieve_fill(fill_number=fill_number)
 
         include_attribute_keys = ["run_number", "run_type", "fill", "lumisections", "b_field", "clock_type", 
