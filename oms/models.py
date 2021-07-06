@@ -1,7 +1,6 @@
 from django.db import models
 
 # Create your models here.
-from wbmcrawlr import oms
 
 
 class OmsFill(models.Model):
@@ -150,17 +149,17 @@ class OmsFill(models.Model):
     #     verbose_name="toReady (to HV on)",
     # )
 
-    b_field_unit = models.CharField(max_length=50)
-    peak_lumi_unit = models.CharField(max_length=50)
-    beta_star_unit = models.CharField(max_length=50)
-    init_lumi_unit = models.CharField(max_length=50)
-    peak_specific_lumi_unit = models.CharField(max_length=50)
-    intensity_beam2_unit = models.CharField(max_length=50)
-    intensity_beam1_unit = models.CharField(max_length=50)
-    delivered_lumi_unit = models.CharField(max_length=50)
-    recorded_lumi_unit = models.CharField(max_length=50)
-    crossing_angle_unit = models.CharField(max_length=50)
-    energy_unit = models.CharField(max_length=50)
+    b_field_unit = models.CharField(max_length=50, default="T")
+    peak_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
+    beta_star_unit = models.CharField(max_length=50, default="cm")
+    init_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
+    peak_specific_lumi_unit = models.CharField(max_length=50, default="10^{30}cm^{-2}s^{-1}(10^{11}p)^{-2}")
+    intensity_beam2_unit = models.CharField(max_length=50, default="10^{11}")
+    intensity_beam1_unit = models.CharField(max_length=50, default="10^{11}")
+    delivered_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
+    recorded_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
+    crossing_angle_unit = models.CharField(max_length=50, default="{\\mu}rad")
+    energy_unit = models.CharField(max_length=50, default="GeV")
 
     first_run_number = models.PositiveIntegerField(
         help_text="Run number for the first run in the fill",
@@ -340,12 +339,12 @@ class OmsRun(models.Model):
         null=True,
     )
 
-    b_field_unit = models.CharField(max_length=50)
-    init_lumi_unit = models.CharField(max_length=50)
-    delivered_lumi_unit = models.CharField(max_length=50)
-    recorded_lumi_unit = models.CharField(max_length=50)
-    end_lumi_unit = models.CharField(max_length=50)
-    energy_unit = models.CharField(max_length=50)
+    b_field_unit = models.CharField(max_length=50, default="T")
+    init_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
+    delivered_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
+    recorded_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
+    end_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
+    energy_unit = models.CharField(max_length=50, default="GeV")
 
     def save(self, *args, **kwargs):
         physics_or_special = (
