@@ -58,7 +58,7 @@ def retrieve_dataset(run_number):
 def retrieve_fill(fill_number):
     fill_check = OmsFill.objects.filter(fill_number=fill_number) 
 
-    if fill_check.exits():
+    if fill_check.exists():
         return OmsFill.objects.get(fill_number=fill_number)
 
     else:
@@ -96,7 +96,7 @@ def retrieve_fill(fill_number):
 def retrieve_run(run_number):
     run_check = OmsRun.objects.filter(run_number=run_number) 
 
-    if run_check.exits():
+    if run_check.exists():
         return OmsRun.objects.get(run_number=run_number)
 
     else:
