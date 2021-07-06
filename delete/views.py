@@ -49,7 +49,7 @@ def hard_delete_reference_run(request, run_number, reco):
 @login_required
 def hard_delete_open_run(request, run_number):
     try:
-        openrun = OpenRuns.objects.get(run_number=run_number, user=request.user)
+        openrun = OpenRuns.objects.get(run_number=run_number)
     except OpenRuns.DoesNotExist:
         raise Http404("The run  {} doesnt exist".format(run_number))
 

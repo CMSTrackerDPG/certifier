@@ -217,7 +217,7 @@ class OpenRunsTable(tables.Table):
     delete = tables.TemplateColumn(
         '<div align="center">'
             '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
-            '{% if user == record.user %}'
+            '{% if user == record.user or user.has_shift_leader_rights %}'
                 '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
             '{% else %}'
                 '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
