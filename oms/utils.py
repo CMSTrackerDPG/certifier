@@ -70,15 +70,14 @@ def retrieve_fill(fill_number):
         'bunches_colliding', 'bunches_target', 'crossing_angle', 'delivered_lumi', 'downtime', 'duration', 
         'efficiency_lumi', 'efficiency_time', 'energy', 'era', 'fill_type_party1', 'fill_type_party2', 
         'fill_type_runtime', 'init_lumi', 'injection_scheme', 'intensity_beam1', 'intensity_beam2', 'peak_lumi', 
-        'peak_pileup', 'peak_specific_lumi', 'recorded_lumi', 'b_field_unit', 'peak_lumi_unit', 'beta_star_unit', 
-        'init_lumi_unit', 'peak_specific_lumi_unit', 'intensity_beam2_unit', 'intensity_beam1_unit', 
-        'delivered_lumi_unit', 'recorded_lumi_unit', 'crossing_angle_unit', 'energy_unit', 'first_run_number', 
-        'last_run_number']
-
+        'peak_pileup', 'peak_specific_lumi', 'recorded_lumi', 'first_run_number', 'last_run_number']
         include_meta_keys = ['init_lumi', 'peak_lumi', 'delivered_lumi', 'recorded_lumi', 'intensity_beam2', 
         'intensity_beam1', 'crossing_angle', 'peak_specific_lumi', 'beta_star']
-
-        fill_kwargs = {key: value for key, value in response['attributes'] if key in include_attribute_keys}
+        
+        fill_kwargs = {}
+        for attribute_key in include_attribute_keys:
+            if attribute_key in response['attributes'].keys():
+                fill_kwargs[attribute_key] = response['attributes'][attribute_key]
 
         for meta_key in include_meta_keys:
             meta_key_unit = meta_key + "_unit"
@@ -107,19 +106,19 @@ def retrieve_run(run_number):
         fill_number = response['attributes'].pop("fill_number")
         fill = retrieve_fill(fill_number=fill_number)
 
-        include_attribute_keys = ["run_number", "run_type", "fill", "lumisections", "b_field", "clock_type", 
-        "cmssw_version", "components", "delivered_lumi", "duration", "end_lumi", "energy", 
-        "fill_type_party1", "fill_type_party2", "fill_type_runtime", "hlt_key", "hlt_physics_counter", 
-        "hlt_physics_rate", "hlt_physics_size", "hlt_physics_throughput", "init_lumi", "initial_prescale_index", 
+        include_attribute_keys = ["run_number", "b_field", "clock_type", "cmssw_version", 
+        "components", "delivered_lumi", "duration", "end_lumi", "energy", "fill_type_party1", 
+        "fill_type_party2", "fill_type_runtime", "hlt_key", "hlt_physics_counter", "hlt_physics_rate", 
+        "hlt_physics_size", "hlt_physics_throughput", "init_lumi", "initial_prescale_index", 
         "l1_hlt_mode", "l1_hlt_mode_stripped", "l1_key", "l1_key_stripped", "l1_menu", "l1_rate", 
-        "l1_triggers_counter", "recorded_lumi", "sequence", "stable_beam", "tier0_transfer", "trigger_mode", 
-        "b_field_unit", "init_lumi_unit", "delivered_lumi_unit", "recorded_lumi_unit", "end_lumi_unit", 
-        "energy_unit"]
-
+        "l1_triggers_counter", "recorded_lumi", "sequence", "stable_beam", "tier0_transfer", "trigger_mode"]
         include_meta_keys = ["init_lumi", "end_lumi", "delivered_lumi", "recorded_lumi"]
 
-        run_kwargs = {key: value for key, value in response['attributes'] if key in include_attribute_keys}
-
+        run_kwargs = {}
+        for attribute_key in include_attribute_keys:
+            if attribute_key in response['attributes'].keys():
+                run_kwargs[attribute_key] = response['attributes'][attribute_key]
+        
         for meta_key in include_meta_keys:
             meta_key_unit = meta_key + "_unit"
             if response['meta']['row'][meta_key]['units']:
