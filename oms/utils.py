@@ -1,52 +1,18 @@
 from django.db import IntegrityError, transaction
-from wbmcrawlr import oms
-
 import runregistry
+from omsapi.utilities import get_oms_run, get_oms_lumisection_count, get_oms_fill
 from oms.models import OmsFill, OmsRun
 from certifier.models import TrackerCertification
 
-'''
-def create_django_model_from_oms_meta(oms_meta_dict):
-    fields = oms_meta_dict['meta']['fields']
-
-    for field in sorted(fields.keys()):
-        value = fields[field]
-
-        source_type = value['source_type']
-        api_type = value['api_type']
-        description = value['description']
-        title = value['title']
-
-        if "float" in source_type:
-            django_model = "FloatField("
-        elif "varchar" in source_type:
-            max_length = source_type.replace("varchar(", "").replace("varchar2(", "").replace(")", "")
-            django_model = "CharField(max_length={}, ".format(max_length)
-        elif "timestamp" in source_type:
-            django_model = "DateTimeField("
-        elif "Integer" in api_type:
-            django_model = "PositiveIntegerField("
-        elif "Fraction" in api_type:
-            django_model = "FloatField("
-        elif 'String' in api_type:
-            django_model = "CharField(max_length=25, "
-        elif "Boolean" in api_type:
-            django_model = "BooleanField("
-        else:
-            raise NotImplementedError("Dont know how to handle : {}".format(field))
-
-        print("{} = models.{}help_text='{}', verbose_name='{}')".format(field, django_model, description, title))
-'''
 
 def get_reco_from_dataset(dataset):
-    lowcase_dataset=dataset.lower()
-    if "express" in lowcase_dataset:
+    if "express" in dataset.lower():
         return "express"
-    elif "prompt" in lowcase_dataset:
+    elif "prompt" in dataset.lower():
         return "prompt"
-    elif "rereco" in  lowcase_dataset and "UL" in dataset:
+    elif "rereco" in  dataset.lower() and "UL" in dataset:
         return "rerecoul"
-    elif "rereco" in  lowcase_dataset:
+    elif "rereco" in  dataset.lower():
         return "rereco"
 
 def retrieve_dataset_by_reco(run_number, reco):
@@ -83,45 +49,88 @@ def retrieve_dataset(run_number):
         if "online" not in dataset["name"]:
             if not TrackerCertification.objects.filter(runreconstruction__run__run_number=run_number, runreconstruction__reconstruction=get_reco_from_dataset(dataset["name"])).exists():
                 return dataset["name"]
-    if len(datasets) != 0:
+
+    if len(datasets) == 0:
         raise Exception("No available datasets for run {}".format(run_number))
     else:
         raise Exception("Run {} has been fully certified".format(run_number))
 
 def retrieve_fill(fill_number):
-    response = oms.get_fills(fill_number, fill_number)[0]
+    fill_check = OmsFill.objects.filter(fill_number=fill_number) 
 
-    exclude = ["dump_ready_to_dump_time", "end_stable_beam", "end_time", "stable_beams",
-               "start_stable_beam", "start_time", "to_dump_ready_time", "to_ready_time"]
+    if fill_check.exits():
+        return OmsFill.objects.get(fill_number=fill_number)
 
-    fill_kwargs = {key: value for key, value in response.items() if key not in exclude}
+    else:
+        response = get_oms_fill(fill_number)
+        if response == None:
+            raise IndexError
+        
+        include_attribute_keys = ['fill_number', 'b_field', 'beta_star', 'bunches_beam1', 'bunches_beam2', 
+        'bunches_colliding', 'bunches_target', 'crossing_angle', 'delivered_lumi', 'downtime', 'duration', 
+        'efficiency_lumi', 'efficiency_time', 'energy', 'era', 'fill_type_party1', 'fill_type_party2', 
+        'fill_type_runtime', 'init_lumi', 'injection_scheme', 'intensity_beam1', 'intensity_beam2', 'peak_lumi', 
+        'peak_pileup', 'peak_specific_lumi', 'recorded_lumi', 'b_field_unit', 'peak_lumi_unit', 'beta_star_unit', 
+        'init_lumi_unit', 'peak_specific_lumi_unit', 'intensity_beam2_unit', 'intensity_beam1_unit', 
+        'delivered_lumi_unit', 'recorded_lumi_unit', 'crossing_angle_unit', 'energy_unit', 'first_run_number', 
+        'last_run_number']
 
-    try:
-        with transaction.atomic():
-            OmsFill.objects.create(**fill_kwargs)
-    except IntegrityError:
-        OmsFill.objects.filter(fill_number=fill_number).update(**fill_kwargs)
+        include_meta_keys = ['init_lumi', 'peak_lumi', 'delivered_lumi', 'recorded_lumi', 'intensity_beam2', 
+        'intensity_beam1', 'crossing_angle', 'peak_specific_lumi', 'beta_star']
 
-    return OmsFill.objects.get(fill_number=fill_number)
+        fill_kwargs = {key: value for key, value in response['attributes'] if key in include_attribute_keys}
+
+        for meta_key in include_meta_keys:
+            meta_key_unit = meta_key + "_unit"
+            if response['meta']['row'][meta_key]['units']:
+                fill_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
+
+        try:
+            with transaction.atomic():
+                OmsFill.objects.create(**fill_kwargs)
+        except IntegrityError:
+            OmsFill.objects.filter(fill_number=fill_number).update(**fill_kwargs)
+
+        return OmsFill.objects.get(fill_number=fill_number)
 
 def retrieve_run(run_number):
-    response = oms.get_runs(run_number, run_number)[0]
+    run_check = OmsRun.objects.filter(run_number=run_number) 
 
-    if response == None:
-        raise IndexError
+    if run_check.exits():
+        return OmsRun.objects.get(run_number=run_number)
 
-    fill_number = response.pop("fill_number")
+    else:
+        response = get_oms_run(run_number)
+        if response == None:
+            raise IndexError
 
-    exclude = ["start_time", "last_update", "end_time"]
-    run_kwargs = {key: value for key, value in response.items() if key not in exclude}
-    run_kwargs["lumisections"] = oms.get_lumisection_count(run_number)
+        fill_number = response.pop("fill_number")
+        fill = retrieve_fill(fill_number=fill_number)
 
-    fill = retrieve_fill(fill_number=fill_number)
+        include_attribute_keys = ["run_number", "run_type", "fill", "lumisections", "b_field", "clock_type", 
+        "cmssw_version", "components", "delivered_lumi", "duration", "end_lumi", "energy", 
+        "fill_type_party1", "fill_type_party2", "fill_type_runtime", "hlt_key", "hlt_physics_counter", 
+        "hlt_physics_rate", "hlt_physics_size", "hlt_physics_throughput", "init_lumi", "initial_prescale_index", 
+        "l1_hlt_mode", "l1_hlt_mode_stripped", "l1_key", "l1_key_stripped", "l1_menu", "l1_rate", 
+        "l1_triggers_counter", "recorded_lumi", "sequence", "stable_beam", "tier0_transfer", "trigger_mode", 
+        "b_field_unit", "init_lumi_unit", "delivered_lumi_unit", "recorded_lumi_unit", "end_lumi_unit", 
+        "energy_unit"]
 
-    try:
-        with transaction.atomic():
-            OmsRun.objects.create(fill=fill, **run_kwargs)
-    except IntegrityError:
-        OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
+        include_meta_keys = ["init_lumi", "end_lumi", "delivered_lumi", "recorded_lumi"]
 
-    return OmsRun.objects.get(run_number=run_number)
+        run_kwargs = {key: value for key, value in response['attributes'] if key in include_attribute_keys}
+
+        for meta_key in include_meta_keys:
+            meta_key_unit = meta_key + "_unit"
+            if response['meta']['row'][meta_key]['units']:
+                run_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
+
+        run_kwargs["lumisections"] = get_oms_lumisection_count(run_number)
+
+        try:
+            with transaction.atomic():
+                OmsRun.objects.create(fill=fill, **run_kwargs)
+        except IntegrityError:
+            OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
+
+        return OmsRun.objects.get(run_number=run_number)
