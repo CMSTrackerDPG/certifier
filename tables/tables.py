@@ -108,7 +108,13 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     edit_run = tables.TemplateColumn(
         '<div align="center">'
             '<a href="{% url \'listruns:update\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
+            '{% if user == record.user %}'
+                '<button class="btn btn-block btn-danger" id="id_certificaion_update">'
+            '{% else %}'
+                '<button class="btn btn-block btn-danger" id="id_certificaion_update" disabled>'
+            '{% endif %}'
                 'Edit'
+                '</button>'
             '</a>'
         '</div>',
         orderable=False,
