@@ -38,6 +38,7 @@ class User(AbstractUser):
     """
     criteria_groups_dict = {
         SHIFTER: [
+            "cms-dqm-runregistry-offline-tracker-certifiers",
             "CMS-Shiftlist_shifters_DQM_Offline",
             "tkdqmdoctor-shifters",
             "CMS-Shiftlist_shifters_DQM_P5"],
