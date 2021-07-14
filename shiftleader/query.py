@@ -17,8 +17,11 @@ from django.db.models import (
 )
 from django.db.models.functions import ExtractWeekDay
 from delete.query import SoftDeletionQuerySet
-from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification, chunks
-from runregistryapp.client import TrackerRunRegistryClient
+from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification
+
+import runregistry
+from operator import itemgetter
+from itertools import groupby
 
 class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def annotate_status(self):
@@ -245,8 +248,14 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         if not self.run_numbers():
             return []
-        client = TrackerRunRegistryClient()
-        return client.get_unique_fill_numbers_by_run_number(self.run_numbers())
+        
+        runs = runregistry.get_runs(filter={
+           'run_number':{
+              'or': self.run_numbers()
+            }
+        })
+        fill_numbers_list = sorted(set({run["oms_attributes"]["fill_number"] for run in runs if run["oms_attributes"]["fill_number"] is not None}))
+        return fill_numbers_list
 
     def pks(self):
         """
@@ -443,7 +452,6 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def compare_with_run_registry(self):
         run_numbers = self.run_numbers()
-        run_registry = TrackerRunRegistryClient()
         keys = [
             "runreconstruction__run__run_number",
             "runreconstruction__run__run_type",
@@ -455,15 +463,15 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         run_info_tuple_set = set(self.values_list(*keys))
 
-        # the resthub api cannot handle more than 1000 elements in the SQL query
-        if len(run_numbers) <= 500:
-            run_registry_entries = run_registry.get_runs_by_list(run_numbers)
-        else:  # split the list if it is too big
-            list_of_run_number_lists = chunks(run_numbers, 500)
-            run_registry_entries = []
-            for run_number_list in list_of_run_number_lists:
-                new_entries = run_registry.get_runs_by_list(run_number_list)
-                run_registry_entries.extend(new_entries)
+        if not run_numbers: 
+            return [], []
+
+        run_registry_entries = runregistry.get_datasets(
+            filter={
+                    'run_number': {'or': run_numbers},
+                    'dataset_name': { 'notlike': '%online%'}
+                }
+            )
 
         convert_run_registry_to_trackercertification(run_registry_entries)
         run_registry_tuple_set = {
@@ -496,7 +504,27 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def matches_with_run_registry(self):
         deviating, corresponding = self.compare_with_run_registry()
         return len(deviating) == 0
+    
 
+    def group_run_numbers_by_fill_number(self):
+        run_numbers = self.run_numbers()
+        response = []
+        runs = runregistry.get_runs(filter={
+           'run_number':{
+              'or': run_numbers
+            }
+        })
+
+        for run in runs:
+            response.append([run["oms_attributes"]["fill_number"],run["run_number"]])
+
+        groups = groupby(response, itemgetter(0))
+        items = [(key, [item[1] for item in value]) for key, value in groups]
+        keys = ["fill_number", "run_number"]
+        fill_run_group = [dict(zip(keys, item)) for item in items]
+        return fill_run_group
+
+    '''
     def annotate_fill_number(self):
         """
         Adds the lhc fill number from the Run Registry
@@ -511,7 +539,4 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             )
             if(fills_list):
                 run.fill_number = fills_list[0]["fill_number"]
-
-    def group_run_numbers_by_fill_number(self):
-        run_registry = TrackerRunRegistryClient()
-        return run_registry.get_grouped_fill_numbers_by_run_number(self.run_numbers())
+    '''
