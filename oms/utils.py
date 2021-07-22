@@ -81,8 +81,9 @@ def retrieve_fill(fill_number):
 
         for meta_key in include_meta_keys:
             meta_key_unit = meta_key + "_unit"
-            if response['meta']['row'][meta_key]['units']:
-                fill_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
+            if 'meta' in response.keys():
+                if response['meta']['row'][meta_key]['units']:
+                    fill_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
 
         try:
             with transaction.atomic():
@@ -121,8 +122,9 @@ def retrieve_run(run_number):
         
         for meta_key in include_meta_keys:
             meta_key_unit = meta_key + "_unit"
-            if response['meta']['row'][meta_key]['units']:
-                run_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
+            if 'meta' in response.keys():
+                if response['meta']['row'][meta_key]['units']:
+                    run_kwargs[meta_key_unit] = response['meta']['row'][meta_key]['units']
 
         run_kwargs["lumisections"] = get_oms_lumisection_count(run_number)
 
