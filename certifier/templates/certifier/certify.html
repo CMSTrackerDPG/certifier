@@ -42,7 +42,7 @@
                 </div>
             </div>
             <!--================================ USER ===============================-->
-            {% if user.has_shift_leader_rights and object%}
+            {% if user.has_shifter_rights and object%}
             <div class="col-sm-3">
                 <div class="row mt-2 d-flex justify-content-start">
                     <div class="col-sm-2" style="font-size: 18px; font-weight: bold;">
@@ -72,9 +72,9 @@
         </div>
     </div>
 
-    <!--================================ TYPE ===============================-->
     <div class="container-fluid">
         <div class="row">
+            <!--================================ TYPE ===============================-->
             <div class="col-md-4">
                 <div class="card shadow-sm bg-white">
                     <div class="card-body">
@@ -126,7 +126,6 @@
                     </div>
                 </div>
             </div>
-
 
             <!--================================ LUMI ===============================-->
             <div class="col-md-4">
