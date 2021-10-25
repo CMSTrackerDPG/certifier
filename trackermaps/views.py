@@ -18,8 +18,8 @@ def send_channel_message(group_name, message):
     )
 
 def run_tracker_maps(run_type, min_run_number, max_run_number):
-    tracker_maps_command = "python /home/cctrack/run_tracker_maps.py " + str(run_type) + " " + str(min_run_number) + " " + str(max_run_number)
-
+    #tracker_maps_command = "python /home/cctrack/run_tracker_maps.py " + str(run_type) + " " + str(min_run_number) + " " + str(max_run_number)
+    tracker_maps_command = "source /home/dpgtkdqm/TkMaps/driveTkmaps"
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
