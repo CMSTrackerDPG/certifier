@@ -35,7 +35,7 @@ def certify(request, run_number, reco=None):
     
     print(request)
     
-    if request.is_ajax():
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         name = request.POST.get("name", None)
         dataset = request.POST.get("dataset", None)
         description = request.POST.get("description", None)
