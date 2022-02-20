@@ -14,14 +14,11 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.exceptions import ConnectionError
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-
 OMS_FILTER_OPERATORS = ["EQ", "NEQ", "LT", "GT", "LE", "GE", "LIKE"]
 OMS_INCLUDES = ["meta", "presentation_timestamp", "data_only"]
 
 #OpenID parameters
-cern_auth_token_url='https://auth.cern.ch/auth/realms/cern/protocol/openid-connect/token'
-grant_type='client_credentials'
-exc_token_type='access_token'
+cern_api_url='https://auth.cern.ch/auth/realms/cern/api-access/token'
 
 class OMSApiException(Exception):
     """ OMS API Client Exception """
@@ -84,7 +81,9 @@ class OMSQuery(object):
 
         response = self.get_request(url, verify=self.cert_verify)
 
-        if response.status_code != 200:
+        if response.status_code == 302:
+            raise Exception("Received redirect (HTTP 302). Try to switch between http/https protocol")
+        elif response.status_code != 200:
             self._warn("Failed to fetch meta information")
         else:
             try:
@@ -351,6 +350,9 @@ class OMSQuery(object):
         else:
             ret = self.get_request(url, verify=self.cert_verify)
 
+        if ret.status_code == 302:
+            raise Exception("Received redirect (HTTP 302). Try to switch between http/https protocol")
+
         return ret
 
     def meta(self):
@@ -364,15 +366,15 @@ class OMSQuery(object):
 
     def get_request(self, url, verify=False):
         if self.oms_auth:
-            response = requests.get(url, verify=verify, headers=self.oms_auth.token_headers, proxies=self.proxies)
+            response = requests.get(url, verify=verify, headers=self.oms_auth.token_headers, proxies=self.proxies, allow_redirects=False)
             #check if token has expired (Unauthorized)
             if response.status_code == 401:
                 print("Unauthorized. Will try to obtain a new token")
                 self.oms_auth.auth_oidc()
-                return requests.get(url, verify=verify, headers=self.oms_auth.token_headers, proxies=self.proxies)
+                return requests.get(url, verify=verify, headers=self.oms_auth.token_headers, proxies=self.proxies, allow_redirects=False)
             return response
         else:
-            return requests.get(url, verify=verify, cookies=self.cookies, proxies=self.proxies)
+            return requests.get(url, verify=verify, cookies=self.cookies, proxies=self.proxies, allow_redirects=False)
  
 class OMSAPIOAuth(object):
     """ OMS API token store and manager """
@@ -411,32 +413,17 @@ class OMSAPIOAuth(object):
                 
         self.token_time = current_time
         token_req_data = {
-            'grant_type': grant_type,
+            'grant_type': 'client_credentials',
             'client_id': self.client_id,
-            'client_secret': self.client_secret
+            'client_secret': self.client_secret,
+            'audience': self.audience
         }
-        ret = requests.post(cern_auth_token_url, data=token_req_data, verify=self.cert_verify, proxies=self.proxies)
+        ret = requests.post(cern_api_url, data=token_req_data, verify=self.cert_verify, proxies=self.proxies)
         if ret.status_code!=200:
             raise Exception("Unable to acquire OAuth token: " + ret.content.decode())
 
-        res = json.loads(ret.content)
-
-        exchange_data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'subject_token': res['access_token'],
-            'audience': self.audience,
-            'grant_type':'urn:ietf:params:oauth:grant-type:token-exchange',
-            'requested_token_type':'urn:ietf:params:oauth:token-type:'+ exc_token_type
-        }
-
-        #cert verification disabled
-        ret = requests.post(cern_auth_token_url, data=exchange_data, verify=self.cert_verify, proxies=self.proxies)
-        if ret.status_code!=200:
-            raise Exception("Unable to exchange OAuth token: " + ret.content.decode())
-
         self.token_json = json.loads(ret.content)
-        self.token_headers = {'Authorization':'Bearer ' + self.token_json["access_token"]}
+        self.token_headers = {'Authorization':'Bearer ' + self.token_json["access_token"], 'content-type':'application/json'}
 
  
 class OMSAPI(object):
@@ -477,7 +464,7 @@ class OMSAPI(object):
             self.oms_auth = OMSAPIOAuth(client_id, client_secret, audience, self.cert_verify, proxies=proxies, retry_on_err_sec=self.err_sec)
         self.oms_auth.auth_oidc()
 
-    def auth_krb(self, cookie_path="ssocookies.txt"):
+    def auth_krb(self, cookie_path="ssocookies.txt", sandbox_cmd=False):
         """ Authorisation for https using kerberos"""
 
         def rm_file(filename):
@@ -485,9 +472,23 @@ class OMSAPI(object):
                 os.remove(filename)
 
         rm_file(cookie_path)
-        args = ["auth-get-sso-cookie", "-u", self.api_url_host, "-o", cookie_path]
-        if not self.cert_verify:
-            args.append("--nocertverify")
+
+        if not sandbox_cmd:
+            args = ["auth-get-sso-cookie", "-u", self.api_url_host, "-o", cookie_path]
+            if not self.cert_verify:
+                args.append("--nocertverify")
+        else:
+            #needed with CMSSW which overrides Python env and auth-get-sso-cookie fails
+
+            #ensure same kerberos cache is used
+            try:
+                krbenv= "KRB5CCNAME=" + os.environ["KRB5CCNAME"] + " "
+            except:
+                krbenv=""
+            
+            nocert = "--nocertverify" if not self.cert_verify else ""
+            args = ['/bin/env', '-i', 'bash', '-c', '-l', f'{krbenv}auth-get-sso-cookie -u {self.api_url_host} -o {cookie_path} {nocert}']
+
         try:
             subprocess.call(args)
         except OSError as e:
