@@ -264,4 +264,7 @@ modules.xml
 ### Python Patch ###
 .venv/
 
+# emacs
+*~
+
 # End of https://www.gitignore.io/api/django,python,pycharm+all
