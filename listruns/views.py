@@ -34,7 +34,7 @@ from listruns.utilities.utilities import (
 
 
 # Create your views here.
-@login_required(login_url='/accounts/login/')
+# @login_required
 def listruns(request):
     """
     View to list all certified runs
@@ -48,11 +48,14 @@ def listruns(request):
     In case the user is not logged in show all objects,
     but remove the edit and remove buttons from the tableview.
     """
-    if request.user.is_authenticated:
-        run_info_list = TrackerCertification.objects.all()
-        run_info_filter = TrackerCertificationFilter(request.GET,
-                                                     queryset=run_info_list)
-        table = TrackerCertificationTable(run_info_filter.qs, order_by="-date")
+    run_info_list = TrackerCertification.objects.all()
+
+    # This does not seem to be required, the check for disabling the edit button
+    # is done upon the django_table creation
+    # if request.user.is_authenticated:
+    run_info_filter = TrackerCertificationFilter(request.GET,
+                                                 queryset=run_info_list)
+    table = TrackerCertificationTable(run_info_filter.qs, order_by="-date")
 
     RequestConfig(request).configure(table)
 
