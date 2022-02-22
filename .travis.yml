@@ -6,11 +6,11 @@ python:
 
 # services: postgresql
 
-before_install:
-  - sudo sed -i -e '/local.*peer/s/postgres/all/' -e 's/peer\|md5/trust/g' /etc/postgresql/*/main/pg_hba.conf
-  - sudo service postgresql restart
-  - sleep 1
-  - postgres --version
+# before_install:
+  # - sudo sed -i -e '/local.*peer/s/postgres/all/' -e 's/peer\|md5/trust/g' /etc/postgresql/*/main/pg_hba.conf
+  # - sudo service postgresql restart
+  # - sleep 1
+  # - postgres --version
 
 
 install:
@@ -21,8 +21,8 @@ before_script:
   - psql -c "create database testdb;" -U postgres
 
 script:
-  - python manage.py collectstatic
-  - python manage.py migrate --run-syncdb
+  # - python manage.py collectstatic
+  # - python manage.py migrate --run-syncdb
   - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py --ignore shiftleader/tests/test_shiftleaderreport.py --ignore analysis/tests/test_analysis_views.py --ignore oms/tests/test_oms_utils.py --ignore plot/tests/test_plot_views.py --ignore runregistry/tests/test_runregistry_client.py --ignore addrefrun/tests/test_addrefrun_views.py
 
 after_success:
@@ -39,5 +39,6 @@ addons:
 env:
   global:
     - PGUSER=postgres
-    - PGPORT=5432
+    - PGVER=12
+    - PGPORT=5433
     - PGHOST=localhost
