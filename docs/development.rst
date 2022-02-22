@@ -149,6 +149,19 @@ https://www.miniwebtool.com/django-secret-key-generator/
 These environment variables are read in the settings.py module which
 configures the database.
 
+Load sample data
+~~~~~~~~~~~~~~~~
+When running the project from a development database as was setup above, you will probably
+need some data to play with. This is done via `Django fixtures <https://docs.djangoproject.com/en/4.0/howto/initial-data/>`__,
+which are written by hand in the ``certifier.yaml`` file in ``certifier/fixtures``. 
+
+To load them, activate the virtual environment and run:
+
+.. code:: bash
+		  
+   python manage.py loaddata certifier.yaml
+
+		  
 Packages
 --------
 
