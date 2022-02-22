@@ -34,7 +34,9 @@ from listruns.utilities.utilities import (
     integer_or_none,
 )
 
+
 # Create your views here.
+@method_decorator(login_required, name="dispatch")
 def listruns(request):
     """
     View to list all certified runs
@@ -43,7 +45,6 @@ def listruns(request):
         return HttpResponseRedirect("/list/%s" % get_today_filter_parameter())
 
     context = {}
-
     """
     Make sure that the logged in user can only see his own runs
     In case the user is not logged in show all objects,
@@ -51,7 +52,8 @@ def listruns(request):
     """
     if request.user.is_authenticated:
         run_info_list = TrackerCertification.objects.all()
-        run_info_filter = TrackerCertificationFilter(request.GET, queryset=run_info_list)
+        run_info_filter = TrackerCertificationFilter(request.GET,
+                                                     queryset=run_info_list)
         table = TrackerCertificationTable(run_info_filter.qs, order_by="-date")
 
     RequestConfig(request).configure(table)
@@ -66,6 +68,7 @@ def listruns(request):
     context["table"] = table
     context["filter"] = run_info_filter
     return render(request, "listruns/list.html", context)
+
 
 @method_decorator(login_required, name="dispatch")
 class UpdateRun(generic.UpdateView):
@@ -83,12 +86,13 @@ class UpdateRun(generic.UpdateView):
 
         context = super().get_context_data(**kwargs)
         context["checklist_not_required"] = True
-        context["run_number"]=self.kwargs["run_number"]
-        context["reco"]=self.kwargs["reco"]
-        context["dataset"]=TrackerCertification.objects.get(
-                runreconstruction__run__run_number=self.kwargs["run_number"],
-                runreconstruction__reconstruction=self.kwargs["reco"]).dataset
-        context["run"]=OmsRun.objects.get(run_number=self.kwargs["run_number"])
+        context["run_number"] = self.kwargs["run_number"]
+        context["reco"] = self.kwargs["reco"]
+        context["dataset"] = TrackerCertification.objects.get(
+            runreconstruction__run__run_number=self.kwargs["run_number"],
+            runreconstruction__reconstruction=self.kwargs["reco"]).dataset
+        context["run"] = OmsRun.objects.get(
+            run_number=self.kwargs["run_number"])
         return context
 
     def same_user_or_shiftleader(self, user):
@@ -97,11 +101,8 @@ class UpdateRun(generic.UpdateView):
         that created the run, has at least shift leader rights
         or is a super user (admin)
         """
-        return (
-            self.get_object().user.id == user.id
-            or user.is_superuser
-            or user.has_shift_leader_rights
-        )
+        return (self.get_object().user.id == user.id or user.is_superuser
+                or user.has_shift_leader_rights)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -109,15 +110,13 @@ class UpdateRun(generic.UpdateView):
         """
         if self.same_user_or_shiftleader(request.user):
             return super(UpdateRun, self).dispatch(request, *args, **kwargs)
-        return redirect_to_login(
-            request.get_full_path(), login_url=reverse("admin:login")
-        )
+        return redirect_to_login(request.get_full_path(),
+                                 login_url=reverse("admin:login"))
 
     def get_success_url(self):
         """
         return redirect url after updating a run
         """
         is_same_user = self.get_object().user.id == self.request.user.id
-        return reverse("home:home") if not is_same_user else reverse("listruns:list")
-
-
+        return reverse("home:home") if not is_same_user else reverse(
+            "listruns:list")
