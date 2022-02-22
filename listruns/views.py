@@ -1,6 +1,5 @@
-import re
-
-from django.contrib.admin.views.decorators import staff_member_required
+# import re
+# from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
@@ -12,7 +11,6 @@ from django.views import generic
 from django.views.generic import TemplateView
 from django_filters.views import FilterView
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
-
 from oms.models import OmsRun
 
 from certifier.models import TrackerCertification
@@ -36,7 +34,7 @@ from listruns.utilities.utilities import (
 
 
 # Create your views here.
-@method_decorator(login_required, name="dispatch")
+@login_required(login_url='/accounts/login/')
 def listruns(request):
     """
     View to list all certified runs
