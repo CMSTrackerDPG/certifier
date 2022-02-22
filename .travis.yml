@@ -34,11 +34,11 @@ addons:
     packages:
       - postgresql-12
       - postgresql-client-12
-      - postgresql-server-dev-12
+      # - postgresql-server-dev-12
  
 env:
   global:
-    - PGUSER=postgres
+    - PGUSER=travis
     - PGVER=12
     - PGPORT=5433
-    - PGHOST=localhost
+    # - PGHOST=localhost
