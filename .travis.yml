@@ -29,3 +29,7 @@ addons:
       - postgresql-client-12
       - postgresql-server-dev-12
  
+env:
+  global:
+  - PGPORT=5433
+  - PGUSER=travis
