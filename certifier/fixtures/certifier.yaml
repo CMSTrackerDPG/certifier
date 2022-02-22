@@ -1,0 +1,126 @@
+---
+
+
+- model: socialaccount.SocialAccount
+  pk: 1
+  fields:
+    user: 69
+    provider: "asdf"
+    uid: "lksjdf"
+    last_login: 2022-02-22 18:59:03.413784+00:00
+    date_joined: 2022-02-22 18:59:03.413784+00:00
+    
+
+- model: users.user
+  pk: 69
+  fields:
+    password: pbkdf2_sha256$320000$FMszXNCGVI2PI2j54EUjtl$Vi7ZCk83BiQ0FdHXVGgdxw7ikn5F++6N4HWrQJpysz0=
+    last_login: 2022-02-22 18:59:03.413784+00:00
+    is_superuser: false
+    username: test_user
+    first_name: 'Test'
+    last_name: 'Tester'
+    email: 'test@cern.ch'
+    is_staff: true
+    is_active: true
+    date_joined: 2022-02-11 10:54:51.105115+00:00
+    extra_data: '{}'
+    user_privilege: 0
+    groups: []
+    user_permissions: []
+
+- model: oms.OmsFill
+  pk: 1
+  fields:
+    fill_number: 69
+    b_field: 0.1111
+    bunches_beam1: 1
+    bunches_beam2: 3
+    bunches_colliding: 1111
+    bunches_target: 8888
+    crossing_angle: 1.222
+    delivered_lumi: 92.11
+    downtime: 999
+    duration: 8
+    efficiency_lumi: 9.22
+    efficiency_time: 2.111
+    energy: 3.22
+    era: "askldjsl"
+    fill_type_party1: "fill1"
+    fill_type_party2: "fill2"
+    fill_type_runtime: "runtime"
+    init_lumi: 2.1111
+    injection_scheme: "injection"
+    intensity_beam1: 2.11
+    intensity_beam2: 2.12
+    first_run_number: 2
+    last_run_number: 3
+    # The rest left as null
+    
+- model: oms.OmsRun
+  pk: 1
+  fields:
+    run_number: 420
+    run_type: "collisions"
+    fill: 69
+    lumisections: 299292
+    hlt_key: "kalispera"
+    
+- model: certifier.RunReconstruction
+  pk: 1
+  fields:
+    run: 420
+    reconstruction: "online"
+    is_reference: false
+    
+- model: certifier.PixelProblem
+  pk: 1
+  fields:
+    name: PixelProblem1
+    description: 'Problem!'
+
+- model: certifier.StripProblem
+  pk: 1
+  fields:
+    name: StripProblem1
+    description: 'Problem!'
+
+- model: certifier.TrackingProblem
+  pk: 1
+  fields:
+    name: TrackingProblem1
+    description: 'Problem!'
+
+- model: certifier.BadReason
+  pk: 1
+  fields:
+    name: BadReason1
+    description: 'Problem!'
+
+- model: certifier.Dataset
+  pk: 1
+  fields:
+    dataset: 'Dataset!'            
+
+  
+- model: certifier.TrackerCertification
+  pk: 1
+  fields:
+    # created_at: 2022-02-11 10:54:51.105115+00:00
+    # updated_at: 2022-02-11 10:54:51.105115+00:00
+    # deleted_at: 2022-02-11 10:54:51.105115+00:00
+    user: 69
+    dataset: 1
+    trackermap: "exists"
+    pixel: "good"
+    strip: "good"
+    tracking: "good"
+    pixel_problems: [1]
+    strip_problems: [1]
+    tracking_problems: [1]
+    bad_reason: 1
+    date: 2022-02-11 10:54:51.105115+00:00
+    reference_runreconstruction: 1
+    
+    
+    
