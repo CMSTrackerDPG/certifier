@@ -169,7 +169,8 @@ fake data, run the following:
 
 		  python manage.py fake_data
 
-
+To recreate random entries, navigate to the admin interface, delete all ``test<num>`` users and re-run
+the aforementioned management command
 		  
 Packages
 --------
