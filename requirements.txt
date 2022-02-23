@@ -22,7 +22,7 @@ git+https://github.com/CMSTrackerDPG/runregcrawlr
 git+https://github.com/CMSTrackerDPG/dqmcrawlr
 git+https://github.com/CMSTrackerDPG/wbmcrawlr
 paramiko
-
 runregistry
 apscheduler
 whitenoise
+factory_boy

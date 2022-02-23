@@ -161,6 +161,15 @@ To load them, activate the virtual environment and run:
 		  
    python manage.py loaddata certifier.yaml
 
+Alternatively, ``factory_boy`` can be used, by calling the custom management command ``fake_data``.
+For example, to populate the database with a default superuser and some
+fake data, run the following:
+
+.. code:: bash
+
+		  python manage.py fake_data
+
+
 		  
 Packages
 --------
