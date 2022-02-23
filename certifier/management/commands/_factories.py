@@ -12,10 +12,11 @@ class UserFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('username', )
 
     username = factory.Sequence(lambda n: "test%d" % n)
-    first_name = 'Test'
-    last_name = 'Tester'
+    password = factory.PostGenerationMethodCall('set_password', '1234')
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
     email = 'test@cern.ch'
-    is_staff = True
+    is_staff = False
     is_active = True
     date_joined = '2022-02-11 10:54:51.105115+00:00'
     extra_data = '{}'
