@@ -295,7 +295,7 @@ Django Tutorial
 ---------------
 
 It is recommended to the finish the Django tutorial at
-https://docs.djangoproject.com/en/1.11/intro/tutorial01/ before doing
+https://docs.djangoproject.com/en/4.0/intro/tutorial01/ before doing
 any changes at the website. The tutorial is beneficial and gives a big
 overview of how Django works.
 
