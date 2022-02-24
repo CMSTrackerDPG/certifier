@@ -16,18 +16,16 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'Certification Helper'
-copyright = '2018, Peter Stein, 2019, Alin Grigorean'
-author = 'Peter Stein, Alin Grigorean'
+copyright = '2018, Peter Stein, 2019, Alin Grigorean, 2022, Abhit Patil, Dimitris Papagiannis'
+author = 'Peter Stein, Alin Grigorean, Abhit Patil, Dimitris Papagiannis'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
 release = ''
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -38,8 +36,7 @@ release = ''
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-]
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -67,7 +64,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -97,12 +93,10 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
-
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'certhelperdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -132,16 +126,12 @@ latex_documents = [
      'Peter Stein', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'certhelper', 'Certification Helper Documentation',
-     [author], 1)
-]
-
+man_pages = [(master_doc, 'certhelper', 'Certification Helper Documentation',
+              [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -149,11 +139,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'certhelper', 'Certification Helper Documentation',
-     author, 'certhelper', 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, 'certhelper', 'Certification Helper Documentation', author,
+     'certhelper', 'One line description of project.', 'Miscellaneous'),
 ]
-
 
 # -- Options for Epub output -------------------------------------------------
 
