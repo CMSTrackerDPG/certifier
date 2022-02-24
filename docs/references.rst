@@ -7,7 +7,7 @@ References
 -  Historic DQM: http://vocms061.cern.ch/event\_display/HDQM/v4/
 -  Run Registry: https://cmsrunregistry.web.cern.ch/online/global
 -  Django https://docs.djangoproject.com/
--  Django tutorial https://docs.djangoproject.com/en/1.11/intro/tutorial01/
+-  Django tutorial https://docs.djangoproject.com/en/4.0/intro/tutorial01/
 
 The full details about the tasks of a Tracker Offline shifter can be
 read at:
