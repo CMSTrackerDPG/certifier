@@ -46,7 +46,7 @@ def openruns(request):
             except ValueError:
                 context = {
                     "message":
-                    "Run list should contains only numbers of runs separated by comma or space"
+                    "Run list should contain only numbers of runs separated by comma or space"
                 }
                 return render(request, "certifier/404.html", context)
 
@@ -60,8 +60,14 @@ def openruns(request):
                 }
                 #return render(request, "certifier/404.html", context)
             else:
-                get_range_of_open_runs(min_run_number, max_run_number,
-                                       request.user)
+                try:
+                    get_range_of_open_runs(min_run_number, max_run_number,
+                                           request.user)
+                # Missing
+                except CertificateNotFound as e:
+                    return HttpResponse(
+                        "Incorrect configuration of RunRegistry certificates",
+                        status=503)
 
         elif len(runs_list) >= runs_search_limit:
             context = {
