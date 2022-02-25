@@ -13,14 +13,11 @@ djangorestframework>=3.10.3
 Django>=3.0.3
 psycopg2-binary>=2.8.3
 python-decouple==3.1
-requests==2.21.0
+requests==2.27.1
 terminaltables==3.1.0
 daphne>=2.4.1
 django-widget-tweaks>=1.4.5
 django-extensions>=2.1.6
-git+https://github.com/CMSTrackerDPG/runregcrawlr
-git+https://github.com/CMSTrackerDPG/dqmcrawlr
-git+https://github.com/CMSTrackerDPG/wbmcrawlr
 paramiko
 runregistry
 apscheduler

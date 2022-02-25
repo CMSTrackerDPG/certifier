@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+//https://simpleisbetterthancomplex.com/tutorial/2016/08/29/how-to-work-with-ajax-request-with-django.html
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
