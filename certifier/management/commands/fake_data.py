@@ -18,6 +18,9 @@ class Command(BaseCommand):
         ref_runreconstruction = _factories.RunReconstructionFactory.create(
             is_reference=True)
 
+        shifters = _factories.ShifterFactory.create_batch(size=5)
+        shiftleaders = _factories.ShiftLeaderFactory.create_batch(size=2)
+
         # Create 10x TrackerCertification entries.
         # This should create all the required entries on related tables
         # like users, OmsRuns etc.
