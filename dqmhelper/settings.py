@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://training-certhelper.web.cern.ch/']
+CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default = '')]
 # Application definition
 
 INSTALLED_APPS = [
