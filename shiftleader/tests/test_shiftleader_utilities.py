@@ -3,9 +3,7 @@ from decimal import Decimal
 import pytest
 from mixer.backend.django import mixer
 from shiftleader.utilities.utilities import *
-
 from unittest.mock import MagicMock
-from runregistryapp.client import RunRegistryClient, TrackerRunRegistryClient
 pytestmark = pytest.mark.django_db
 
 class TestUtilities:
