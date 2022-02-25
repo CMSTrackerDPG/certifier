@@ -7,9 +7,6 @@ def get_specific_open_runs(runs_list, user):
             filter={
                 'run_number': {
                     'or': runs_list
-                },
-                'tracker_state': {
-                    '=': 'OPEN'
                 }
             }
         )
@@ -21,9 +18,6 @@ def get_range_of_open_runs(start, end, user):
             filter={
                 'run_number': {
                     'and': [{'>=': start}, {'<=': end}]
-                },
-                'tracker_state': {
-                    '=': 'OPEN'
                 }
             }
         )
