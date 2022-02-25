@@ -7,6 +7,9 @@ from users import models as users_models
 
 
 class UserFactory(factory.django.DjangoModelFactory):
+    """
+    Generic user creation factory with Guest privileges
+    """
     class Meta:
         model = users_models.User
         django_get_or_create = ("username", )
@@ -26,18 +29,24 @@ class UserFactory(factory.django.DjangoModelFactory):
     # getter=lambda c: c[0])
 
     # FixedPrivilege
-    user_privilege = users_models.User.SHIFTER
+    user_privilege = users_models.User.GUEST
 
     # groups =
     # user_permissions =
 
 
 class ShifterFactory(UserFactory):
+    """
+    User creation factory with Shifter privileges
+    """
     username = factory.Sequence(lambda n: "shifter%d" % n)
     user_privilege = users_models.User.SHIFTER
 
 
 class ShiftLeaderFactory(UserFactory):
+    """
+    User creation factory with Shift Leader privileges
+    """
     username = factory.Sequence(lambda n: "shiftleader%d" % n)
     user_privilege = users_models.User.SHIFTLEADER
 
@@ -178,10 +187,10 @@ class TrackerCertificationFactory(factory.django.DjangoModelFactory):
     bad_reason = factory.SubFactory(BadReasonFactory)
     # trackermap = factory.Faker('trackermap')
 
-    pixel_problems = factory.RelatedFactoryList(PixelProblemFactory, size=5)
-    strip_problems = factory.RelatedFactoryList(StripProblemFactory, size=5)
-    tracking_problems = factory.RelatedFactoryList(TrackingProblemFactory,
-                                                   size=5)
+    # pixel_problems = factory.RelatedFactoryList(PixelProblemFactory, size=5)
+    # strip_problems = factory.RelatedFactoryList(StripProblemFactory, size=5)
+    # tracking_problems = factory.RelatedFactoryList(TrackingProblemFactory,
+    # size=5)
 
     @factory.post_generation
     def pixel_problems(self, create, extracted, **kwargs):
