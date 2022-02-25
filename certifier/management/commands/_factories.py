@@ -9,20 +9,37 @@ from users import models as users_models
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = users_models.User
-        django_get_or_create = ('username', )
+        django_get_or_create = ("username", )
 
     username = factory.Sequence(lambda n: "test%d" % n)
-    password = factory.PostGenerationMethodCall('set_password', '1234')
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    email = 'test@cern.ch'
+    password = factory.PostGenerationMethodCall("set_password", "1234")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    email = factory.LazyAttribute(
+        lambda a: "{}.{}@cern.ch".format(a.first_name, a.last_name).lower())
     is_staff = False
     is_active = True
-    date_joined = '2022-02-11 10:54:51.105115+00:00'
-    extra_data = '{}'
-    user_privilege = 0
+    date_joined = "2022-02-11 10:54:51.105115+00:00"
+    extra_data = "{}"
+    # Random user_privilege
+    # user_privilege = fuzzy.FuzzyChoice(users_models.User.USER_PRIVILEGE_GROUPS,
+    # getter=lambda c: c[0])
+
+    # FixedPrivilege
+    user_privilege = users_models.User.SHIFTER
+
     # groups =
     # user_permissions =
+
+
+class ShifterFactory(UserFactory):
+    username = factory.Sequence(lambda n: "shifter%d" % n)
+    user_privilege = users_models.User.SHIFTER
+
+
+class ShiftLeaderFactory(UserFactory):
+    username = factory.Sequence(lambda n: "shiftleader%d" % n)
+    user_privilege = users_models.User.SHIFTLEADER
 
 
 class SocialAccountFactory(factory.django.DjangoModelFactory):
@@ -35,7 +52,7 @@ class SocialAccountFactory(factory.django.DjangoModelFactory):
 class OmsFillFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = oms_models.OmsFill
-        django_get_or_create = ('fill_number', )
+        django_get_or_create = ("fill_number", )
 
     fill_number = factory.Sequence(lambda n: n)
     b_field = 0.1111
@@ -47,17 +64,17 @@ class OmsFillFactory(factory.django.DjangoModelFactory):
     delivered_lumi = 92.11
     downtime = 999
     duration = 8
-    efficiency_lumi = factory.Faker('random_int')
-    efficiency_time = factory.Faker('random_int')
-    energy = factory.Faker('random_int')
-    era = factory.Faker('text')
+    efficiency_lumi = factory.Faker("random_int")
+    efficiency_time = factory.Faker("random_int")
+    energy = factory.Faker("random_int")
+    era = factory.Faker("text")
     fill_type_party1 = "fill1"
     fill_type_party2 = "fill2"
     fill_type_runtime = "runtime"
     init_lumi = 2.1111
     injection_scheme = "injection"
-    intensity_beam1 = factory.Faker('random_int')
-    intensity_beam2 = factory.Faker('random_int')
+    intensity_beam1 = factory.Faker("random_int")
+    intensity_beam2 = factory.Faker("random_int")
     first_run_number = 2
     last_run_number = 3
 
@@ -65,20 +82,20 @@ class OmsFillFactory(factory.django.DjangoModelFactory):
 class OmsRunFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = oms_models.OmsRun
-        django_get_or_create = ('run_number', )
+        django_get_or_create = ("run_number", )
 
     run_number = factory.Sequence(lambda n: n)
     run_type = fuzzy.FuzzyChoice(oms_models.OmsRun.RUN_TYPE_CHOICES,
                                  getter=lambda c: c[0])
     fill = factory.SubFactory(OmsFillFactory)
-    lumisections = factory.Faker('random_int')
-    hlt_key = factory.Faker('country')
+    lumisections = factory.Faker("random_int")
+    hlt_key = factory.Faker("country")
 
 
 class RunReconstructionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.RunReconstruction
-        django_get_or_create = ('run', )
+        django_get_or_create = ("run", )
 
     run = factory.SubFactory(OmsRunFactory)
     reconstruction = fuzzy.FuzzyChoice(
@@ -89,68 +106,75 @@ class RunReconstructionFactory(factory.django.DjangoModelFactory):
 class DatasetFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.Dataset
-        django_get_or_create = ('dataset', )
+        django_get_or_create = ("dataset", )
 
-    dataset = factory.Faker('country')
+    dataset = factory.Faker("country")
 
 
 class PixelProblemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.PixelProblem
-        django_get_or_create = ('name', )
+        django_get_or_create = ("name", )
 
-    name = factory.Sequence(lambda n: 'Pixel Problem %d' % n)
+    name = factory.Sequence(lambda n: "Pixel Problem %d" % n)
     description = f"{name} description"
 
 
 class StripProblemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.StripProblem
-        django_get_or_create = ('name', )
+        django_get_or_create = ("name", )
 
-    name = factory.Sequence(lambda n: 'Strip Problem %d' % n)
+    name = factory.Sequence(lambda n: "Strip Problem %d" % n)
     description = f"{name} description"
 
 
 class TrackingProblemFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.TrackingProblem
-        django_get_or_create = ('name', )
+        django_get_or_create = ("name", )
 
-    name = factory.Sequence(lambda n: 'Tracking Problem %d' % n)
+    name = factory.Sequence(lambda n: "Tracking Problem %d" % n)
     description = f"{name} description"
 
 
 class BadReasonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.BadReason
-        django_get_or_create = ('name', )
+        django_get_or_create = ("name", )
 
-    name = factory.Sequence(lambda n: 'Bad Reason %d' % n)
+    name = factory.Sequence(lambda n: "Bad Reason %d" % n)
     description = f"{name} description"
 
 
 class TrackerCertificationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = certifier_models.TrackerCertification
-        django_get_or_create = ('runreconstruction',
-                                'reference_runreconstruction', 'bad_reason',
-                                'dataset')
+        django_get_or_create = (
+            "runreconstruction",
+            "reference_runreconstruction",
+            "bad_reason",
+            "dataset",
+        )
 
-    user = factory.SubFactory(UserFactory)
+    # user = factory.SubFactory(UserFactory)
+    user = factory.Iterator(users_models.User.objects.all())
     runreconstruction = factory.SubFactory(RunReconstructionFactory)
     reference_runreconstruction = factory.SubFactory(RunReconstructionFactory)
     dataset = factory.SubFactory(DatasetFactory)
     date = "2022-02-11"
     pixel = fuzzy.FuzzyChoice(
         certifier_models.TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        getter=lambda c: c[0])
+        getter=lambda c: c[0],
+    )
     strip = fuzzy.FuzzyChoice(
         certifier_models.TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        getter=lambda c: c[0])
+        getter=lambda c: c[0],
+    )
     tracking = fuzzy.FuzzyChoice(
         certifier_models.TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        getter=lambda c: c[0])
+        getter=lambda c: c[0],
+    )
     bad_reason = factory.SubFactory(BadReasonFactory)
     # trackermap = factory.Faker('trackermap')
 
