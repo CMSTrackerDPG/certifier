@@ -1,19 +1,32 @@
 language: python
 python:
-  - "3.6"
-  - "3.7"
-
-services: postgresql
+  # - "3.6"
+  # - "3.7"
+  - "3.8"
 
 install:
   - pip install --upgrade -r requirements.txt
   - pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
 
 before_script:
-  - psql -c "create database testdb;" -U postgres
+  - psql -c "create database testdb;" -U travis
 
 script:
   - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py --ignore shiftleader/tests/test_shiftleaderreport.py --ignore analysis/tests/test_analysis_views.py --ignore oms/tests/test_oms_utils.py --ignore plot/tests/test_plot_views.py --ignore runregistry/tests/test_runregistry_client.py --ignore addrefrun/tests/test_addrefrun_views.py
 
 after_success:
   - codecov
+ 
+addons:
+  postgresql: "12"
+  apt:
+    packages:
+      - postgresql-12
+      - postgresql-client-12
+ 
+env:
+  global:
+    # From the official Travis documentation, username and port has changed for Postgres version > 10
+    - PGUSER=travis
+    - PGVER=12
+    - PGPORT=5433
