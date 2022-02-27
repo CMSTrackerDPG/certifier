@@ -1,11 +1,11 @@
 Deployment
 ==========
 
-Requesting website
-------------------
+Requesting a website
+--------------------
 
-A website can be requested at the CERN web services.
-https://webservices.web.cern.ch/webservices/
+Create a new PaaS project: https://paas.docs.cern.ch/1._Getting_Started/1-create-paas-project/
+
 
 .. image:: images/request-website.png
 
@@ -23,123 +23,140 @@ Setup
 Prerequisites
 ^^^^^^^^^^^^^
 
-Download the ``oc`` command line utility.
+Download the ``oc`` command line utility, preferably on your lxplus account.
 
-https://www.okd.io/download.html
+https://paas.docs.cern.ch/1._Getting_Started/5-installing-cli/
 
-On Arch Linux all you have to do is install ``origin-client-bin`` from
-the AUR.
 
-.. code:: bash
-
-   yay -S origin-client-bin
+Procedure
+^^^^^^^^^
 
 Once the website is successfully requested the application should be
 available in OpenShift. Following steps need to be done in order to
 configure the web application with the GitHub repository:
 
-1.  go to https://openshift.cern.ch/console/
-2.  select the project
-3.  click "Browse Catalog"
-4.  choose Python
-5.  click "Next"
-6.  on "Add to Project" select your Project
-7.  choose Version 3.6
-8.  Fill Application Name and Link to GitHub repository e.g.:
-    test-certhelper https://github.com/CMSTrackerDPG/certifier
-9.  click on "advanced options"
-10. set branch name in "Git Reference" if branch anything other than
-    "master"
-11. add GitHub credentials at "Source Secret" if the repository is
+1.  Go to https://paas.cern.ch
+2.  Select the project you created
+	.. image:: images/paas-select-project.png
+3.  Click on "Add" on the left
+	.. image:: images/paas-add.png	
+4.  choose ``Git Repository``
+	.. image:: images/paas-add-git.png
+5.  Paste the repository URL in the field provided.
+6.  Under ``Advanced Git options``, you may select a specific branch, if needed.
+7.  okd will automatically detect that this is a Python	application and will select the latest version of Python.
+	.. note::
+	   As of writing, we select ``3.8-ubi8``.
+	   
+8.  Under **General**, change the **Application name** and **Name** appropriately. 
+9.  Under **Resources**, select **Deployment**
+	.. image:: images/paas-deployment.png
+			   
+10. Add GitHub credentials at "Source Secret" if the repository is
     private
-12. check "Secure route"
-13. set "TLS Termination" to "Edge"
-14. set "Insecure Traffic" to "Redirect"
-15. click on "CREATE"
-16. click on your name in the top right corner and click on ``Copy Login Command`` and login in your terminal by pasting it.
-17. select Project
+	
+11. Make sure that *Create a route to the Application* is ticked.
+12. Under *Show advanced Routing options*:
+	a. Paste the **Hostname** you want (will be automatically registered),
+	b. Make sure *Secure Route* is ticked,
+	c. Under **TLS termination**, select *Edge*,
+	d. Under **Insecure Traffic**, select *Redirect*.
+13. Click on **Create**. The application has been configured!
+	.. note::
+	   Under **Topology**, you will see your project trying to run for the first time.
+	   This will fail, since most environmental variables are missing. Click on the
+	   main app:
+	   
+	   .. image:: images/paas-topology-main-app.png
 
-.. code:: bash
+	   You should be getting the following error:
+				  
+	   .. image:: images/paas-crash-loop.png
+	
+..
+   14. click on your name in the top right corner and click on ``Copy Login Command`` and login in your terminal by pasting it.
+..
+   14. select the Project
 
-   $ oc project <your-project-name>
+	   .. code:: bash
 
-18. create Secrets
+				 $ oc project <your-project-name>
 
-First you have to create the secrets in Openshift for all accounts needed below:
+   18. create Secrets
 
-.. code:: bash
+   First you have to create the secrets in Openshift for all accounts needed below:
 
-   $ oc create secret generic <secret-name> --type=kubernetes.io/basic-auth --from-literal=username=<account-username> --from-literal=password=<account-password>
+   .. code:: bash
+
+	  $ oc create secret generic <secret-name> --type=kubernetes.io/basic-auth --from-literal=username=<account-username> --from-literal=password=<account-password>
 
 
-19. under "Build"->Your project->Environment use the "Add Value | Add Value from Config Map or Secret" buttons to add the variables:
+19. Under :menuselection:`Builds --> Your project name --> Environment` use the :guilabel:`Add more` and :guilabel:`Add from ConfigMap or Secret` buttons to add the variables:
 
-Accounts/Secrets environment variables(added using "Add Value from Config Map or Secret" button):
+	* Accounts/Secrets environment variables (added using :guilabel:`Add Value from Config Map or Secret` button):
 
-    -  this will be used for the database credentials:
+	  - this will be used for the database credentials:
+		::
+		   
+		   DJANGO_SECRET_KEY          <your-secret>
+		   DJANGO_DATABASE_USER       <your-username>
+		   DJANGO_DATABASE_PASSWORD   <your-password>
 
-    ::
+	  - this will be used for the email notifications:
+		::
+	   
+		   DJANGO_EMAIL_HOST_USER     <your-email-username>
+		   DJANGO_EMAIL_HOST_PASSWORD <your-email-password>
 
-        DJANGO_SECRET_KEY          <your-secret>
-        DJANGO_DATABASE_USER       <your-username>
-        DJANGO_DATABASE_PASSWORD   <your-password>
+	  - this will be used to generate the tracker maps:
+		::
+		 
+		   DJANGO_SECRET_ACC           <account-username>
+		   DJANGO_SECRET_PASS          <account-password>
 
-    -  this will be used for the email notifications:
+	* Remaining Variables (added using :guilabel:`Add Value` button):
 
-    ::
+	  - this is needed for OpenShift to be able to access the site:
+		::
+		 
+		   DJANGO_ALLOWED_HOSTS       <Host website you registered in step 12.a>
+		   DJANGO_DEBUG               False
+		   
+	  - this will be used for the database credentials:
+		::
+			 
+		   DJANGO_DATABASE_ENGINE     django.db.backends.postgresql_psycopg2
+		   DJANGO_DATABASE_NAME       <your-database-name>
+		   DJANGO_DATABASE_HOST       <your-database-host>
+		   DJANGO_DATABASE_PORT       6611
 
-        DJANGO_EMAIL_HOST_USER     <your-email-username>
-        DJANGO_EMAIL_HOST_PASSWORD <your-email-password>
+	  - this will be used for the email notifications:
+		::
+			 
+		   DJANGO_EMAIL_HOST          smtp.cern.ch
+		   DJANGO_EMAIL_PORT          587
+		   DJANGO_EMAIL_USE_TLS       True
+		   DJANGO_SERVER_EMAIL        <tkdqmdoctor-email-address>
 
-    - this will be used to generate the tracker maps:
+	  - this will be used for the cernrequest and Runregistry API:
+		::
+			 
+		   CERN_CERTIFICATE_PATH       <path>
+	  
+	  - this will be used to access the Redis server (secret is created automatically by the redis yaml):
+		::
 
-    ::
+		   REDIS_HOST                  <redis-[server number]>
+		   REDIS_PASSWORD              <password>
 
-        DJANGO_SECRET_ACC           <account-username>
-        DJANGO_SECRET_PASS          <account-password>
+	  - Other:
+		::
+		  
+		   CSRF_TRUSTED_ORIGINS        https://[the hostname you resistered in step 12.a]
 
-Remaining Variables(added using "Add Value" button):
-
-    -  this is needed for OpenShift to be able to access the site
-
-    ::
-
-        DJANGO_ALLOWED_HOSTS       <your openshift website>
-        DJANGO_DEBUG               False
-
-    -  this will be used for the database credentials:
-
-    ::
-
-        DJANGO_DATABASE_ENGINE     django.db.backends.postgresql_psycopg2
-        DJANGO_DATABASE_NAME       <your-database-name>
-        DJANGO_DATABASE_HOST       <your-database-host>
-        DJANGO_DATABASE_PORT       6600
-
-    -  this will be used for the email notifications:
-
-    ::
-
-        DJANGO_EMAIL_HOST          smtp.cern.ch
-        DJANGO_EMAIL_PORT          587
-        DJANGO_EMAIL_USE_TLS       True
-        DJANGO_SERVER_EMAIL        <tkdqmdoctor-email-address>
-
-    - this will be used for the cernrequest and runregistry api
-
-    ::
-
-        CERN_CERTIFICATE_PATH       <path>
-
-    - this will be used to access the redis server(secret is created automatically by the redis yaml):
-
-    ::
-
-        REDIS_HOST                  <redis-[server number]>
-        REDIS_PASSWORD              <password>
-
-Note: The application has to be set up only once. Once it is fully
-configured it probably can never be touched again.
+		
+.. note::
+   The procedure above should only be followed once. Once the app is fully configured, you should not have to alter anything, unless a change occurs (e.g. Database host/password).
 
 
 Mount EOS Storage
