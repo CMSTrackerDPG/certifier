@@ -16,6 +16,12 @@ requested it is ready to use.
 
 OpenShift
 ---------
+The following steps will guide you through the deployment procedure of the app on OpenShift.
+An overview of the steps is:
+* Create a new PaaS project
+* Setup the repository that will be used
+* Configure environmental variables
+* Mount the EOS drive
 
 Setup
 ~~~~~
@@ -28,8 +34,8 @@ Download the ``oc`` command line utility, preferably on your lxplus account.
 https://paas.docs.cern.ch/1._Getting_Started/5-installing-cli/
 
 
-Procedure
-^^^^^^^^^
+Setup Procedure
+^^^^^^^^^^^^^^^
 
 Once the website is successfully requested the application should be
 available in OpenShift. Following steps need to be done in order to
@@ -91,24 +97,24 @@ configure the web application with the GitHub repository:
 	  $ oc create secret generic <secret-name> --type=kubernetes.io/basic-auth --from-literal=username=<account-username> --from-literal=password=<account-password>
 
 
-19. Under :menuselection:`Builds --> Your project name --> Environment` use the :guilabel:`Add more` and :guilabel:`Add from ConfigMap or Secret` buttons to add the variables:
+14. Under :menuselection:`Builds --> Your project name --> Environment` use the :guilabel:`Add more` and :guilabel:`Add from ConfigMap or Secret` buttons to add the variables:
 
 	* Accounts/Secrets environment variables (added using :guilabel:`Add Value from Config Map or Secret` button):
 
-	  - this will be used for the database credentials:
+	  - Database credentials:
 		::
 		   
 		   DJANGO_SECRET_KEY          <your-secret>
 		   DJANGO_DATABASE_USER       <your-username>
 		   DJANGO_DATABASE_PASSWORD   <your-password>
 
-	  - this will be used for the email notifications:
+	  - Email notifications:
 		::
 	   
 		   DJANGO_EMAIL_HOST_USER     <your-email-username>
 		   DJANGO_EMAIL_HOST_PASSWORD <your-email-password>
 
-	  - this will be used to generate the tracker maps:
+	  - Tracker Maps credentials:
 		::
 		 
 		   DJANGO_SECRET_ACC           <account-username>
@@ -116,7 +122,7 @@ configure the web application with the GitHub repository:
 
 	* Remaining Variables (added using :guilabel:`Add Value` button):
 
-	  - this is needed for OpenShift to be able to access the site:
+	  - Needed for OpenShift to be able to access the site:
 		::
 		 
 		   DJANGO_ALLOWED_HOSTS       <Host website you registered in step 12.a>
@@ -153,7 +159,10 @@ configure the web application with the GitHub repository:
 		::
 		  
 		   CSRF_TRUSTED_ORIGINS        https://[the hostname you resistered in step 12.a]
+15. Save the variables and rebuild the project:
+	.. image:: images/paas-rebuild.png
 
+	You should now be able to visit the app on the URL you specified.
 		
 .. note::
    The procedure above should only be followed once. Once the app is fully configured, you should not have to alter anything, unless a change occurs (e.g. Database host/password).
@@ -161,6 +170,7 @@ configure the web application with the GitHub repository:
 
 Mount EOS Storage
 ~~~~~~~~~~~~~~~~~
+.. warning:: Might be deprecated
 
 The project has 1 TB of storage associated in the EOS. To mount it to
 OpenShift follow these instructions.
@@ -170,7 +180,8 @@ https://cern.service-now.com/service-portal/article.do?n=KB0005259
 
 Create Secret
 ^^^^^^^^^^^^^
-
+.. warning:: Might be deprecated
+			 
 Replace with your password.
 
 .. code:: bash
@@ -179,6 +190,7 @@ Replace with your password.
 
 Do EOS stuff
 ^^^^^^^^^^^^
+.. warning:: Might be deprecated
 
 Run these commands and replace with the name of your build.
 
@@ -218,6 +230,7 @@ Tip: for deleting the volume run the following command first
 
 Add shared volume
 ~~~~~~~~~~~~~~~~~
+.. warning:: Might be deprecated
 
 Add a shared volume to allow the use of unix socket between nginx and daphne
 
@@ -249,8 +262,8 @@ The username-id can be found by going to Application->Pods-><Your Project>->Term
 
 Install
 
-Add NGINX Server(not working for now)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add NGINX Server (not working for now)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1.  go to https://openshift.cern.ch/console/
 2.  choose "Nginx HTTP server and a reverse proxy (nginx)"
@@ -271,29 +284,24 @@ Add NGINX Server(not working for now)
 Deployment
 ~~~~~~~~~~
 
-Development Site
-^^^^^^^^^^^^^^^^
-
-The Development website is configured to automatically deploy every time
-a push to the Github repository is performed.
 
 Production Site
 ^^^^^^^^^^^^^^^
 
 If you want to push to the production website (master branch) you have
 to manually trigger a build at Openshift
-(https://openshift.cern.ch/console/project/certhelper). This is due to
+(https://paas.cern.ch/k8s/ns/certhelper/build.openshift.io~v1~BuildConfig). This is due to
 safety reasons, to not accidentally trigger a broken build by pushes to
 the master branch.
 
 This can be done by visiting
-`openshift.cern.ch <https://openshift.cern.ch/>`__, selecting the
-``Certhelper`` project and then visiting ``Build`` -> ``builds``. This
+`paas.cern.ch <https://paas.cern.ch/>`__, selecting the
+``certhelper`` project and then visiting :menuselection:`Build --> builds`. This
 page should already contain a build of the Certification Helper project that is
 automatically pulled from GitHub. By clicking on this build and then
-pressing the ``build`` button the whole deployment process should be
+pressing the :guilabel:`build` button the whole deployment process should be
 started. In the meantime, the logs of the build process can be viewed by
-clicking on ``View Log``.
+clicking on :guilabel:`View Log`.
 
 Database
 --------
