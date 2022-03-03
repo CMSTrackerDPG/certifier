@@ -19,7 +19,7 @@ daphne>=2.4.1
 django-widget-tweaks>=1.4.5
 django-extensions>=2.1.6
 paramiko
-
 runregistry
 apscheduler
 whitenoise
+factory_boy

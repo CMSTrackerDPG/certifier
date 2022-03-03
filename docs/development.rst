@@ -161,6 +161,16 @@ To load them, activate the virtual environment and run:
 		  
    python manage.py loaddata certifier.yaml
 
+Alternatively, ``factory_boy`` can be used, by calling the custom management command ``fake_data``.
+For example, to populate the database with a default superuser and some
+fake data, run the following:
+
+.. code:: bash
+
+		  python manage.py fake_data
+
+To recreate random entries, navigate to the admin interface, delete all ``test<num>`` users and re-run
+the aforementioned management command
 		  
 Packages
 --------
@@ -285,7 +295,7 @@ Django Tutorial
 ---------------
 
 It is recommended to the finish the Django tutorial at
-https://docs.djangoproject.com/en/1.11/intro/tutorial01/ before doing
+https://docs.djangoproject.com/en/4.0/intro/tutorial01/ before doing
 any changes at the website. The tutorial is beneficial and gives a big
 overview of how Django works.
 
