@@ -18,10 +18,10 @@ OpenShift
 ---------
 The following steps will guide you through the deployment procedure of the app on OpenShift.
 An overview of the steps is:
-* Create a new PaaS project
-* Setup the repository that will be used
-* Configure environmental variables
-* Mount the EOS drive
+- Create a new PaaS project
+- Setup the repository that will be used
+- Configure environmental variables
+- Mount the EOS drive
 
 Setup
 ~~~~~
