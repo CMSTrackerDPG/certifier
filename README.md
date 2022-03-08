@@ -5,3 +5,12 @@
 # Tracker Data Certification Helper
 
 Documentation can be found here: https://certifier.readthedocs.io/en/latest/
+
+## Documentation 
+Documentation generation is automatically triggered on each push to the `master` branch via a webhook.
+
+To build locally: 
+```bash
+cd docs
+make html
+```
