@@ -8,14 +8,15 @@ logger = logging.getLogger(__name__)
 
 def get_specific_open_runs(runs_list, user):
     logger.info(f"Getting all OPEN RR datasets for run numbers {runs_list}")
-    datasets = runregistry.get_datasets(filter={
-        "run_number": {
-            "or": runs_list
-        },
-        "tracker_state": {
-            "=": "OPEN"
-        }
-    })
+    datasets = runregistry.get_datasets(
+        filter={
+            "run_number": {
+                "or": runs_list
+            },
+            # "tracker_state": {
+            #     "=": "OPEN"
+            # }
+        })
     logger.info(f"Got {len(datasets)} datasets.")
     get_datasets_of_runs(datasets, user)
 
@@ -31,9 +32,9 @@ def get_range_of_open_runs(start, end, user):
                     "<=": end
                 }]
             },
-            "tracker_state": {
-                "=": "OPEN"
-            }
+            # "tracker_state": {
+            #     "=": "OPEN"
+            # }
         })
     logger.info(f"Got {len(datasets)} datasets.")
 
