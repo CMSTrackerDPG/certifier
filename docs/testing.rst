@@ -120,16 +120,23 @@ test commands.
 
     language: python
     python:
-      - "3.5"
-      - "3.6"
+      - "3.8"
 
     addons:
       firefox: "latest"
+	  postgresql: "12"
+	  apt:
+	    packages:
+		  - postgresql-12
+		  - postgresql-client-12	  
 
     env:
-      - DJANGO_VERSION=1.11
-      - DJANGO_VERSION=2.0
-
+	  global:
+		# From the official Travis documentation, username and port has changed for Postgres version > 10
+	    - PGUSER=travis
+		- PGVER=12
+		- PGPORT=5433
+		  
     # used by selenium
     before_install:
       - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/
@@ -138,19 +145,20 @@ test commands.
       - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
       - export PATH=$PATH:$PWD/geckodriver
 
-    install:
-      - pip install -I Django==$DJANGO_VERSION
-      - pip install -r testing-requirements.txt
+	install:
+      - pip install --upgrade -r requirements.txt
+      - pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
+
 
     before_script:
+	  - psql -c "create database testdb;" -U travis
+		
     script:
-      - PYTHONWARNINGS=all pytest --cov=.
+      - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
 
     after_success:
       - codecov
 
-Although 1.11 is used in production, the website is also tested against
-Django Version 2.0 in case of a future upgrade.
 
 In Travis CI following environment variables have to be set:
 
@@ -162,6 +170,11 @@ In Travis CI following environment variables have to be set:
     DJANGO_DATABASE_USER postgres
     DJANGO_DEBUG True
     DJANGO_SECRET_KEY dbwqabxpc2denpefq4hgfhijkl0usxi6d3tm4jk609zo85dqrw
+	OMS_CLIENT_ID <secret>
+	OMS_CLIENT_SECRET <secret>
+	PGPORT 5543
+	POSTGRES_DB test_postgres_db
+	POSTGRES_USER travis
 
 Coverage Reports
 ----------------
