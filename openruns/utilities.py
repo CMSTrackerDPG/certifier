@@ -1,35 +1,51 @@
+import logging
 import runregistry
 from django.utils import timezone
 from openruns.models import OpenRuns
 
+logger = logging.getLogger(__name__)
+
 
 def get_specific_open_runs(runs_list, user):
-    datasets = runregistry.get_datasets(
-        filter={"run_number": {
+    logger.info(f"Getting all OPEN RR datasets for run numbers {runs_list}")
+    datasets = runregistry.get_datasets(filter={
+        "run_number": {
             "or": runs_list
-        }})
-
+        },
+        "tracker_state": {
+            "=": "OPEN"
+        }
+    })
+    logger.info(f"Got {len(datasets)} datasets.")
     get_datasets_of_runs(datasets, user)
 
 
 def get_range_of_open_runs(start, end, user):
+    logger.info(f"Getting all OPEN RR datasets for runs {start} to {end}")
     datasets = runregistry.get_datasets(
-        filter={"run_number": {
-            "and": [{
-                ">=": start
-            }, {
-                "<=": end
-            }]
-        }})
+        filter={
+            "run_number": {
+                "and": [{
+                    ">=": start
+                }, {
+                    "<=": end
+                }]
+            },
+            "tracker_state": {
+                "=": "OPEN"
+            }
+        })
+    logger.info(f"Got {len(datasets)} datasets.")
 
     get_datasets_of_runs(datasets, user)
 
 
 def get_datasets_of_runs(datasets, user):
     today = timezone.now().strftime("%Y-%m-%d")
-    for dataset in datasets:
 
+    for dataset in datasets:
         run_number = dataset["run_number"]
+        logger.debug(f"Dataset {run_number}: {dataset['name']}")
         run_check = OpenRuns.objects.filter(run_number=run_number)
 
         dataset_express = ""
