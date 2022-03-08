@@ -1,5 +1,8 @@
-Frequently asked questions
-==========================
+FAQ
+===
+
+Development
+###########
 
 How do I copy data from the production database to the development database?
 ****************************************************************************
@@ -10,6 +13,9 @@ All my selenium tests keep failing
 ***********************************
 
 Try to update FireFox and the geckodriver.
+
+Deployment
+##########
 
 The website is not working. What should i do?
 *********************************************
@@ -29,3 +35,7 @@ I cannot start the server with the development database:
 Access to the development database is only possible within CERN GPN. So make sure that
 you have access to the CERN network.
 Also make sure that you have not accidentally activated a VPN or Proxy to another network.
+
+I'm getting `403 Client Error: Forbidden for url` messages
+**********************************************************
+Verify that the app's grid certificates work. Lookup issue `#97 <https://github.com/CMSTrackerDPG/certifier/issues/97>`_ on github for simple testing of the credentials.

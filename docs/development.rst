@@ -171,6 +171,23 @@ fake data, run the following:
 
 To recreate random entries, navigate to the admin interface, delete all ``test<num>`` users and re-run
 the aforementioned management command
+
+Another option (by Peter):
+
+.. code:: python
+
+		  # Create fake entries
+		  import pytest
+		  from mixer.backend.django import mixer
+		  pytestmark = pytest.mark.django_db
+
+		  mixer.blend("oms.OmsFill")
+		  mixer.blend("oms.OmsRun")
+		  mixer.blend("oms.OmsRun")
+
+		  mixer.blend("certifier.RunReconstruction")
+		  my_run_certification = mixer.blend("certifier.TrackerCertification")
+
 		  
 Packages
 --------
