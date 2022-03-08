@@ -12,7 +12,10 @@ before_script:
   - psql -c "create database testdb;" -U travis
 
 script:
-  - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py --ignore shiftleader/tests/test_shiftleaderreport.py --ignore analysis/tests/test_analysis_views.py --ignore plot/tests/test_plot_views.py --ignore runregistry/tests/test_runregistry_client.py --ignore addrefrun/tests/test_addrefrun_views.py
+  # Ignore OMS which is not reachable outside CERN
+  # Ignore addrefrun which does not seem to redirect correctly - TODO
+  # Ignore certifier tests, for the same reason
+  - PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
 
 after_success:
   - codecov

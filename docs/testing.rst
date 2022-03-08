@@ -118,50 +118,56 @@ test commands.
 
 .. code:: yaml
 
-    language: python
-    python:
-      - "3.5"
-      - "3.6"
+	addons: 
+	  apt: 
+	    packages: 
+	      - postgresql-12
+	      - postgresql-client-12
+	  firefox: latest
+	  postgresql: "12"
+	after_success: 
+	  - codecov
+	before_install: 
+	  - "wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz"
+	  - "mkdir geckodriver"
+	  - "tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver"
+	  - "export PATH=$PATH:$PWD/geckodriver"
+	before_script: 
+	  - "psql -c \"create database testdb;\" -U travis"
+	env: 
+	  global: 
+	    - PGUSER=travis
+	    - PGVER=12
+	    - PGPORT=5433
+	install: 
+	  - "pip install --upgrade -r requirements.txt"
+	  - "pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium"
+	language: python
+	python: 
+	  - "3.8"
+	script: 
+	  - "PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py"
+	
 
-    addons:
-      firefox: "latest"
+.. note::
 
-    env:
-      - DJANGO_VERSION=1.11
-      - DJANGO_VERSION=2.0
-
-    # used by selenium
-    before_install:
-      - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/
-      geckodriver-v0.21.0-linux64.tar.gz
-      - mkdir geckodriver
-      - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
-      - export PATH=$PATH:$PWD/geckodriver
-
-    install:
-      - pip install -I Django==$DJANGO_VERSION
-      - pip install -r testing-requirements.txt
-
-    before_script:
-    script:
-      - PYTHONWARNINGS=all pytest --cov=.
-
-    after_success:
-      - codecov
-
-Although 1.11 is used in production, the website is also tested against
-Django Version 2.0 in case of a future upgrade.
-
+   Certifier views tests and OMS utils tests have been disabled due to OMS being unreachable from outside CERN.
+		
 In Travis CI following environment variables have to be set:
 
 .. code:: bash
 
-    DJANGO_DATABASE_ENGINE django.db.backends.postgresql_psycopg2
-    DJANGO_DATABASE_HOST localhost
-    DJANGO_DATABASE_NAME testdb
-    DJANGO_DATABASE_USER postgres
-    DJANGO_DEBUG True
-    DJANGO_SECRET_KEY dbwqabxpc2denpefq4hgfhijkl0usxi6d3tm4jk609zo85dqrw
+		  DJANGO_DATABASE_ENGINE django.db.backends.postgresql_psycopg2
+		  DJANGO_DATABASE_HOST localhost
+		  DJANGO_DATABASE_NAME testdb
+		  DJANGO_DATABASE_USER postgres
+		  DJANGO_DEBUG True
+		  DJANGO_SECRET_KEY dbwqabxpc2denpefq4hgfhijkl0usxi6d3tm4jk609zo85dqrw
+		  OMS_CLIENT_ID <secret>
+		  OMS_CLIENT_SECRET <secret>
+		  PGPORT 5543
+		  POSTGRES_DB test_postgres_db
+		  POSTGRES_USER travis
 
 Coverage Reports
 ----------------
