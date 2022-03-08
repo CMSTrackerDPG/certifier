@@ -2,7 +2,7 @@ import pytest
 # import types
 # from django.test import RequestFactory
 # from mixer.backend.django import mixer
-
+from oms.models import OmsFill, OmsRun
 from oms.utils import retrieve_fill, retrieve_run
 
 pytestmark = pytest.mark.django_db
