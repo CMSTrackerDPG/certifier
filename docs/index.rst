@@ -12,6 +12,7 @@ Welcome to Certification Helper's documentation!
 
    overview
    user-manual
+   admin-manual
    development
    project-code
    testing
