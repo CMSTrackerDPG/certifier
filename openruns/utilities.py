@@ -13,6 +13,11 @@ def get_specific_open_runs(runs_list, user):
             "run_number": {
                 "or": runs_list
             },
+            "name": {
+                "and": [{
+                    "<>": "online"
+                }]
+            },
             # "tracker_state": {
             #     "=": "OPEN"
             # }
@@ -30,6 +35,11 @@ def get_range_of_open_runs(start, end, user):
                     ">=": start
                 }, {
                     "<=": end
+                }]
+            },
+            "name": {
+                "and": [{
+                    "<>": "online"
                 }]
             },
             # "tracker_state": {
