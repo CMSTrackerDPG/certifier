@@ -8,6 +8,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
+
 
 def send_channel_message(group_name, message):
     channel_layer = get_channel_layer()
@@ -18,18 +20,21 @@ def send_channel_message(group_name, message):
 
 
 def run_tracker_maps(run_type, min_run_number, max_run_number):
+    logger.info(f"Tracker maps for '{run_type}' runs with number"
+                f"{min_run_number} to {max_run_number}")
     #tracker_maps_command = "python /home/cctrack/run_tracker_maps.py " + str(run_type) + " " + str(min_run_number) + " " + str(max_run_number)
     tracker_maps_command = "python /home/apatil/test_script.py " + str(
         run_type) + " " + str(min_run_number) + " " + str(max_run_number)
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    print("printing django secrets", settings.DJANGO_SECRET_ACC,
-          settings.DJANGO_SECRET_PASS)
+    # logger.debug("printing django secrets", settings.DJANGO_SECRET_ACC,
+    # settings.DJANGO_SECRET_PASS)
 
     ssh.connect("vocms066",
                 username=settings.DJANGO_SECRET_ACC,
                 password=settings.DJANGO_SECRET_PASS)
+    logger.debug(f"Executing '{tracker_maps_command}'")
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(tracker_maps_command,
                                                          get_pty=True)
 
@@ -37,8 +42,13 @@ def run_tracker_maps(run_type, min_run_number, max_run_number):
         send_channel_message("output_group", line)
     send_channel_message("output_group", "GENERATION ENDED\n")
 
-    if ssh_stdout.channel.recv_exit_status():
+    # This blocks until the process has exited
+    exit_status = ssh_stdout.channel.recv_exit_status()
+
+    if exit_status:
+        logger.warning("Remote process exited with status {exit_status}")
         return False
+    logger.info("Remote process terminated with no errors")
     return True
 
 
