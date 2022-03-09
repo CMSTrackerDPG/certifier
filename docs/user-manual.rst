@@ -284,14 +284,4 @@ colored green if the run was certified "Good" and red for "Bad".
 
 .. image:: images/shiftleader-report-list-of-runs.png
 
-Administrator
--------------
 
-The administrator has the most power in the website. He can create new
-(local) users and is responsible for maintaining the website. He can
-update or create the OAuth2 keys, which are necessary for CERN Single
-sign-on.
-
-The admin panel of the administrator consists of all of the same rights
-that a shift leader has plus additional settings that for site
-management.
