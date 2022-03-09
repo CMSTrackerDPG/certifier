@@ -39,11 +39,11 @@ def get_this_week_filter_parameter():
 def get_certification_status(detector_type):
 
     if "GOOD" in detector_type.keys():
-        return "good"  # TrackerCertification.GOOD
+        return "Good"
     if "BAD" in detector_type.keys():
-        return "bad"  # TrackerCertification.BAD
+        return "Bad"
     if "EXCLUDED" in detector_type.keys():
-        return "excluded"  # TrackerCertification.EXCLUDED
+        return "Excluded"
 
 
 def convert_run_registry_to_trackercertification(list_of_dictionaries):
@@ -77,9 +77,10 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
             elif "cosmic" in entry["oms_attributes"]["hlt_key"]:
                 entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
         else:
-            logger.warning(f"Run {entry['run_number']} (Class:{run_class},"
-                           f" Dataset:{dataset}) does not contain enough info"
-                           " to assume its run type")
+            logger.warning(
+                f"Run {entry['runreconstruction__run__run_number']} (Class:{run_class},"
+                f" Dataset:{dataset}) does not contain enough info"
+                " to assume its run type")
 
         if "express" in dataset:
             entry["runreconstruction__reconstruction"] = "express"  # EXPRESS
