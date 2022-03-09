@@ -512,7 +512,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             if not ('collision' in [rr_entry['class'], rr_entry['name']]
                     or 'cosmic' in [rr_entry['class'], rr_entry['name']]):
                 logger.info(
-                    f"Cannot safely assume run_type from class {rr_entry['class']}",
+                    f"Cannot safely assume run_type from class {rr_entry['class']}"
                     f" and name {rr_entry['name']}, getting OMS attributes")
                 # Run extra query for run info, get oms_attributes and insert
                 # them to the entry
