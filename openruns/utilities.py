@@ -13,7 +13,7 @@ def get_specific_open_runs(runs_list, user):
             "run_number": {
                 "or": runs_list
             },
-            "name": {
+            "dataset_name": {
                 "and": [{
                     "<>": "online"
                 }]
@@ -37,7 +37,7 @@ def get_range_of_open_runs(start, end, user):
                     "<=": end
                 }]
             },
-            "name": {
+            "dataset_name": {
                 "and": [{
                     "<>": "online"
                 }]
