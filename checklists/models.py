@@ -4,17 +4,20 @@ from ckeditor.fields import RichTextField
 
 # Create your models here.
 
+
 class Checklist(models.Model):
     title = models.CharField(max_length=50, unique=True)
     description = RichTextField(
         blank=True,
-        help_text="Text that will be displayed above the checklist items to provide "
+        help_text=
+        "Text that will be displayed above the checklist items to provide "
         "further information needed to the explain the problems",
     )
 
     additional_description = RichTextField(
         blank=True,
-        help_text="Text that will be displayed under the checklist items to provide "
+        help_text=
+        "Text that will be displayed under the checklist items to provide "
         "tips and links",
     )
 
@@ -23,7 +26,8 @@ class Checklist(models.Model):
     identifier = models.SlugField(
         unique=True,
         max_length=15,
-        help_text="Short unique word used to identify the checklist in the website. "
+        help_text=
+        "Short unique word used to identify the checklist in the website. "
         "Examples: general, trackermap, pixel, sistrip, tracking",
     )
 
@@ -47,14 +51,20 @@ class ChecklistItemGroup(models.Model):
 
     description = RichTextField(
         blank=True,
-        help_text="Text that will be displayed above the checklist items to provide"
+        help_text=
+        "Text that will be displayed above the checklist items to provide"
         "further information needed to the explain the problems",
     )
 
+    def __str__(self):
+        return f"{self.checklist.title}/{self.name}"
+
 
 class ChecklistItem(models.Model):
-    checklistgroup = models.ForeignKey(ChecklistItemGroup, on_delete=models.CASCADE)
-    text = RichTextField(help_text="Text that will be displayed at the bullet point")
+    checklistgroup = models.ForeignKey(ChecklistItemGroup,
+                                       on_delete=models.CASCADE)
+    text = RichTextField(
+        help_text="Text that will be displayed at the bullet point")
 
     def __str__(self):
-        return self.text
+        return f"{self.checklistgroup.checklist.title}/{self.checklistgroup.name}/{self.text[:20]}"
