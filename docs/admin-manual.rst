@@ -54,12 +54,11 @@ An example of a checklist structure:
    "Checklist Item" -> "Checklist Group" [style=invis]
    "Checklist Group" -> "Checklist" [style=invis]   
    
-   
    "Tracking" [color = red]
    "Bad components" [color = blue]
    "Tracking checks" [color = blue]
    "Check TkMaps" [color = green]
-   "did we recover some 'known' bad component?" [color = green, text]
+   "did we recover some 'known' bad component?" [color = green]
    "If yes, what is the reason to be flagged as bad?" [color = green]
    
    "did we recover some 'known' bad component?" -> "Bad components"
