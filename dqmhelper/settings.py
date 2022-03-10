@@ -21,69 +21,50 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('DJANGO_SECRET_KEY')
-DJANGO_SECRET_ACC = config('DJANGO_SECRET_ACC', default='admin')
-DJANGO_SECRET_PASS = config('DJANGO_SECRET_PASS', default='admin')
+SECRET_KEY = config("DJANGO_SECRET_KEY")
+DJANGO_SECRET_ACC = config("DJANGO_SECRET_ACC", default="admin")
+DJANGO_SECRET_PASS = config("DJANGO_SECRET_PASS", default="admin")
 
 # Redis Server Hostname
-REDIS_HOST = config('REDIS_HOST', default='localhost')
-REDIS_PASSWORD = config('REDIS_PASSWORD', default='')
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PASSWORD = config("REDIS_PASSWORD", default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-    config('DJANGO_ALLOWED_HOSTS', default='localhost'),
-    '127.0.0.1',
+    config("DJANGO_ALLOWED_HOSTS", default="localhost"),
+    "127.0.0.1",
 ]
 
-CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default = '')]
+CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default='')]
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
-    "cablingmap.apps.CablingmapConfig",
-    "mlplayground.apps.MlplaygroundConfig",
-    "mldatasets.apps.MldatasetsConfig",
-    "trackermaps.apps.TrackermapsConfig",
-    "openruns.apps.OpenrunsConfig",
-    "addrefrun.apps.AddrefrunConfig",
-    "summary.apps.SummaryConfig",
-    "restore.apps.RestoreConfig",
-    "delete.apps.DeleteConfig",
-    "shiftleader.apps.ShiftleaderConfig",
-    "tables.apps.TablesConfig",
-    "listruns.apps.ListrunsConfig",
-    "checklists.apps.ChecklistsConfig",
-    "users.apps.UsersConfig",
-    "home.apps.HomeConfig",
-    "certifier.apps.CertifierConfig",
-    "oms.apps.OmsConfig",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    'django.contrib.sites',
-    'rest_framework',
-    'bootstrap3',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.cern',
-    'allauth.socialaccount.providers.github',
-    'widget_tweaks',
-    'django_extensions',
-    'django_tables2',
-    'django_filters',
+    "channels", "cablingmap.apps.CablingmapConfig",
+    "mlplayground.apps.MlplaygroundConfig", "mldatasets.apps.MldatasetsConfig",
+    "trackermaps.apps.TrackermapsConfig", "openruns.apps.OpenrunsConfig",
+    "addrefrun.apps.AddrefrunConfig", "summary.apps.SummaryConfig",
+    "restore.apps.RestoreConfig", "delete.apps.DeleteConfig",
+    "shiftleader.apps.ShiftleaderConfig", "tables.apps.TablesConfig",
+    "listruns.apps.ListrunsConfig", "checklists.apps.ChecklistsConfig",
+    "users.apps.UsersConfig", "home.apps.HomeConfig",
+    "certifier.apps.CertifierConfig", "oms.apps.OmsConfig",
+    "django.contrib.admin", "django.contrib.auth",
+    "django.contrib.contenttypes", "django.contrib.sessions",
+    "django.contrib.messages", "django.contrib.staticfiles",
+    "django.contrib.sites", "rest_framework", "bootstrap3", "allauth",
+    "allauth.account", "allauth.socialaccount",
+    "allauth.socialaccount.providers.cern",
+    "allauth.socialaccount.providers.github", "widget_tweaks",
+    "django_extensions", "django_tables2", "django_filters", "ckeditor"
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'django.middleware.locale.LocaleMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -109,15 +90,14 @@ TEMPLATES = [{
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
 
-#WSGI_APPLICATION = "dqmhelper.wsgi.application"
+# WSGI_APPLICATION = "dqmhelper.wsgi.application"
 ASGI_APPLICATION = "dqmhelper.routing.application"
 
 CHANNEL_LAYERS = {
@@ -134,13 +114,13 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': config('DJANGO_DATABASE_ENGINE', default=''),
-        'NAME': config('DJANGO_DATABASE_NAME', default=''),
-        'USER': config('DJANGO_DATABASE_USER', default=''),
-        'PASSWORD': config('DJANGO_DATABASE_PASSWORD', default=''),
-        'HOST': config('DJANGO_DATABASE_HOST', default=''),
-        'PORT': config('DJANGO_DATABASE_PORT', default=''),
+    "default": {
+        "ENGINE": config("DJANGO_DATABASE_ENGINE", default=""),
+        "NAME": config("DJANGO_DATABASE_NAME", default=""),
+        "USER": config("DJANGO_DATABASE_USER", default=""),
+        "PASSWORD": config("DJANGO_DATABASE_PASSWORD", default=""),
+        "HOST": config("DJANGO_DATABASE_HOST", default=""),
+        "PORT": config("DJANGO_DATABASE_PORT", default=""),
     },
 }
 
@@ -182,47 +162,49 @@ USE_TZ = True
 SITE_ID = 2
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG' if DEBUG else 'WARNING',
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG" if DEBUG else "WARNING",
     },
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} - {asctime} - {module} - {message}',
-            'style': '{',
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} - {asctime} - {module} - {message}",
+            "style": "{",
         },
-    }
+    },
 }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'home/static'),
-                    os.path.join(BASE_DIR, 'checklists/static'),
-                    os.path.join(BASE_DIR, 'listruns/static'))
-#STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
-STATIC_ROOT = os.path.join(BASE_DIR, '/sock/asgi/static')
+STATIC_URL = "/static/"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "home/static"),
+    os.path.join(BASE_DIR, "checklists/static"),
+    os.path.join(BASE_DIR, "listruns/static"),
+)
+# STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
+STATIC_ROOT = os.path.join(BASE_DIR, "/sock/asgi/static")
 
 AUTH_USER_MODEL = "users.User"
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('DJANGO_EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('DJANGO_EMAIL_PORT', default=25, cast=int)
-EMAIL_HOST_USER = config('DJANGO_EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('DJANGO_EMAIL_HOST_PASSWORD', default='')
-EMAIL_USE_TLS = config('DJANGO_EMAIL_USE_TLS', default=False, cast=bool)
-SERVER_EMAIL = config('DJANGO_SERVER_EMAIL', default='root@localhost')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = config("DJANGO_EMAIL_HOST", default="localhost")
+EMAIL_PORT = config("DJANGO_EMAIL_PORT", default=25, cast=int)
+EMAIL_HOST_USER = config("DJANGO_EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("DJANGO_EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("DJANGO_EMAIL_USE_TLS", default=False, cast=bool)
+SERVER_EMAIL = config("DJANGO_SERVER_EMAIL", default="root@localhost")
 
-CERN_CERTIFICATE_PATH = config('CERN_CERTIFICATE_PATH', default='')
+CERN_CERTIFICATE_PATH = config("CERN_CERTIFICATE_PATH", default="")
 
 # When Upgraded to Django 3.2 - RELEASE 06.04.2021
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
