@@ -1,8 +1,11 @@
+import logging
 from django.db import IntegrityError, transaction
 import runregistry
 from omsapi.utilities import get_oms_run, get_oms_lumisection_count, get_oms_fill
 from oms.models import OmsFill, OmsRun
 from certifier.models import TrackerCertification
+
+logger = logging.getLogger(__name__)
 
 
 def get_reco_from_dataset(dataset):
@@ -62,11 +65,14 @@ def retrieve_fill(fill_number):
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
     if fill_check.exists():
+        logger.debug(f"Fill number {fill_number} already in Database")
         return OmsFill.objects.get(fill_number=fill_number)
-
     else:
+        # Query OMS API
+        logger.debug(f"Querying OMS API for fill {fill_number}")
         response = get_oms_fill(fill_number)
-        if response == None:
+        if response is None:
+            logger.warning(f"Fill {fill_number} not found in OMS API")
             raise IndexError
 
         include_attribute_keys = [
@@ -111,14 +117,20 @@ def retrieve_fill(fill_number):
 
 
 def retrieve_run(run_number):
+    """
+    Helper function that, given a run number, tries to retrieve it
+    by looking into the DB first, then the OMS API.
+    If not in DB, a new entry is created and returned.
+    If the API returns no results, raises an IndexError
+    """
     run_check = OmsRun.objects.filter(run_number=run_number)
-
     if run_check.exists():
+        logger.debug(f"Run {run_number} found in DB")
         return OmsRun.objects.get(run_number=run_number)
-
     else:
         response = get_oms_run(run_number)
-        if response == None:
+        if response is None:
+            logger.warning(f"Run {run_number} not found in OMS API")
             raise IndexError
 
         fill_number = response['attributes'].pop("fill_number")
