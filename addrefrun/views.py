@@ -1,9 +1,13 @@
+import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from tables.tables import SimpleRunReconstructionTable
 from certifier.models import RunReconstruction
 from oms.utils import retrieve_run
 from django.contrib import messages
+
+logger = logging.getLogger(__name__)
+
 
 # Create your views here.
 @login_required
@@ -20,14 +24,15 @@ def addreference(request):
         try:
             run = retrieve_run(run_number)
 
-            if not RunReconstruction.objects.filter(run__run_number=run_number,reconstruction=reco).exists():
-                runReconstruction = RunReconstruction.objects.create(run=run, reconstruction=reco, is_reference=True)
+            if not RunReconstruction.objects.filter(
+                    run__run_number=run_number, reconstruction=reco).exists():
+                runReconstruction = RunReconstruction.objects.create(
+                    run=run, reconstruction=reco, is_reference=True)
             else:
                 add_reference_failed = True
         except IndexError:
             context = {"message": "Run {} does not exist".format(run_number)}
             return render(request, "certifier/404.html", context)
-
 
     run_info_list = RunReconstruction.objects.filter(is_reference=True)
     table = SimpleRunReconstructionTable(run_info_list)
