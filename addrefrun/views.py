@@ -24,6 +24,7 @@ def addreference(request):
 
     if run_number and reco:
         try:
+            # Get OmsRun info from DB, create entry if does not exist
             run = retrieve_run(run_number)
 
             if not RunReconstruction.objects.filter(
@@ -36,9 +37,12 @@ def addreference(request):
             context = {"message": f"Run {run_number} does not exist"}
             return render(request, "certifier/404.html", context)
 
+    # Get all reference runreconstructions and render them
     run_info_list = RunReconstruction.objects.filter(is_reference=True)
     table = SimpleRunReconstructionTable(run_info_list)
 
+    # Warning message, should only appear on error when adding a
+    # runreconstruction as reference
     context["table"] = table
     context["add_reference_failed"] = add_reference_failed
     context["run_number"] = run_number
