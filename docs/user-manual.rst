@@ -162,7 +162,10 @@ Once clicked you are presented with the following page:
 
 Here the user can either delete a reference run that was added by mistake or add a new one by using the run number and type of the run.
 
-!!! Warning !!! Deleting a reference run will delete all the certifications that have used that reference run since the won't have a reference anymore, no longer being valid.
+.. warning::
+
+   A certification without a reference is no longer valid. Therefore, deleting a reference run
+   will also delete all the certifications that refer to that specific reference run. 
 
 Generate Tracker Maps
 ~~~~~~~~~~~~~~~~~~~~~
