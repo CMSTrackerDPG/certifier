@@ -14,6 +14,9 @@ from openruns.models import OpenRuns
 
 
 class SimpleRunReconstructionTable(tables.Table):
+    """
+    A table to render RunReconstruction entries, mainly used in the addrefrun app
+    """
     run = tables.Column(verbose_name="Run Number")
     reconstruction = tables.Column()
     run_type = tables.Column(accessor="run.run_type")
