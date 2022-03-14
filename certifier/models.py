@@ -94,7 +94,8 @@ class TrackerCertification(SoftDeletionModel):
 
     runreconstruction = models.OneToOneField(RunReconstruction,
                                              on_delete=models.CASCADE,
-                                             primary_key=True)
+                                             primary_key=True,
+                                             related_name="certification")
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
