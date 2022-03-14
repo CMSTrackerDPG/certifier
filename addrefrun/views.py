@@ -1,10 +1,10 @@
 import logging
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from tables.tables import SimpleRunReconstructionTable
 from certifier.models import RunReconstruction
 from oms.utils import retrieve_run
-from django.contrib import messages
+# from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +14,13 @@ logger = logging.getLogger(__name__)
 def addreference(request):
     run_number = request.GET.get("run_number", None)
     reco = request.GET.get("reco", None)
+    logger.debug(f"Requested to add {run_number} ({reco}) as reference")
     add_reference_failed = False
 
     context = {}
 
-    messages.info(request, 'Your password has been changed successfully!')
+    # No idea why this is here, commented it out
+    # messages.info(request, 'Your password has been changed successfully!')
 
     if run_number and reco:
         try:
@@ -31,7 +33,7 @@ def addreference(request):
             else:
                 add_reference_failed = True
         except IndexError:
-            context = {"message": "Run {} does not exist".format(run_number)}
+            context = {"message": f"Run {run_number} does not exist"}
             return render(request, "certifier/404.html", context)
 
     run_info_list = RunReconstruction.objects.filter(is_reference=True)
