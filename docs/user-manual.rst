@@ -162,6 +162,10 @@ Once clicked you are presented with the following page:
 
 Here the user can either delete a reference run that was added by mistake or add a new one by using the run number and type of the run.
 
+.. note::
+
+   You can only add **new** Run reconstructions here; to promote an existing one to reference, see `Shift Leader View`_.
+
 .. warning::
 
    A certification without a reference is no longer valid. Therefore, deleting a reference run
@@ -208,9 +212,9 @@ Certified Runs tab
 
 In the "Certified Runs" tab a tabular list of all the certified runs for
 the current week (or specified filter criteria) is shown. The shift
-leader has the right to edit the certifications of the shifters or
-delete them entirely. It is essential to keep the list of certified runs
-correct in order to generate accurate shift leader reports.
+leader has the right to edit the certifications of the shifters,
+delete them entirely or promote a Run to reference. It is essential to keep the list
+of certified runs correct in order to generate accurate shift leader reports.
 
 .. image:: images/shiftleader-list-of-certified-runs.png
 
