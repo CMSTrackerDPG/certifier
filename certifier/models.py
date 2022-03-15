@@ -1,8 +1,12 @@
+import logging
 from django.db import models
 from users.models import User
 from certifier.manager import TrackerCertificationManager
 from oms.models import OmsRun
 from delete.models import SoftDeletionModel
+from certifier.exceptions import RunReconstructionIsAlreadyReference, RunReconstructionNotYetCertified
+
+logger = logging.getLogger(__name__)
 
 
 class RunReconstruction(models.Model):
@@ -32,8 +36,45 @@ class RunReconstruction(models.Model):
     def run_number(self):
         return self.run.run_number
 
+    def promote_to_reference(self) -> bool:
+        """
+        Class method that, given a run number and a run reconstruction type,
+        promotes it to reference run reconstruction if the following conditions
+        apply:
+        - The reconstruction is not already a reference
+        - There is a TrackerCertification entry for this specific reconstruction
+        - The certification is good
+
+        Returns:
+        True if successfully promoted reconstruction to reference, else raises custom
+        exceptions:
+        - RunReconstructionIsAlreadyReference if already a reference
+        - RunReconstructionNotYetCertified if no certification found for this Run reco
+        """
+
+        if self.is_reference:
+            raise RunReconstructionIsAlreadyReference(
+                f"Run reconstruction {self.run_number}"
+                f"({self.reconstruction}) is already a reference")
+
+        # Look into TrackerCertification for the specific run reconstruction
+        # to see if it has been certified. RunReconstruction ids are TrackerCertification's
+        # primary key
+        if TrackerCertification.objects.filter(runreconstruction=self).exists(
+        ) and self.certification.is_good:
+            # Run reconstruction has been certified and is good,
+            # so we're promoting it.
+            self.is_reference = True
+            self.save()
+        else:
+            raise RunReconstructionNotYetCertified(
+                f"Run reconstruction {self.run_number}"
+                f"({self.reconstruction}) has not been certified yet")
+
+        return True
+
     def __str__(self):
-        return "{} {}".format(self.run_number, self.reconstruction)
+        return f"{self.run_number} {self.reconstruction}"
 
 
 class PixelProblem(models.Model):

@@ -152,24 +152,29 @@ Apart from that the shiftleader has access to all the pages/tiles, including the
 Add Reference Run
 ~~~~~~~~~~~~~~~~~
 
-A new reference run can be added in the Admin Settings by clicking on the Add Reference Run tile.
+A new reference run can be added by clicking on the :guilabel:`Add Reference Run` tile.
 
 .. image:: images/add-reference-run-tile.png
-
+		   
 Once clicked you are presented with the following page:
 
 .. image:: images/add-reference-run.png
 
-Here the user can either delete a reference run that was added by mistake or add a new one by using the run number and type of the run.
+Here the user can either permanently delete a reference run that was added by mistake or promote a
+certified one by using the run number and type of the run.
+
+Since a reference run reconstruction must have been certified first, adding a run reconstruction that
+has not been certified yet will prompt the user to certify the run first.
 
 .. note::
 
-   You can only add **new** Run reconstructions here; to promote an existing one to reference, see `Shift Leader View`_.
+   To promote an existing one to reference, you can also use the `Shift Leader View`_.
 
 .. warning::
 
-   A certification without a reference is no longer valid. Therefore, deleting a reference run
-   will also delete all the certifications that refer to that specific reference run. 
+   A certification without a reference run reconstruction is no longer valid.
+   Therefore, deleting a reference run will also delete all the certifications
+   that refer to that specific reference run. 
 
 Generate Tracker Maps
 ~~~~~~~~~~~~~~~~~~~~~
