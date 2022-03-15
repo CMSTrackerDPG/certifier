@@ -1,14 +1,12 @@
 import logging
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, Http404
+from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
-# Create your views here.
-from django.shortcuts import redirect
 from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
-from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
-from django.http import HttpResponseRedirect, Http404
 
 logger = logging.getLogger(__name__)
 
@@ -23,15 +21,19 @@ def addBadReason(request):
 
 @login_required
 def promoteToReference(request, run_number, reco):
+    """
+    View which is called from the Shift Leader View, to promote a specific run 
+    reconstruction to a reference one.
+    """
     try:
         runReconstruction = RunReconstruction.objects.get(
             run__run_number=run_number, reconstruction=reco)
-    except RunReconstruction.DoesNotExist:
-        raise Http404("The run  {} doesnt exist".format(run_number))
+    except RunReconstruction.DoesNotExist as run_reco_does_not_exist:
+        raise Http404(
+            f"The run {run_number} doesn't exist") from run_reco_does_not_exist
 
     if request.method == "POST":
-        runReconstruction.is_reference = True
-        runReconstruction.save()
+        runReconstruction.promote_to_reference()
         return HttpResponseRedirect("/shiftleader/")
 
     return render(request, "certifier/promote.html",

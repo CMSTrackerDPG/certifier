@@ -30,3 +30,42 @@ To assign the Shifter or Shift Leader role to a user, follow the steps below:
 #. Click on **SAVE**
 	  
 	   	   
+Adding/Tweaking Checklist items
+-------------------------------
+Checklists appear on the `/update/` url of the app, and their purpose is to help
+the Shifter keep track of the required checks that must be done before submission.
+
+These can be configured from the admin panel.
+
+**Checklists** are composed of **Checklist Groups**. Checklist Groups, are composed
+of **Checklist Items**. So, if you need to add items to a specific Checklist, create
+new Checklist Items and select the appropriate Checklist Group they should belong
+to. 
+
+An example of a checklist structure:
+
+.. graphviz::
+   
+   digraph checklists {
+   "Checklist Item" [color = green, shape = square, fixedsize=true, width=1.5]
+   "Checklist Group" [color = blue, shape = square, fixedsize=true, width=1.5]
+   "Checklist" [color = red, shape = square, fixedsize=true, width=1.5]
+
+   "Checklist Item" -> "Checklist Group" [style=invis]
+   "Checklist Group" -> "Checklist" [style=invis]   
+   
+   "Tracking" [color = red]
+   "Bad components" [color = blue]
+   "Tracking checks" [color = blue]
+   "Check TkMaps" [color = green]
+   "did we recover some 'known' bad component?" [color = green]
+   "If yes, what is the reason to be flagged as bad?" [color = green]
+   
+   "did we recover some 'known' bad component?" -> "Bad components"
+   "If yes, what is the reason to be flagged as bad?" -> "Bad components"   
+   "Check TkMaps" -> "Tracking checks"
+   "Bad components" -> "Tracking"
+   "Tracking checks" -> "Tracking"
+   }
+
+   

@@ -93,7 +93,7 @@ class OmsRunFactory(factory.django.DjangoModelFactory):
         model = oms_models.OmsRun
         django_get_or_create = ("run_number", )
 
-    run_number = factory.Sequence(lambda n: n)
+    run_number = factory.Sequence(lambda n: n + 348590)
     run_type = fuzzy.FuzzyChoice(oms_models.OmsRun.RUN_TYPE_CHOICES,
                                  getter=lambda c: c[0])
     fill = factory.SubFactory(OmsFillFactory)
