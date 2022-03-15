@@ -21,15 +21,19 @@ def addBadReason(request):
 
 @login_required
 def promoteToReference(request, run_number, reco):
+    """
+    View which is called from the Shift Leader View, to promote a specific run 
+    reconstruction to a reference one.
+    """
     try:
         runReconstruction = RunReconstruction.objects.get(
             run__run_number=run_number, reconstruction=reco)
-    except RunReconstruction.DoesNotExist:
-        raise Http404("The run  {} doesnt exist".format(run_number))
+    except RunReconstruction.DoesNotExist as run_reco_does_not_exist:
+        raise Http404(
+            f"The run {run_number} doesn't exist") from run_reco_does_not_exist
 
     if request.method == "POST":
-        runReconstruction.is_reference = True
-        runReconstruction.save()
+        runReconstruction.promote_to_reference()
         return HttpResponseRedirect("/shiftleader/")
 
     return render(request, "certifier/promote.html",
