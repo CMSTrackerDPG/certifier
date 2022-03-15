@@ -41,7 +41,7 @@ def addreference(request):
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
                 run_id=run_number, reconstruction=reco)
             if not run_reconstruction.is_reference:
-                if run_reconstruction.certification.is_good:
+                if run_reconstruction.certification and run_reconstruction.certification.is_good:
                     # Run reconstruction has been certified and is good,
                     # promoting it. This code should, perhaps, be shared
                     # with the promote view in shiftleader
