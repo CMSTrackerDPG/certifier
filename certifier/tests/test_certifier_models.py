@@ -8,6 +8,55 @@ from oms.models import OmsRun
 pytestmark = pytest.mark.django_db
 
 
+class TestRunReconstructionPromotion:
+    """
+    Test the promotion to reference procedure of RunReconstruction entries
+    """
+    def test_promote_reference_run_reco(self):
+        """
+        Try promoting a RunReconstruction that already is a refernce one
+        """
+        test_number = 323444
+        runReconstruction = mixer.blend(RunReconstruction,
+                                        run=mixer.blend(
+                                            OmsRun, run_number=test_number),
+                                        is_reference=True)
+        with pytest.raises(RunReconstructionIsAlreadyReference):
+            runReconstruction.promote_to_reference()
+
+    def test_promote_noncertified_run_reco(self):
+        """
+        Try promoting a RunReconstruction that has not been certified yet
+        """
+        test_number = 323444
+        runReconstruction = mixer.blend(
+            RunReconstruction,
+            run=mixer.blend(OmsRun, run_number=test_number),
+        )
+        with pytest.raises(RunReconstructionNotYetCertified):
+            runReconstruction.promote_to_reference()
+
+    def test_promote_certified_run_reco(self):
+        """
+        Try promoting a RunReconstruction that has been certified
+        """
+        test_number = 323444
+        # Make a new run reconstruction of type cosmics (not reference due to default value)
+        runReconstruction = mixer.blend(
+            RunReconstruction,
+            run=mixer.blend(OmsRun, run_number=test_number,
+                            run_type="cosmics"),
+        )
+        # Blend up a GOOD certification for our lovely reconstruction
+        trk_certification = mixer.blend(TrackerCertification,
+                                        runreconstruction=runReconstruction,
+                                        strip='good',
+                                        tracking='good')
+
+        # Should promote just fine
+        assert runReconstruction.promote_to_reference()
+
+
 class TestRunReconstruction:
     def test_run_number(self):
         test_number = 323444
