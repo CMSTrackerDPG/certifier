@@ -2,7 +2,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from tables.tables import SimpleRunReconstructionTable
-from certifier.models import RunReconstruction
+from certifier.models import RunReconstruction, TrackerCertification
 from oms.utils import retrieve_run
 from django.contrib import messages
 
@@ -40,10 +40,16 @@ def addreference(request):
             #     add_reference_failed = True
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
                 run_id=run_number, reconstruction=reco)
+
             if not run_reconstruction.is_reference:
-                if run_reconstruction.certification and run_reconstruction.certification.is_good:
+                # Look into TrakcerCertification for the specific run reconstruction
+                # to see if it has been certified. RunReconstruction ids are TrackerCertification's
+                # primary key
+                if TrackerCertification.objects.filter(
+                        runreconstruction=run_reconstruction).exists(
+                        ) and run_reconstruction.certification.is_good:
                     # Run reconstruction has been certified and is good,
-                    # promoting it. This code should, perhaps, be shared
+                    # so we're promoting it. This code should, perhaps, be shared
                     # with the promote view in shiftleader
                     run_reconstruction.is_reference = True
                     run_reconstruction.save()
