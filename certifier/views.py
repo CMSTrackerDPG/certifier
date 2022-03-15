@@ -1,14 +1,12 @@
 import logging
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, Http404
+from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
-# Create your views here.
-from django.shortcuts import redirect
 from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
-from .forms import CertifyFormWithChecklistForm, DatasetForm, BadReasonForm
 from oms.models import OmsRun
 from users.models import User
-from django.http import HttpResponseRedirect, Http404
 
 logger = logging.getLogger(__name__)
 

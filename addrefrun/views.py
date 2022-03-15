@@ -23,8 +23,6 @@ def addreference(request):
     if run_number and reco:
         logger.debug(f"Requested to make {run_number} ({reco}) a reference")
 
-    # add_reference_failed = False
-
     context = {}
 
     if run_number and reco:
@@ -32,12 +30,6 @@ def addreference(request):
             # Get OmsRun info from DB, create entry if does not exist
             run = retrieve_run(run_number)
 
-            # if not RunReconstruction.objects.filter(
-            #         run__run_number=run_number, reconstruction=reco).exists():
-            #     runReconstruction = RunReconstruction.objects.create(
-            #         run=run, reconstruction=reco, is_reference=True)
-            # else:
-            #     add_reference_failed = True
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
                 run_id=run_number, reconstruction=reco)
 
