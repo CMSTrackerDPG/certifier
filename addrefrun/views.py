@@ -39,7 +39,7 @@ def addreference(request):
             # else:
             #     add_reference_failed = True
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
-                run__run_number=run_number, reconstruction=reco)
+                run_id=run_number, reconstruction=reco)
             if not run_reconstruction.is_reference:
                 if run_reconstruction.certification.is_good:
                     # Run reconstruction has been certified and is good,
