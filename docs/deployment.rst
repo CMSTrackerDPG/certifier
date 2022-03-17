@@ -65,8 +65,8 @@ configure the web application with the GitHub repository:
 12. Under *Show advanced Routing options*:
 	a. Paste the **Hostname** you want (will be automatically registered),
 	b. Make sure *Secure Route* is ticked,
-	c. Under **TLS termination**, select *Edge*,
-	d. Under **Insecure Traffic**, select *Redirect*.
+	c. Under **TLS termination**, select :guilabel:`Edge`,
+	d. Under **Insecure Traffic**, select :guilabel:`Redirect`.
 13. Click on **Create**. The application has been configured!
 	.. note::
 	   Under **Topology**, you will see your project trying to run for the first time.
@@ -258,7 +258,7 @@ And then just run the following commands in the same terminal where you have log
 
    helm install redis stable/redis --set securityContext.runAsUser=<username-id> --set securityContext.fsGroup=<username-id>
 
-The username-id can be found by going to Application->Pods-><Your Project>->Terminal and then running the ``whoami`` command which will return an id like ``1008250000``
+The username-id can be found by going to :menuselection:`Application --> Pods --> <Your Project> --> Terminal` and then running the ``whoami`` command which will return an id like ``1008250000``
 
 Install
 
@@ -267,18 +267,18 @@ Add NGINX Server (not working for now)
 
 1.  go to https://openshift.cern.ch/console/
 2.  choose "Nginx HTTP server and a reverse proxy (nginx)"
-3.  click "Next"
-4.  select your project in "*Add to Project*"
+3.  click :guilabel:`Next`
+4.  select your project in :guilabel:`Add to Project`
 5.  choose a name
 6.  add the git repository: https://github.com/alingrig/nginx-ex
-7.  click "Create"
+7.  click :guilabel:`Create`
 8.  add the shared volume
 
 .. code:: bash
 
     oc set volume dc/<your-chosen-name> --add --name=<volume-name> --type=persistentVolumeClaim --mount-path=<path> --claim-name=<volume-name> --claim-class=cephfs-no-backup --claim-size=1
 
-9.  go to Application->Routes
+9.  go to :menuselection:`Application --> Routes`
 10. replace the dev-certhelper route with an one for nginx-server
 
 Deployment

@@ -1,3 +1,8 @@
+.. role:: red
+.. role:: gray
+.. role:: green
+.. role:: yellow
+
 User manual
 ===========
 
@@ -53,12 +58,14 @@ The purpose of this page is to receive the runs data based on the number and typ
 - **Get Open Runs**:
   This will return the requested open runs, either by using a list of run numbers or a range of run numbers. This is meant to work in such a way that each shifter will get his open runs at the beginning of the week and go through them one by one afterwards.
 
-.. image:: images/openruns-table.png
-\
-  Grayed out row means the openrun is taken by somebody else.
-  Yellow run type button means run not certified
-  Green run type button means run is certified
+  .. image:: images/openruns-table.png
 
+  :gray:`Grayed` out row means the openrun is taken by somebody else.
+		
+  :yellow:`Yellow` run type button means run not certified
+		  
+  :green:`Green` run type button means run is certified
+   
   The table also gives the user the option to delete an entry from his account(this is completely safe, the run can be retrieved back anytime). Main reason for this is in case a run has to be moved from one user to another, it first has to be removed from the first user and then retrieved back by the second.
 
 
@@ -183,9 +190,26 @@ By using the Tracker Maps tile button you can access the page where you can gene
 
 .. image:: images/tracker-maps-tile.png
 
-Here the shiftleader can generate tracker maps for a range of runs. All he/she has to do is add the number range and the type. Once that is done on press of the "Generate Tracker Maps" button will start the process. The shiftleader can follow the process by looking at the logs of the generating script.
+Here the shiftleader can generate tracker maps for specific runs. All they have to do is add the run number
+list (either comma or space separated values) and select the type.
+Once that is done, pressing the :guilabel:`Generate Tracker Maps` button will
+start the process. The shiftleader can follow the process in real time by observing the logs of
+the generating script.
 
 .. image:: images/tracker-maps.png
+
+		   
+.. note::
+
+   If multiple Shift Leader have visited the page, they will all be updated with execution logs of the
+   running scripts at the same time.
+
+
+.. warning::
+
+   Currently, a Shift Leader can execute the tracker map generation script multiple times. This
+   can overload the ``vocms066`` machine, so please wait for previous map generation to complete
+   before invoking the script again.
 
 
 Shift Leader View
