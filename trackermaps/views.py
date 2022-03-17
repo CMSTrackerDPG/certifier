@@ -63,12 +63,10 @@ def maps(request):
     """
     context = {}
 
-    if request.method == 'GET':
-        return render(request, "trackermaps/trackermaps.html")
-
     # is_ajax has been deprecated
     # https://stackoverflow.com/questions/63629935/django-3-1-and-is-ajax
-    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+    if request.method == 'POST' and request.META.get(
+            'HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         run_type = request.POST.get("type", None)
         runs_list = request.POST.get("list", None)
         logger.info(
