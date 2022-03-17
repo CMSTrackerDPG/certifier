@@ -6,6 +6,7 @@ import paramiko
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
 from asgiref.sync import async_to_sync
@@ -36,7 +37,7 @@ def send_channel_message(channel_layer: RedisChannelLayer, group_name: str,
     })
 
 
-def run_tracker_maps(run_type: str, run_number_list: list) -> Bool:
+def run_tracker_maps(run_type: str, run_number_list: list) -> bool:
     """
     Function that connects to vocms066 using the env-supplied username/password
     and executes the script to generate specific tracker maps.
@@ -71,8 +72,7 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> Bool:
 
     # Spit out output to channel layer
     for line in line_buffered(ssh_stdout):
-        line = line.decode('utf-8', errors='ignore')
-        print(line)
+        line = line.decode('utf-8', errors='ignore')  # Convert bytes to str
         send_channel_message(channel_layer, "output_group", f"{line}")
 
     send_channel_message(channel_layer, "output_group", "GENERATION ENDED\n")
@@ -86,6 +86,7 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> Bool:
     return True
 
 
+@login_required
 def maps(request):
     """
     View for the trackermaps/ url
