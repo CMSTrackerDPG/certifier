@@ -6,7 +6,7 @@ import paramiko
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
 from asgiref.sync import async_to_sync
@@ -86,7 +86,9 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> bool:
     return True
 
 
-@login_required
+@user_passes_test(lambda user: hasattr(user, 'has_shift_leader_rights') and
+                  user.has_shift_leader_rights,
+                  redirect_field_name=None)
 def maps(request):
     """
     View for the trackermaps/ url

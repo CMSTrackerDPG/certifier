@@ -1,5 +1,5 @@
 import logging
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from tables.tables import SimpleRunReconstructionTable
 from certifier.models import RunReconstruction, TrackerCertification
@@ -10,7 +10,9 @@ from django.contrib import messages
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@user_passes_test(lambda user: hasattr(user, 'has_shift_leader_rights') and
+                  user.has_shift_leader_rights,
+                  redirect_field_name=None)
 def addreference(request):
     """
     Main view for listing Reference Run Reconstructions

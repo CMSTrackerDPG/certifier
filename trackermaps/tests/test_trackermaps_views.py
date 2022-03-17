@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestTrackermapsJSONResponses:
-    def test_400_response(self):
+    def test_trackermap_generation_view(self):
         """
         Try requesting an invalid array of run numbers
         This is done with POST via an XMLHttpRequest.
@@ -22,6 +22,12 @@ class TestTrackermapsJSONResponses:
         req = RequestFactory().post(reverse('trackermaps:maps'),
                                     data=arguments,
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        req.user = mixer.blend(User)
+        # Only shiftleaders should access this
+        req.user = mixer.blend(User, user_privilege=User.SHIFTLEADER)
         resp = maps(req)
         assert resp.status_code == 400
+
+        # Non-shiftleader should get error
+        req.user = mixer.blend(User, user_privilege=User.SHIFTER)
+        resp = maps(req)
+        assert resp.status_code == 302
