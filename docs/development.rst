@@ -288,7 +288,8 @@ Code changes to the `master` branch include:
 		git merge master
 		git push origin training
 
-	Some of the changes **will** lead to conflicts upon merge.
+
+   Some of the changes *will* lead to conflicts upon merge.
 
 
 Develop
