@@ -11,7 +11,7 @@ Prerequisites
 In case one wants to improve the Certhelper project, the following
 steps are necessary:
 
--  Install Python version 3.7 or 3.8 (recommended 3.8)
+-  Install Python version 3.8
 -  Setup a virtual environment
 -  Install requirements packages
 
@@ -57,7 +57,7 @@ If you do not want to use an AUR helper you can install Python 3.6
 Checking Python Version
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The project requires the python version 3.7 or 3.8. To ensure that the
+The project requires the python version 3.8. To ensure that the
 correct python version is configured the ``python3 --version`` command
 be used.
 
@@ -373,16 +373,16 @@ The project files can then be reformated with
 
 Run the website locally
 -----------------------
+1. Create a file named ``.env`` with the required configuration (See `Configure database connection`_).
+   You should also include the variables ``OMS_CLIENT_ID``, ``OMS_CLIENT_SECRET``, which can take any value
+   since they will only exist as placeholders when running locally.
+   
+2. Run:
 
 .. code:: bash
-
-    python manage.py migrate
-    python manage.py collectstatic
-
-
-.. code:: bash
-
-    python manage.py runserver
+   
+   python manage.py migrate --run-syncdb
+   python manage.py runserver
 
 
 Migrations
