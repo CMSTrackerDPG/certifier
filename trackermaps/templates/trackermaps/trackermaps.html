@@ -118,31 +118,35 @@ $myForm.submit(function(){
     });
 });
 
-if (location.protocol === 'https:') {
-    // page is secure
-    var command_output_socket = new WebSocket(
- 'wss://' + window.location.host +
-							 '/ws/output/');
-		}
-else{
-    var command_output_socket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/output/');
-}
+ // WS initialization
+ if (location.protocol === 'https:') {
+     // page is secure
+     var command_output_socket = new WebSocket(
+		 'wss://' + window.location.host +
+		 '/ws/output/');
+ }
+ else{
+     var command_output_socket = new WebSocket(
+         'ws://' + window.location.host +
+         '/ws/output/');
+ }
 
-function clearOutput(){
-    $('#id_command_output').val("");
-}
+ // Clear output button callback
+ function clearOutput(){
+     $('#id_command_output').val("");
+ }
 
-command_output_socket.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-    var message = data['message'];
-    document.querySelector('#id_command_output').value += (message);
-    document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+ // Callback run on every new message that
+ // is received from the WS
+ command_output_socket.onmessage = function(e) {
+     var data = JSON.parse(e.data);
+     var message = data['message'];
+     document.querySelector('#id_command_output').value += (message);
+     document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
 };
 
-command_output_socket.onclose = function(e) {
-    console.error('Socket closed unexpectedly: '+ e.message);
-};
+ command_output_socket.onclose = function(e) {
+     console.error('Socket closed unexpectedly: '+ e.message);
+ };
 </script>
 {% endblock %}
