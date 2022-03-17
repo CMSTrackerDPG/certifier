@@ -1,12 +1,13 @@
-import subprocess
 import re
-import os
-import paramiko
 import logging
+import paramiko
+import subprocess
+
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +25,11 @@ def run_tracker_maps(run_type: str, run_number_list: list):
     Function that connects to vocms066 using the env-supplied username/password
     and executes the script to generate specific tracker maps.
     """
-    logger.info(f"Tracker maps for '{run_type}' runs {run_number_list}")
-
     tracker_maps_command = f"cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"\
         " bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh"\
-        f" {str(run_type)} {str(min_run_number)} {str(max_run_number)}"
-
+        f" {str(run_type)} {str(run_number_list)}"
+    logger.debug(tracker_maps_command)
+    return True
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -58,6 +58,9 @@ def run_tracker_maps(run_type: str, run_number_list: list):
 
 
 def maps(request):
+    """
+    View for the trackermaps/ url
+    """
     context = {}
 
     if request.method == 'GET':
@@ -66,24 +69,29 @@ def maps(request):
     # is_ajax has been deprecated
     # https://stackoverflow.com/questions/63629935/django-3-1-and-is-ajax
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        # min_run_number = request.POST.get("min", None)
-        # max_run_number = request.POST.get("max", None)
         run_type = request.POST.get("type", None)
         runs_list = request.POST.get("list", None)
+        logger.info(
+            f"Got trackermaps generation request for {run_type}: {runs_list}")
         if runs_list:
             try:
+                print("!??r")
                 runs_list = list(
                     map(
                         int,
                         re.split(
                             " , | ,|, |,| ",
-                            re.sub('\s+', ' ', runs_list).lstrip().rstrip())))
+                            re.sub(r'\s+', ' ', runs_list).lstrip().rstrip())))
+                logger.debug(f"Parsed runs list: {runs_list}")
             except ValueError:
                 context = {
                     "message":
-                    "Run list should contains only numbers of runs separated by comma or space"
+                    "Run list should contain only numbers of runs separated by comma or space"
                 }
-                return render(request, "certifier/404.html", context)
+                return JsonResponse(context, status=400)
+            except Exception as e:
+                context = {"message": repr(e)}
+                return JsonResponse(context, status=500)
 
         run_tracker_maps(run_type, runs_list)
 
