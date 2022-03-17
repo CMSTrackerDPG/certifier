@@ -1,28 +1,27 @@
-from django.shortcuts import render
-from django.views import generic
-from django.http import HttpResponseRedirect, Http404, JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django_filters.views import FilterView
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from certifier.models import TrackerCertification
 from django_tables2 import SingleTableMixin
 from tables.tables import ShiftleaderTrackerCertificationTable, DeletedTrackerCertificationTable, RunRegistryComparisonTable
-from django_filters.views import FilterView
-from certifier.forms import CertifyForm
+from certifier.models import TrackerCertification
+# from certifier.forms import CertifyForm
 from listruns.utilities.utilities import request_contains_filter_parameter
+# from listruns.filters import (
+#     TrackerCertificationFilter,
+#     ComputeLuminosityTrackerCertificationFilter,
+#     RunsFilter,
+# )
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
-
-from listruns.filters import (
-    TrackerCertificationFilter,
-    ComputeLuminosityTrackerCertificationFilter,
-    RunsFilter,
-)
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
 from summary.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
 
 
-@login_required
+@user_passes_test(lambda user: hasattr(user, 'has_shift_leader_rights') and
+                  user.has_shift_leader_rights,
+                  redirect_field_name=None)
 def shiftleader_view(request):
     """
     if no filter parameters are specified than every run from every user will be listed
