@@ -19,12 +19,17 @@ def send_channel_message(group_name, message):
     })
 
 
-def run_tracker_maps(run_type, min_run_number, max_run_number):
-    logger.info(f"Tracker maps for '{run_type}' runs with number"
-                f"{min_run_number} to {max_run_number}")
-    #tracker_maps_command = "python /home/cctrack/run_tracker_maps.py " + str(run_type) + " " + str(min_run_number) + " " + str(max_run_number)
-    tracker_maps_command = "python /home/apatil/test_script.py " + str(
-        run_type) + " " + str(min_run_number) + " " + str(max_run_number)
+def run_tracker_maps(run_type: str, run_number_list: list):
+    """
+    Function that connects to vocms066 using the env-supplied username/password
+    and executes the script to generate specific tracker maps.
+    """
+    logger.info(f"Tracker maps for '{run_type}' runs {run_number_list}")
+
+    tracker_maps_command = f"cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"\
+        " bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh"\
+        f" {str(run_type)} {str(min_run_number)} {str(max_run_number)}"
+
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -61,8 +66,8 @@ def maps(request):
     # is_ajax has been deprecated
     # https://stackoverflow.com/questions/63629935/django-3-1-and-is-ajax
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        min_run_number = request.POST.get("min", None)
-        max_run_number = request.POST.get("max", None)
+        # min_run_number = request.POST.get("min", None)
+        # max_run_number = request.POST.get("max", None)
         run_type = request.POST.get("type", None)
         runs_list = request.POST.get("list", None)
         if runs_list:
@@ -80,10 +85,6 @@ def maps(request):
                 }
                 return render(request, "certifier/404.html", context)
 
-        if min_run_number and max_run_number and not runs_list:
-            run_tracker_maps(run_type, min_run_number, max_run_number)
-            print(min_run_number, max_run_number, run_type)
-        else:
-            print(runs_list, run_type)
+        run_tracker_maps(run_type, runs_list)
 
     return render(request, "trackermaps/trackermaps.html")
