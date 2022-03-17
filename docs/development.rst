@@ -384,6 +384,24 @@ Run the website locally
    python manage.py migrate --run-syncdb
    python manage.py runserver
 
+3. [Optional] If you need to test tracker map generation, you will also need to have Redis locally.
+
+.. code:: bash
+
+   sudo apt install redis-server
+
+In ``settings.py``:
+	
+.. code:: python
+		  
+   CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+	   }
+	}
+
+
 
 Migrations
 ----------
