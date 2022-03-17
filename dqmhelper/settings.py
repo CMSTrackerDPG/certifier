@@ -14,6 +14,9 @@ import os
 
 from decouple import config
 
+# Version to display in order to keep track of changes
+CERTHELPER_VERSION = "1.0.0"
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -84,6 +87,7 @@ TEMPLATES = [{
             "django.template.context_processors.request",
             "django.contrib.auth.context_processors.auth",
             "django.contrib.messages.context_processors.messages",
+            "dqmhelper.context_processors.global_context"
         ]
     },
 }]
