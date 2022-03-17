@@ -75,7 +75,6 @@ def maps(request):
             f"Got trackermaps generation request for {run_type}: {runs_list}")
         if runs_list:
             try:
-                print("!??r")
                 runs_list = list(
                     map(
                         int,
