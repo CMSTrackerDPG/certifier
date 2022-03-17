@@ -22,26 +22,9 @@
                 <div class="form-group">
                     <div class="row mb-3 justify-content-center">
                         <div class="col-sm-5">
-                            <div class="row mb-3 justify-content-center">
-                                <div class="col-sm-6">
-                                    <b>from:</b>
-                                    <input type="number" class="form-control" name='min' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
-                                </div>
-                                <div class="col-sm-6">
-                                    <b>to:</b>
-                                    <input type="number" class="form-control" name='max' id='id_run_number' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
-                                </div>
-                            </div>
-                        </div>
-                        {%if 0%}
-                        <div class="col-1 text-center my-auto">
-                            <h5 class="font-weight-bold text-center">or</h5>
-                        </div>
-                        <div class="col-sm-5">
-                            <b>list:</b>
+                            <label for="list"><b>List of runs:</b></label>
                             <input type="text" class="form-control" name="list" placeholder="Separated list of run numbers (comma or space)" id="id_run_number_list" required>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="row mb-3 justify-content-center">
@@ -91,29 +74,36 @@ $myForm.submit(function(){
             `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
         );
     }
-    $.ajax({
-        headers: { "X-CSRFToken": '{{csrf_token}}' },
-        type: "POST",
-        url: "{% url 'trackermaps:maps' %}",
-        data: {
-           'min': $('#id_form_generate_maps [name="min"]').val(),
-           'max' : $('#id_form_generate_maps [name="max"]').val(),
-           'type' : $('#id_form_generate_maps [name="type"]:checked').val()
-        },
-        success: function() {
-            $("#id_generate_maps").html(
-                'Generate Tracker Maps'
-            );
-            $("#id_form_generate_maps").find(':input[type=submit]').prop('disabled', false);
-        }
-    });
-    return false
-});
+     $.ajax({
+         headers: { "X-CSRFToken": '{{csrf_token}}' },
+         type: "POST",
+         url: "{% url 'trackermaps:maps' %}",
+         data: {
+			 // 'min': $('#id_form_generate_maps [name="min"]').val(),
+			 // 'max' : $('#id_form_generate_maps [name="max"]').val(),
+			 'type' : $('#id_form_generate_maps [name="type"]:checked').val(),
+			 'list' : $('#id_form_generate_maps [name="list"]').val()
+         },
+     })
+	  .always(function(){
+		  $("#id_form_generate_maps").find(':input[type=submit]').prop('disabled', false);
+		  $("#id_generate_maps").html(
+			  'Generate Tracker Maps'
+		  );
+	  })
+	  .fail(function(data){
+		  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
+		  console.error(msg);
+		  alert(msg);
+		  $('#id_run_number_list').val('');// Clear value
+	  });
+     return false
+ });
 
-$(document).ready(function() {
+ $(document).ready(function() {
     $(function() {
         $('[id=id_run_number]').focus(function(){
-          $('#id_run_number_list').val('');
+			$('#id_run_number_list').val('');
           $('#id_run_number_list').prop('disabled', 'disabled');
         }).blur(function(){
           $('#id_run_number_list').prop('disabled', '');
@@ -128,31 +118,35 @@ $(document).ready(function() {
     });
 });
 
-if (location.protocol === 'https:') {
-    // page is secure
-    var command_output_socket = new WebSocket(
-        'wss://' + window.location.host +
-        '/ws/output/');
-}
-else{
-    var command_output_socket = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/output/');
-}
+ // WS initialization
+ if (location.protocol === 'https:') {
+     // page is secure
+     var command_output_socket = new WebSocket(
+		 'wss://' + window.location.host +
+		 '/ws/output/');
+ }
+ else{
+     var command_output_socket = new WebSocket(
+         'ws://' + window.location.host +
+         '/ws/output/');
+ }
 
-function clearOutput(){
-    $('#id_command_output').val("");
-}
+ // Clear output button callback
+ function clearOutput(){
+     $('#id_command_output').val("");
+ }
 
-command_output_socket.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-    var message = data['message'];
-    document.querySelector('#id_command_output').value += (message);
-    document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+ // Callback run on every new message that
+ // is received from the WS
+ command_output_socket.onmessage = function(e) {
+     var data = JSON.parse(e.data);
+     var message = data['message'];
+     document.querySelector('#id_command_output').value += (message);
+     document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
 };
 
-command_output_socket.onclose = function(e) {
-    console.error('Socket closed unexpectedly: '+ e.message);
-};
+ command_output_socket.onclose = function(e) {
+     console.error('Socket closed unexpectedly: '+ e.message);
+ };
 </script>
 {% endblock %}

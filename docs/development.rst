@@ -11,7 +11,7 @@ Prerequisites
 In case one wants to improve the Certhelper project, the following
 steps are necessary:
 
--  Install Python version 3.7 or 3.8 (recommended 3.8)
+-  Install Python version 3.8
 -  Setup a virtual environment
 -  Install requirements packages
 
@@ -57,7 +57,7 @@ If you do not want to use an AUR helper you can install Python 3.6
 Checking Python Version
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The project requires the python version 3.7 or 3.8. To ensure that the
+The project requires the python version 3.8. To ensure that the
 correct python version is configured the ``python3 --version`` command
 be used.
 
@@ -265,8 +265,38 @@ certhelper.web.cern.ch via OpenShift. This branch should only contain
 stable and tested code. Changes should never be made directly in the
 master branch.
 
+Training
+~~~~~~~~
+The `training` branch serves as a separate project, which deploys
+independantly, using a different database so that Shifters can train
+without interfering with the production one.
+
+Code changes to the `master` branch include:
+
+- Fetches all runs from RunRegistry, not just open ones (see `openruns/utilities.py`)
+- Visual cues to easily differentiate the apps
+
+.. note::
+
+   Every time an important update is pushed to `master`, the changes
+   should also be merged to the `training` branch
+
+   .. code:: bash
+
+		git fetch -a
+		git checkout training
+		git merge master
+		git push origin training
+
+
+   Some of the changes *will* lead to conflicts upon merge.
+
+
 Develop
 ~~~~~~~
+.. warning::
+
+   Deprecated
 
 Development branch to test new features before deploying it to the
 production website. Commits in the development branch are automatically
@@ -289,23 +319,28 @@ it can be merged into the master branch:
 Feature branches
 ~~~~~~~~~~~~~~~~
 
-When developing new features, a new feature branch should be created.
+When developing new features or working on bugfixes, a new branch should be created.
 
 .. code:: bash
 
-    git checkout -b feature-mynewfeature develop
+    # for new features
+    git checkout -b feature-mynewfeature master
+
+	# for specific issues, e.g. issue 108
+	git checkout -b "#108" master
 
 After the new changes have been committed, they can be merged back into
-the develop branch.
+the master branch.
 
 .. code:: bash
 
-    git checkout develop
-    git merge my-new-feature
-    git branch -d my-new-feature
-    git push origin develop
+	git checkout master
+	git merge --no-ff feature-mynewfeature  # --no-ff can be clearer for historic reasons, preserving commits on a separate "branch"
+	git commit -m "Merging feature mynewfeature"
+	git branch -d feature-mynewfeature
+	git push origin master
 
-The push to the development branch automatically triggers the unit tests
+The push to `master` branch automatically triggers the unit tests
 at Travis CI.
 
 Django Tutorial
@@ -338,16 +373,34 @@ The project files can then be reformated with
 
 Run the website locally
 -----------------------
+1. Create a file named ``.env`` with the required configuration (See `Configure database connection`_).
+   You should also include the variables ``OMS_CLIENT_ID``, ``OMS_CLIENT_SECRET``, which can take any value
+   since they will only exist as placeholders when running locally.
+   
+2. Run:
+
+.. code:: bash
+   
+   python manage.py migrate --run-syncdb
+   python manage.py runserver
+
+3. [Optional] If you need to test tracker map generation, you will also need to have Redis locally.
 
 .. code:: bash
 
-    python manage.py migrate
-    python manage.py collectstatic
+   sudo apt install redis-server
 
+In ``settings.py``:
+	
+.. code:: python
+		  
+   CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+	   }
+	}
 
-.. code:: bash
-
-    python manage.py runserver
 
 
 Migrations
