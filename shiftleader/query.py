@@ -509,8 +509,10 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         # to get the run type. If not, do an extra query to get extra oms attributes
         # Issue #100
         for rr_entry in run_registry_entries:
-            if not ('collision' in [rr_entry['class'], rr_entry['name']]
-                    or 'cosmic' in [rr_entry['class'], rr_entry['name']]):
+            if not ('collision'
+                    in [rr_entry['class'].lower(), rr_entry['name'].lower()]
+                    or 'cosmic'
+                    in [rr_entry['class'].lower(), rr_entry['name'].lower()]):
                 logger.info(
                     f"Cannot safely assume run_type from class {repr(rr_entry['class'])}"
                     f" and name {repr(rr_entry['name'])}, getting OMS attributes"
