@@ -1,9 +1,8 @@
-from django.utils import timezone
 import datetime
 import logging
-# from certifier.models import RunReconstruction, TrackerCertification # circular import
-
+from django.utils import timezone
 from oms.models import OmsRun
+from shiftleader.exceptions import CannotAssumeRunTypeException
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,29 @@ def get_certification_status(detector_type):
         return "Excluded"
 
 
-def convert_run_registry_to_trackercertification(list_of_dictionaries):
+def _get_run_type_from_run_class_and_dataset_name(run_class: str = "",
+                                                  dataset_name: str = ""
+                                                  ) -> str:
+    """
+    Helper function that, given the "class" and "name" from the data returned
+    from a RunRegistry dataset, returns the "run_type" for the specific dataset
+
+    Raises an Exception if the type cannot be assumed
+    """
+    run_class = run_class.lower()
+    dataset_name = dataset_name.lower()
+
+    if "collision" in run_class or "collision" in dataset_name:
+        return OmsRun.COLLISIONS
+    elif "cosmic" in run_class or "cosmic" in dataset_name:
+        return OmsRun.COSMICS
+
+    raise CannotAssumeRunTypeException(
+        f"Cannot safely assume run_type from class {repr(run_class)}"
+        f" and name {repr(dataset_name)}")
+
+
+def convert_run_registry_to_trackercertification(list_of_dictionaries: list):
     """
     Converts the list of JSON dictionaries into a TrackerCertification 
     compatible format, i.e.:
@@ -60,27 +81,34 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries):
         dataset = entry["dataset"].lower()
         entry["runreconstruction__run__run_number"] = entry.pop("run_number")
 
-        if "collision" in run_class:
-            entry["runreconstruction__run__run_type"] = OmsRun.COLLISIONS
-        elif "cosmic" in run_class:
-            entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
-        elif "collision" in dataset:  # When run_class is e.g. Commissioning18
-            entry["runreconstruction__run__run_type"] = OmsRun.COLLISIONS
-        elif "cosmic" in dataset:
-            entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
-        # Edge case where class is something like "Commissioning22" and
-        # name does not contain "cosmic" nor "collision" (e.g. /Express/Commissioning2022/DQM)
-        elif "oms_attributes" in entry:
-            # Use OMS attributes
-            if "collision" in entry["oms_attributes"]["hlt_key"]:
-                entry["runreconstruction__run__run_type"] = OmsRun.COLLISIONS
-            elif "cosmic" in entry["oms_attributes"]["hlt_key"]:
-                entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
-        else:
-            logger.warning(
-                f"Run {entry['runreconstruction__run__run_number']} (Class:{run_class},"
-                f" Dataset:{dataset}) does not contain enough info"
-                " to assume its run type")
+        # if "collision" in run_class:
+        #     entry["runreconstruction__run__run_type"] = OmsRun.COLLISIONS
+        # elif "cosmic" in run_class:
+        #     entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
+        # elif "collision" in dataset:  # When run_class is e.g. Commissioning18
+        #     entry["runreconstruction__run__run_type"] = OmsRun.COLLISIONS
+        # elif "cosmic" in dataset:
+        #     entry["runreconstruction__run__run_type"] = OmsRun.COSMICS
+
+        try:
+            entry[
+                "runreconstruction__run__run_type"] = _get_run_type_from_run_class_and_dataset_name(
+                    run_class, dataset)
+        except CannotAssumeRunTypeException:
+            # Edge case where class is something like "Commissioning22" and
+            # name does not contain "cosmic" nor "collision" (e.g. /Express/Commissioning2022/DQM)
+            if "oms_attributes" in entry:
+                # Use OMS attributes
+                try:
+                    entry[
+                        "runreconstruction__run__run_type"] = _get_run_type_from_run_class_and_dataset_name(
+                            entry["oms_attributes"]["hlt_key"])
+                except CannotAssumeRunTypeException:
+                    logger.warning(
+                        f"Run {entry['runreconstruction__run__run_number']} (Class:{run_class},"
+                        f" Dataset:{dataset}) does not contain enough info"
+                        " to assume its run type")
+                    raise
 
         if "express" in dataset:
             entry["runreconstruction__reconstruction"] = "express"  # EXPRESS
