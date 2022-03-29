@@ -6,7 +6,7 @@ import paramiko
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
 from asgiref.sync import async_to_sync
@@ -42,9 +42,9 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> bool:
     Function that connects to vocms066 using the env-supplied username/password
     and executes the script to generate specific tracker maps.
     """
-    tracker_maps_command = f"cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"\
+    tracker_maps_command = "cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"\
     " bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh"\
-    f" {str(run_type)} {str(run_number_list)}"
+    f" {str(run_type)} {''.join(str(run_number)+' ' for run_number in run_number_list)}"
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -80,13 +80,15 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> bool:
     # Verify script's exit status
     exit_status = ssh_stdout.channel.recv_exit_status()
     if exit_status:
-        logger.warning("Remote process exited with status {exit_status}")
+        logger.warning(f"Remote process exited with status {exit_status}")
         return False
     logger.info("Remote process terminated with no errors")
     return True
 
 
-@login_required
+@user_passes_test(lambda user: hasattr(user, 'has_shift_leader_rights') and
+                  user.has_shift_leader_rights,
+                  redirect_field_name=None)
 def maps(request):
     """
     View for the trackermaps/ url

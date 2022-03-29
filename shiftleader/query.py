@@ -17,7 +17,8 @@ from django.db.models import (
 )
 from django.db.models.functions import ExtractWeekDay
 from delete.query import SoftDeletionQuerySet
-from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification
+from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification, _get_run_type_from_run_class_and_dataset_name
+from shiftleader.exceptions import CannotAssumeRunTypeException
 import runregistry
 from operator import itemgetter
 from itertools import groupby
@@ -509,12 +510,11 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         # to get the run type. If not, do an extra query to get extra oms attributes
         # Issue #100
         for rr_entry in run_registry_entries:
-            if not ('collision' in [rr_entry['class'], rr_entry['name']]
-                    or 'cosmic' in [rr_entry['class'], rr_entry['name']]):
-                logger.info(
-                    f"Cannot safely assume run_type from class {repr(rr_entry['class'])}"
-                    f" and name {repr(rr_entry['name'])}, getting OMS attributes"
-                )
+            try:
+                _get_run_type_from_run_class_and_dataset_name(
+                    rr_entry['class'], rr_entry['name'])
+            except CannotAssumeRunTypeException as e:
+                logger.info(e)
                 # Run extra query for run info, get oms_attributes and insert
                 # them to the entry
                 rr_entry['oms_attributes'] = runregistry.get_run(

@@ -15,7 +15,7 @@ import os
 from decouple import config
 
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "2.0.0"
+CERTHELPER_VERSION = "2.0.1"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

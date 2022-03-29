@@ -1,8 +1,7 @@
+import os
 import math
 import pytest
-import os
 from mixer.backend.django import mixer
-
 from oms.models import OmsRun
 from certifier.models import TrackerCertification, RunReconstruction
 from shiftleader.utilities.utilities import to_date, to_weekdayname
