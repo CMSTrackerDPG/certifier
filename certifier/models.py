@@ -31,6 +31,7 @@ class RunReconstruction(models.Model):
 
     class Meta:
         unique_together = ("run", "reconstruction")
+        ordering = ["-run__run_number"]
 
     @property
     def run_number(self):
