@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404
 from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
+from openruns.models import OpenRuns
 from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
 from oms.models import OmsRun
 from users.models import User
@@ -43,8 +44,26 @@ def promoteToReference(request, run_number, reco):
 @login_required
 def certify(request, run_number, reco=None):
 
-    # print(request)
     logger.debug(f"Requesting certification of run {run_number}")
+
+    # Check if run is already booked
+    try:
+        open_run = OpenRuns.objects.get(run_number=run_number)
+        if request.user != open_run.user:
+            msg = f"Run {run_number} is already booked by another user"
+            logger.warning(msg)
+            return render(request,
+                          "certifier/http_error.html",
+                          context={
+                              "error_num": 400,
+                              "message": msg
+                          })
+
+    except OpenRuns.DoesNotExist as e:
+        # Means that OpenRun does not exist
+        logger.debug(f"Open run for {run_number} does not exist yet")
+
+    # From openruns colored boxes
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         name = request.POST.get("name", None)
         dataset = request.POST.get("dataset", None)
