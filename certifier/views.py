@@ -1,9 +1,10 @@
 import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, JsonResponse
 from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
+from certifier.api.serializers import RunReferenceRunSerializer
 from openruns.models import OpenRuns
 from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
 from oms.models import OmsRun
@@ -165,3 +166,15 @@ def certify(request, run_number, reco=None):
     }
 
     return render(request, "certifier/certify.html", context)
+
+
+def runRefRun_list(request):
+    """
+    Simple list view of serialized Reference runs
+
+    Transferred from old 'mldatasets' app
+    """
+    if request.method == 'GET':
+        runRefRunsAll = TrackerCertification.objects.all()
+        serializer = RunReferenceRunSerializer(runRefRunsAll, many=True)
+        return JsonResponse(serializer.data, safe=False)
