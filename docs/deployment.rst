@@ -270,46 +270,47 @@ and add two new values:
 Rebuild the main project and, by connecting to Tracker Maps, you should not be
 getting any errors in the Django logs.
 
-.. warning::
+..
+   .. warning::
 
-   Procedure below is deprecated
+	  Procedure below is deprecated
 
-Download the ``helm`` command line utility.
+   Download the ``helm`` command line utility.
 
-https://github.com/helm/helm
+   https://github.com/helm/helm
 
-On Arch Linux all you have to do is install ``kubernetes-helm-bin`` from
-the AUR.
+   On Arch Linux all you have to do is install ``kubernetes-helm-bin`` from
+   the AUR.
 
-.. code:: bash
+   .. code:: bash
 
-   yay -S aur/kubernetes-helm-bin
+	  yay -S aur/kubernetes-helm-bin
 
-On Ubuntu:
+   On Ubuntu:
 
-.. code:: bash
-		  
-	curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
-	sudo apt-get install apt-transport-https --yes
-	echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-	sudo apt-get update
-	sudo apt-get install helm
+   .. code:: bash
 
-And then just run the following commands in the same terminal where you have logged in previously:
+	   curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+	   sudo apt-get install apt-transport-https --yes
+	   echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+	   sudo apt-get update
+	   sudo apt-get install helm
 
-.. code:: bash
-		  
-   helm repo add bitnami https://charts.bitnami.com/bitnami
-   helm install redis bitnami/redis --set securityContext.runAsUser=<username-id> --set securityContext.fsGroup=<username-id>
+   And then just run the following commands in the same terminal where you have logged in previously:
 
-The username-id can be found by going to :menuselection:`Application --> Pods --> <Your Project> --> Terminal` and then running the ``whoami`` command which will return an id like ``1008250000``.
+   .. code:: bash
 
-The command ``helm install`` will also tell you the hostname of the redis instance created, e.g.: ``redis-master.certhelper.svc.cluster.local``. This will be used in the following step.
+	  helm repo add bitnami https://charts.bitnami.com/bitnami
+	  helm install redis bitnami/redis --set securityContext.runAsUser=<username-id> --set securityContext.fsGroup=<username-id>
 
-Navigate to :menuselection:`Developer --> Builds --> <Your Project> --> Environment` and add two new values:
+   The username-id can be found by going to :menuselection:`Application --> Pods --> <Your Project> --> Terminal` and then running the ``whoami`` command which will return an id like ``1008250000``.
 
-- :guilabel:`Add more`: key ``REDIS_HOST`` with value equal to the hostname you noted earlier.
-- :guilabel:`Add from ConfigMap or Secret`: key ``REDIS_PASSWORD`` with value equal to the :guilabel:`redis-password` secret.
+   The command ``helm install`` will also tell you the hostname of the redis instance created, e.g.: ``redis-master.certhelper.svc.cluster.local``. This will be used in the following step.
+
+   Navigate to :menuselection:`Developer --> Builds --> <Your Project> --> Environment` and add two new values:
+
+   - :guilabel:`Add more`: key ``REDIS_HOST`` with value equal to the hostname you noted earlier.
+   - :guilabel:`Add from ConfigMap or Secret`: key ``REDIS_PASSWORD`` with value equal to the :guilabel:`redis-password` secret.
 
 Add NGINX Server (not working for now)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
