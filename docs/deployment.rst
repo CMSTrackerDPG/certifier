@@ -240,6 +240,40 @@ Add a shared volume to allow the use of unix socket between nginx and daphne
 Add REDIS Server
 ~~~~~~~~~~~~~~~~~
 
+A redis server will used by the `channels-redis` module as a backing store. 
+
+Navigate to :guilabel:`Topology` and right-click next to the pod of the project.
+Then, click :menuselection:`Add to Project --> From Catalog`.
+
+.. image:: images/paas-add-from-catalog.png
+
+Then, search for and select :guilabel:`Redis`, and then :guilabel:`Instantiate Template`. 
+
+.. image:: images/paas-redis.png
+
+Leave all settings to their default values. Take note of the :guilabel:`Database Service Name`,
+which will serve as the hostname that Django will have to connect to.
+
+Click on :guilabel:`Create`. This will automatically place a new pod on the
+topology, which is effectively a separate system running a redis server.
+
+Verify that by navigating to :guilabel:`Secrets`, a new ``redis`` secret which has been created.
+
+Now, navigate to :menuselection:`Developer --> Builds --> <Your Project> --> Environment`
+and add two new values:
+
+- Click on :guilabel:`Add more` and name the new key ``REDIS_HOST``. Its value must be equal to the
+  hostname you noted earlier.
+- Click on :guilabel:`Add from ConfigMap or Secret` and name the new key ``REDIS_PASSWORD``.
+  Its value must be the :menuselection:`redis --> database-password` secret.
+
+Rebuild the main project and, by connecting to Tracker Maps, you should not be
+getting any errors in the Django logs.
+
+.. warning::
+
+   Procedure below is deprecated
+
 Download the ``helm`` command line utility.
 
 https://github.com/helm/helm
@@ -251,15 +285,31 @@ the AUR.
 
    yay -S aur/kubernetes-helm-bin
 
+On Ubuntu:
+
+.. code:: bash
+		  
+	curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+	sudo apt-get install apt-transport-https --yes
+	echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+	sudo apt-get update
+	sudo apt-get install helm
+
 And then just run the following commands in the same terminal where you have logged in previously:
 
 .. code:: bash
+		  
+   helm repo add bitnami https://charts.bitnami.com/bitnami
+   helm install redis bitnami/redis --set securityContext.runAsUser=<username-id> --set securityContext.fsGroup=<username-id>
 
-   helm install redis stable/redis --set securityContext.runAsUser=<username-id> --set securityContext.fsGroup=<username-id>
+The username-id can be found by going to :menuselection:`Application --> Pods --> <Your Project> --> Terminal` and then running the ``whoami`` command which will return an id like ``1008250000``.
 
-The username-id can be found by going to :menuselection:`Application --> Pods --> <Your Project> --> Terminal` and then running the ``whoami`` command which will return an id like ``1008250000``
+The command ``helm install`` will also tell you the hostname of the redis instance created, e.g.: ``redis-master.certhelper.svc.cluster.local``. This will be used in the following step.
 
-Install
+Navigate to :menuselection:`Developer --> Builds --> <Your Project> --> Environment` and add two new values:
+
+- :guilabel:`Add more`: key ``REDIS_HOST`` with value equal to the hostname you noted earlier.
+- :guilabel:`Add from ConfigMap or Secret`: key ``REDIS_PASSWORD`` with value equal to the :guilabel:`redis-password` secret.
 
 Add NGINX Server (not working for now)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
