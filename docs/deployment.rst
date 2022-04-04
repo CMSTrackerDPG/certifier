@@ -170,13 +170,12 @@ configure the web application with the GitHub repository:
 
 Mount EOS Storage
 ~~~~~~~~~~~~~~~~~
-.. warning:: Might be deprecated
-
 The project has 1 TB of storage associated in the EOS. To mount it to
 OpenShift follow these instructions.
 
-Detailed instructions can be found at
-https://cern.service-now.com/service-portal/article.do?n=KB0005259
+Detailed instructions can be found on the `PaaS docs
+<https://paas.docs.cern.ch/3._Storage/eos/>`__.
+
 
 Create Secret
 ^^^^^^^^^^^^^
@@ -190,7 +189,7 @@ Replace with your password.
 
 Do EOS stuff
 ^^^^^^^^^^^^
-.. warning:: Might be deprecated
+.. warning:: Deprecated
 
 Run these commands and replace with the name of your build.
 
@@ -320,20 +319,29 @@ CERN Setup
 ~~~~~~~~~~
 
 OAuth2 is an authorization service which can be used to authenticate
-CERN users. The advanctage of using such an authorization service is that
+CERN users. The advantage of using such an authorization service is that
 users of the certification helper do not have register manually, but can
 already use their existing CERN accounts.
 
 In order to integrate the CERN OAuth2 service with the website, the
-application has to be registered at the SSO Managment site.
-https://sso-management.web.cern.ch/OAuth/RegisterOAuthClient.aspx
+application has to be registered at the `SSO Managment site
+<https://sso-management.web.cern.ch/OAuth/RegisterOAuthClient.aspx>`__
 
-When registering a redirect\_uri has to specified which in case of the
+You can use the :guilabel:`Identifier` of the website found
+`here <https://application-portal.web.cern.ch/>`__ as the :guilabel:`client_id`.
+
+When registering a `redirect\_uri` has to specified which in case of the
 certification helper is
 ``https://certhelper.web.cern.ch/accounts/cern/login/callback/`` for
 the production website and
 ``https://dev-certhelper.web.cern.ch/accounts/cern/login/callback/``
 for the development site.
+
+.. note::
+
+   Each instance of certhelper requires a different OAuth2 authorization
+   key, so you cannot reuse an existing `client_id` and `secret` for a new
+   instance.
 
 Integration
 ~~~~~~~~~~~
