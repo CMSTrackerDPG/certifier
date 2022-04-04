@@ -1,7 +1,8 @@
+import re
 import datetime
 import decimal
-import re
 from django.utils import timezone
+
 
 def is_valid_date(date_text):
     try:
@@ -9,6 +10,7 @@ def is_valid_date(date_text):
         return True
     except:
         return False
+
 
 def get_date_string(year, month, day):
     """"
@@ -19,11 +21,8 @@ def get_date_string(year, month, day):
     datestring = None
 
     if year and month and day:  # if attributes exist
-        if (
-            int(year) in range(1900, 3000)
-            and int(month) in range(1, 13)
-            and int(day) in range(1, 32)
-        ):
+        if (int(year) in range(1900, 3000) and int(month) in range(1, 13)
+                and int(day) in range(1, 32)):
             if len(month) == 1:
                 month = "0" + month
             if len(day) == 1:
@@ -36,15 +35,14 @@ def get_date_string(year, month, day):
 
 
 def get_filters_from_request_GET(request):
-    filter_candidates = ["date_range_min", "date_range_max", "runs_min", "runs_max", "type"]
+    filter_candidates = [
+        "date_range_min", "date_range_max", "runs_min", "runs_max", "type"
+    ]
     applied_filters = {}
     for candidate in filter_candidates:
         tmp = request.GET.get(candidate, "")
         if tmp != "" and tmp != 0:
-            if (
-                candidate.startswith("date_range")
-                and is_valid_date(tmp)
-            ):
+            if (candidate.startswith("date_range") and is_valid_date(tmp)):
                 applied_filters[candidate] = tmp
 
     year = request.GET.get("date_year", "")
@@ -74,22 +72,24 @@ def is_valid_id(primary_key, Classname):
 
 def request_contains_filter_parameter(request):
     for candidate in [
-        "options",
-        "category",
-        "runs",
-        "type",
-        "date",
-        "user",
-        "run_number",
-        "problem_categories",
+            "options",
+            "category",
+            "runs",
+            "type",
+            "date",
+            "user",
+            "run_number",
+            "problem_categories",
     ]:
         for word in request.GET:
             if candidate in word:
                 return True
     return False
 
+
 def get_today_filter_parameter():
     return "?date={}".format(timezone.now().strftime("%Y-%m-%d"))
+
 
 def decimal_or_none(number):
     """
