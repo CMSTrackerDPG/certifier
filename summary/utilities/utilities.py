@@ -1,7 +1,20 @@
+from textwrap import wrap
 from certifier.models import TrackerCertification
 from terminaltables import AsciiTable
+from terminaltables.terminal_io import terminal_size
 from shiftleader.utilities.utilities import to_date
 from listruns.utilities.utilities import is_valid_date
+
+
+def get_wrapped_string(string: str, max_width: int) -> str:
+    """
+    Use textwrap to wrap long strings, given an max_width
+    """
+    if max_width <= 0:
+        raise ValueError(f"Max width must be > 0 ({max_width} given)")
+    if not isinstance(string, str) or len(string) < max_width:
+        return string
+    return '\n'.join(wrap(string, max_width))
 
 
 def get_from_summary(summary, runtype=None, reco=None, date=None):
@@ -22,8 +35,27 @@ def get_from_summary(summary, runtype=None, reco=None, date=None):
 
 
 def get_ascii_table(column_description, data):
+    """
+    Create an AsciiTable using the header and table data
+    passed. 
+
+    If table is too wide, try to wrap every line that's too long
+    """
     table = AsciiTable([column_description] + data)
     table.inner_row_border = True
+
+    # The ok property determines if the table fits in the terminal
+    # If not ok, wrap long lines
+    if not table.ok:
+        for row_index, row in enumerate(table.table_data):
+            for col_index, col in enumerate(row):
+                # Get max width of current col, depending
+                # on terminal size
+                max_width = table.column_max_width(column_number=col_index)
+                if max_width > 0:  # Might return negative numbers!!
+                    s = get_wrapped_string(
+                        table.table_data[row_index][col_index], max_width)
+                    table.table_data[row_index][col_index] = s
     return table.table
 
 
