@@ -31,8 +31,7 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos,
                                   alert_filters):
     from certifier.models import TrackerCertification
 
-    runs = TrackerCertification.objects.filter(
-        user=request.user).order_by("-runreconstruction__run__run_number")
+    runs = TrackerCertification.objects.filter(user=request.user)
 
     date_filter_value = request.GET.get("date", None)
 
@@ -40,7 +39,7 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos,
     date_to = request.GET.get("date_range_1", None)
     runs_from = request.GET.get("runs_0", None)
     runs_to = request.GET.get("runs_1", None)
-    type_id = request.GET.get("type", None)
+    # type_id = request.GET.get("type", None)
 
     if date_filter_value:
         if is_valid_date(date_filter_value):
@@ -89,4 +88,4 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos,
         alert_infos.append(
             "No filters applied. Showing every run you have ever certified!")
 
-    return runs
+    return runs.order_by("-runreconstruction__run__run_number")
