@@ -21,8 +21,10 @@ def format_integrated_luminosity(int_luminosity):
         value = Decimal("1E6") * value
         value_string = "{:.3f}".format(value)
         formatted_value = strip_trailing_zeros(value_string)
-        return "{} µb⁻¹".format(formatted_value)
+        # return "{} µb⁻¹".format(formatted_value)
+        return "{} ub^-1".format(formatted_value)
 
     value_string = "{:.3f}".format(value)
     formatted_value = strip_trailing_zeros(value_string)
-    return "{} pb⁻¹".format(formatted_value)
+    # return "{} pb⁻¹".format(formatted_value)
+    return "{} pb^-1".format(formatted_value)
