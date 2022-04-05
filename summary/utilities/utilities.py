@@ -1,9 +1,11 @@
+import logging
 from textwrap import wrap
-from certifier.models import TrackerCertification
 from terminaltables import AsciiTable
 from terminaltables.terminal_io import terminal_size
 from shiftleader.utilities.utilities import to_date
 from listruns.utilities.utilities import is_valid_date
+
+logger = logging.getLogger(__name__)
 
 
 def get_wrapped_string(string: str, max_width: int) -> str:
@@ -41,6 +43,7 @@ def get_ascii_table(column_description, data):
 
     If table is too wide, try to wrap every line that's too long
     """
+    logger.info(f"Terminal size: {terminal_size()}")
     table = AsciiTable([column_description] + data)
     table.inner_row_border = True
 
