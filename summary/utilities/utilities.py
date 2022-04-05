@@ -1,11 +1,21 @@
+import sys
 import logging
+import time
+from prettytable import PrettyTable, SINGLE_BORDER, ALL
 from textwrap import wrap
-from terminaltables import AsciiTable
-from terminaltables.terminal_io import terminal_size
 from shiftleader.utilities.utilities import to_date
 from listruns.utilities.utilities import is_valid_date
+from certifier.models import TrackerCertification
 
 logger = logging.getLogger(__name__)
+
+
+def set_terminal_size(width, height):
+    """
+    Dirty(?) solution of forcing the terminal size to a specific
+    size so that terminaltables behave
+    """
+    sys.stdout.write(f"\x1b[8;{height};{width}t")
 
 
 def get_wrapped_string(string: str, max_width: int) -> str:
@@ -16,7 +26,7 @@ def get_wrapped_string(string: str, max_width: int) -> str:
         raise ValueError(f"Max width must be > 0 ({max_width} given)")
     if not isinstance(string, str) or len(string) < max_width:
         return string
-    return '\n'.join(wrap(string, max_width))
+    return "\n".join(wrap(string, max_width))
 
 
 def get_from_summary(summary, runtype=None, reco=None, date=None):
@@ -38,33 +48,21 @@ def get_from_summary(summary, runtype=None, reco=None, date=None):
 
 def get_ascii_table(column_description, data):
     """
-    Create an AsciiTable using the header and table data
-    passed. 
+    Create a PrettyTable using the header and table data
+    passed.
 
     If table is too wide, try to wrap every line that's too long
     """
-    logger.info(f"Terminal size: {terminal_size()}")
-    table = AsciiTable([column_description] + data)
-    table.inner_row_border = True
-
-    # The ok property determines if the table fits in the terminal
-    # If not ok, wrap long lines
-    if not table.ok:
-        for row_index, row in enumerate(table.table_data):
-            for col_index, col in enumerate(row):
-                # Get max width of current col, depending
-                # on terminal size
-                max_width = table.column_max_width(column_number=col_index)
-                if max_width > 0:  # Might return negative numbers!!
-                    s = get_wrapped_string(
-                        table.table_data[row_index][col_index], max_width)
-                    table.table_data[row_index][col_index] = s
-    return table.table
+    tbl = PrettyTable()
+    tbl._max_width = {'Comment': 50}  # Hardcoded value
+    tbl.field_names = column_description
+    tbl.add_rows(data)
+    tbl.hrules = ALL
+    return str(tbl)
 
 
 def get_runs_from_request_filters(request, alert_errors, alert_infos,
                                   alert_filters):
-    from certifier.models import TrackerCertification
 
     runs = TrackerCertification.objects.filter(user=request.user)
 
@@ -74,7 +72,6 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos,
     date_to = request.GET.get("date_range_1", None)
     runs_from = request.GET.get("runs_0", None)
     runs_to = request.GET.get("runs_1", None)
-    # type_id = request.GET.get("type", None)
 
     if date_filter_value:
         if is_valid_date(date_filter_value):
