@@ -1,41 +1,49 @@
 Deployment
 ==========
-
-Requesting a website
---------------------
-
-Create a new PaaS project: https://paas.docs.cern.ch/1._Getting_Started/1-create-paas-project/
-
-
-.. image:: images/request-website.png
-
-When creating a website a lot of different site types can be chosen. In
-order to use the OpenShift software, the "PaaS Web Application" option
-has to be selected. About 15 minutes after the website has been
-requested it is ready to use.
-
-OpenShift
----------
 The following steps will guide you through the deployment procedure of the app on OpenShift.
 An overview of the steps is:
-- Create a new PaaS project
-- Setup the repository that will be used
-- Configure environmental variables
-- Mount the EOS drive
 
-Setup
-~~~~~
+- Create a new PaaS project (`Requesting a website`_)
+- Setup the repository that will be used (`Setup Procedure`_)
+- Configure environmental variables (`Setup Environmental Variables`_)
+- Request a new database (`Setup a Database`_)
+- Mount the EOS drive (`Mount EOS Storage`_)
+- Add a Redis server (`Add Redis Server`_)
+- Add nginx server (`Add nginx Server (not working for now)`_)
+- Setup CERN SSO (`Single Sign-On`_)
+- Deploy (`Deploying a new build`_)
+
+The procedure can be done completely via the web UI provided by PaaS. However,
+the ``oc`` command line utility can prove very useful. See `oc command line utility`_
+for how to install it.
 
 Prerequisites
-^^^^^^^^^^^^^
+-------------
+
+``oc`` command line utility
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
+   
+   Optional
 
 Download the ``oc`` command line utility, preferably on your lxplus account.
 
 https://paas.docs.cern.ch/1._Getting_Started/5-installing-cli/
 
 
+Requesting a website
+--------------------
+
+Create a new PaaS project by clicking `here <https://paas.docs.cern.ch/1._Getting_Started/1-create-paas-project/>`__. Then, fill out the fields as shown below:
+
+.. image:: images/request-website.png
+
+When creating a website, different site types can be chosen. In
+order to use the OpenShift software, the :guilabel:`PaaS Web Application` option
+has to be selected.
+
 Setup Procedure
-^^^^^^^^^^^^^^^
+---------------
 
 Once the website is successfully requested the application should be
 available in OpenShift. Following steps need to be done in order to
@@ -96,6 +104,8 @@ configure the web application with the GitHub repository:
 
 	  $ oc create secret generic <secret-name> --type=kubernetes.io/basic-auth --from-literal=username=<account-username> --from-literal=password=<account-password>
 
+Setup Environmental Variables
+-----------------------------
 
 14. Under :menuselection:`Builds --> Your project name --> Environment` use the :guilabel:`Add more` and :guilabel:`Add from ConfigMap or Secret` buttons to add the variables:
 
@@ -167,19 +177,33 @@ configure the web application with the GitHub repository:
 .. note::
    The procedure above should only be followed once. Once the app is fully configured, you should not have to alter anything, unless a change occurs (e.g. Database host/password).
 
+Setup a Database
+----------------
+
+The database was requested from the CERN `DB on demand service
+<https://dbod.web.cern.ch/>`__.
+
+After the database has been requested it can be used straight away.
+Django takes care of creating the necessary tables and only requires the
+credentials.
 
 Mount EOS Storage
-~~~~~~~~~~~~~~~~~
+-----------------
+
+Via the UI
+^^^^^^^^^^
 The project has 1 TB of storage associated in the EOS. To mount it to
 OpenShift follow these instructions.
 
 Detailed instructions can be found on the `PaaS docs
 <https://paas.docs.cern.ch/3._Storage/eos/>`__.
 
+Using ``oc``
+^^^^^^^^^^^^
+.. warning:: Might be deprecated
 
 Create Secret
-^^^^^^^^^^^^^
-.. warning:: Might be deprecated
+"""""""""""""
 			 
 Replace with your password.
 
@@ -188,8 +212,7 @@ Replace with your password.
    oc create secret generic eos-credentials --type=eos.cern.ch/credentials --from-literal=keytab-user=tkdqmdoc --from-literal=keytab-pwd=<the-password>
 
 Do EOS stuff
-^^^^^^^^^^^^
-.. warning:: Deprecated
+""""""""""""
 
 Run these commands and replace with the name of your build.
 
@@ -228,8 +251,7 @@ Tip: for deleting the volume run the following command first
     kubectl patch pvc PVC_NAME -p '{"metadata":{"finalizers": []}}' --type=merge
 
 Add shared volume
-~~~~~~~~~~~~~~~~~
-.. warning:: Might be deprecated
+"""""""""""""""""
 
 Add a shared volume to allow the use of unix socket between nginx and daphne
 
@@ -237,8 +259,8 @@ Add a shared volume to allow the use of unix socket between nginx and daphne
 
     oc set volume dc/<your-build-name> --add --name=<volume-name> --type=persistentVolumeClaim --mount-path=<path> --claim-name=<volume-name> --claim-class=cephfs-no-backup --claim-size=1
 
-Add REDIS Server
-~~~~~~~~~~~~~~~~~
+Add Redis Server
+----------------
 
 A redis server will used by the `channels-redis` module as a backing store. 
 
@@ -312,10 +334,14 @@ getting any errors in the Django logs.
    - :guilabel:`Add more`: key ``REDIS_HOST`` with value equal to the hostname you noted earlier.
    - :guilabel:`Add from ConfigMap or Secret`: key ``REDIS_PASSWORD`` with value equal to the :guilabel:`redis-password` secret.
 
-Add NGINX Server (not working for now)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Add nginx Server (not working for now)
+--------------------------------------
 
-1.  go to https://openshift.cern.ch/console/
+.. warning::
+
+   Not tested
+
+1.  Go to https://openshift.cern.ch/console/
 2.  choose "Nginx HTTP server and a reverse proxy (nginx)"
 3.  click :guilabel:`Next`
 4.  select your project in :guilabel:`Add to Project`
@@ -331,43 +357,11 @@ Add NGINX Server (not working for now)
 9.  go to :menuselection:`Application --> Routes`
 10. replace the dev-certhelper route with an one for nginx-server
 
-Deployment
-~~~~~~~~~~
-
-
-Production Site
-^^^^^^^^^^^^^^^
-
-If you want to push to the production website (master branch) you have
-to manually trigger a build at Openshift
-(https://paas.cern.ch/k8s/ns/certhelper/build.openshift.io~v1~BuildConfig). This is due to
-safety reasons, to not accidentally trigger a broken build by pushes to
-the master branch.
-
-This can be done by visiting
-`paas.cern.ch <https://paas.cern.ch/>`__, selecting the
-``certhelper`` project and then visiting :menuselection:`Build --> builds`. This
-page should already contain a build of the Certification Helper project that is
-automatically pulled from GitHub. By clicking on this build and then
-pressing the :guilabel:`build` button the whole deployment process should be
-started. In the meantime, the logs of the build process can be viewed by
-clicking on :guilabel:`View Log`.
-
-Database
---------
-
-The database was requested from the CERN "DB on demand service"
-(https://dbod.web.cern.ch/)
-
-After the database has been requested it can be used straight away.
-Django takes care of creating the necessary tables and only requires the
-credentials.
-
 Single Sign-On
 --------------
 
 CERN Setup
-~~~~~~~~~~
+^^^^^^^^^^
 
 OAuth2 is an authorization service which can be used to authenticate
 CERN users. The advantage of using such an authorization service is that
@@ -395,7 +389,7 @@ for the development site.
    instance.
 
 Integration
-~~~~~~~~~~~
+^^^^^^^^^^^
 
 The single sign-on integration is very easy when using the
 *django-allauth* python package, which has build in CERN support.
@@ -403,4 +397,47 @@ The single sign-on integration is very easy when using the
 In order to make use CERN single sign-on service it has to be configured
 in the Admin Panel under "Social applications". There the client id and
 secret key has to be specified which can be listed in the "cern
-sso-managment" website.
+sso-managment" website.	
+
+Deploying a new build
+---------------------
+
+Production Site (``certhelper``)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to push to the production website (``master`` branch) you have
+to manually `trigger a build at Openshift
+<https://paas.cern.ch/k8s/ns/certhelper/build.openshift.io~v1~BuildConfig>`__.
+This is due to safety reasons, to not accidentally trigger a broken build by pushes to
+the master branch.
+
+This can be done by visiting
+`paas.cern.ch <https://paas.cern.ch/>`__, selecting the
+``certhelper`` project and then visiting :menuselection:`Build --> builds`. This
+page should already contain a build of the Certification Helper project that is
+automatically pulled from GitHub. By clicking on this build and then
+pressing the :guilabel:`build` button the whole deployment process should be
+started. In the meantime, the logs of the build process can be viewed by
+clicking on :guilabel:`View Log`.
+
+Schedule
+^^^^^^^^
+
+The main ``certhelper`` instance should only be deployed on shift changes,
+to prevent confusion and/or any inconvenience. Contact a Shift Leader to verify the schedule.
+
+The ``training-certhelper`` instance should also be updated whenever no training
+is taking place.
+
+The ``dev-certhelper`` instance can be updated at will.
+
+To automate deployment, the ``oc start-build <build-config>`` can be used
+as a crontab job. See the `official documentation
+<https://docs.openshift.com/container-platform/3.11/dev_guide/builds/basic_build_operations.html>`__
+for more info
+
+
+
+
+
+
