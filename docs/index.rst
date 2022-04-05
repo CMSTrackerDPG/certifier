@@ -19,6 +19,7 @@ Welcome to Certification Helper's documentation!
    deployment
    references
    faq
+   developer-faq
 
 Indices and tables
 ==================
