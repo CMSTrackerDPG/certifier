@@ -31,7 +31,8 @@ def get_runs_from_request_filters(request, alert_errors, alert_infos,
                                   alert_filters):
     from certifier.models import TrackerCertification
 
-    runs = TrackerCertification.objects.filter(user=request.user)
+    runs = TrackerCertification.objects.filter(
+        user=request.user).order_by("-runreconstruction__run__run_number")
 
     date_filter_value = request.GET.get("date", None)
 
