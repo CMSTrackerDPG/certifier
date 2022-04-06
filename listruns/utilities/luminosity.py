@@ -22,11 +22,11 @@ def format_integrated_luminosity(int_luminosity, to_ascii=False):
         value_string = "{:.3f}".format(value)
         formatted_value = strip_trailing_zeros(value_string)
         if to_ascii:
-            return "{} ub^-1".format(formatted_value)
+            return "{} /ub".format(formatted_value)
         return "{} µb⁻¹".format(formatted_value)
 
     value_string = "{:.3f}".format(value)
     formatted_value = strip_trailing_zeros(value_string)
     if to_ascii:
-        return "{} pb^-1".format(formatted_value)
+        return "{} /pb".format(formatted_value)
     return "{} pb⁻¹".format(formatted_value)
