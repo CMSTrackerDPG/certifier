@@ -1,53 +1,77 @@
-
 {% extends 'dqmhelper/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'summary/css/summary.css' %}" type="text/css">
+{% endblock %}
 
 {% block content %}
-{% load static %}
-<a href="#comment_div" class="btn btn-link" onclick="show_special_comment_area()"><span class="glyphicon glyphicon-comment"></span> Add Special Comment</a>
-<a href="#links_div" class="btn btn-link" onclick="show_links_area()">
-	<span class="glyphicon glyphicon-globe"></span> Add Links
-</a><br>
-
-<!--
-	 **INFO** When is a RUN marked as 'Good'?
-	 Depends on runtype:
-	 | - - - - - - - - - - - - - - - - - - - - - - - - - - |
-	 |-(Collisions) pixel    = (Good OR Lowstat)   AND     |
-	 |              sistrip  = (Good OR Lowstat)   AND     |
-	 |              tracking = (Good OR Lowstat)           |
-	 | - - - - - - - - - - - - - - - - - - - - - - - - - - |
-	 |-(Cosmics)    sistrip  = (Good OR Lowstat)   AND     |
-	 |              tracking = (Good OR Lowstat)           |
-     |- - - - - - - - - - - - - - - - - - - - - - - - - - -|
--->
-
-{% if alert_infos %}
-{% for info in alert_infos %}
-<div class="alert alert-info">
-    <strong>Info:</strong> {{ info }}
-</div>
-{% endfor %}
-{% endif %}
-
-{% if alert_filters %}
-<div class="alert alert-info">
-    <strong>Applied filters:</strong>
-    <ul>
-        {% for item in alert_filters %}
-        <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+<div class="container-fluid">
 
 
-{% if alert_errors %}
-{% for error in alert_errors %}
-<div class="alert alert-danger">
-    <strong>Error!</strong> {{ error }}
-</div>
-{% endfor %}
-{% endif %}
+	<!--
+		 **INFO** When is a RUN marked as 'Good'?
+		 Depends on runtype:
+		 | - - - - - - - - - - - - - - - - - - - - - - - - - - |
+		 |-(Collisions) pixel    = (Good OR Lowstat)   AND     |
+		 |              sistrip  = (Good OR Lowstat)   AND     |
+		 |              tracking = (Good OR Lowstat)           |
+		 | - - - - - - - - - - - - - - - - - - - - - - - - - - |
+		 |-(Cosmics)    sistrip  = (Good OR Lowstat)   AND     |
+		 |              tracking = (Good OR Lowstat)           |
+		 |- - - - - - - - - - - - - - - - - - - - - - - - - - -|
+	-->
+
+	{% if alert_infos %}
+	{% for info in alert_infos %}
+	<div class="alert alert-info">
+		<strong>Info:</strong> {{ info }}
+	</div>
+	{% endfor %}
+	{% endif %}
+
+	{% if alert_filters %}
+	<div class="alert alert-info">
+		<strong>Applied filters:</strong>
+		<ul>
+			{% for item in alert_filters %}
+			<li>{{ item }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+
+
+	{% if alert_errors %}
+	{% for error in alert_errors %}
+	<div class="alert alert-danger">
+		<strong>Error!</strong> {{ error }}
+	</div>
+	{% endfor %}
+	{% endif %}
+	<form class="card border-light shadow p-3 bg-white rounded mb-4">
+		<div class="form-group">
+			<label for="summary_date">Date:</label>
+			<input type="date" class="form-control"
+				   id ="summary_date"
+				   placeholder=""
+						 aria-describedby="summary_date_help">
+			<small id="summary_date_help"
+				   class="form-text text-muted">
+				Specify date to generate the summary for
+			</small>
+		</div>
+		<button type="submit" class="btn btn-primary">Generate summary</button>
+	</form>
+	<div class="row">
+		<a href="#comment_div" class="btn btn-link" onclick="show_special_comment_area()">
+			<span class="glyphicon glyphicon-comment"></span> Add Special Comment
+		</a>
+		<a href="#links_div" class="btn btn-link" onclick="show_links_area()">
+			<span class="glyphicon glyphicon-globe"></span> Add Links
+		</a>
+		<br>
+	</div>
 <!--
 	 Do *NOT* mess with formatting inside the pre element,
 	 as it will mess up the final summary formatting.
@@ -55,7 +79,7 @@
 	 I.e. new lines, spaces between <p> and <div> will
 	 *also show inside the <pre>* !!
 -->
-<pre id=summary>
+	<pre id=summary>
 =============Reference Runs===============
 {% for ref in refs %}{{ ref }}
 {% endfor %}
@@ -67,12 +91,10 @@
 {% endfor %}
 =============HDQM Trends==================
 =============Certified Runs===============
-{% for certified_run in certified_runs %}
-{{ certified_run }}
+{% for certified_run in certified_runs %}{{ certified_run }}
 {% endfor %}
 =============Sum of Quantities============
-{% for sum in sums %}
-{{ sum }}
+{% for sum in sums %}{{ sum }}
 {% endfor %}
 <div id=comment_div style="display: none;">
 =============Special Comments=============
@@ -80,14 +102,15 @@
 				rows="4" cols="40"
 				id=special_comment_textarea
 				form="usrform"
-				placeholder="Enter text here"></textarea><div align="center"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><span class="glyphicon glyphicon-ok"></span> Apply</button><button type="button" class="btn btn-light" onclick="hide_comment_area()"><span class="glyphicon glyphicon-remove"></span> Remove</button></div></div></div>
+				placeholder="Enter text here"></textarea><div align="center" class="row"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><span class="glyphicon glyphicon-ok"></span>Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><span class="glyphicon glyphicon-remove"></span>Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
 <p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea><textarea
 				rows="4" cols="40"
 				id=links_textarea
 				form="usrform"
 					  placeholder="Enter text here"></textarea><div align="center"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><span class="glyphicon glyphicon-ok"></span>OK</button></div></div></div>
-</pre>
+	</pre>
+</div>
 {% endblock content %}
 
 {% block scripts %}
