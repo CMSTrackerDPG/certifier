@@ -48,7 +48,13 @@
 </div>
 {% endfor %}
 {% endif %}
+<!--
+	 Do *NOT* mess with formatting inside the pre element,
+	 as it will mess up the final summary formatting.
 
+	 I.e. new lines, spaces between <p> and <div> will
+	 *also show inside the <pre>* !!
+-->
 <pre id=summary>
 =============Reference Runs===============
 {% for ref in refs %}{{ ref }}
@@ -68,44 +74,19 @@
 {% for sum in sums %}
 {{ sum }}
 {% endfor %}
-	<div id=comment_div style="display: none;">
-		=============Special Comments=============
-		<p id=specialcomment_text></p>
-		<div id=formarea>
-			<textarea
+<div id=comment_div style="display: none;">
+=============Special Comments=============
+<p id=specialcomment_text></p><div id=formarea><textarea
 				rows="4" cols="40"
 				id=special_comment_textarea
 				form="usrform"
-				placeholder="Enter text here" >
-			</textarea>
-			<div align="center">
-				<button type="button" class="btn btn-default" onclick="write_to_comment_area()">
-					<span class="glyphicon glyphicon-ok"></span> Apply
-				</button>
-				<button type="button" class="btn btn-default" onclick="hide_comment_area()">
-					<span class="glyphicon glyphicon-remove"></span> Remove
-				</button>
-			</div>
-		</div>
-	</div>
-============= Link to the Prompt Feedback plots============
-	<p id=links_text>Please add the link</p>
-	<div id=links_div style="display: none;">
-		<div id=linksarea>
-			<textarea
+				placeholder="Enter text here"></textarea><div align="center"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><span class="glyphicon glyphicon-ok"></span> Apply</button><button type="button" class="btn btn-light" onclick="hide_comment_area()"><span class="glyphicon glyphicon-remove"></span> Remove</button></div></div></div>
+=============Link to the Prompt Feedback plots============
+<p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea><textarea
 				rows="4" cols="40"
 				id=links_textarea
 				form="usrform"
-				placeholder="Enter text here">
-			</textarea
-			<div align="center">
-				<button type="button" class="btn btn-default" onclick="write_to_text_area()">
-					<span class="glyphicon glyphicon-ok"></span>
-					OK
-				</button>
-			</div>
-		</div>
-	</div>
+					  placeholder="Enter text here"></textarea><div align="center"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><span class="glyphicon glyphicon-ok"></span>OK</button></div></div></div>
 </pre>
 {% endblock content %}
 
