@@ -1,8 +1,7 @@
 import sys
 import logging
-import time
-from prettytable import PrettyTable, SINGLE_BORDER, ALL
 from textwrap import wrap
+from prettytable import PrettyTable, ALL
 from shiftleader.utilities.utilities import to_date
 from listruns.utilities.utilities import is_valid_date
 from certifier.models import TrackerCertification
@@ -54,7 +53,7 @@ def get_ascii_table(column_description, data):
     If table is too wide, try to wrap every line that's too long
     """
     tbl = PrettyTable()
-    tbl._max_width = {'Comment': 50}  # Hardcoded value
+    tbl._max_width = {"Comment": 50}  # Hardcoded value
     tbl.field_names = column_description
     tbl.add_rows(data)
     tbl.hrules = ALL
