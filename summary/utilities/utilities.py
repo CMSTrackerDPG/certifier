@@ -52,13 +52,23 @@ def get_ascii_table(column_description, data):
 
     If table is too wide, try to wrap every line that's too long
     """
+    # Dirty patch in case there are '\r's in the text (usually in the comment column).
+    # prettytable splits lines with '\r\n', so removing the '\r' fixes
+    # columns printing too wide, ignoring _max_width.
+    # Keeping just '\n' seems to display as intended, without problems
+    data = [[
+        col.replace('\r', '') if isinstance(col, str) else col for col in datum
+    ] for datum in data]
     tbl = PrettyTable()
     tbl.field_names = column_description
     tbl.align = 'l'
-    tbl._max_width = {"Comment": 50}  # Hardcoded value
+
+    # Hardcoded value, ignored if no "Comment" field exists
+    tbl._max_width = {"Comment": 50}
     tbl.add_rows(data)
     tbl.hrules = ALL
-    return str(tbl)
+
+    return tbl.get_string()
 
 
 def get_runs_from_request_filters(request, alert_errors, alert_infos,
