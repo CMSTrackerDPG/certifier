@@ -294,4 +294,8 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        row_attrs = {'user_row': lambda record: record.user.username}
+        row_attrs = {
+            'user_row':
+            lambda record: ""
+            if not hasattr(record.user, 'username') else record.user.username
+        }

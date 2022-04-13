@@ -27,6 +27,7 @@ def openruns(request):
             response = redirect("/certify/{}".format(run_number))
             return response
 
+    # Search for openruns
     if request.method == 'POST':
 
         min_run_number = request.POST.get("min", None)

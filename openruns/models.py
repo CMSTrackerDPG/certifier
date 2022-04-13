@@ -4,6 +4,7 @@ from users.models import User
 
 # Create your models here.
 
+
 class OpenRuns(models.Model):
     STATE_CHOICES = (
         ("OPEN", "Open"),
@@ -11,11 +12,14 @@ class OpenRuns(models.Model):
         ("SIGNOFF", "SignOff"),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             blank=True,
+                             null=True)
 
-    run_number = models.PositiveIntegerField(
-        help_text="Run number", verbose_name="Run", primary_key=True
-    )
+    run_number = models.PositiveIntegerField(help_text="Run number",
+                                             verbose_name="Run",
+                                             primary_key=True)
 
     dataset_express = models.CharField(max_length=150)
     dataset_prompt = models.CharField(max_length=150, null=True, blank=True)
