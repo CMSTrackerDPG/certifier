@@ -9,6 +9,7 @@ from django_tables2 import RequestConfig
 from django.http import HttpResponse
 from django.db.models import Case, When
 from cernrequests.certs import CertificateNotFound
+from urllib3.exceptions import ProtocolError
 
 
 def openruns(request):
@@ -68,6 +69,9 @@ def openruns(request):
                     return HttpResponse(
                         "Incorrect configuration of RunRegistry certificates",
                         status=503)
+                except ProtocolError as e:
+                    return HttpResponse(f"ProtocolError occurred: {e}",
+                                        status=503)
 
         elif len(runs_list) >= runs_search_limit:
             context = {

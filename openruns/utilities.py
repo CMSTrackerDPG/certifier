@@ -52,6 +52,10 @@ def get_range_of_open_runs(start, end, user):
 
 
 def get_datasets_of_runs(datasets, user):
+    """
+    Given a list of RunRegistry datasets, for each one:
+    - Creates an OpenRuns object
+    """
     today = timezone.now().strftime("%Y-%m-%d")
 
     for dataset in datasets:
@@ -68,6 +72,8 @@ def get_datasets_of_runs(datasets, user):
         state_rereco = ""
         state_rereco_ul = ""
 
+        # Depending on the reconstruction type, update the
+        # OpenRuns entry with the dataset name, if does not exist
         if "express" in dataset["name"].lower():
             dataset_express = dataset["name"]
             state_express = (dataset["dataset_attributes"]["tracker_state"]
@@ -114,12 +120,13 @@ def get_datasets_of_runs(datasets, user):
                 run_check.update(dataset_rereco=dataset_rereco,
                                  state_rereco=state_rereco)
 
+        # In case the OpenRuns entry does not exist yet, create it
         if not run_dataset_check.exists() and not run_check.exists():
             if (dataset_express != "" or dataset_prompt != ""
                     or dataset_rereco != "" or dataset_rereco_ul != ""):
                 OpenRuns.objects.create(
                     run_number=dataset["run_number"],
-                    user=user,
+                    # user=user,
                     dataset_express=dataset_express,
                     dataset_prompt=dataset_prompt,
                     dataset_rereco=dataset_rereco,

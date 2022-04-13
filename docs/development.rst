@@ -124,7 +124,7 @@ following environment variables should be exported.
     DJANGO_SECRET_KEY=(%g65bg+&9rbnt+h&txlxw$+lkq=g=yrp!6@v+7@&$a%9^yt-!
 
 In case one wants to work with the development database (used in
-dev-certhelper.web.cern.ch) following environment variables have to be
+``dev-certhelper.web.cern.ch``) following environment variables have to be
 exported:
 
 .. code:: bash
@@ -300,8 +300,13 @@ Develop
 
 Development branch to test new features before deploying it to the
 production website. Commits in the development branch are automatically
-deployed to dev-certhelper.web.cern.ch every time changes are pushed to
+deployed to ``dev-certhelper.web.cern.ch`` every time changes are pushed to
 GitHub.
+
+.. note::
+
+   This is no longer available, because the PaaS link that triggers the build
+   cannot be accessed from outside of CERN (i.e. from a GitHub webhook)
 
 .. code:: bash
 
