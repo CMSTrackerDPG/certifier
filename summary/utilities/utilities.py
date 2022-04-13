@@ -73,6 +73,10 @@ def get_ascii_table(column_description, data):
 
 def get_runs_from_request_filters(request, alert_errors, alert_infos,
                                   alert_filters):
+    """
+    Helper function that gets GET parameters from the summaryView request, 
+    and returns the required data to render the summary.html template 
+    """
 
     runs = TrackerCertification.objects.filter(user=request.user)
 
