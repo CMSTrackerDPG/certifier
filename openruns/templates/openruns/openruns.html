@@ -4,57 +4,56 @@
 {% load static %}
 
 {% block style %}
-    <link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "listruns/css/list_table.css" %}">
     <style>
         .table-hover > tbody > tr:hover {
           background-color: #D2D2D2;
         }
     </style>
-{% endblock %}
+	{% endblock %}
 
-{% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="mt-4 mb-4 col-lg-12 text-center">
-                <h1>Certify a new run</h1>
-            </div>
-        </div>
+	{% block content %}
+	<!-- Form for directly certifying a specific run reconstruction -->
+    <div class="container mb-4 mt-4">
+        <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 600px;">		
+			<form method="get" class="justify-content-center align-items-center" id="id_form_certify">
+				<div class="form-group">
+					<div class="mt-4 mb-4 col-lg-12 text-center">
+						<h1>Certify a new run</h1>
+					</div>
+					<div class="row mb-3 justify-content-center">
+						<div class="col"></div>
+						<div class="col">
+							<input type="number" class="form-control" name='run_number' id='id_run_number_certify' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
+						</div>
+						<div class="col"></div>
+					</div>
+					<div class="row mb-3 justify-content-center">
+						<div class="btn-group btn-group-toggle" data-toggle="buttons">
+							<label class="btn btn-outline-secondary">
+								<input type="radio" name="reco" value='express' id="id-reco-express" autocomplete="off" class="sr-only"> Express
+							</label>
+							<label class="btn btn-outline-secondary">
+								<input type="radio" name="reco" value='prompt' id="id-reco-prompt" autocomplete="off" class="sr-only"> Prompt
+							</label>
+							<label class="btn btn-outline-secondary">
+								<input type="radio" name="reco" value='rereco' id="id-reco-rereco" autocomplete="off" class="sr-only"> ReReco
+							</label>
+							<label class="btn btn-outline-secondary">
+								<input type="radio" name="reco" value='rerecoul' id="id-reco-rereco-ul" autocomplete="off" class="sr-only"> ReRecoUL
+							</label>
+						</div>
+					</div>
+
+				</div>
+				<div class="row justify-content-center">
+					<button type="submit" class="btn btn-primary" id="id_certify">Certify</button>
+				</div>
+			</form>
+		</div>
     </div>
 
-    <div class="container mb-4">
-        <form method="get" class="justify-content-center align-items-center" id="id_form_certify">
-            <div class="form-group">
-                <div class="row mb-3 justify-content-center">
-                    <div class="col"></div>
-                    <div class="col">
-                        <input type="number" class="form-control" name='run_number' id='id_run_number_certify' min="100000" max="999999" placeholder="Run number" aria-describedby="emailHelp" required>
-                    </div>
-                    <div class="col"></div>
-                </div>
-                <div class="row mb-3 justify-content-center">
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="reco" value='express' id="id-reco-express" autocomplete="off" class="sr-only"> Express
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="reco" value='prompt' id="id-reco-prompt" autocomplete="off" class="sr-only"> Prompt
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="reco" value='rereco' id="id-reco-rereco" autocomplete="off" class="sr-only"> ReReco
-                        </label>
-                        <label class="btn btn-outline-secondary">
-                            <input type="radio" name="reco" value='rerecoul' id="id-reco-rereco-ul" autocomplete="off" class="sr-only"> ReRecoUL
-                        </label>
-                    </div>
-                </div>
-
-            </div>
-            <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary" id="id_certify">Certify</button>
-            </div>
-        </form>
-    </div>
-
+	<!-- Form for fetching open runs as a table (POST) -->
     <div class="container mb-4">
         <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 600px;">
             <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
@@ -89,94 +88,94 @@
     </div>
 
     {% if openruns_table %}
-        <div class="overflow-auto px-3 bg-white" id="style-1">
-            {% load render_table from django_tables2%}
-            {% render_table openruns_table %}
-        </div>
+    <div class="overflow-auto px-3 bg-white" id="style-1">
+        {% load render_table from django_tables2%}
+        {% render_table openruns_table %}
+    </div>
     {% else %}
-        <div class="alert alert-danger" role="alert">No Table found.</div>
+    <div class="alert alert-danger" role="alert">No Table found.</div>
     {% endif %}
 
-{% endblock %}
+	{% endblock %}
 
-{% block scripts %}
-<script>
-var $myForm = $("#id_form_get_open_runs");
-$myForm.submit(function(){
-    $(this).find(':input[type=submit]').prop('disabled', true);
-    $myForm.submit(function(){
-        return false;
-    });
-});
+	{% block scripts %}
+	<script>
+	 var $myForm = $("#id_form_get_open_runs");
+	 $myForm.submit(function(){
+		 $(this).find(':input[type=submit]').prop('disabled', true);
+		 $myForm.submit(function(){
+			 return false;
+		 });
+	 });
 
-var $myForm = $("#id_form_certify");
-$myForm.submit(function(){
-    $(this).find(':input[type=submit]').prop('disabled', true);
-    $myForm.submit(function(){
-        return false;
-    });
-});
+	 var $myForm = $("#id_form_certify");
+	 $myForm.submit(function(){
+		 $(this).find(':input[type=submit]').prop('disabled', true);
+		 $myForm.submit(function(){
+			 return false;
+		 });
+	 });
 
-var $rows = $('#openruns_table tbody tr');
-$rows.each(function(i, item) {
-    $this = $(item);
-    if("{{user.username}}"!=$this.attr("user_row")){
-        $this.addClass('table-secondary');
-    }
-});
+	 var $rows = $('#openruns_table tbody tr');
+	 $rows.each(function(i, item) {
+		 $this = $(item);
+		 if("{{user.username}}"!=$this.attr("user_row")){
+			 $this.addClass('table-secondary');
+		 }
+	 });
 
-$(document).ready(function() {
-    $("#id_get_open_runs").click(function() {
-        // add spinner to button
-        if ($('[id=id_run_number]').val() != '') {
-            console.log($('[id=id_run_number]').val())
-          $('#id_run_number_list').removeAttr('required');
-        }
-        if ($("#id_form_get_open_runs")[0].checkValidity()) {
-            $(this).html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        }
-    });
-    $("#id_certify").click(function() {
-        // add spinner to button
-        if ($("#id_form_certify")[0].checkValidity()) {
-            $(this).html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        }
-    });
-    $("[id=id_table_certify]").click(function() {
-      // add spinner to button
-      $(this).html(
-        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-      );
-       $(this).prop('disabled', true);
-    });
-    $("[id=id_openruns_delete]").click(function() {
-      // add spinner to button
-      $(this).html(
-        `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-      );
-       $(this).prop('disabled', true);
-    });
+	 $(document).ready(function() {
+		 $("#id_get_open_runs").click(function() {
+			 // add spinner to button
+			 if ($('[id=id_run_number]').val() != '') {
+				 console.log($('[id=id_run_number]').val())
+				 $('#id_run_number_list').removeAttr('required');
+			 }
+			 if ($("#id_form_get_open_runs")[0].checkValidity()) {
+				 $(this).html(
+					 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+				 );
+			 }
+		 });
+		 $("#id_certify").click(function() {
+			 // add spinner to button
+			 if ($("#id_form_certify")[0].checkValidity()) {
+				 $(this).html(
+					 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+				 );
+			 }
+		 });
+		 $("[id=id_table_certify]").click(function() {
+			 // add spinner to button
+			 $(this).html(
+				 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+			 );
+			 $(this).prop('disabled', true);
+		 });
+		 $("[id=id_openruns_delete]").click(function() {
+			 // add spinner to button
+			 $(this).html(
+				 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+			 );
+			 $(this).prop('disabled', true);
+		 });
 
-$(function() {
-    $('[id=id_run_number]').focus(function(){
-      $('#id_run_number_list').val('');
-      $('#id_run_number_list').prop('disabled', 'disabled');
-    }).blur(function(){
-      $('#id_run_number_list').prop('disabled', '');
-    });
+		 $(function() {
+			 $('[id=id_run_number]').focus(function(){
+				 $('#id_run_number_list').val('');
+				 $('#id_run_number_list').prop('disabled', 'disabled');
+			 }).blur(function(){
+				 $('#id_run_number_list').prop('disabled', '');
+			 });
 
-    $('#id_run_number_list').focus(function(){
-      $('[id=id_run_number]').val('');
-      $('[id=id_run_number]').prop('disabled', 'disabled');
-    }).blur(function(){
-      $('[id=id_run_number]').prop('disabled', '');
-    });
-});
-});
-</script>
-{% endblock %}
+			 $('#id_run_number_list').focus(function(){
+				 $('[id=id_run_number]').val('');
+				 $('[id=id_run_number]').prop('disabled', 'disabled');
+			 }).blur(function(){
+				 $('[id=id_run_number]').prop('disabled', '');
+			 });
+		 });
+	 });
+	</script>
+	{% endblock %}
 
