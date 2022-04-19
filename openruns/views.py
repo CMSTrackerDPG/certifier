@@ -82,7 +82,7 @@ def openruns(request):
             #return render(request, "certifier/404.html", context)
 
         else:
-            get_specific_open_runs(runs_list, request.user)
+            get_specific_open_runs(runs_list)
 
     today = timezone.now().strftime("%Y-%m-%d")
 

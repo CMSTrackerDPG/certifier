@@ -6,7 +6,11 @@ from openruns.models import OpenRuns
 logger = logging.getLogger(__name__)
 
 
-def get_specific_open_runs(runs_list, user):
+def get_specific_open_runs(runs_list: list) -> None:
+    """
+    Function that gets a list of run numbers, queries RR for them,
+    gets the available datasets for these runs and calls get_datasets_of_runs
+    """
     logger.info(f"Getting all OPEN RR datasets for run numbers {runs_list}")
     datasets = runregistry.get_datasets(filter={
         "run_number": {
@@ -17,10 +21,14 @@ def get_specific_open_runs(runs_list, user):
         }
     })
     logger.info(f"Got {len(datasets)} datasets.")
-    get_datasets_of_runs(datasets, user)
+    get_datasets_of_runs(datasets)
 
 
-def get_range_of_open_runs(start, end, user):
+def get_range_of_open_runs(start: int, end: int) -> None:
+    """
+    Function that gets a range of run numbers and queries RR for 
+    the available OPEN datasets for those runs.
+    """
     logger.info(f"Getting all OPEN RR datasets for runs {start} to {end}")
     datasets = runregistry.get_datasets(
         filter={
@@ -33,21 +41,26 @@ def get_range_of_open_runs(start, end, user):
             },
             "tracker_state": {
                 "=": "OPEN"
-            }
+            },
         })
     logger.info(f"Got {len(datasets)} datasets.")
 
-    get_datasets_of_runs(datasets, user)
+    get_datasets_of_runs(datasets)
 
 
-def get_datasets_of_runs(datasets, user):
+def get_datasets_of_runs(datasets: list) -> None:
     """
     Given a list of RunRegistry datasets, for each one:
-    - Creates an OpenRuns object
+    - Creates an OpenRuns object if it does not exist
+    - If it exists, update the OpenRuns entry
+
+    datasets is a list with elements in the form:
+    
     """
     today = timezone.now().strftime("%Y-%m-%d")
 
     for dataset in datasets:
+        print("!!!", dataset)
         run_number = dataset["run_number"]
         logger.debug(f"Dataset {run_number}: {dataset['name']}")
         run_check = OpenRuns.objects.filter(run_number=run_number)
