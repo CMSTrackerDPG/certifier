@@ -219,7 +219,7 @@ class RunRegistryComparisonTable(tables.Table):
 
 class OpenRunsTable(tables.Table):
     run_number = tables.Column(verbose_name="Run Number")
-    user = tables.Column(verbose_name="User")
+    # user = tables.Column(verbose_name="User")
 
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
@@ -231,20 +231,20 @@ class OpenRunsTable(tables.Table):
                                     verbose_name="",
                                     visible=False)
 
-    delete = tables.TemplateColumn(
-        '<div align="center">'
-        '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
-        '{% if user == record.user or user.has_shift_leader_rights %}'
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
-        '{% else %}'
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
-        '{% endif %}'
-        'Remove Entry'
-        '</button>'
-        '</a>'
-        '</div>',
-        orderable=False,
-        verbose_name="")
+    # delete = tables.TemplateColumn(
+    #     '<div align="center">'
+    #     '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
+    #     '{% if user == record.user or user.has_shift_leader_rights %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
+    #     '{% else %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
+    #     '{% endif %}'
+    #     'Remove Entry'
+    #     '</button>'
+    #     '</a>'
+    #     '</div>',
+    #     orderable=False,
+    #     verbose_name="")
 
     def render_run_number(self, record):  # pragma: no cover
         return mark_safe(
@@ -290,8 +290,8 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        row_attrs = {
-            'user_row':
-            lambda record: ""
-            if not hasattr(record.user, 'username') else record.user.username
-        }
+        # row_attrs = {
+        #     'user_row':
+        #     lambda record: ""
+        #     if not hasattr(record.user, 'username') else record.user.username
+        # }

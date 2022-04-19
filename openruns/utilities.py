@@ -67,7 +67,6 @@ def get_datasets_of_runs(datasets: List[Dict]) -> None:
     for dataset in datasets:
         run_number = dataset["run_number"]
         logger.debug(f"Dataset {run_number}: {dataset['name']}")
-        run_check = OpenRuns.objects.filter(run_number=run_number)
 
         dataset_express = ""
         dataset_prompt = ""
@@ -77,6 +76,21 @@ def get_datasets_of_runs(datasets: List[Dict]) -> None:
         state_prompt = ""
         state_rereco = ""
         state_rereco_ul = ""
+        try:
+            run_check = OpenRuns.objects.get(run_number=run_number)
+        except OpenRuns.DoesNotExist:
+            run_check = OpenRuns.objects.create(
+                run_number=run_number,
+                date_retrieved=today,
+                dataset_express="",
+                dataset_prompt="",
+                dataset_rereco="",
+                dataset_rereco_ul="",
+                state_express="",
+                state_prompt="",
+                state_rereco="",
+                state_rereco_ul="",
+            )
 
         # Depending on the reconstruction type, update the
         # OpenRuns entry with the dataset name, if does not exist
@@ -85,60 +99,36 @@ def get_datasets_of_runs(datasets: List[Dict]) -> None:
             state_express = (dataset["dataset_attributes"]["tracker_state"]
                              if "tracker_state"
                              in dataset["dataset_attributes"] else "SIGNOFF")
-            run_dataset_check = run_check.filter(
-                dataset_express=dataset_express)
-            if not run_dataset_check.exists() and run_check.exists():
-                run_check.update(
-                    dataset_express=dataset_express,
-                    state_express=state_express)  # Date is updated at the end
+
+            if not run_check.dataset_express:
+                run_check.dataset_express = dataset_express
+                run_check.state_express = state_express
 
         elif "prompt" in dataset["name"].lower():
             dataset_prompt = dataset["name"]
             state_prompt = (dataset["dataset_attributes"]["tracker_state"]
                             if "tracker_state" in dataset["dataset_attributes"]
                             else "SIGNOFF")
-            run_dataset_check = run_check.filter(dataset_prompt=dataset_prompt)
-            if not run_dataset_check.exists() and run_check.exists():
-                run_check.update(dataset_prompt=dataset_prompt,
-                                 state_prompt=state_prompt)
+            if not run_check.dataset_prompt:
+                run_check.dataset_prompt = dataset_prompt
+                run_check.state_prompt = state_prompt
 
         elif "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
             dataset_rereco_ul = dataset["name"]
             state_rereco_ul = (dataset["dataset_attributes"]["tracker_state"]
                                if "tracker_state"
                                in dataset["dataset_attributes"] else "SIGNOFF")
-            run_dataset_check = run_check.filter(dataset_rereco=dataset_rereco)
-            if not run_dataset_check.exists() and run_check.exists():
-                run_check.update(dataset_rereco_ul=dataset_rereco_ul,
-                                 state_rereco_ul=state_rereco_ul)
+            if not run_check.dataset_rereco_ul:
+                run_check.dataset_rereco_ul = dataset_rereco_ul
+                run_check.state_rereco_ul = state_rereco_ul
 
         elif "rereco" in dataset["name"].lower():
             dataset_rereco = dataset["name"]
             state_rereco = (dataset["dataset_attributes"]["tracker_state"]
                             if "tracker_state" in dataset["dataset_attributes"]
                             else "SIGNOFF")
-            run_dataset_check = run_check.filter(
-                dataset_rereco_ul=dataset_rereco_ul)
-            if not run_dataset_check.exists() and run_check.exists():
-                run_check.update(dataset_rereco=dataset_rereco,
-                                 state_rereco=state_rereco)
+            if not run_check.dataset_rereco:
+                run_check.dataset_rereco = dataset_rereco
+                run_check.state_rereco = state_rereco
 
-        # In case the OpenRuns entry does not exist yet, create it
-        if not run_dataset_check.exists() and not run_check.exists():
-            if (dataset_express != "" or dataset_prompt != ""
-                    or dataset_rereco != "" or dataset_rereco_ul != ""):
-                OpenRuns.objects.create(
-                    run_number=dataset["run_number"],
-                    # user=user,
-                    dataset_express=dataset_express,
-                    dataset_prompt=dataset_prompt,
-                    dataset_rereco=dataset_rereco,
-                    dataset_rereco_ul=dataset_rereco_ul,
-                    state_express=state_express,
-                    state_prompt=state_prompt,
-                    state_rereco=state_rereco,
-                    state_rereco_ul=state_rereco_ul,
-                    date_retrieved=today,
-                )
-        else:
-            run_check.update(date_retrieved=today)
+        run_check.save()
