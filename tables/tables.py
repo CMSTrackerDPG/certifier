@@ -257,32 +257,28 @@ class OpenRunsTable(tables.Table):
         :return: colored status of Dataset
         """
         return render_dataset(record.run_number, record.dataset_express,
-                              record.state_express, "express", record.user,
-                              self.request.user)
+                              record.state_express, "express")
 
     def render_dataset_prompt(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
         return render_dataset(record.run_number, record.dataset_prompt,
-                              record.state_prompt, "prompt", record.user,
-                              self.request.user)
+                              record.state_prompt, "prompt")
 
     def render_dataset_rereco(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
         return render_dataset(record.run_number, record.dataset_rereco,
-                              record.state_rereco, "rereco", record.user,
-                              self.request.user)
+                              record.state_rereco, "rereco")
 
     def render_dataset_rereco_ul(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
         return render_dataset(record.run_number, record.dataset_rereco_ul,
-                              record.state_rereco_ul, "rerecoul", record.user,
-                              self.request.user)
+                              record.state_rereco_ul, "rerecoul")
 
     def render_certify(self, record):  # pragma: no cover
         """
