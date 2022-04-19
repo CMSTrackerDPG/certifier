@@ -53,23 +53,23 @@ def certify(request, run_number, reco=None):
     logger.debug(f"Requesting certification of run {run_number}")
 
     # Check if run is already booked
-    try:
-        open_run = OpenRuns.objects.get(run_number=run_number)
-        if request.user != open_run.user:
-            msg = f"Run {run_number} is already booked by another user"
-            logger.warning(msg)
-            return render(
-                request,
-                "certifier/http_error.html",
-                context={
-                    "error_num": 400,
-                    "message": msg
-                },
-            )
+    # try:
+    #     open_run = OpenRuns.objects.get(run_number=run_number)
+    #     if request.user != open_run.user:
+    #         msg = f"Run {run_number} is already booked by another user"
+    #         logger.warning(msg)
+    #         return render(
+    #             request,
+    #             "certifier/http_error.html",
+    #             context={
+    #                 "error_num": 400,
+    #                 "message": msg
+    #             },
+    #         )
 
-    except OpenRuns.DoesNotExist as e:
-        # Means that OpenRun does not exist
-        logger.debug(f"Open run for {run_number} does not exist yet")
+    # except OpenRuns.DoesNotExist as e:
+    #     # Means that OpenRun does not exist
+    #     logger.debug(f"Open run for {run_number} does not exist yet")
 
     # Check if already certified
     try:
