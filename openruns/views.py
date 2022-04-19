@@ -1,17 +1,17 @@
-import json
 import re
-from django.utils import timezone
-from django.shortcuts import render, redirect
-from openruns.models import OpenRuns
-from tables.tables import OpenRunsTable
-from openruns.utilities import get_range_of_open_runs, get_specific_open_runs
 from django_tables2 import RequestConfig
 from django.http import HttpResponse
-from django.db.models import Case, When
+from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from cernrequests.certs import CertificateNotFound
 from urllib3.exceptions import ProtocolError
+from openruns.models import OpenRuns
+from openruns.utilities import get_range_of_open_runs, get_specific_open_runs
+from tables.tables import OpenRunsTable
 
 
+@login_required
 def openruns(request):
     context = {}
 
