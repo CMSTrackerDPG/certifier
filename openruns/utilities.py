@@ -76,6 +76,10 @@ def get_datasets_of_runs(datasets: List[Dict]) -> None:
         state_prompt = ""
         state_rereco = ""
         state_rereco_ul = ""
+
+        # Used a try-except to get_or_create because you'd have to
+        # also supply date_retrieved, which we do not want to specify
+        # if the object exists.
         try:
             run_check = OpenRuns.objects.get(run_number=run_number)
         except OpenRuns.DoesNotExist:
