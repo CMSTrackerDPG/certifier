@@ -1,3 +1,4 @@
+from typing import List, Dict
 import logging
 import runregistry
 from django.utils import timezone
@@ -6,7 +7,7 @@ from openruns.models import OpenRuns
 logger = logging.getLogger(__name__)
 
 
-def get_specific_open_runs(runs_list: list) -> None:
+def get_specific_open_runs(runs_list: List[int]) -> None:
     """
     Function that gets a list of run numbers, queries RR for them,
     gets the available datasets for these runs and calls get_datasets_of_runs
@@ -48,19 +49,22 @@ def get_range_of_open_runs(start: int, end: int) -> None:
     get_datasets_of_runs(datasets)
 
 
-def get_datasets_of_runs(datasets: list) -> None:
+def get_datasets_of_runs(datasets: List[Dict]) -> None:
     """
     Given a list of RunRegistry datasets, for each one:
     - Creates an OpenRuns object if it does not exist
     - If it exists, update the OpenRuns entry
 
-    datasets is a list with elements in the form:
-    
+    datasets is a list with dictionaries with lots of information, 
+    including:
+    - 'class'
+    - 'name'
+    - 'run_number'
+    - 'lumisections'
     """
     today = timezone.now().strftime("%Y-%m-%d")
 
     for dataset in datasets:
-        print("!!!", dataset)
         run_number = dataset["run_number"]
         logger.debug(f"Dataset {run_number}: {dataset['name']}")
         run_check = OpenRuns.objects.filter(run_number=run_number)
@@ -81,8 +85,8 @@ def get_datasets_of_runs(datasets: list) -> None:
             state_express = (dataset["dataset_attributes"]["tracker_state"]
                              if "tracker_state"
                              in dataset["dataset_attributes"] else "SIGNOFF")
-            run_dataset_check = OpenRuns.objects.filter(
-                run_number=run_number).filter(dataset_express=dataset_express)
+            run_dataset_check = run_check.filter(
+                dataset_express=dataset_express)
             if not run_dataset_check.exists() and run_check.exists():
                 run_check.update(
                     dataset_express=dataset_express,
@@ -93,8 +97,7 @@ def get_datasets_of_runs(datasets: list) -> None:
             state_prompt = (dataset["dataset_attributes"]["tracker_state"]
                             if "tracker_state" in dataset["dataset_attributes"]
                             else "SIGNOFF")
-            run_dataset_check = OpenRuns.objects.filter(
-                run_number=run_number).filter(dataset_prompt=dataset_prompt)
+            run_dataset_check = run_check.filter(dataset_prompt=dataset_prompt)
             if not run_dataset_check.exists() and run_check.exists():
                 run_check.update(dataset_prompt=dataset_prompt,
                                  state_prompt=state_prompt)
@@ -104,8 +107,7 @@ def get_datasets_of_runs(datasets: list) -> None:
             state_rereco_ul = (dataset["dataset_attributes"]["tracker_state"]
                                if "tracker_state"
                                in dataset["dataset_attributes"] else "SIGNOFF")
-            run_dataset_check = OpenRuns.objects.filter(
-                run_number=run_number).filter(dataset_rereco=dataset_rereco)
+            run_dataset_check = run_check.filter(dataset_rereco=dataset_rereco)
             if not run_dataset_check.exists() and run_check.exists():
                 run_check.update(dataset_rereco_ul=dataset_rereco_ul,
                                  state_rereco_ul=state_rereco_ul)
@@ -115,9 +117,8 @@ def get_datasets_of_runs(datasets: list) -> None:
             state_rereco = (dataset["dataset_attributes"]["tracker_state"]
                             if "tracker_state" in dataset["dataset_attributes"]
                             else "SIGNOFF")
-            run_dataset_check = OpenRuns.objects.filter(
-                run_number=run_number).filter(
-                    dataset_rereco_ul=dataset_rereco_ul)
+            run_dataset_check = run_check.filter(
+                dataset_rereco_ul=dataset_rereco_ul)
             if not run_dataset_check.exists() and run_check.exists():
                 run_check.update(dataset_rereco=dataset_rereco,
                                  state_rereco=state_rereco)
