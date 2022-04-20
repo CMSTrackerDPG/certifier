@@ -112,13 +112,13 @@
 	 });
  });
 
- var $rows = $('#openruns_table tbody tr');
- $rows.each(function(i, item) {
-	 $this = $(item);
-	 if("{{user.username}}"!=$this.attr("user_row")){
-		 $this.addClass('table-secondary');
-	 }
- });
+ // var $rows = $('#openruns_table tbody tr');
+ // $rows.each(function(i, item) {
+ // 	 $this = $(item);
+ // 	 if("{{user.username}}"!=$this.attr("user_row")){
+ // 		 $this.addClass('table-secondary');
+ // 	 }
+ // });
 
  $(document).ready(function() {
 	 $("#id_get_open_runs").click(function() {

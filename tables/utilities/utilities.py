@@ -71,21 +71,26 @@ def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_r
         )
 
 
-def render_dataset(run_number, dataset, state, reco):  # pragma: no cover
+def render_dataset(run_number, dataset, state, reco, user):  # pragma: no cover
     """
     Function that renders the per-dataset button on the OpenRunsTable.
     """
-    exists = TrackerCertification.objects.filter(
-        runreconstruction__run__run_number=run_number,
-        runreconstruction__reconstruction=reco,
-    ).exists()
-    # If already exists or not Open, update the entry
+    try:
+        certification = TrackerCertification.objects.get(
+            runreconstruction__run__run_number=run_number,
+            runreconstruction__reconstruction=reco,
+        )
+        exists = True
+    except TrackerCertification.DoesNotExist:
+        exists = False
+
+    # If already exists or not Open, allow user to update the entry
     if state != "OPEN" or exists:
-        if exists:
+        if exists and certification.user == user:
             return mark_safe(
                 '<div align="center">'
                 '<a href="/list/{0}/update/{1}/{2}">'
-                '<button class="btn btn-block btn-success" id="id_table_certify">'
+                '<button class="btn btn-block btn-success" id="id_table_certify" title="Update existing certification">'
                 "{3}"
                 "</button>"
                 "</a>"
@@ -99,19 +104,19 @@ def render_dataset(run_number, dataset, state, reco):  # pragma: no cover
                     dataset,
                 )
             )
-        else:
-            return mark_safe(
-                '<div align="center">'
-                '<button class="btn btn-block btn-success" id="id_table_certify" disabled>'
-                '<font color="black">{}</font>'
-                "</button>"
-                "</div>".format(dataset)
-            )
-
+        # State is NOT open AND (Certification does not exist OR user is same with request)
+        return mark_safe(
+            '<div align="center">'
+            '<button class="btn btn-block btn-success" id="id_table_certify" disabled title="Booked by another user!">'
+            '<font color="black">{}</font>'
+            "</button>"
+            "</div>".format(dataset)
+        )
+    # Reconstruction state is OPEN and There's no certification yet
     return mark_safe(
         '<div align="center">'
         '<a href="/certify/{0}/?dataset={1}">'
-        '<button class="btn btn-block btn-warning" id="id_table_certify">'
+        '<button class="btn btn-block btn-warning" id="id_table_certify" title="Available for certification">'
         "{1}"
         "</button>"
         "</a>"
