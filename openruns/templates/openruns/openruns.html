@@ -5,17 +5,13 @@
 
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{% static 'listruns/css/list_table.css' %}">
-<style>
- .table-hover > tbody > tr:hover {
-     background-color: #D2D2D2;
- }
-</style>
+<link rel="stylesheet" type="text/css" href="{% static 'openruns/css/openruns.css' %}">
 {% endblock %}
 
 {% block content %}
 <!-- Form for directly certifying a specific run reconstruction (GET) -->
 <div class="container mb-4 mt-4">
-    <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 600px;">		
+    <div class="card openruns-card border-light shadow p-3 bg-white rounded mb-4">		
 		<form method="get" class="justify-content-center align-items-center" id="id_form_certify">
 			<div class="form-group">
 				<div class="mt-4 mb-4 col-lg-12 text-center">
@@ -55,7 +51,7 @@
 
 <!-- Form for fetching open runs as a table (POST) -->
 <div class="container mb-4 mt-4">
-    <div class="card border-light shadow p-3 bg-white rounded mb-4" style="margin: 0 auto 10px; width: 600px;">
+    <div class="card openruns-card border-light shadow p-3 bg-white rounded mb-4">
         <form method="post" class="justify-content-center align-items-center" id="id_form_get_open_runs">
             {% csrf_token %}
             <div class="form-group">
