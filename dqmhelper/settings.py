@@ -15,7 +15,7 @@ import os
 from decouple import config
 
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "1.2.0"
+CERTHELPER_VERSION = "1.2.1"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,26 +40,45 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS', default='')]
+CSRF_TRUSTED_ORIGINS = [config("CSRF_TRUSTED_ORIGINS", default="")]
 
 INSTALLED_APPS = [
-    "channels", "cablingmap.apps.CablingmapConfig",
+    "channels",
+    "cablingmap.apps.CablingmapConfig",
     "mlplayground.apps.MlplaygroundConfig",
-    "trackermaps.apps.TrackermapsConfig", "openruns.apps.OpenrunsConfig",
-    "addrefrun.apps.AddrefrunConfig", "summary.apps.SummaryConfig",
-    "restore.apps.RestoreConfig", "delete.apps.DeleteConfig",
-    "shiftleader.apps.ShiftleaderConfig", "tables.apps.TablesConfig",
-    "listruns.apps.ListrunsConfig", "checklists.apps.ChecklistsConfig",
-    "users.apps.UsersConfig", "home.apps.HomeConfig",
-    "certifier.apps.CertifierConfig", "oms.apps.OmsConfig",
-    "django.contrib.admin", "django.contrib.auth",
-    "django.contrib.contenttypes", "django.contrib.sessions",
-    "django.contrib.messages", "django.contrib.staticfiles",
-    "django.contrib.sites", "rest_framework", "bootstrap3", "allauth",
-    "allauth.account", "allauth.socialaccount",
+    "trackermaps.apps.TrackermapsConfig",
+    "openruns.apps.OpenrunsConfig",
+    "addrefrun.apps.AddrefrunConfig",
+    "summary.apps.SummaryConfig",
+    "restore.apps.RestoreConfig",
+    "delete.apps.DeleteConfig",
+    "shiftleader.apps.ShiftleaderConfig",
+    "tables.apps.TablesConfig",
+    "listruns.apps.ListrunsConfig",
+    "checklists.apps.ChecklistsConfig",
+    "users.apps.UsersConfig",
+    "home.apps.HomeConfig",
+    "certifier.apps.CertifierConfig",
+    "oms.apps.OmsConfig",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "rest_framework",
+    "bootstrap3",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "allauth.socialaccount.providers.cern",
-    "allauth.socialaccount.providers.github", "widget_tweaks",
-    "django_extensions", "django_tables2", "django_filters", "ckeditor"
+    "allauth.socialaccount.providers.github",
+    "widget_tweaks",
+    "django_extensions",
+    "django_tables2",
+    "django_filters",
+    "ckeditor",
 ]
 
 MIDDLEWARE = [
@@ -76,20 +95,22 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "dqmhelper.urls"
 
-TEMPLATES = [{
-    "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [os.path.join(BASE_DIR, "templates")],
-    "APP_DIRS": True,
-    "OPTIONS": {
-        "context_processors": [
-            "django.template.context_processors.debug",
-            "django.template.context_processors.request",
-            "django.contrib.auth.context_processors.auth",
-            "django.contrib.messages.context_processors.messages",
-            "dqmhelper.context_processors.global_context"
-        ]
-    },
-}]
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "dqmhelper.context_processors.global_context",
+            ]
+        },
+    }
+]
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -107,8 +128,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts":
-            [("redis://:" + REDIS_PASSWORD + "@" + REDIS_HOST + ":6379/0")],
+            "hosts": [("redis://:" + REDIS_PASSWORD + "@" + REDIS_HOST + ":6379/0")],
         },
     },
 }
@@ -132,21 +152,11 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME":
-        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {
-        "NAME":
-        "django.contrib.auth.password_validation.MinimumLengthValidator"
-    },
-    {
-        "NAME":
-        "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME":
-        "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # Internationalization
@@ -168,15 +178,9 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose"
-        },
+        "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG" if DEBUG else "WARNING",
-    },
+    "root": {"handlers": ["console"], "level": "DEBUG" if DEBUG else "WARNING",},
     "formatters": {
         "verbose": {
             "format": "{levelname} - {asctime} - {module} - {message}",
