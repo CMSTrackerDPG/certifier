@@ -22,11 +22,15 @@ def summaryView(request):
 
     request.GET = request.GET.copy()
 
-    request.GET["date"] = datetime.now().strftime(
-        "%Y-%m-%d") if not "date" in request.GET else request.GET["date"]
+    request.GET["date"] = (
+        datetime.now().strftime("%Y-%m-%d")
+        if not "date" in request.GET
+        else request.GET["date"]
+    )
 
-    runs = get_runs_from_request_filters(request, alert_errors, alert_infos,
-                                         alert_filters)
+    runs = get_runs_from_request_filters(
+        request, alert_errors, alert_infos, alert_filters
+    )
     logger.debug(f"Generating summary for {len(runs)} runs")
 
     summary = SummaryReport(runs)
