@@ -1,0 +1,8 @@
+.table-hover > tbody > tr:hover {
+    background-color: #d2d2d2;
+}
+
+.openruns-card {
+    margin: 0 auto 10px;
+    width: 600px;
+}

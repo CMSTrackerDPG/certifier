@@ -1,10 +1,12 @@
+import logging
+from datetime import datetime
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from summary.utilities.SummaryReport import SummaryReport
 from summary.utilities.utilities import get_runs_from_request_filters
-from django.contrib.auth.decorators import login_required
-from datetime import datetime
 
-# Create your views here.
+logger = logging.getLogger(__name__)
+
 
 @login_required
 def summaryView(request):
@@ -19,10 +21,17 @@ def summaryView(request):
     alert_filters = []
 
     request.GET = request.GET.copy()
-    request.GET["date"]=datetime.now().strftime("%Y-%m-%d")
+
+    request.GET["date"] = (
+        datetime.now().strftime("%Y-%m-%d")
+        if not "date" in request.GET
+        else request.GET["date"]
+    )
+
     runs = get_runs_from_request_filters(
         request, alert_errors, alert_infos, alert_filters
     )
+    logger.debug(f"Generating summary for {len(runs)} runs")
 
     summary = SummaryReport(runs)
 
@@ -38,4 +47,3 @@ def summaryView(request):
     }
 
     return render(request, "summary/summary.html", context)
-

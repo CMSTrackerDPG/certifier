@@ -17,16 +17,17 @@ class SimpleRunReconstructionTable(tables.Table):
     """
     A table to render RunReconstruction entries, mainly used in the addrefrun app
     """
+
     run = tables.Column(verbose_name="Run Number")
     reconstruction = tables.Column()
     run_type = tables.Column(accessor="run.run_type")
     is_reference = tables.Column()
     delete_run = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'delete:delete_reference\' run_number=record.run.run_number reco=record.reconstruction%}">'
-        'Delete'
-        '</a>'
-        '</div>',
+        "<a href=\"{% url 'delete:delete_reference' run_number=record.run.run_number reco=record.reconstruction%}\">"
+        "Delete"
+        "</a>"
+        "</div>",
         orderable=False,
         verbose_name="Delete",
     )
@@ -56,9 +57,8 @@ class SimpleTrackerCertificationTable(tables.Table):
     strip = tables.Column()
     tracking = tables.Column()
     comment = tables.TemplateColumn(
-        '<div id="id_comment">'
-        '{{record.comment}}'
-        '</div>', )
+        '<div id="id_comment">' "{{record.comment}}" "</div>",
+    )
     date = tables.Column()
 
     class Meta:
@@ -107,21 +107,23 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
     """
     TrackerCertification table used by shifters
     """
-    is_reference = tables.Column(verbose_name="Is Reference",
-                                 accessor="runreconstruction.is_reference")
+
+    is_reference = tables.Column(
+        verbose_name="Is Reference", accessor="runreconstruction.is_reference"
+    )
 
     edit_run = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'listruns:update\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        '{% if user == record.user or user.has_shift_leader_rights %}'
+        "<a href=\"{% url 'listruns:update' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
+        "{% if user == record.user or user.has_shift_leader_rights %}"
         '<button class="btn btn-block btn-danger" id="id_certificaion_update">'
-        '{% else %}'
+        "{% else %}"
         '<button class="btn btn-block btn-danger" id="id_certificaion_update" disabled>'
-        '{% endif %}'
-        'Edit'
-        '</button>'
-        '</a>'
-        '</div>',
+        "{% endif %}"
+        "Edit"
+        "</button>"
+        "</a>"
+        "</div>",
         orderable=False,
         verbose_name="Edit",
     )
@@ -137,20 +139,20 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
 
     delete_run = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'delete:delete\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        'Delete'
-        '</a>'
-        '</div>',
+        "<a href=\"{% url 'delete:delete' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
+        "Delete"
+        "</a>"
+        "</div>",
         orderable=False,
         verbose_name="Delete",
     )
 
     promote_run = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'promote\' run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        'Promote'
-        '</a>'
-        '</div>',
+        "<a href=\"{% url 'promote' run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
+        "Promote"
+        "</a>"
+        "</div>",
         orderable=False,
         verbose_name="Promote to Reference",
     )
@@ -162,19 +164,19 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
 class DeletedTrackerCertificationTable(tables.Table):
     restore_run = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'restore:restore_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        'Restore'
-        '</a>'
-        '</div>',
+        "<a href=\"{% url 'restore:restore_run' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
+        "Restore"
+        "</a>"
+        "</div>",
         orderable=False,
     )
 
     delete_forever = tables.TemplateColumn(
         '<div align="center">'
-        '<a href="{% url \'delete:hard_delete_run\' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}">'
-        'Hard Delete'
-        '</a>'
-        '</div>',
+        "<a href=\"{% url 'delete:hard_delete_run' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
+        "Hard Delete"
+        "</a>"
+        "</div>",
         orderable=False,
     )
 
@@ -193,8 +195,7 @@ class DeletedTrackerCertificationTable(tables.Table):
 
 
 class RunRegistryComparisonTable(tables.Table):
-    runreconstruction__run__run_number = tables.Column(
-        verbose_name="Run Number")
+    runreconstruction__run__run_number = tables.Column(verbose_name="Run Number")
     runreconstruction__run__run_type = tables.Column(verbose_name="Run Type")
     runreconstruction__reconstruction = tables.Column(verbose_name="Reco")
     pixel = tables.Column()
@@ -205,93 +206,129 @@ class RunRegistryComparisonTable(tables.Table):
         attrs = {"class": "table table-hover table-bordered"}
 
     def render_pixel(self, record):  # pragma: no cover
-        return render_component(record.get("pixel"),
-                                record.get("pixel_lowstat"))
+        return render_component(record.get("pixel"), record.get("pixel_lowstat"))
 
     def render_strip(self, record):  # pragma: no cover
-        return render_component(record.get("strip"),
-                                record.get("strip_lowstat"))
+        return render_component(record.get("strip"), record.get("strip_lowstat"))
 
     def render_tracking(self, record):  # pragma: no cover
-        return render_component(record.get("tracking"),
-                                record.get("tracking_lowstat"))
+        return render_component(record.get("tracking"), record.get("tracking_lowstat"))
 
 
 class OpenRunsTable(tables.Table):
     run_number = tables.Column(verbose_name="Run Number")
-    user = tables.Column(verbose_name="User")
+    # user = tables.Column(verbose_name="User")
 
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
     dataset_rereco = tables.Column(verbose_name="ReReco")
     dataset_rereco_ul = tables.Column(verbose_name="ReRecoUL")
 
-    certify = tables.TemplateColumn('<div></div>',
-                                    orderable=False,
-                                    verbose_name="",
-                                    visible=False)
+    certify = tables.TemplateColumn(
+        "<div></div>", orderable=False, verbose_name="", visible=False
+    )
 
-    delete = tables.TemplateColumn(
-        '<div align="center">'
-        '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
-        '{% if user == record.user or user.has_shift_leader_rights %}'
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
-        '{% else %}'
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
-        '{% endif %}'
-        'Remove Entry'
-        '</button>'
-        '</a>'
-        '</div>',
-        orderable=False,
-        verbose_name="")
+    def get_context_data(self, **kwargs):
+        """ 
+        Override class method to make HTTP request for the table available.
+        From request, we will use the user that issued it to cross-check which
+        which dataset buttons will be enabled or not.
+
+        https://stackoverflow.com/questions/30424056/django-tables2-use-request-user-in-render-method
+        """
+        context = super().get_context_data(**kwargs)
+        table = self.get_table(**self.get_table_kwargs())
+
+        # add the request directly to your table
+        table.request = self.request
+        context[self.get_context_table_name(table)] = table
+        return context
+
+    # delete = tables.TemplateColumn(
+    #     '<div align="center">'
+    #     '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
+    #     '{% if user == record.user or user.has_shift_leader_rights %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
+    #     '{% else %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
+    #     '{% endif %}'
+    #     'Remove Entry'
+    #     '</button>'
+    #     '</a>'
+    #     '</div>',
+    #     orderable=False,
+    #     verbose_name="")
 
     def render_run_number(self, record):  # pragma: no cover
         return mark_safe(
-            '<div>'
+            "<div>"
             '<span class="align-middle">{}</span>'
-            '</div>'.format(record.run_number), )
+            "</div>".format(record.run_number),
+        )
 
     def render_dataset_express(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_express,
-                              record.state_express, "express", record.user,
-                              self.request.user)
+        return render_dataset(
+            record.run_number,
+            record.dataset_express,
+            record.state_express,
+            "express",
+            self.request.user,
+        )
 
     def render_dataset_prompt(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_prompt,
-                              record.state_prompt, "prompt", record.user,
-                              self.request.user)
+        return render_dataset(
+            record.run_number,
+            record.dataset_prompt,
+            record.state_prompt,
+            "prompt",
+            self.request.user,
+        )
 
     def render_dataset_rereco(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_rereco,
-                              record.state_rereco, "rereco", record.user,
-                              self.request.user)
+        return render_dataset(
+            record.run_number,
+            record.dataset_rereco,
+            record.state_rereco,
+            "rereco",
+            self.request.user,
+        )
 
     def render_dataset_rereco_ul(self, record):  # pragma: no cover
         """
         :return: colored status of Dataset
         """
-        return render_dataset(record.run_number, record.dataset_rereco_ul,
-                              record.state_rereco_ul, "rerecoul", record.user,
-                              self.request.user)
+        return render_dataset(
+            record.run_number,
+            record.dataset_rereco_ul,
+            record.state_rereco_ul,
+            "rerecoul",
+            self.request.user,
+        )
 
     def render_certify(self, record):  # pragma: no cover
         """
         :return: colored Certify button
         """
-        return render_certify_button(record.run_number, record.dataset_express,
-                                     record.dataset_prompt,
-                                     record.dataset_rereco)
+        return render_certify_button(
+            record.run_number,
+            record.dataset_express,
+            record.dataset_prompt,
+            record.dataset_rereco,
+        )
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        row_attrs = {'user_row': lambda record: record.user.username}
+        # row_attrs = {
+        #     'user_row':
+        #     lambda record: ""
+        #     if not hasattr(record.user, 'username') else record.user.username
+        # }

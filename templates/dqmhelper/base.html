@@ -1,64 +1,81 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
-    <title> {% block title %}Tracker Data Certifier{% endblock %} - TRAINING</title>
-	<link rel="icon" href="{% static 'home/img/favicon.ico' %}" type="image/x-icon"/>
-    {% block style %}{% endblock %}
-    {% block head %}{% endblock head %}
-</head>
-<body>
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">	
+		<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+		<title> {% block title %}Tracker Data Certifier{% endblock %}</title>
+		<link rel="icon" href="{% static 'home/img/favicon.ico' %}" type="image/x-icon"/>
+		{% block style %}{% endblock %}
+		{% block head %}{% endblock head %}
+	</head>
+	<body>
 
-<!-- Navigation -->
+		<!-- Navigation -->
 
-{% include "dqmhelper/menu.html" %}
+		{% include "dqmhelper/menu.html" %}
 
-<!-- Page Content -->
-{% block content %}
-    content: Oops. You shouldn't be seeing this.
-{% endblock %}
+		<!-- Page Content -->
+		{% if messages %}
+		{% for message in messages %}	
+		<div class="alert alert-{{ message.tags}} alert-dismissible fade show" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			{{ message }}
+		</div>
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-<script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+		{% endfor %}
+		
+		{% endif %}
 
-<!-- Scripts -->
-<script>
- // Common on all pages
- var certhelper_version = "{{ certhelper_version }}";
- document.onkeydown = function (e) {
-	 if (e.ctrlKey && e.keyCode == 48) {
-		 alert(`CertHelper version ${certhelper_version}`);
-		 return;
-	 }
- }
-</script>
+		{% block content %}
+		content: Oops. You shouldn't be seeing this.
+		{% endblock %}
 
-{# Block to be overridden by each template #}
-{% block scripts %}
-<script>
-	alert("scripts: Oops. You shouldn't be seeing this.");
-</script>
-{% endblock %}
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<!-- <script
+			 src="https://code.jquery.com/jquery-3.3.1.min.js"
+			 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			 crossorigin="anonymous"></script>
+			 <script
+			 src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+			 integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+			 crossorigin="anonymous"></script>
+			 <script
+			 src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+			 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+			 crossorigin="anonymous"></script>
+			 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>		
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
 
-</body>
+		<!-- Scripts -->
+		<script>
+		 // Common on all pages
+		 var certhelper_version = "{{ certhelper_version }}";
+		 document.onkeydown = function (e) {
+			 if (e.ctrlKey && e.keyCode == 48) {
+				 alert(`CertHelper version ${certhelper_version}`);
+				 return;
+			 }
+		 }
+		</script>
+
+		{# Block to be overridden by each template #}
+		{% block scripts %}
+		<script>
+		 alert("scripts: Oops. You shouldn't be seeing this.");
+		</script>
+		{% endblock %}
+
+	</body>
 </html>

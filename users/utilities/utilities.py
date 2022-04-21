@@ -1,16 +1,9 @@
-import datetime
-import decimal
-import re
-
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import Group, Permission
-from django.utils import timezone
-from django.utils.safestring import mark_safe
-from terminaltables import AsciiTable
-
 from users.utilities.logger import get_configured_logger
 
 logger = get_configured_logger(loggername=__name__, filename="utilities.log")
+
 
 def extract_egroups(json_data):
     """
@@ -37,17 +30,13 @@ def get_or_create_group(group_name):
         g = Group.objects.get(name=group_name)
     except Group.DoesNotExist:
         user_permissions = Permission.objects.filter(
-                content_type__model="user"
-        )
+            content_type__model="user")
         users_permissions = Permission.objects.filter(
-            content_type__app_label="users"
-        )
+            content_type__app_label="users")
         oms_permissions = Permission.objects.filter(
-            content_type__app_label="oms"
-        )
+            content_type__app_label="oms")
         certifier_permissions = Permission.objects.filter(
-            content_type__app_label="certifier"
-        )
+            content_type__app_label="certifier")
         all_permissions = Permission.objects.all()
 
         g = Group.objects.create(name=group_name)
@@ -68,6 +57,7 @@ def get_or_create_group(group_name):
         g.save()
     return g
 
+
 def update_user_extradata(user):
     if user:  # Only already existing users
         try:
@@ -79,4 +69,5 @@ def update_user_extradata(user):
         except SocialAccount.DoesNotExist:
             logger.warning("No SocialAccount exists for User {}".format(user))
     else:
-        logger.info("Cannot update extradata for non existing User {}".format(user))
+        logger.info(
+            "Cannot update extradata for non existing User {}".format(user))
