@@ -3,7 +3,7 @@ from decimal import Decimal
 from listruns.utilities.manip import strip_trailing_zeros
 
 
-def format_integrated_luminosity(int_luminosity):
+def format_integrated_luminosity(int_luminosity, to_ascii=False):
     """
     Example:
     >>> format_integrated_luminosity(Decimal("0.000000266922"))
@@ -21,8 +21,12 @@ def format_integrated_luminosity(int_luminosity):
         value = Decimal("1E6") * value
         value_string = "{:.3f}".format(value)
         formatted_value = strip_trailing_zeros(value_string)
+        if to_ascii:
+            return "{} /ub".format(formatted_value)
         return "{} µb⁻¹".format(formatted_value)
 
     value_string = "{:.3f}".format(value)
     formatted_value = strip_trailing_zeros(value_string)
+    if to_ascii:
+        return "{} /pb".format(formatted_value)
     return "{} pb⁻¹".format(formatted_value)

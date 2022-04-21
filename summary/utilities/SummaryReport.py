@@ -2,6 +2,7 @@ from summary.utilities.utilities import get_ascii_table
 from listruns.utilities.luminosity import format_integrated_luminosity
 from certifier.models import TrackerCertification
 
+
 class SummaryReport:
     """
     SummaryReport used in summary.html.
@@ -24,27 +25,51 @@ class SummaryReport:
                 "Reference Run",
                 "Number of LS",
                 "Int. Luminosity",
+                "Tracking",
                 "Pixel",
                 "Strip",
-                "Tracking",
-                "Comment"
+                "Comment",
             ]
 
-            data = [[
-                run.runreconstruction.run.run_number,
-                run.reference_runreconstruction.run.run_number,
-                run.runreconstruction.run.lumisections,
-                format_integrated_luminosity(run.runreconstruction.run.recorded_lumi),
-                run.pixel,
-                run.strip,
-                run.tracking,
-                run.comment
-            ] for run in runs_with_specific_type]
+            data = [
+                [
+                    run.runreconstruction.run.run_number,
+                    run.reference_runreconstruction.run.run_number,
+                    run.runreconstruction.run.lumisections,
+                    format_integrated_luminosity(
+                        run.runreconstruction.run.recorded_lumi, to_ascii=True
+                    ),
+                    run.tracking,
+                    run.pixel,
+                    run.strip,
+                    run.comment,
+                ]
+                for run in runs_with_specific_type
+            ]
 
-            headline = "Type " + str(idx + 1) + ": " + str(runs_with_specific_type[0].runreconstruction.reconstruction) + " " + str(runs_with_specific_type[0].runreconstruction.run.run_type) + " " + str(runs_with_specific_type[0].runreconstruction.run.b_field) + " T " + str(runs_with_specific_type[0].runreconstruction.run.fill_type_party1) + " " + str(runs_with_specific_type[0].runreconstruction.run.energy) + " TeV " + str(TrackerCertification.objects.get(runreconstruction=runs_with_specific_type[0]).dataset)
+            headline = (
+                "Type "
+                + str(idx + 1)
+                + ": "
+                + str(runs_with_specific_type[0].runreconstruction.reconstruction)
+                + " "
+                + str(runs_with_specific_type[0].runreconstruction.run.run_type)
+                + " "
+                + str(runs_with_specific_type[0].runreconstruction.run.b_field)
+                + " T "
+                + str(runs_with_specific_type[0].runreconstruction.run.fill_type_party1)
+                + " "
+                + str(runs_with_specific_type[0].runreconstruction.run.energy)
+                + " TeV "
+                + str(
+                    TrackerCertification.objects.get(
+                        runreconstruction=runs_with_specific_type[0]
+                    ).dataset
+                )
+            )
 
             table = get_ascii_table(column_description, data)
-            runs_checked.append(headline + '\n' + table + '\n')
+            runs_checked.append(headline + "\n" + table + "\n")
 
         return runs_checked
 
@@ -90,7 +115,7 @@ class SummaryReport:
             column_description = [
                 "Type {}".format(idx + 1),
                 "Sum of LS",
-                "Sum of int. luminosity"
+                "Sum of int. luminosity",
             ]
 
             data = []
@@ -99,11 +124,25 @@ class SummaryReport:
 
             if good.exists():
                 data.append(
-                    ["Good", good.lumisections(), format_integrated_luminosity(good.integrated_luminosity())])
+                    [
+                        "Good",
+                        good.lumisections(),
+                        format_integrated_luminosity(
+                            good.integrated_luminosity(), to_ascii=True
+                        ),
+                    ]
+                )
 
             if bad.exists():
                 data.append(
-                    ["Bad", bad.lumisections(), format_integrated_luminosity(bad.integrated_luminosity())])
+                    [
+                        "Bad",
+                        bad.lumisections(),
+                        format_integrated_luminosity(
+                            bad.integrated_luminosity(), to_ascii=True
+                        ),
+                    ]
+                )
 
             table = get_ascii_table(column_description, data)
             certified_run_numbers.append(table)

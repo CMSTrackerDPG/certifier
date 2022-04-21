@@ -6,7 +6,12 @@ from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
 from certifier.api.serializers import RunReferenceRunSerializer
 from openruns.models import OpenRuns
-from oms.utils import retrieve_run, retrieve_dataset, retrieve_dataset_by_reco, get_reco_from_dataset
+from oms.utils import (
+    retrieve_run,
+    retrieve_dataset,
+    retrieve_dataset_by_reco,
+    get_reco_from_dataset,
+)
 from oms.models import OmsRun
 from users.models import User
 
@@ -48,24 +53,48 @@ def certify(request, run_number, reco=None):
     logger.debug(f"Requesting certification of run {run_number}")
 
     # Check if run is already booked
-    try:
-        open_run = OpenRuns.objects.get(run_number=run_number)
-        if request.user != open_run.user:
-            msg = f"Run {run_number} is already booked by another user"
-            logger.warning(msg)
-            return render(request,
-                          "certifier/http_error.html",
-                          context={
-                              "error_num": 400,
-                              "message": msg
-                          })
+    # try:
+    #     open_run = OpenRuns.objects.get(run_number=run_number)
+    #     if request.user != open_run.user:
+    #         msg = f"Run {run_number} is already booked by another user"
+    #         logger.warning(msg)
+    #         return render(
+    #             request,
+    #             "certifier/http_error.html",
+    #             context={
+    #                 "error_num": 400,
+    #                 "message": msg
+    #             },
+    #         )
 
-    except OpenRuns.DoesNotExist as e:
-        # Means that OpenRun does not exist
-        logger.debug(f"Open run for {run_number} does not exist yet")
+    # except OpenRuns.DoesNotExist as e:
+    #     # Means that OpenRun does not exist
+    #     logger.debug(f"Open run for {run_number} does not exist yet")
+
+    # Check if already certified
+    try:
+        certification = TrackerCertification.objects.get(
+            runreconstruction__run__run_number=run_number,
+            runreconstruction__reconstruction=reco,
+        )
+        if request.user != TrackerCertification.user:
+            msg = f"Reconstruction {run_number} {reco} is already certified by another user"
+            logger.warning(msg)
+            return render(
+                request,
+                "certifier/http_error.html",
+                context={
+                    "error_num": 400,
+                    "message": msg
+                },
+            )
+    except TrackerCertification.DoesNotExist as e:
+        # Means that this specific certification does not exist yet
+        logger.debug(
+            f"Certification for {run_number} {reco} does not exist yet")
 
     # From openruns colored boxes
-    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
         name = request.POST.get("name", None)
         dataset = request.POST.get("dataset", None)
         description = request.POST.get("description", None)
@@ -85,12 +114,12 @@ def certify(request, run_number, reco=None):
                 "reco": reco,
                 "run": run,
                 "dataset": dataset,
-                "form": form
+                "form": form,
             }
 
             return render(request, "certifier/certify.html", context)
 
-    dataset = request.GET.get('dataset', None)
+    dataset = request.GET.get("dataset", None)
 
     try:
 
@@ -117,7 +146,7 @@ def certify(request, run_number, reco=None):
         reco = get_reco_from_dataset(dataset)
 
     # if this is a POST request we need to process the form data
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
             runReconstruction = RunReconstruction.objects.get(
                 run__run_number=run_number, reconstruction=reco)
@@ -162,7 +191,7 @@ def certify(request, run_number, reco=None):
         "reco": reco,
         "run": run,
         "dataset": dataset,
-        "form": form
+        "form": form,
     }
 
     return render(request, "certifier/certify.html", context)
@@ -174,7 +203,7 @@ def runRefRun_list(request):
 
     Transferred from old 'mldatasets' app
     """
-    if request.method == 'GET':
+    if request.method == "GET":
         runRefRunsAll = TrackerCertification.objects.all()
         serializer = RunReferenceRunSerializer(runRefRunsAll, many=True)
         return JsonResponse(serializer.data, safe=False)

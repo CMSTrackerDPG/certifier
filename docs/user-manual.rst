@@ -53,23 +53,22 @@ This will open the certification page which contains the first step of the certi
 The purpose of this page is to receive the runs data based on the number and type of run. There are currently two ways to do that:
 
 - **Certify Button**:
-  Once you add the run number and the type after which you press the Certify button and go to the certification form page.
+  Once you add the run number and the type after which you press the :guilabel:`Certify` button and go to the certification form page.
 
 - **Get Open Runs**:
-  This will return the requested open runs, either by using a list of run numbers or a range of run numbers. This is meant to work in such a way that each shifter will get his open runs at the beginning of the week and go through them one by one afterwards.
+  This will return the requested run reconstructions, either by using a list of run numbers or a range of run numbers. This is meant to work in such a way that each shifter will get their open runs at the beginning of the week and go through them one by one afterwards.
 
   .. image:: images/openruns-table.png
 
-  :gray:`Grayed` out row means the openrun is taken by somebody else.
-		
-  :yellow:`Yellow` run type button means run not certified
+  :yellow:`Yellow` run type button means run not yet certified
 		  
-  :green:`Green` run type button means run is certified
+  :green:`Green` run type button means run is certified. If the button is disabled, 
    
-  The table also gives the user the option to delete an entry from his account(this is completely safe, the run can be retrieved back anytime). Main reason for this is in case a run has to be moved from one user to another, it first has to be removed from the first user and then retrieved back by the second.
+  ..
+	 The table also gives the user the option to delete an entry from his account(this is completely safe, the run can be retrieved back anytime). Main reason for this is in case a run has to be moved from one user to another, it first has to be removed from the first user and then retrieved back by the second.
 
 
-Going to the next certification step is done either by pressing the Certify button or one of the run type buttons from the Open Runs table.
+Going to the next certification step is done either by pressing the :guilabel:`Certify` button or one of the run reconstruction type buttons from the Open Runs table.
 
 .. image:: images/certification-page-2.png
 

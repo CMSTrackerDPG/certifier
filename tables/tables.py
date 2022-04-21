@@ -217,7 +217,7 @@ class RunRegistryComparisonTable(tables.Table):
 
 class OpenRunsTable(tables.Table):
     run_number = tables.Column(verbose_name="Run Number")
-    user = tables.Column(verbose_name="User")
+    # user = tables.Column(verbose_name="User")
 
     dataset_express = tables.Column(verbose_name="Express")
     dataset_prompt = tables.Column(verbose_name="Prompt")
@@ -228,21 +228,36 @@ class OpenRunsTable(tables.Table):
         "<div></div>", orderable=False, verbose_name="", visible=False
     )
 
-    delete = tables.TemplateColumn(
-        '<div align="center">'
-        "<a href=\"{% url 'delete:delete_open_run' run_number=record.run_number %}\">"
-        "{% if user == record.user or user.has_shift_leader_rights %}"
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
-        "{% else %}"
-        '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
-        "{% endif %}"
-        "Remove Entry"
-        "</button>"
-        "</a>"
-        "</div>",
-        orderable=False,
-        verbose_name="",
-    )
+    def get_context_data(self, **kwargs):
+        """ 
+        Override class method to make HTTP request for the table available.
+        From request, we will use the user that issued it to cross-check which
+        which dataset buttons will be enabled or not.
+
+        https://stackoverflow.com/questions/30424056/django-tables2-use-request-user-in-render-method
+        """
+        context = super().get_context_data(**kwargs)
+        table = self.get_table(**self.get_table_kwargs())
+
+        # add the request directly to your table
+        table.request = self.request
+        context[self.get_context_table_name(table)] = table
+        return context
+
+    # delete = tables.TemplateColumn(
+    #     '<div align="center">'
+    #     '<a href="{% url \'delete:delete_open_run\' run_number=record.run_number %}">'
+    #     '{% if user == record.user or user.has_shift_leader_rights %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete">'
+    #     '{% else %}'
+    #     '<button class="btn btn-block btn-danger" id="id_openruns_delete" disabled>'
+    #     '{% endif %}'
+    #     'Remove Entry'
+    #     '</button>'
+    #     '</a>'
+    #     '</div>',
+    #     orderable=False,
+    #     verbose_name="")
 
     def render_run_number(self, record):  # pragma: no cover
         return mark_safe(
@@ -260,7 +275,6 @@ class OpenRunsTable(tables.Table):
             record.dataset_express,
             record.state_express,
             "express",
-            "" if not hasattr(record, "user") else record.user,
             self.request.user,
         )
 
@@ -273,7 +287,6 @@ class OpenRunsTable(tables.Table):
             record.dataset_prompt,
             record.state_prompt,
             "prompt",
-            "" if not hasattr(record, "user") else record.user,
             self.request.user,
         )
 
@@ -286,7 +299,6 @@ class OpenRunsTable(tables.Table):
             record.dataset_rereco,
             record.state_rereco,
             "rereco",
-            "" if not hasattr(record, "user") else record.user,
             self.request.user,
         )
 
@@ -299,7 +311,6 @@ class OpenRunsTable(tables.Table):
             record.dataset_rereco_ul,
             record.state_rereco_ul,
             "rerecoul",
-            "" if not hasattr(record, "user") else record.user,
             self.request.user,
         )
 
@@ -316,8 +327,8 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        row_attrs = {
-            "user_row": lambda record: ""
-            if not hasattr(record, "user") or not hasattr(record.user, "username")
-            else record.user.username
-        }
+        # row_attrs = {
+        #     'user_row':
+        #     lambda record: ""
+        #     if not hasattr(record.user, 'username') else record.user.username
+        # }
