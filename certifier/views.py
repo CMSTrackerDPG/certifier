@@ -34,17 +34,20 @@ def promoteToReference(request, run_number, reco):
     """
     try:
         runReconstruction = RunReconstruction.objects.get(
-            run__run_number=run_number, reconstruction=reco)
+            run__run_number=run_number, reconstruction=reco
+        )
     except RunReconstruction.DoesNotExist as run_reco_does_not_exist:
         raise Http404(
-            f"The run {run_number} doesn't exist") from run_reco_does_not_exist
+            f"The run {run_number} doesn't exist"
+        ) from run_reco_does_not_exist
 
     if request.method == "POST":
         runReconstruction.promote_to_reference()
         return HttpResponseRedirect("/shiftleader/")
 
-    return render(request, "certifier/promote.html",
-                  {"runReconstruction": runReconstruction})
+    return render(
+        request, "certifier/promote.html", {"runReconstruction": runReconstruction}
+    )
 
 
 @login_required
@@ -132,11 +135,11 @@ def certify(request, run_number, reco=None):
         # print(request)
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
-        logger.error(e)
+        logger.error(f"{context['message']} ({repr(e)})")
         return render(request, "certifier/404.html", context)
     except Exception as e:
         context = {"message": e}
-        logger.exception(e)
+        logger.exception(repr(e))
         return render(request, "certifier/404.html", context)
 
     if not reco:
@@ -146,10 +149,12 @@ def certify(request, run_number, reco=None):
     if request.method == "POST":
         try:
             runReconstruction = RunReconstruction.objects.get(
-                run__run_number=run_number, reconstruction=reco)
+                run__run_number=run_number, reconstruction=reco
+            )
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                run=run, reconstruction=reco)
+                run=run, reconstruction=reco
+            )
 
         try:
             dataset = Dataset.objects.get(dataset=dataset)
@@ -168,7 +173,8 @@ def certify(request, run_number, reco=None):
             # redirect to a new URL:
             try:
                 trackerCertification = TrackerCertification.objects.get(
-                    runreconstruction=runReconstruction)
+                    runreconstruction=runReconstruction
+                )
             except TrackerCertification.DoesNotExist:
                 formToSave = form.save(commit=False)
                 formToSave.runreconstruction = runReconstruction
