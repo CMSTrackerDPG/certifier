@@ -77,21 +77,18 @@ def certify(request, run_number, reco=None):
             runreconstruction__run__run_number=run_number,
             runreconstruction__reconstruction=reco,
         )
-        if request.user != TrackerCertification.user:
+        if request.user != certification.user:
+            print(request.user, certification.user.username)
             msg = f"Reconstruction {run_number} {reco} is already certified by another user"
             logger.warning(msg)
             return render(
                 request,
                 "certifier/http_error.html",
-                context={
-                    "error_num": 400,
-                    "message": msg
-                },
+                context={"error_num": 400, "message": msg},
             )
     except TrackerCertification.DoesNotExist as e:
         # Means that this specific certification does not exist yet
-        logger.debug(
-            f"Certification for {run_number} {reco} does not exist yet")
+        logger.debug(f"Certification for {run_number} {reco} does not exist yet")
 
     # From openruns colored boxes
     if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
