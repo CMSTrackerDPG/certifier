@@ -183,11 +183,13 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="card-title text-info">Fill</h6>
+						{% if run.fill.fill_number %}
                         <div class="row">
                             <div class="col-md-5 text-right">
                                 <strong>Fill number</strong>
                             </div>
                             <div class="col-md-7">
+
                                 <a href="https://cmsoms.cern.ch/cms/fills/report?cms_fill={{run.fill.fill_number}}" target="_blank">
                                     {{ run.fill.fill_number }}
                                 </a>
@@ -227,6 +229,11 @@
                                 \({{ run.fill.peak_pileup|floatformat:3 }}\)
                             </div>
                         </div>
+						{% else %}
+						<div class="alert alert-warning fade show" role="alert">
+							No fill number available for this run
+						</div>
+						{% endif %}
                     </div>
                 </div>
             </div>
