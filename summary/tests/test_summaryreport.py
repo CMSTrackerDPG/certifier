@@ -5,9 +5,14 @@ from summary.utilities.SummaryReport import SummaryReport
 
 pytestmark = pytest.mark.django_db
 
+
 class TestSummaryReport:
     def test_summaryreport(self, shifter, runs_for_summary_report):
-        summary = SummaryReport(TrackerCertification.objects.all().order_by("runreconstruction__run__run_number"))
+        summary = SummaryReport(
+            TrackerCertification.objects.all().order_by(
+                "runreconstruction__run__run_number"
+            )
+        )
 
         refs = summary.reference_runs().order_by("run__run_number")
         assert 4 == len(refs)
@@ -91,7 +96,7 @@ class TestSummaryReport:
         assert 4 == len(sums)
 
         assert "| Type 1 | Sum of LS | Sum of int. luminosity |" in sums[0]
-        assert "| Bad    | 3424      | 3534.83 pb⁻¹           |" in sums[0]
+        assert "| Bad    | 3424      | 3534.83 /pb            |" in sums[0]
 
         assert "| Type 2 | Sum of LS | Sum of int. luminosity |" in sums[1]
         assert "| Bad    | 4487      | 5316" in sums[1]

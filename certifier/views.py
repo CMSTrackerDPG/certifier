@@ -53,26 +53,7 @@ def promoteToReference(request, run_number, reco):
 @login_required
 def certify(request, run_number, reco=None):
 
-    logger.debug(f"Requesting certification of run {run_number}")
-
-    # Check if run is already booked
-    # try:
-    #     open_run = OpenRuns.objects.get(run_number=run_number)
-    #     if request.user != open_run.user:
-    #         msg = f"Run {run_number} is already booked by another user"
-    #         logger.warning(msg)
-    #         return render(
-    #             request,
-    #             "certifier/http_error.html",
-    #             context={
-    #                 "error_num": 400,
-    #                 "message": msg
-    #             },
-    #         )
-
-    # except OpenRuns.DoesNotExist as e:
-    #     # Means that OpenRun does not exist
-    #     logger.debug(f"Open run for {run_number} does not exist yet")
+    logger.debug(f"Requesting certification of run {run_number} {reco if reco else ''}")
 
     # Check if already certified
     try:
@@ -81,17 +62,19 @@ def certify(request, run_number, reco=None):
             runreconstruction__reconstruction=reco,
         )
         if request.user != certification.user:
-            print(request.user, certification.user.username)
             msg = f"Reconstruction {run_number} {reco} is already certified by another user"
             logger.warning(msg)
             return render(
                 request,
                 "certifier/http_error.html",
                 context={"error_num": 400, "message": msg},
+                status=400,
             )
     except TrackerCertification.DoesNotExist as e:
         # Means that this specific certification does not exist yet
-        logger.debug(f"Certification for {run_number} {reco} does not exist yet")
+        logger.debug(
+            f"Certification for {run_number} {reco if reco else ''} does not exist yet"
+        )
 
     # From openruns colored boxes
     if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":

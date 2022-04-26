@@ -24,166 +24,180 @@ class TestTrackerCertificationQuerySet:
     def test_compare_list_if_certified(self):
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=1234,
-                                                          run_type="cosmics"),
-                                          reconstruction="express"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=1234, run_type="cosmics"),
+                reconstruction="express",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=8765,
-                                                          run_type="cosmics")),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=8765, run_type="cosmics"),
+            ),
             pixel="good",
             strip="good",
             tracking="bad",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=4321,
-                                                          run_type="cosmics"),
-                                          reconstruction="express"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=4321, run_type="cosmics"),
+                reconstruction="express",
+            ),
             pixel="good",
             strip="good",
             tracking="bad",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=6543)),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction", run=mixer.blend(OmsRun, run_number=6543)
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=6655,
-                                                          run_type="cosmics")),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=6655, run_type="cosmics"),
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=9876)),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction", run=mixer.blend(OmsRun, run_number=9876)
+            ),
             pixel="good",
             strip="good",
             tracking="bad",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=444,
-                                                          run_type="cosmics"),
-                                          reconstruction="express"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=444, run_type="cosmics"),
+                reconstruction="express",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(
-                                              OmsRun,
-                                              run_number=444,
-                                              run_type="collisions",
-                                              hlt_key="/cdaq/physics",
-                                              stable_beam=True),
-                                          reconstruction="prompt"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(
+                    OmsRun,
+                    run_number=444,
+                    run_type="collisions",
+                    hlt_key="/cdaq/physics",
+                    stable_beam=True,
+                ),
+                reconstruction="prompt",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=333,
-                                                          run_type="cosmics"),
-                                          reconstruction="express"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=333, run_type="cosmics"),
+                reconstruction="express",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(
-                                              OmsRun,
-                                              run_number=333,
-                                              run_type="collisions",
-                                              hlt_key="/cdaq/physics",
-                                              stable_beam=True),
-                                          reconstruction="prompt"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(
+                    OmsRun,
+                    run_number=333,
+                    run_type="collisions",
+                    hlt_key="/cdaq/physics",
+                    stable_beam=True,
+                ),
+                reconstruction="prompt",
+            ),
             pixel="good",
             strip="good",
             tracking="bad",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(OmsRun,
-                                                          run_number=999)),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction", run=mixer.blend(OmsRun, run_number=999)
+            ),
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(
-                                              OmsRun,
-                                              run_number=800,
-                                              run_type="collisions",
-                                              hlt_key="/cdaq/physics",
-                                              stable_beam=True)),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(
+                    OmsRun,
+                    run_number=800,
+                    run_type="collisions",
+                    hlt_key="/cdaq/physics",
+                    stable_beam=True,
+                ),
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(
-                                              OmsRun,
-                                              run_number=4321,
-                                              run_type="collisions",
-                                              hlt_key="/cdaq/physics",
-                                              stable_beam=True),
-                                          reconstruction="prompt"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(
+                    OmsRun,
+                    run_number=4321,
+                    run_type="collisions",
+                    hlt_key="/cdaq/physics",
+                    stable_beam=True,
+                ),
+                reconstruction="prompt",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          run=mixer.blend(
-                                              OmsRun,
-                                              run_number=1234,
-                                              run_type="collisions",
-                                              hlt_key="/cdaq/physics",
-                                              stable_beam=True),
-                                          reconstruction="prompt"),
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(
+                    OmsRun,
+                    run_number=1234,
+                    run_type="collisions",
+                    hlt_key="/cdaq/physics",
+                    stable_beam=True,
+                ),
+                reconstruction="prompt",
+            ),
             pixel="good",
             strip="good",
             tracking="good",
         )
 
-        d = TrackerCertification.objects.all().compare_list_if_certified([
-            333, 1234, 6655, "800", 4321, 7777, 9876, "abde", 8765, 6543, 888,
-            444
-        ])
+        d = TrackerCertification.objects.all().compare_list_if_certified(
+            [333, 1234, 6655, "800", 4321, 7777, 9876, "abde", 8765, 6543, 888, 444]
+        )
 
         assert set([1234, 6655, 6543, 444, "800"]) == set(d["good"])
         assert set([9876, 8765]) == set(d["bad"])
@@ -214,8 +228,7 @@ class TestTrackerCertificationQuerySet:
         14      Cosmics    Prompt  False
         """
         assert 3 == len(TrackerCertification.objects.all().changed_flags())
-        assert {5, 4,
-                14} == set(TrackerCertification.objects.all().changed_flags())
+        assert {5, 4, 14} == set(TrackerCertification.objects.all().changed_flags())
 
     def test_no_changed_flags(self):
         assert 0 == len(TrackerCertification.objects.all().changed_flags())
@@ -290,12 +303,16 @@ class TestTrackerCertificationQuerySet:
     def test_rereco(self, some_certified_runs):
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          reconstruction="rereco"))
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction", reconstruction="rereco"
+            ),
+        )
         mixer.blend(
             "certifier.TrackerCertification",
-            runreconstruction=mixer.blend("certifier.RunReconstruction",
-                                          reconstruction="rereco"))
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction", reconstruction="rereco"
+            ),
+        )
         runs = TrackerCertification.objects.all().rereco()
         assert 0 != len(runs)
 
@@ -303,27 +320,43 @@ class TestTrackerCertificationQuerySet:
             assert "rereco" == run.runreconstruction.reconstruction
 
     def test_run_numbers(self):
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", run_number=123456)))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        reconstruction="express",
-                        run=mixer.blend("oms.OmsRun", run_number=234567)))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        reconstruction="prompt",
-                        run=mixer.blend("oms.OmsRun", run_number=234567)))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", run_number=345678)))
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", run_number=123456),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                reconstruction="express",
+                run=mixer.blend("oms.OmsRun", run_number=234567),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                reconstruction="prompt",
+                run=mixer.blend("oms.OmsRun", run_number=234567),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", run_number=345678),
+            ),
+        )
 
-        assert [123456, 234567, 234567,
-                345678] == TrackerCertification.objects.all().run_numbers()
+        assert [
+            123456,
+            234567,
+            234567,
+            345678,
+        ] == TrackerCertification.objects.all().run_numbers()
 
     def test_pks(self):
         a = mixer.blend("certifier.TrackerCertification").pk
@@ -333,29 +366,42 @@ class TestTrackerCertificationQuerySet:
         assert [a, b, c] == TrackerCertification.objects.all().pks()
 
     def test_int_luminosity(self):
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", recorded_lumi="13")))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", recorded_lumi="12.2")))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", recorded_lumi="0")))
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend("oms.OmsRun", recorded_lumi="9")))
-        assert 34.2 == TrackerCertification.objects.all(
-        ).integrated_luminosity()
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", recorded_lumi="13"),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", recorded_lumi="12.2"),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", recorded_lumi="0"),
+            ),
+        )
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", recorded_lumi="9"),
+            ),
+        )
+        assert 34.2 == TrackerCertification.objects.all().integrated_luminosity()
 
     def test_total_number(self, some_certified_runs):
         assert 19 == TrackerCertification.objects.all().total_number()
-        assert len(TrackerCertification.objects.all()
-                   ) == TrackerCertification.objects.all().total_number()
+        assert (
+            len(TrackerCertification.objects.all())
+            == TrackerCertification.objects.all().total_number()
+        )
 
     def test_slr(self, runs_for_slr):
         runs = TrackerCertification.objects.all()
@@ -370,9 +416,9 @@ class TestTrackerCertificationQuerySet:
         assert cosmics_express.total_number() == 7
         assert cosmics_prompt.total_number() == 1
 
-        assert math.isclose(161301.363,
-                            collisions_express.integrated_luminosity(),
-                            abs_tol=0.1)
+        assert math.isclose(
+            161301.363, collisions_express.integrated_luminosity(), abs_tol=0.1
+        )
         assert collisions_prompt.integrated_luminosity() == 123133.554
         assert cosmics_express.integrated_luminosity() == 0.1234
         assert cosmics_prompt.integrated_luminosity() == 0
@@ -439,52 +485,44 @@ class TestTrackerCertificationQuerySet:
         assert 3 == refs[2]
 
     def test_reference_runs(self, runs_with_three_refs):
-        refs = TrackerCertification.objects.all().reference_runs().order_by(
-            "run__run_number")
+        refs = (
+            TrackerCertification.objects.all()
+            .reference_runs()
+            .order_by("run__run_number")
+        )
         assert 3 == len(refs)
         assert RunReconstruction.objects.get(run__run_number=1) == refs[0]
         assert RunReconstruction.objects.get(run__run_number=2) == refs[1]
         assert RunReconstruction.objects.get(run__run_number=3) == refs[2]
 
     def test_runs(self, runs_with_three_refs):
-        refs = TrackerCertification.objects.all().runs().order_by(
-            "run__run_number")
+        refs = TrackerCertification.objects.all().runs().order_by("run__run_number")
         assert 3 == len(refs)
         assert RunReconstruction.objects.get(run__run_number=1) == refs[0]
         assert RunReconstruction.objects.get(run__run_number=2) == refs[1]
         assert RunReconstruction.objects.get(run__run_number=3) == refs[2]
 
     def test_types(self):
-        t1 = runreconstruction = mixer.blend("certifier.RunReconstruction",
-                                             run=mixer.blend(
-                                                 OmsRun,
-                                                 run_type="collisions",
-                                                 hlt_key="/cdaq/physics",
-                                                 stable_beam=True))
-        t2 = runreconstruction = mixer.blend("certifier.RunReconstruction",
-                                             run=mixer.blend(
-                                                 OmsRun, run_type="cosmics"))
+        t1 = runreconstruction = mixer.blend(
+            "certifier.RunReconstruction",
+            run=mixer.blend(
+                OmsRun, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True
+            ),
+        )
+        t2 = runreconstruction = mixer.blend(
+            "certifier.RunReconstruction", run=mixer.blend(OmsRun, run_type="cosmics")
+        )
 
-        r1 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r2 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r3 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r4 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r5 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t1)
-        r6 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r7 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t1)
-        r8 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t2)
-        r9 = mixer.blend("certifier.TrackerCertification",
-                         runreconstruction=t1)
-        r10 = mixer.blend("certifier.TrackerCertification",
-                          runreconstruction=t2)
+        r1 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r2 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r3 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r4 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r5 = mixer.blend("certifier.TrackerCertification", runreconstruction=t1)
+        r6 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r7 = mixer.blend("certifier.TrackerCertification", runreconstruction=t1)
+        r8 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
+        r9 = mixer.blend("certifier.TrackerCertification", runreconstruction=t1)
+        r10 = mixer.blend("certifier.TrackerCertification", runreconstruction=t2)
 
         runs = TrackerCertification.objects.all()
         types = runs.types()
@@ -550,13 +588,17 @@ class TestTrackerCertificationQuerySet:
         for t in RunReconstruction.objects.filter(is_reference=True):
             print(t)
         TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number").print_verbose()
+            "runreconstruction__run__run_number"
+        ).print_verbose()
         TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number").print_reference_runs()
+            "runreconstruction__run__run_number"
+        ).print_reference_runs()
         TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number").print_runs()
+            "runreconstruction__run__run_number"
+        ).print_runs()
         TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number").print()
+            "runreconstruction__run__run_number"
+        ).print()
 
     def test_shifters(self, shifter, runs_for_summary_report):
         runs = TrackerCertification.objects.all()
@@ -567,33 +609,35 @@ class TestTrackerCertificationQuerySet:
         ret = runs.week_number()
         assert "" == ret
 
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend(OmsRun,
-                                        run_number=1234,
-                                        run_type="cosmics"),
-                        reconstruction="express"),
-                    pixel="good",
-                    strip="good",
-                    tracking="good",
-                    date="2019-6-10")
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=1234, run_type="cosmics"),
+                reconstruction="express",
+            ),
+            pixel="good",
+            strip="good",
+            tracking="good",
+            date="2019-6-10",
+        )
 
         runs = TrackerCertification.objects.all()
         ret = runs.week_number()
         assert 24 == ret
 
-        mixer.blend("certifier.TrackerCertification",
-                    runreconstruction=mixer.blend(
-                        "certifier.RunReconstruction",
-                        run=mixer.blend(OmsRun,
-                                        run_number=1274,
-                                        run_type="cosmics"),
-                        reconstruction="express"),
-                    pixel="good",
-                    strip="good",
-                    tracking="good",
-                    date="2019-7-10")
+        mixer.blend(
+            "certifier.TrackerCertification",
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend(OmsRun, run_number=1274, run_type="cosmics"),
+                reconstruction="express",
+            ),
+            pixel="good",
+            strip="good",
+            tracking="good",
+            date="2019-7-10",
+        )
 
         runs = TrackerCertification.objects.all()
         ret = runs.week_number()
@@ -609,9 +653,10 @@ class TestTrackerCertificationQuerySet:
         assert 1 == runs[0].runreconstruction.run.run_number
         assert 15 == runs[len(runs) - 1].runreconstruction.run.run_number
 
-    @pytest.mark.skipif('TRAVIS' in os.environ,
-                        reason="skipped due to travis not being able to run it"
-                        )
+    @pytest.mark.skipif(
+        "GITHUB_ACTIONS" in os.environ,
+        reason="skipped due to GitHub actions not being able to run it",
+    )
     def test_compare_with_run_registry_above_500(self):
         create_runs(501, 1, "collisions", "express")
         runs = TrackerCertification.objects.all()
@@ -619,9 +664,10 @@ class TestTrackerCertificationQuerySet:
         assert 501 == len(deviating)
         assert 501 == len(corresponding)
 
-    @pytest.mark.skipif('TRAVIS' in os.environ,
-                        reason="skipped due to travis not being able to run it"
-                        )
+    @pytest.mark.skipif(
+        "GITHUB_ACTIONS" in os.environ,
+        reason="skipped due to GitHub actions not being able to run it",
+    )
     def test_compare_with_run_registry(self):
         create_runs(3, 1, "collisions", "express")
         runs = TrackerCertification.objects.all()
@@ -629,9 +675,10 @@ class TestTrackerCertificationQuerySet:
         assert 3 == len(deviating)
         assert 3 == len(corresponding)
 
-    @pytest.mark.skipif('TRAVIS' in os.environ,
-                        reason="skipped due to travis not being able to run it"
-                        )
+    @pytest.mark.skipif(
+        "GITHUB_ACTIONS" in os.environ,
+        reason="skipped due to GitHub actions not being able to run it",
+    )
     def test_matches_with_run_registry(self):
         create_runs(2, 1, "collisions", "express")
         runs = TrackerCertification.objects.all()
@@ -639,7 +686,7 @@ class TestTrackerCertificationQuerySet:
         assert False == ret
 
     # Deprecated
-    # @pytest.mark.skipif('TRAVIS' in os.environ, reason="skipped due to travis not being able to run it")
+    # @pytest.mark.skipif('GITHUB_ACTIONS' in os.environ, reason="skipped due to GitHub actions not being able to run it")
     # def test_annotate_fill_number(self, shifter, runs_for_summary_report):
     #     runs=TrackerCertification.objects.all()
     #     runs.annotate_fill_number()
