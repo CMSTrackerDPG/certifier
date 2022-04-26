@@ -61,6 +61,55 @@ class TestCertify:
         assert 302 == resp.status_code, "should redirect to success view"
         assert TrackerCertification.objects.exists()
 
+    def test_certify_other_users_certification(self):
+        """
+        Trying to overwrite an existing certification done
+        by another user should fail
+        """
+        user_a = mixer.blend(User)
+        user_b = mixer.blend(User)
+        run_number = 321123
+        run = mixer.blend(OmsRun, run_number=run_number, run_type=OmsRun.COLLISIONS)
+        run_reconstruction = mixer.blend(RunReconstruction, run=run, is_reference=False)
+        ref_run_reconstruction = mixer.blend(RunReconstruction, is_reference=True)
+        bad_reason = mixer.blend(BadReason)
+        dataset = mixer.blend(Dataset)
+
+        # Certification made by User A
+        c = TrackerCertification.objects.create(
+            user=user_a,
+            runreconstruction=run_reconstruction,
+            reference_runreconstruction=ref_run_reconstruction,
+            dataset=dataset,
+            bad_reason=bad_reason,
+            comment="test",
+            date="2018-01-01",
+            trackermap="exists",
+            pixel="good",
+            strip="good",
+            tracking="good",
+        )
+
+        # Create a form using the same data
+        form = CertifyForm(instance=c)
+
+        # Create a POST request with this data
+        req_url = reverse(
+            "certify",
+            kwargs={
+                "run_number": run_number,
+                "reco": run_reconstruction.reconstruction,
+            },
+        )
+        req = RequestFactory().post(req_url, data=form.data)
+        # Try to certify as user_b
+        req.user = user_b
+
+        resp = views.certify(
+            req, run_number=run_number, reco=run_reconstruction.reconstruction
+        )
+        assert resp.status_code == 400
+
     def test_certify_invalid_bad_run_number(self):
         run_number = 999999999
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
