@@ -21,7 +21,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -47,7 +47,7 @@ jobs:
         # Main dir is /home/runner/work/certifier
         DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
         DJANGO_DATABASE_ENGINE: django.db.backends.postgresql
-        DJANGO_DATABASE_NAME: testdb
+        DJANGO_DATABASE_NAME: postgres
         DJANGO_DATABASE_USER: postgres
         DJANGO_DATABASE_PORT: 5432
         DJANGO_DATABASE_PASSWORD: postgres
