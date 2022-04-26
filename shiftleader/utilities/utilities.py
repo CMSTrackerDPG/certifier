@@ -90,7 +90,7 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries: list):
         entry["dataset"] = entry.pop("name")
         dataset = entry["dataset"].lower()
         entry["runreconstruction__run__run_number"] = entry.pop("run_number")
-        entry["state"] = entry.pop("state")
+        entry["state"] = entry["dataset_attributes"].pop("tracker_state")
 
         try:
             entry[
