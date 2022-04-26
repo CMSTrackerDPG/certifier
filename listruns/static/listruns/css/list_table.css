@@ -76,3 +76,32 @@ th:after {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #666;
 }
+
+
+.state-good {
+    width: 64px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.state-bad {
+    width: 64px;
+    text-align: center;
+    background-color: red;
+    color: white;
+}
+
+.state-mixed {
+    width: 64px;
+    text-align: center;
+    background-color: orange;
+    color: black;
+}
+
+.state-neutral {
+    width: 64px;
+    text-align: center;
+    background-color: grey;
+    color: black;
+}
