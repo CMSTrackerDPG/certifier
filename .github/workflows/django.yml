@@ -30,7 +30,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+      
+    - uses: codecov/codecov-action@v2
+      with:
+        # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        # files: ./coverage1.xml,./coverage2.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
+        
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -56,7 +65,12 @@ jobs:
         OMS_CLIENT_SECRET: ${{ secrets.OMS_CLIENT_SECRET }}
 
       run: |
-        PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
+        PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=./ --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
+        
+    - name: CodeCov
+      run: |
+        codecov
+
     # - name: Run Functional Tests with Selenium on Chrome
     #   env:
     #     DIR_PATH_EOS_CMSML4DC: /home/runner/work/MLplayground/MLplayground/histograms/test_files/
