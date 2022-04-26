@@ -7,6 +7,7 @@ from tables.utilities.utilities import (
     render_boolean_cell,
     render_dataset,
     render_certify_button,
+    render_generic_state,
 )
 from listruns.utilities.luminosity import format_integrated_luminosity
 from certifier.models import TrackerCertification, RunReconstruction
@@ -195,12 +196,20 @@ class DeletedTrackerCertificationTable(tables.Table):
 
 
 class RunRegistryComparisonTable(tables.Table):
+    # Map of RR record states to css classes
+    RR_RECORD_STATE_MAP = {
+        "SIGNOFF": "state-mixed",
+        "OPEN": "state-bad",
+        "COMPLETED": "state-neutral",
+    }
+
     runreconstruction__run__run_number = tables.Column(verbose_name="Run Number")
     runreconstruction__run__run_type = tables.Column(verbose_name="Run Type")
     runreconstruction__reconstruction = tables.Column(verbose_name="Reco")
     pixel = tables.Column()
     strip = tables.Column()
     tracking = tables.Column()
+    state = tables.Column()
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered"}
@@ -213,6 +222,9 @@ class RunRegistryComparisonTable(tables.Table):
 
     def render_tracking(self, record):  # pragma: no cover
         return render_component(record.get("tracking"), record.get("tracking_lowstat"))
+
+    def render_state(self, record):  # pragma: no cover
+        return render_generic_state(record.get("state"), self.RR_RECORD_STATE_MAP)
 
 
 class OpenRunsTable(tables.Table):

@@ -33,6 +33,16 @@ def render_component(component, component_lowstat):  # pragma: no cover
     return component
 
 
+def render_generic_state(state: str = "", state_map: dict = {}):  # pragma: no cover
+    """
+    Renders an HTML div using the state as the key to the state map dict, 
+    containing the classes that should be applied to the div for the state
+    """
+    if not state in state_map:
+        return state
+    return mark_safe(f'<div class="{state_map[state]}">{state}</div>')
+
+
 def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_rereco):
     css_class = None
 
