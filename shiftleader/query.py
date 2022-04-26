@@ -565,30 +565,39 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         for rr_entry in run_registry_entries:
             try:
                 _get_run_type_from_run_class_and_dataset_name(
-                    rr_entry['class'], rr_entry['name'])
+                    rr_entry["class"], rr_entry["name"]
+                )
             except CannotAssumeRunTypeException as e:
                 logger.info(e)
                 # Run extra query for run info, get oms_attributes and insert
                 # them to the entry
-                rr_entry['oms_attributes'] = runregistry.get_run(
-                    run_number=rr_entry['run_number'])['oms_attributes']
+                rr_entry["oms_attributes"] = runregistry.get_run(
+                    run_number=rr_entry["run_number"]
+                )["oms_attributes"]
 
         convert_run_registry_to_trackercertification(run_registry_entries)
+
+        # Dirty fix for #108
         run_registry_tuple_set = {
-            tuple(d[key] for key in keys)
-            for d in run_registry_entries
+            tuple(d[key] for key in [*keys, "state"]) for d in run_registry_entries
         }
 
-        deviating_run_info_tuple_list = sorted(run_info_tuple_set -
-                                               run_registry_tuple_set)
+        deviating_run_info_tuple_list = sorted(
+            run_info_tuple_set - run_registry_tuple_set
+        )
         corresponding_run_registry_runs = []
         for run in deviating_run_info_tuple_list:
             elements = list(
-                filter(lambda x: x[0] == run[0] and x[2] == run[2],
-                       run_registry_tuple_set))
+                filter(
+                    lambda x: x[0] == run[0] and x[2] == run[2], run_registry_tuple_set
+                )
+            )
             if not elements:
                 elements = [("", "", "", "", "", "", False, False, False)]
             corresponding_run_registry_runs.extend(elements)
+
+        # Dirty fix for #108
+        keys.append("state")
 
         deviating_run_info_dict = [
             dict(zip(keys, run)) for run in deviating_run_info_tuple_list
