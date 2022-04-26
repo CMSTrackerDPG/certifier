@@ -10,12 +10,14 @@ from certifier import views
 from users.models import User
 from django.urls import reverse
 
+
 pytestmark = pytest.mark.django_db
+
 
 class TestCertify:
     def test_certify_get(self):
         run_number = 321123
-        arguments={'run_number': run_number }
+        arguments = {"run_number": run_number}
 
         req = RequestFactory().get(reverse("certify", kwargs=arguments))
 
@@ -30,7 +32,7 @@ class TestCertify:
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
-        arguments={'run_number': run_number}
+        arguments = {"run_number": run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -49,7 +51,9 @@ class TestCertify:
         assert {} == form.errors
         assert form.is_valid()
 
-        req = RequestFactory().post(reverse("certify", kwargs=arguments), data=form.data)
+        req = RequestFactory().post(
+            reverse("certify", kwargs=arguments), data=form.data
+        )
         req.user = mixer.blend(User)
 
         resp = views.certify(req, run_number)
@@ -62,7 +66,7 @@ class TestCertify:
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
-        arguments={'run_number': run_number}
+        arguments = {"run_number": run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -81,7 +85,9 @@ class TestCertify:
         assert {} == form.errors
         assert form.is_valid()
 
-        req = RequestFactory().post(reverse("certify", kwargs=arguments), data=form.data)
+        req = RequestFactory().post(
+            reverse("certify", kwargs=arguments), data=form.data
+        )
 
         req.user = mixer.blend(User)
 
@@ -94,7 +100,7 @@ class TestCertify:
         run_number = 321123
         ref_runReconstruction = mixer.blend(RunReconstruction)
         bad_reason = mixer.blend(BadReason)
-        arguments={'run_number': run_number}
+        arguments = {"run_number": run_number}
 
         data = {
             "reference_runreconstruction": ref_runReconstruction.pk,
@@ -109,7 +115,9 @@ class TestCertify:
         assert {} != form.errors
         assert form.is_valid() == False
 
-        req = RequestFactory().post(reverse("certify", kwargs=arguments), data=form.data)
+        req = RequestFactory().post(
+            reverse("certify", kwargs=arguments), data=form.data
+        )
         req.user = mixer.blend(User)
 
         resp = views.certify(req, run_number)
