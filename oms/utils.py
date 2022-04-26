@@ -19,7 +19,7 @@ def get_reco_from_dataset(dataset):
         return "rereco"
 
 
-def retrieve_dataset_by_reco(run_number, reco):
+def retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -37,7 +37,7 @@ def retrieve_dataset_by_reco(run_number, reco):
     raise Exception(f"Could not find reconstruction:{reco} for run {run_number}")
 
 
-def retrieve_dataset(run_number):
+def retrieve_dataset(run_number):  # pragma: no cover
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -55,7 +55,7 @@ def retrieve_dataset(run_number):
     raise Exception(f"Run {run_number} has been fully certified")
 
 
-def retrieve_fill(fill_number):
+def retrieve_fill(fill_number):  # pragma: no cover
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
     if fill_check.exists():
@@ -134,7 +134,7 @@ def retrieve_fill(fill_number):
     return OmsFill.objects.get(fill_number=fill_number)
 
 
-def retrieve_run(run_number):
+def retrieve_run(run_number):  # pragma: no cover
     """
     Helper function that, given a run number, tries to retrieve it
     by looking into the DB first, then the OMS API.

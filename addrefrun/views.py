@@ -3,17 +3,22 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from tables.tables import SimpleRunReconstructionTable
 from certifier.models import RunReconstruction, TrackerCertification
-from certifier.exceptions import RunReconstructionIsAlreadyReference, RunReconstructionNotYetCertified
+from certifier.exceptions import (
+    RunReconstructionIsAlreadyReference,
+    RunReconstructionNotYetCertified,
+)
 from oms.utils import retrieve_run
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
 
-@user_passes_test(lambda user: hasattr(user, 'has_shift_leader_rights') and
-                  user.has_shift_leader_rights,
-                  redirect_field_name=None)
-def addreference(request):
+@user_passes_test(
+    lambda user: hasattr(user, "has_shift_leader_rights")
+    and user.has_shift_leader_rights,
+    redirect_field_name=None,
+)
+def addreference(request):  # pragma: no cover
     """
     Main view for listing Reference Run Reconstructions
     and adding new ones as reference or promoting existing ones.
@@ -33,11 +38,12 @@ def addreference(request):
             run = retrieve_run(run_number)
 
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
-                run_id=run_number, reconstruction=reco)
+                run_id=run_number, reconstruction=reco
+            )
             if created:
                 messages.info(
-                    request,
-                    f"{run_reconstruction} created, must be certified first")
+                    request, f"{run_reconstruction} created, must be certified first"
+                )
 
             try:
                 run_reconstruction.promote_to_reference()
