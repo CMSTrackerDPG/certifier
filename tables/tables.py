@@ -201,6 +201,7 @@ class RunRegistryComparisonTable(tables.Table):
     pixel = tables.Column()
     strip = tables.Column()
     tracking = tables.Column()
+    state = tables.Column()
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered"}
@@ -213,6 +214,9 @@ class RunRegistryComparisonTable(tables.Table):
 
     def render_tracking(self, record):  # pragma: no cover
         return render_component(record.get("tracking"), record.get("tracking_lowstat"))
+
+    def render_state(self, record):  # pragma: no cover
+        return record.get("state")
 
 
 class OpenRunsTable(tables.Table):
