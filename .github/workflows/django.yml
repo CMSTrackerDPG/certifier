@@ -56,7 +56,7 @@ jobs:
         OMS_CLIENT_SECRET: ${{ secrets.OMS_CLIENT_SECRET }}
 
       run: |
-        PYTHONWARNINGS=all travis_retry pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
+        PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=. --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
     # - name: Run Functional Tests with Selenium on Chrome
     #   env:
     #     DIR_PATH_EOS_CMSML4DC: /home/runner/work/MLplayground/MLplayground/histograms/test_files/
