@@ -152,7 +152,11 @@ def retrieve_run(run_number):
         raise IndexError
 
     fill_number = response["attributes"].pop("fill_number")
-    fill = retrieve_fill(fill_number=fill_number)
+    # There's a chance there's no fill number, see #127
+    if fill_number:
+        fill = retrieve_fill(fill_number=fill_number)
+    else:
+        fill = None
 
     include_attribute_keys = [
         "run_number",
@@ -208,7 +212,8 @@ def retrieve_run(run_number):
     try:
         with transaction.atomic():
             OmsRun.objects.create(fill=fill, **run_kwargs)
-    except IntegrityError:
+    except IntegrityError as e:
+        logger.warning(f"{e} trying to create OmsRun")
         OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
 
     return OmsRun.objects.get(run_number=run_number)
