@@ -344,3 +344,38 @@ class OpenRunsTable(tables.Table):
         #     lambda record: ""
         #     if not hasattr(record.user, 'username') else record.user.username
         # }
+
+
+class ReferenceRunReconstructionTable(tables.Table):
+    """
+    A table to render RunReconstruction entries, mainly used in the addrefrun app
+    """
+
+    run = tables.Column(verbose_name="Run Number")
+    era = tables.Column(accessor="run.fill.era")
+    apv_mode = tables.Column()
+    b_field = tables.Column(accessor="run.fill.b_field")
+    run_type = tables.Column(accessor="run.run_type")
+    reconstruction = tables.Column()
+    peak_pileup = tables.Column(accessor="run.fill.peak_pileup")
+    colliding_bunches = tables.Column(accessor="run.fill.bunches_colliding")
+    delete_run = tables.TemplateColumn(
+        '<div align="center">'
+        "<a href=\"{% url 'delete:delete_reference' run_number=record.run.run_number reco=record.reconstruction%}\">"
+        '<i title="Permanently delete this reconstruction" class="bi bi-trash3"></i>'
+        "</a>"
+        "</div>",
+        orderable=False,
+        verbose_name="Delete",
+    )
+
+    class Meta:
+        model = RunReconstruction
+        fields = ()
+        attrs = {"class": "table table-hover table-bordered table-fixed"}
+
+    def render_run(self, reconstruction):  # pragma: no cover
+        """
+        :return: run number of the reference run
+        """
+        return reconstruction.run_number
