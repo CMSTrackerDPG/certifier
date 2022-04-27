@@ -26,7 +26,7 @@ class SimpleRunReconstructionTable(tables.Table):
     delete_run = tables.TemplateColumn(
         '<div align="center">'
         "<a href=\"{% url 'delete:delete_reference' run_number=record.run.run_number reco=record.reconstruction%}\">"
-        "Delete"
+        '<i title="Delete" class="bi bi-trash3"></i>'
         "</a>"
         "</div>",
         orderable=False,
