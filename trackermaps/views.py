@@ -13,16 +13,16 @@ from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
-TEST_BASH_SCRIPT = """
-echo Received commands: $1 $2
+# TEST_BASH_SCRIPT = """
+# echo Received commands: $1 $2
 
-for i in {1..10}
-do
-	echo "heheheeh kalispera filoi mou" $i
-	sleep 1
-done
+# for i in {1..10}
+# do
+# 	echo "heheheeh kalispera filoi mou" $i
+# 	sleep 1
+# done
 
-"""
+# """
 # TEST_BASH_SCRIPT = """
 # python3 -c "import salkdfklsadf"
 # """
@@ -111,8 +111,7 @@ def run_tracker_maps(run_type: str, run_number_list: list) -> bool:
 
 
 @user_passes_test(
-    lambda user: hasattr(user, "has_shift_leader_rights")
-    and user.has_shift_leader_rights,
+    lambda user: hasattr(user, "has_shifter_rights") and user.has_shifter_rights,
     redirect_field_name=None,
 )
 def maps(request):
