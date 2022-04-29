@@ -1,3 +1,6 @@
+import re
+import logging
+import requests
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
 
@@ -12,6 +15,8 @@ from tables.utilities.utilities import (
 from listruns.utilities.luminosity import format_integrated_luminosity
 from certifier.models import TrackerCertification, RunReconstruction
 from openruns.models import OpenRuns
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleRunReconstructionTable(tables.Table):
@@ -353,7 +358,7 @@ class ReferenceRunReconstructionTable(tables.Table):
 
     run = tables.Column(verbose_name="Run Number", accessor="run.run_number")
     era = tables.Column(accessor="run.fill.era")
-    apv_mode = tables.Column()
+    apv_mode = tables.Column(empty_values=())
     b_field = tables.Column(accessor="run.fill.b_field")
     run_type = tables.Column(accessor="run.run_type")
     reconstruction = tables.Column()
@@ -368,6 +373,38 @@ class ReferenceRunReconstructionTable(tables.Table):
         orderable=False,
         verbose_name="Delete",
     )
+
+    def __init__(self, *args, **kwargs):
+        self.ebutz_response_pattern = re.compile(
+            r"\[\[\"(?P<run_number_ebutz>\d{6})\"\,\"(?P<apv_mode>\w{4,5})\"\]\]"
+        )
+        super().__init__(*args, **kwargs)
+
+    def render_apv_mode(self, record):
+        run_number = record.run.run_number
+        r = requests.get(
+            f"http://ebutz.web.cern.ch/ebutz/cgi-bin/getReadOutmode.pl?RUN={run_number}"
+        )
+        try:
+            m = re.search(self.ebutz_response_pattern, r.text)
+            if m is None:
+                raise ValueError
+        except ValueError:
+            logger.error(f"Could not parse '{r.text}' as a list")
+            return None
+
+        try:
+            run_number_ebutz = int(m.group("run_number_ebutz"))
+        except ValueError:
+            logger.error(f"Could not parse '{m.group('run_number_ebutz')}' as a number")
+            return None
+
+        apv_mode = m.group("apv_mode")
+        if run_number != run_number_ebutz:
+            logger.error(
+                f"API returned wrong results (requested {run_number}, got {run_number_ebutz})"
+            )
+        return apv_mode
 
     class Meta:
         model = RunReconstruction
