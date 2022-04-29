@@ -351,7 +351,7 @@ class ReferenceRunReconstructionTable(tables.Table):
     A table to render RunReconstruction entries, mainly used in the addrefrun app
     """
 
-    run = tables.Column(verbose_name="Run Number")
+    run = tables.Column(verbose_name="Run Number", accessor="run.run_number")
     era = tables.Column(accessor="run.fill.era")
     apv_mode = tables.Column()
     b_field = tables.Column(accessor="run.fill.b_field")
@@ -373,9 +373,3 @@ class ReferenceRunReconstructionTable(tables.Table):
         model = RunReconstruction
         fields = ()
         attrs = {"class": "table table-hover table-bordered table-fixed"}
-
-    def render_run(self, reconstruction):  # pragma: no cover
-        """
-        :return: run number of the reference run
-        """
-        return reconstruction.run_number
