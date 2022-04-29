@@ -1,7 +1,7 @@
 import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from tables.tables import SimpleRunReconstructionTable
+from tables.tables import ReferenceRunReconstructionTable
 from certifier.models import RunReconstruction, TrackerCertification
 from certifier.exceptions import (
     RunReconstructionIsAlreadyReference,
@@ -65,7 +65,7 @@ def addreference(request):  # pragma: no cover
 
     # Get all reference runreconstructions and render them
     run_info_list = RunReconstruction.objects.filter(is_reference=True)
-    table = SimpleRunReconstructionTable(run_info_list)
+    table = ReferenceRunReconstructionTable(run_info_list)
 
     context["table"] = table
     context["run_number"] = run_number
