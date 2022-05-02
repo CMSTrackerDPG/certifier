@@ -1,5 +1,9 @@
-from django.http import HttpResponseRedirect
+import logging
+from xml.etree.ElementTree import ParseError
+from requests.exceptions import SSLError
+from django.http import HttpResponseRedirect, HttpResponseServerError
 from django_filters.views import FilterView
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django_tables2 import SingleTableMixin
@@ -10,19 +14,15 @@ from tables.tables import (
 )
 from certifier.models import TrackerCertification
 
-# from certifier.forms import CertifyForm
 from listruns.utilities.utilities import request_contains_filter_parameter
-
-# from listruns.filters import (
-#     TrackerCertificationFilter,
-#     ComputeLuminosityTrackerCertificationFilter,
-#     RunsFilter,
-# )
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
 from summary.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
+
+
+logger = logging.getLogger(__name__)
 
 
 @user_passes_test(
@@ -65,8 +65,13 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
         except Checklist.DoesNotExist:
             # shift leader checklist has not been created yet.
             pass
-
-        deviating, corresponding = self.filterset.qs.compare_with_run_registry()
+        try:
+            deviating, corresponding = self.filterset.qs.compare_with_run_registry()
+        except (SSLError, ParseError) as e:
+            msg = f"CERN Authentication error ({e})"
+            logger.error(msg)
+            messages.error(self.request, msg, extra_tags="danger")
+            return {}
 
         if deviating:
             context[
