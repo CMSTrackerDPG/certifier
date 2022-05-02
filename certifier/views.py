@@ -1,6 +1,7 @@
 import logging
 from xml.etree.ElementTree import ParseError
-from requests.exceptions import SSLError
+from requests.exceptions import SSLError, ConnectionError
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404, JsonResponse
@@ -104,10 +105,10 @@ def certify(request, run_number, reco=None):
 
             return render(request, "certifier/certify.html", context)
 
+    # Used "Certify a new run" button
     dataset = request.GET.get("dataset", None)
-
+    run = None
     try:
-
         run = retrieve_run(run_number)
         if not dataset:
             if not reco:
@@ -117,21 +118,30 @@ def certify(request, run_number, reco=None):
         else:
             dataset = dataset
 
-    except (IndexError, ConnectionError) as e:
-        context = {"message": "Run {} does not exist".format(run_number)}
+    except IndexError as e:
+        context = {"message": f"Run {run_number} does not exist"}
         logger.error(f"{context['message']} ({repr(e)})")
         return render(request, "certifier/404.html", context, status=404)
-    except (SSLError, ParseError) as e:
-        context = {"message": f"CERN Authentication error ({e})", "error_num": 500}
-        logger.error(f"{context['message']} ({repr(e)})")
-        return render(request, "certifier/http_error.html", context, status=500)
+    # TODO replace with cernrequests-specific Exception
+    except (ConnectionError, ParseError,) as e:
+        if isinstance(e, ConnectionError):
+            logger.warning(f"Unable to connect to external API: {e}")
+            messages.warning(
+                request,
+                "Unable to connect to RunRegisty. Please proceed to enter the data manually",
+            )
+        elif isinstance(e, ParseError):
+            logger.warning(f"CERN authentication failed: {e}")
     except Exception as e:
         context = {"message": e, "error_num": 500}
         logger.exception(repr(e))
         return render(request, "certifier/http_error.html", context, status=500)
 
     if not reco:
-        reco = get_reco_from_dataset(dataset)
+        if dataset:
+            reco = get_reco_from_dataset(dataset)
+        else:
+            reco = None
 
     # if this is a POST request we need to process the form data
     if request.method == "POST":
@@ -174,7 +184,7 @@ def certify(request, run_number, reco=None):
             return redirect("openruns:openruns")
 
     # if a GET (or any other method) we'll create a blank form
-    if request.method == "GET":
+    elif request.method == "GET":
         form = CertifyFormWithChecklistForm()
 
     context = {
