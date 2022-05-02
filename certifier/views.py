@@ -115,7 +115,6 @@ def certify(request, run_number, reco=None):
         else:
             dataset = dataset
 
-        # print(request)
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         logger.error(f"{context['message']} ({repr(e)})")

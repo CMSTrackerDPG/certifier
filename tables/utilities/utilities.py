@@ -1,5 +1,9 @@
+import logging
 from django.utils.safestring import mark_safe
 from certifier.models import TrackerCertification
+
+
+logger = logging.getLogger(__name__)
 
 
 def render_component(component, component_lowstat):  # pragma: no cover
@@ -142,7 +146,7 @@ def render_trackermap(trackermap):  # pragma: no cover
 
 def render_boolean_cell(value):  # pragma: no cover
     boolean_value = False if value is False or value == "0" or value == 0 else True
-    print("{} {}".format(value, boolean_value))
+    logger.debug(f"{value} {boolean_value}")
     glyphicon = "ok" if boolean_value else "remove"
 
     html = '<span class="glyphicon glyphicon-{}"></span>'.format(glyphicon, glyphicon)
