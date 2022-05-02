@@ -58,25 +58,17 @@ def certify(request, run_number, reco=None):
 
     logger.debug(f"Requesting certification of run {run_number} {reco if reco else ''}")
 
-    # Check if already certified
-    try:
-        certification = TrackerCertification.objects.get(
-            runreconstruction__run__run_number=run_number,
-            runreconstruction__reconstruction=reco,
-        )
-        if request.user != certification.user:
-            msg = f"Reconstruction {run_number} {reco} is already certified by another user"
-            logger.warning(msg)
-            return render(
-                request,
-                "certifier/http_error.html",
-                context={"error_num": 400, "message": msg},
-                status=400,
-            )
-    except TrackerCertification.DoesNotExist as e:
-        # Means that this specific certification does not exist yet
-        logger.debug(
-            f"Certification for {run_number} {reco if reco else ''} does not exist yet"
+    # Check if already certified by another user
+    if not TrackerCertification.can_be_certified_by_user(
+        run_number, reco, request.user
+    ):
+        msg = f"Reconstruction {run_number} {reco} is already certified by another user"
+        logger.warning(msg)
+        return render(
+            request,
+            "certifier/http_error.html",
+            context={"error_num": 400, "message": msg},
+            status=400,
         )
 
     # From openruns colored boxes
@@ -128,7 +120,7 @@ def certify(request, run_number, reco=None):
             logger.warning(f"Unable to connect to external API: {e}")
             messages.warning(
                 request,
-                "Unable to connect to RunRegisty. Please proceed to enter the data manually",
+                f"Unable to connect to external API. Please proceed to enter the data manually (Error: {e})",
             )
         elif isinstance(e, ParseError):
             logger.warning(f"CERN authentication failed: {e}")
@@ -183,7 +175,7 @@ def certify(request, run_number, reco=None):
 
             return redirect("openruns:openruns")
 
-    # if a GET (or any other method) we'll create a blank form
+    # If a GET, we'll create a blank form
     elif request.method == "GET":
         form = CertifyFormWithChecklistForm()
 

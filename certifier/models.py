@@ -170,14 +170,29 @@ class TrackerCertification(SoftDeletionModel):
     strip_problems = models.ManyToManyField(StripProblem, blank=True)
     tracking_problems = models.ManyToManyField(TrackingProblem, blank=True)
 
-    bad_reason = models.ForeignKey(BadReason,
-                                   null=True,
-                                   blank=True,
-                                   on_delete=models.SET_NULL)
+    bad_reason = models.ForeignKey(
+        BadReason, null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     date = models.DateField()
 
     comment = models.TextField(blank=True)
+
+    @classmethod
+    def can_be_certified_by_user(cls, run_number: int, reconstruction: str, user):
+        try:
+            certification = cls.objects.get(
+                runreconstruction__run__run_number=run_number,
+                runreconstruction__reconstruction=reconstruction,
+            )
+            if user != certification.user:
+                return False
+
+        except cls.DoesNotExist as e:
+            # This specific certification does not exist yet
+            pass
+
+        return True
 
     @property
     def is_good(self):
