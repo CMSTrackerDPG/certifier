@@ -358,7 +358,7 @@ class ReferenceRunReconstructionTable(tables.Table):
 
     run = tables.Column(verbose_name="Run Number", accessor="run.run_number")
     era = tables.Column(accessor="run.fill.era")
-    apv_mode = tables.Column(empty_values=())
+    apv_mode = tables.Column(empty_values=(), verbose_name="APV mode")
     b_field = tables.Column(accessor="run.fill.b_field")
     run_type = tables.Column(accessor="run.run_type")
     reconstruction = tables.Column()
