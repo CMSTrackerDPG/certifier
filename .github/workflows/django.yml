@@ -38,6 +38,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
+        git config --global url."https://${{ secrets.CERN_GITLAB_USER }}:${{ secrets.CERN_GITLAB_TOKEN }}@gitlab.cern.ch".insteadOf https://gitlab.cern.ch       
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
