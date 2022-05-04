@@ -1,5 +1,7 @@
+====================
 CertHelper internals
 ====================
+
 Information regarding the internals of this Django project, mainly targeting developers.
 
 ``certifier``
@@ -7,9 +9,13 @@ Information regarding the internals of this Django project, mainly targeting dev
 
 Views
 *****
+``addBadReasonForm``
+====================
+A simple form served at `/certify/addbadreasonform/` so that it can be loaded using jQuery (using ``load()``) on the `/certify/` page. 
+
 
 ``badReason``
--------------
+=============
 Allows the user to get existing :guilabel:`Bad Reasons` and add new ones.
 Responds in ``json`` format.  
 
@@ -18,7 +24,7 @@ This view is triggered by clicking on the :guilabel:`+` sign next to the :guilab
 A simple ``GET`` request to the page will just return the existing :guilabel:`Bad Reasons`.
   
 ``certify``
-___________
+===========
 This complicated view contains multiple functionalities:
 
 * Displays a form to certify a combination of run number & reconstruction type
@@ -38,6 +44,6 @@ The user can land on this page from:
 
 
 Bad Reasons
-^^^^^^^^^^^
-The form to submit a new bad reason is dynamically loaded via jQuery from the `/addbadreasonform/` URL and stored in the ``div`` with ``id="addBadReason"``. When the button to submit a new bad reason is pressed, a ``POST XMLHttpRequest`` is made to `/badreasons/` with the ``name`` and ``description`` of the new bad reason. A ``json`` response is returned.
+-----------
+The form to submit a new bad reason is dynamically loaded via jQuery from the `/certify/addbadreasonform/` URL and stored in the ``div`` with ``id="addBadReason"``. When the button to submit a new bad reason is pressed, a ``POST XMLHttpRequest`` is made to `/certify/badreasons/` with the ``name`` and ``description`` of the new bad reason. A ``json`` response is returned.
 
