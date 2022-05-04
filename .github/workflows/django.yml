@@ -1,0 +1,83 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8]
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        #         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        #
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
+
+    - name: Run Unit Tests
+      env:
+        # Main dir is /home/runner/work/certifier
+        DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+        DJANGO_DATABASE_ENGINE: django.db.backends.postgresql
+        DJANGO_DATABASE_NAME: postgres
+        DJANGO_DATABASE_USER: postgres
+        DJANGO_DATABASE_PORT: 5432
+        DJANGO_DATABASE_PASSWORD: postgres
+        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        OMS_CLIENT_ID: ${{ secrets.OMS_CLIENT_ID }}
+        OMS_CLIENT_SECRET: ${{ secrets.OMS_CLIENT_SECRET }}
+
+      run: |
+        PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=./ --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py
+        codecov
+
+    # - name: Run Functional Tests with Selenium on Chrome
+    #   env:
+    #     DIR_PATH_EOS_CMSML4DC: /home/runner/work/MLplayground/MLplayground/histograms/test_files/
+    #     DJANGO_DATABASE_ENGINE: ${{ secrets.DJANGO_DATABASE_ENGINE }}
+    #     DJANGO_DATABASE_NAME: ${{ secrets.DJANGO_DATABASE_NAME }}
+    #     DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+    #     DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+    #     FILE_PATH_EOS_CMSML4DC: ${{ secrets.FILE_PATH_EOS_CMSML4DC }}
+    #     WEB_BROWSER: Chrome
+    #   run: |
+    #     python manage.py test functional_tests
+    # - name: Run Functional Tests with Selenium on Firefox
+    #   env:
+    #     DIR_PATH_EOS_CMSML4DC: /home/runner/work/MLplayground/MLplayground/histograms/test_files/
+    #     DJANGO_DATABASE_ENGINE: ${{ secrets.DJANGO_DATABASE_ENGINE }}
+    #     DJANGO_DATABASE_NAME: ${{ secrets.DJANGO_DATABASE_NAME }}
+    #     DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+    #     DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+    #     FILE_PATH_EOS_CMSML4DC: ${{ secrets.FILE_PATH_EOS_CMSML4DC }}
+    #     WEB_BROWSER: Firefox
+    #   run: |
+    #     python manage.py test functional_tests

@@ -1,4 +1,6 @@
 import logging
+from xml.etree.ElementTree import ParseError
+from requests.exceptions import SSLError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404, JsonResponse
@@ -53,26 +55,7 @@ def promoteToReference(request, run_number, reco):
 @login_required
 def certify(request, run_number, reco=None):
 
-    logger.debug(f"Requesting certification of run {run_number}")
-
-    # Check if run is already booked
-    # try:
-    #     open_run = OpenRuns.objects.get(run_number=run_number)
-    #     if request.user != open_run.user:
-    #         msg = f"Run {run_number} is already booked by another user"
-    #         logger.warning(msg)
-    #         return render(
-    #             request,
-    #             "certifier/http_error.html",
-    #             context={
-    #                 "error_num": 400,
-    #                 "message": msg
-    #             },
-    #         )
-
-    # except OpenRuns.DoesNotExist as e:
-    #     # Means that OpenRun does not exist
-    #     logger.debug(f"Open run for {run_number} does not exist yet")
+    logger.debug(f"Requesting certification of run {run_number} {reco if reco else ''}")
 
     # Check if already certified
     try:
@@ -81,17 +64,19 @@ def certify(request, run_number, reco=None):
             runreconstruction__reconstruction=reco,
         )
         if request.user != certification.user:
-            print(request.user, certification.user.username)
             msg = f"Reconstruction {run_number} {reco} is already certified by another user"
             logger.warning(msg)
             return render(
                 request,
                 "certifier/http_error.html",
                 context={"error_num": 400, "message": msg},
+                status=400,
             )
     except TrackerCertification.DoesNotExist as e:
         # Means that this specific certification does not exist yet
-        logger.debug(f"Certification for {run_number} {reco} does not exist yet")
+        logger.debug(
+            f"Certification for {run_number} {reco if reco else ''} does not exist yet"
+        )
 
     # From openruns colored boxes
     if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
@@ -132,15 +117,18 @@ def certify(request, run_number, reco=None):
         else:
             dataset = dataset
 
-        # print(request)
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         logger.error(f"{context['message']} ({repr(e)})")
-        return render(request, "certifier/404.html", context)
+        return render(request, "certifier/404.html", context, status=404)
+    except (SSLError, ParseError) as e:
+        context = {"message": f"CERN Authentication error ({e})", "error_num": 500}
+        logger.error(f"{context['message']} ({repr(e)})")
+        return render(request, "certifier/http_error.html", context, status=500)
     except Exception as e:
-        context = {"message": e}
+        context = {"message": e, "error_num": 500}
         logger.exception(repr(e))
-        return render(request, "certifier/404.html", context)
+        return render(request, "certifier/http_error.html", context, status=500)
 
     if not reco:
         reco = get_reco_from_dataset(dataset)

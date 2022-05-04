@@ -1,5 +1,8 @@
-[![Build Status](https://travis-ci.com/CMSTrackerDPG/certifier.svg?branch=master)](https://travis-ci.com/CMSTrackerDPG/certifier)
-<!-- [![Build Status](https://travis-ci.com/CMSTrackerDPG/certifier.svg?branch=develop)](https://travis-ci.com/CMSTrackerDPG/certifier) -->
+
+Master: [![Django CI](https://github.com/CMSTrackerDPG/certifier/actions/workflows/django.yml/badge.svg)](https://github.com/CMSTrackerDPG/certifier/actions/workflows/django.yml)
+
+Development: [![Django CI](https://github.com/CMSTrackerDPG/certifier/actions/workflows/django.yml/badge.svg?branch=develop)](https://github.com/CMSTrackerDPG/certifier/actions/workflows/django.yml)
+
 [![codecov](https://codecov.io/gh/CMSTrackerDPG/certifier/branch/master/graph/badge.svg)](https://codecov.io/gh/CMSTrackerDPG/certifier)
 
 # Tracker Data Certification Helper

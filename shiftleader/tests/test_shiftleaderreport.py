@@ -3,7 +3,10 @@ import pytest
 import os
 from django.utils import timezone
 from certifier.models import TrackerCertification
-from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport, ShiftLeaderReportDay
+from shiftleader.utilities.ShiftLeaderReport import (
+    ShiftLeaderReport,
+    ShiftLeaderReportDay,
+)
 from shiftleader.utilities.utilities import to_date
 from utilities.utilities import create_runs
 
@@ -23,9 +26,9 @@ class TestShiftLeaderReport:
         assert math.isclose(
             161301.363,
             report.collisions().express().integrated_luminosity(),
-            abs_tol=0.1)
-        assert report.prompt().collisions().integrated_luminosity(
-        ) == 123133.554
+            abs_tol=0.1,
+        )
+        assert report.prompt().collisions().integrated_luminosity() == 123133.554
         assert report.express().cosmics().integrated_luminosity() == 0.1234
         assert report.cosmics().prompt().integrated_luminosity() == 0
 
@@ -35,8 +38,7 @@ class TestShiftLeaderReport:
         assert report.bad().prompt().cosmics().total_number() == 1
 
         assert report.bad().collisions().express().integrated_luminosity() == 0
-        assert report.bad().collisions().prompt().integrated_luminosity(
-        ) == 123133.554
+        assert report.bad().collisions().prompt().integrated_luminosity() == 123133.554
         assert report.bad().cosmics().express().integrated_luminosity() == 0
         assert report.bad().cosmics().prompt().integrated_luminosity() == 0
 
@@ -133,8 +135,7 @@ class TestShiftLeaderReport:
         assert day.cosmics().express().total_number() == 0
         assert day.cosmics().prompt().total_number() == 0
 
-        assert day.collisions().express().integrated_luminosity(
-        ) == 154543 + 124.123
+        assert day.collisions().express().integrated_luminosity() == 154543 + 124.123
         assert day.prompt().collisions().integrated_luminosity() == 0
         assert day.express().cosmics().integrated_luminosity() == 0
         assert day.cosmics().prompt().integrated_luminosity() == 0
@@ -156,8 +157,7 @@ class TestShiftLeaderReport:
         assert day.cosmics().express().total_number() == 0
         assert day.cosmics().prompt().total_number() == 0
 
-        assert day.collisions().express().integrated_luminosity(
-        ) == 154543 + 124.123
+        assert day.collisions().express().integrated_luminosity() == 154543 + 124.123
         assert day.prompt().collisions().integrated_luminosity() == 0
         assert day.express().cosmics().integrated_luminosity() == 0
         assert day.cosmics().prompt().integrated_luminosity() == 0
@@ -190,8 +190,7 @@ class TestShiftLeaderReport:
         assert day.bad().prompt().cosmics().total_number() == 0
 
         assert day.bad().collisions().express().integrated_luminosity() == 0
-        assert day.bad().collisions().prompt().integrated_luminosity(
-        ) == 123132.32
+        assert day.bad().collisions().prompt().integrated_luminosity() == 123132.32
         assert day.bad().cosmics().express().integrated_luminosity() == 0
         assert day.bad().cosmics().prompt().integrated_luminosity() == 0
 
@@ -208,7 +207,8 @@ class TestShiftLeaderReport:
         create_runs(2, 40, "cosmics", "rereco", good=False)
 
         runs = TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number")
+            "runreconstruction__run__run_number"
+        )
         report = ShiftLeaderReport(runs)
 
         assert [
@@ -222,8 +222,7 @@ class TestShiftLeaderReport:
             8,
             9,
         ] == report.collisions().express().run_numbers()
-        assert [10, 11, 12, 15, 16,
-                17] == report.collisions().prompt().run_numbers()
+        assert [10, 11, 12, 15, 16, 17] == report.collisions().prompt().run_numbers()
         assert [
             21,
             22,
@@ -235,32 +234,25 @@ class TestShiftLeaderReport:
             28,
             29,
         ] == report.cosmics().express().run_numbers()
-        assert [30, 31, 32, 35, 36,
-                37] == report.cosmics().prompt().run_numbers()
+        assert [30, 31, 32, 35, 36, 37] == report.cosmics().prompt().run_numbers()
 
-        assert [1, 2, 3, 4,
-                5] == report.collisions().express().good().run_numbers()
-        assert [10, 11,
-                12] == report.collisions().prompt().good().run_numbers()
-        assert [21, 22, 23, 24,
-                25] == report.cosmics().express().good().run_numbers()
+        assert [1, 2, 3, 4, 5] == report.collisions().express().good().run_numbers()
+        assert [10, 11, 12] == report.collisions().prompt().good().run_numbers()
+        assert [21, 22, 23, 24, 25] == report.cosmics().express().good().run_numbers()
         assert [30, 31, 32] == report.cosmics().prompt().good().run_numbers()
 
-        assert [6, 7, 8,
-                9] == report.collisions().express().bad().run_numbers()
+        assert [6, 7, 8, 9] == report.collisions().express().bad().run_numbers()
         assert [15, 16, 17] == report.collisions().prompt().bad().run_numbers()
-        assert [26, 27, 28,
-                29] == report.cosmics().express().bad().run_numbers()
+        assert [26, 27, 28, 29] == report.cosmics().express().bad().run_numbers()
         assert [35, 36, 37] == report.cosmics().prompt().bad().run_numbers()
 
-        assert [38, 39, 40,
-                41] == report.cosmics().rereco().bad().run_numbers()
-        assert [38, 39, 40,
-                41] == report.cosmics().rereco().bad().run_numbers()
+        assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
+        assert [38, 39, 40, 41] == report.cosmics().rereco().bad().run_numbers()
 
-    @pytest.mark.skipif('TRAVIS' in os.environ,
-                        reason="skipped due to travis not being able to run it"
-                        )
+    @pytest.mark.skipif(
+        "GITHUB_ACTIONS" in os.environ,
+        reason="skipped due to GitHub actions not being able to run it",
+    )
     def test_fill_numbers(self):
         create_runs(1, 321177, "cosmics", "express")
         create_runs(1, 321178, "cosmics", "express")
@@ -268,14 +260,16 @@ class TestShiftLeaderReport:
         create_runs(1, 323500, "cosmics", "express")
 
         runs = TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number")
+            "runreconstruction__run__run_number"
+        )
         report = ShiftLeaderReport(runs)
 
         assert [7048, 7052] == report.cosmics().express().good().fill_numbers()
 
-    @pytest.mark.skipif('TRAVIS' in os.environ,
-                        reason="skipped due to travis not being able to run it"
-                        )
+    @pytest.mark.skipif(
+        "GITHUB_ACTIONS" in os.environ,
+        reason="skipped due to GitHub actions not being able to run it",
+    )
     def test_fills(self):
         create_runs(1, 321171, "cosmics", "express")
         create_runs(1, 321179, "cosmics", "express")
@@ -284,16 +278,14 @@ class TestShiftLeaderReport:
         create_runs(1, 321185, "cosmics", "express")
 
         runs = TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number")
+            "runreconstruction__run__run_number"
+        )
         report = ShiftLeaderReport(runs)
 
-        assert [{
-            'fill_number': 7049,
-            'run_number': [321185, 321182]
-        }, {
-            'fill_number': 7048,
-            'run_number': [321181, 321179, 321171]
-        }] == report.cosmics().express().good().fills()
+        assert [
+            {"fill_number": 7049, "run_number": [321185, 321182]},
+            {"fill_number": 7048, "run_number": [321181, 321179, 321171]},
+        ] == report.cosmics().express().good().fills()
 
     def test_flag_changed(self):
         today = timezone.now().date
@@ -304,41 +296,28 @@ class TestShiftLeaderReport:
         runs = TrackerCertification.objects.all()
         report = ShiftLeaderReportDay(runs)
 
-        assert [321171, 321171, 321172, 321172, 321173,
-                321173] == report.flag_changed().run_numbers()
+        assert [
+            321171,
+            321171,
+            321172,
+            321172,
+            321173,
+            321173,
+        ] == report.flag_changed().run_numbers()
 
     def test_list_of_run_certified(self):
-        create_runs(2,
-                    1,
-                    "collisions",
-                    "express",
-                    good=True,
-                    date="2018-05-14")
-        create_runs(2,
-                    6,
-                    "collisions",
-                    "express",
-                    good=False,
-                    date="2018-05-14")
-        create_runs(2,
-                    10,
-                    "collisions",
-                    "prompt",
-                    good=True,
-                    date="2018-05-15")
-        create_runs(2,
-                    15,
-                    "collisions",
-                    "prompt",
-                    good=False,
-                    date="2018-05-15")
+        create_runs(2, 1, "collisions", "express", good=True, date="2018-05-14")
+        create_runs(2, 6, "collisions", "express", good=False, date="2018-05-14")
+        create_runs(2, 10, "collisions", "prompt", good=True, date="2018-05-15")
+        create_runs(2, 15, "collisions", "prompt", good=False, date="2018-05-15")
         create_runs(2, 21, "cosmics", "express", good=True, date="2018-05-14")
         create_runs(2, 26, "cosmics", "express", good=False, date="2018-05-16")
         create_runs(2, 30, "cosmics", "prompt", good=True, date="2018-05-14")
         create_runs(2, 35, "cosmics", "prompt", good=False, date="2018-05-14")
 
         runs = TrackerCertification.objects.all().order_by(
-            "runreconstruction__run__run_number")
+            "runreconstruction__run__run_number"
+        )
         report = ShiftLeaderReport(runs)
 
         days = report.day_by_day()

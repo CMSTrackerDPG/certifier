@@ -8,7 +8,7 @@ from omsapi.apiconfig import (
 )
 
 
-def get_oms_api():
+def get_oms_api():  # pragma: no cover
     """
     These parameters can be changed in the file apiconfig.py
     """
@@ -17,7 +17,7 @@ def get_oms_api():
     return omsapi
 
 
-def get_oms_fill(fill_number):
+def get_oms_fill(fill_number):  # pragma: no cover
     omsapi = get_oms_api()
     oms_query = omsapi.query("fills")
     oms_query.filter("fill_number", fill_number)
@@ -27,7 +27,7 @@ def get_oms_fill(fill_number):
     return None
 
 
-def get_oms_run(run_number):
+def get_oms_run(run_number):  # pragma: no cover
     omsapi = get_oms_api()
     oms_query = omsapi.query("runs")
     oms_query.filter("run_number", run_number)
@@ -37,7 +37,7 @@ def get_oms_run(run_number):
     return None
 
 
-def get_oms_lumisection_count(run_number):
+def get_oms_lumisection_count(run_number):  # pragma: no cover
     omsapi = get_oms_api()
     oms_query = omsapi.query("lumisections")
     oms_query.filter("run_number", run_number).sort("lumisection_number", asc=False)
