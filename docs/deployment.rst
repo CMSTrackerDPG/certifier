@@ -12,6 +12,7 @@ An overview of the steps is:
 - Add nginx server (`Add nginx Server (not working for now)`_)
 - Setup CERN SSO (`Single Sign-On`_)
 - Deploy (`Deploying a new build`_)
+- Expose the app (`Exposing the app`_)
 
 The procedure can be done completely via the web UI provided by PaaS. However,
 the ``oc`` command line utility can prove very useful. See `oc command line utility`_
@@ -431,13 +432,29 @@ is taking place.
 
 The ``dev-certhelper`` instance can be updated at will.
 
-To automate deployment, the ``oc start-build <build-config>`` can be used
-as a crontab job. See the `official documentation
-<https://docs.openshift.com/container-platform/3.11/dev_guide/builds/basic_build_operations.html>`__
-for more info
+To automate deployment, use OpenShift's :guilabel:`CronJobs` to create pods based on the ``curlimages/curl`` image:
 
+* Navigate to the project's `BuildConfig <https://paas.cern.ch/k8s/ns/certhelper/buildconfigs/certification-helper>`__, find the :guilabel:`Generic` webhook shown at the bottom of the page and click :guilabel:`Copy URL with Secret`.
+* Navigate to :menuselection:`Administrator --> Workloads --> CronJobs` (`link <https://paas.cern.ch/k8s/ns/certhelper/cronjobs>`__) and create a new :guilabel:`CronJob`.
+* Update ``name`` under ``metadata`` to something meaningful (e.g.: ``scheduled-deployment``)
+* Update ``schedule`` under ``spec`` to the desired crontab (e.g.: ``'0 0 * * 1,5'``, time is in UTC)
+* Use ``curlimages/curl`` as ``image``
+* Under ``args`` paste:
+  ::
 
+	 args:
+	 - curl
+	 - '-X'
+	 - POST
+	 - '-k'
+	 - >-
+	   <the Generic Webhook you copied earlier>
 
+A new pod will be created under the crontab schedule you configured, triggering a new build.
+
+Exposing the app
+----------------
+See the `PaaS docs <https://paas.docs.cern.ch/5._Exposing_The_Application/2-network-visibility/>`__ on how to make the app visible from outside the CERN GPN.
 
 
 
