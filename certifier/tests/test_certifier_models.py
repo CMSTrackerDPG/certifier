@@ -172,7 +172,7 @@ class TestTrackerCertification:
         trackerCertification = mixer.blend(
             TrackerCertification, runreconstruction=runReconstruction, strip="bad"
         )
-        assert True == trackerCertification.is_bad
+        assert trackerCertification.is_bad is True
 
     def test_certification_same_user(self):
         test_number = 323444
