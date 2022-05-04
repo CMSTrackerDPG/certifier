@@ -1,4 +1,5 @@
 import logging
+from django.shortcuts import reverse
 from django.utils.safestring import mark_safe
 from certifier.models import TrackerCertification
 
@@ -76,12 +77,12 @@ def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_r
     else:
         return mark_safe(
             '<div align="center">'
-            '<a href="\certify\{}">'
+            '<a href="{}">'
             '<button class="btn btn-block btn-info" id="id_table_certify">'
             "Certify This Run"
             "</button>"
             "</a>"
-            "</div>".format(run_number)
+            "</div>".format(reverse("certify", kwargs={"run_number": run_number}))
         )
 
 
@@ -103,18 +104,23 @@ def render_dataset(run_number, dataset, state, reco, user):  # pragma: no cover
         if exists and certification.user == user:
             return mark_safe(
                 '<div align="center">'
-                '<a href="/list/{0}/update/{1}/{2}">'
+                '<a href="{0}">'
                 '<button class="btn btn-block btn-success" id="id_table_certify" title="Update existing certification">'
-                "{3}"
+                "{1}"
                 "</button>"
                 "</a>"
                 "</div>".format(
-                    TrackerCertification.objects.get(
-                        runreconstruction__run__run_number=run_number,
-                        runreconstruction__reconstruction=reco,
-                    ).pk,
-                    run_number,
-                    reco,
+                    reverse(
+                        "listruns:update",
+                        kwargs={
+                            "pk": TrackerCertification.objects.get(
+                                runreconstruction__run__run_number=run_number,
+                                runreconstruction__reconstruction=reco,
+                            ).pk,
+                            "run_number": run_number,
+                            "reco": reco,
+                        },
+                    ),
                     dataset,
                 )
             )
@@ -129,12 +135,12 @@ def render_dataset(run_number, dataset, state, reco, user):  # pragma: no cover
     # Reconstruction state is OPEN and There's no certification yet
     return mark_safe(
         '<div align="center">'
-        '<a href="/certify/{0}/?dataset={1}">'
+        '<a href="{0}?dataset={1}">'
         '<button class="btn btn-block btn-warning" id="id_table_certify" title="Available for certification">'
         "{1}"
         "</button>"
         "</a>"
-        "</div>".format(run_number, dataset)
+        "</div>".format(reverse("certify", kwargs={"run_number": run_number}), dataset)
     )
 
 
