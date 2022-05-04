@@ -140,6 +140,7 @@ def retrieve_run(run_number):  # pragma: no cover
     by looking into the DB first, then the OMS API.
     If not in DB, a new entry is created and returned.
     If the API returns no results, raises an IndexError
+    If the API is unreachable, raises a requests.exceptions.ConnectionError
     """
     run_check = OmsRun.objects.filter(run_number=run_number)
     if run_check.exists():
