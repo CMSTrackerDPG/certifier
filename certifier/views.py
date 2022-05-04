@@ -73,7 +73,6 @@ def certify(request, run_number, reconstruction_type=None):
             status=400,
         )
 
-    # Used "Certify a new run" button
     dataset = request.GET.get("dataset", None)
     run = None
     try:
@@ -121,44 +120,8 @@ def certify(request, run_number, reconstruction_type=None):
 
     # if this is a POST request we need to process the form data
     if request.method == "POST":
-        try:
-            runReconstruction = RunReconstruction.objects.get(
-                run__run_number=run_number, reconstruction=reconstruction_type
-            )
-        except RunReconstruction.DoesNotExist:
-            runReconstruction = RunReconstruction.objects.create(
-                run=run, reconstruction=reconstruction_type
-            )
 
-        dataset = Dataset.objects.get_or_create(dataset=dataset)
-
-        user = User.objects.get(pk=request.user.id)
-
-        # create a form instance and populate it with data from the request:
-        form = CertifyFormWithChecklistForm(request.POST)
-
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            try:
-                trackerCertification = TrackerCertification.objects.get(
-                    runreconstruction=runReconstruction
-                )
-            except TrackerCertification.DoesNotExist:
-                formToSave = form.save(commit=False)
-                formToSave.runreconstruction = runReconstruction
-                formToSave.dataset = dataset
-                formToSave.user = user
-                formToSave.save()
-                form.save_m2m()
-
-            return redirect("openruns:openruns")
-
-    # If a GET, we'll create a blank form
-    elif request.method == "GET":
-        # From openruns colored boxes
+        # Add bad reason
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
             name = request.POST.get("name", None)
             dataset = request.POST.get("dataset", None)
@@ -175,7 +138,7 @@ def certify(request, run_number, reconstruction_type=None):
 
                 context = {
                     "run_number": run_number,
-                    "reco": reconstruction_type,
+                    "reconstruction_type": reconstruction_type,
                     "run": run,
                     "dataset": dataset,
                     "form": form,
@@ -183,12 +146,58 @@ def certify(request, run_number, reconstruction_type=None):
 
                 return render(request, "certifier/certify.html", context)
 
+        try:
+            runReconstruction = RunReconstruction.objects.get(
+                run__run_number=run_number, reconstruction=reconstruction_type
+            )
+        except RunReconstruction.DoesNotExist:
+            runReconstruction = RunReconstruction.objects.create(
+                run=run, reconstruction=reconstruction_type
+            )
+
+        dataset, _ = Dataset.objects.get_or_create(dataset=dataset)
+
+        user = User.objects.get(pk=request.user.id)
+
+        # create a form instance and populate it with data from the request:
+        form = CertifyFormWithChecklistForm(request.POST)
+
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            try:
+                trackerCertification = TrackerCertification.objects.get(
+                    runreconstruction=runReconstruction
+                )
+                messages.warning(
+                    request,
+                    f"Certification for {trackerCertification.runreconstruction.run.run_number} {trackerCertification.runreconstruction.reconstruction} already exists",
+                )
+            except TrackerCertification.DoesNotExist:
+                formToSave = form.save(commit=False)
+                formToSave.runreconstruction = runReconstruction
+                formToSave.dataset = dataset
+                formToSave.user = user
+                formToSave.save()
+                form.save_m2m()
+                messages.info(
+                    request,
+                    f"Certification for {trackerCertification.runreconstruction.run.run_number} {trackerCertification.runreconstruction.reconstruction} successfully saved",
+                )
+            return redirect("openruns:openruns")
+
+    # If a GET, we'll create a blank form
+    elif request.method == "GET":
+        # From openruns colored boxes
+
         # Default behavior
         form = CertifyFormWithChecklistForm()
 
     context = {
         "run_number": run_number,
-        "reco": reconstruction_type,
+        "reconstruction_type": reconstruction_type,
         "run": run,
         "dataset": dataset,
         "form": form,
