@@ -1,7 +1,6 @@
 import pytest
 from mixer.backend.django import mixer
-
-from django.http import QueryDict
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory
 from certifier.models import *
 from certifier.forms import *
@@ -55,10 +54,12 @@ class TestCertify:
             reverse("certify", kwargs=arguments), data=form.data
         )
         req.user = mixer.blend(User)
-
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
         resp = views.certify(req, run_number)
 
-        assert 302 == resp.status_code, "should redirect to success view"
+        assert 302 == resp.status_code, "should redirect to openruns"
         assert TrackerCertification.objects.exists()
 
     def test_certify_other_users_certification(self):
@@ -142,7 +143,7 @@ class TestCertify:
 
         resp = views.certify(req, run_number)
 
-        assert 200 == resp.status_code, "should not redirect to success view"
+        assert 404 == resp.status_code, "should not redirect to success view"
         assert TrackerCertification.objects.exists() == False
 
     def test_certify_invalid_no_selection(self):
