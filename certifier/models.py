@@ -197,7 +197,7 @@ class TrackerCertification(SoftDeletionModel):
             if user != certification.user:
                 return False
 
-        except cls.DoesNotExist as e:
+        except cls.DoesNotExist:
             # This specific certification does not exist yet
             pass
 
