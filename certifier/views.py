@@ -52,6 +52,10 @@ def badReason(request):
 
 @login_required
 def addBadReasonForm(request):
+    """
+    View which makes available a BadReasonForm.
+    Used by the certify view to load the form via jQuery.load().
+    """
     form = BadReasonForm()
 
     return render(request, "certifier/badreason.html", {"form": form})
@@ -60,7 +64,7 @@ def addBadReasonForm(request):
 @login_required
 def promoteToReference(request, run_number, reco):
     """
-    View which is called from the Shift Leader View, to promote a specific run 
+    View which is called from the Shift Leader View, to promote a specific run
     reconstruction to a reference one.
     """
     try:
@@ -111,7 +115,9 @@ def certify(request, run_number, reco=None):
             "listruns:update", pk=certification.pk, run_number=run_number, reco=reco
         )
 
+    # This is only available from openruns colored boxes
     dataset = request.GET.get("dataset", None)
+
     run = None
     try:
         run = retrieve_run(run_number)
@@ -125,7 +131,10 @@ def certify(request, run_number, reco=None):
         context = {"message": f"Run {run_number} does not exist"}
         logger.error(f"{context['message']} ({repr(e)})")
         return render(request, "certifier/404.html", context, status=404)
-    except (ConnectionError, ParseError,) as e:
+    except (
+        ConnectionError,
+        ParseError,
+    ) as e:
         if isinstance(e, ConnectionError):
             msg = "Unable to connect to external API."
         elif isinstance(e, ParseError):
@@ -142,8 +151,7 @@ def certify(request, run_number, reco=None):
             }
             return render(request, "certifier/http_error.html", context, status=400)
         # Proceed with warning
-        else:
-            messages.warning(request, msg)
+        messages.warning(request, msg)
 
     except Exception as e:
         context = {"message": e, "error_num": 500}
@@ -156,7 +164,7 @@ def certify(request, run_number, reco=None):
         else:
             reco = None
 
-    # if this is a POST request we need to process the form data
+    # Certification submission
     if request.method == "POST":
 
         try:
@@ -201,11 +209,10 @@ def certify(request, run_number, reco=None):
                 )
             return redirect("openruns:openruns")
 
-    # If a GET, we'll create a blank form
-    elif request.method == "GET":
-        # From openruns colored boxes
+        messages.error(request, "Submitted form was invalid!")
 
-        # Default behavior
+    # From openruns openruns page, create a blank form
+    elif request.method == "GET":
         form = CertifyFormWithChecklistForm()
 
     context = {
