@@ -157,10 +157,7 @@ def certify(request, run_number, reco=None):
                 run=run, reconstruction=reco
             )
 
-        try:
-            dataset = Dataset.objects.get(dataset=dataset)
-        except Dataset.DoesNotExist:
-            dataset = Dataset.objects.create(dataset=dataset)
+        dataset = Dataset.objects.get_or_create(dataset=dataset)
 
         user = User.objects.get(pk=request.user.id)
 
