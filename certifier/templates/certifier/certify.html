@@ -31,7 +31,7 @@
                                 {{ run_number }}
                                 </a>
                             </span>
-                            <span class="badge badge-pill badge-success">{{ reconstruction_type|capfirst }}</span>
+                            <span class="badge badge-pill badge-success">{{ reco|capfirst }}</span>
                             <span class="badge badge-pill badge-success">{{ dataset }}</span>
                             {% if user.is_superuser %}
                             <!-- super secret button for developers -->
@@ -535,7 +535,7 @@ expandTextarea('id_comment_box', 90);
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
-        $("#addBadReason").load("{% url 'addbadreason' %}");
+        $("#addBadReason").load("{% url 'addbadreasonform' %}");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
         });
@@ -555,7 +555,7 @@ function add_bad_reason(){
     $.ajax({
         headers: { "X-CSRFToken": '{{csrf_token}}' },
         type: "POST",
-        url: "{% url 'certify' run_number=run_number reconstruction_type=reconstruction_type %}",
+        url: "{% url 'certify' run_number=run_number reco=reco %}",
         data: {
            'name': $('#id_bad_reason_name').val(),
            'description' : $('#id_bad_reason_desc').val(),
