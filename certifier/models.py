@@ -179,7 +179,16 @@ class TrackerCertification(SoftDeletionModel):
     comment = models.TextField(blank=True)
 
     @classmethod
-    def can_be_certified_by_user(cls, run_number: int, reconstruction: str, user):
+    def can_be_certified_by_user(
+        cls, run_number: int, reconstruction: str, user
+    ) -> bool:
+        """
+        Returns True if run_number/reconstruction combination certification does not exist
+        OR exists and is certified by the user specified.
+        
+        Returns False if certification exists and is certified by another user.
+        
+        """
         try:
             certification = cls.objects.get(
                 runreconstruction__run__run_number=run_number,
