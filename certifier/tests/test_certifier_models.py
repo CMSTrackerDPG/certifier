@@ -175,6 +175,9 @@ class TestTrackerCertification:
         assert trackerCertification.is_bad is True
 
     def test_certification_same_user(self):
+        """
+        Same user can edit own certification
+        """
         test_number = 323444
         user = mixer.blend(User)
         runReconstruction = mixer.blend(
@@ -190,7 +193,22 @@ class TestTrackerCertification:
             is True
         )
 
+    def test_certification_does_not_exist(self):
+        """
+        Non-existent certification should be certifiable
+        """
+        user = mixer.blend(User)
+        assert (
+            TrackerCertification.can_be_certified_by_user(
+                354355, reconstruction="express", user=user
+            )
+            is True
+        )
+
     def test_certification_different_user(self):
+        """
+        Different user cannot certify other's certification
+        """
         test_number = 323444
         user_a = mixer.blend(User)
         user_b = mixer.blend(User)
