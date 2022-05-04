@@ -54,15 +54,17 @@ def promoteToReference(request, run_number, reco):
 
 
 @login_required
-def certify(request, run_number, reco=None):
+def certify(request, run_number, reconstruction_type=None):
 
-    logger.debug(f"Requesting certification of run {run_number} {reco if reco else ''}")
+    logger.debug(
+        f"Requesting certification of run {run_number} {reconstruction_type if reconstruction_type else ''}"
+    )
 
-    # Check if already certified by another user
+    # Check if specific combination can be certified by current user
     if not TrackerCertification.can_be_certified_by_user(
-        run_number, reco, request.user
+        run_number, reconstruction_type, request.user
     ):
-        msg = f"Reconstruction {run_number} {reco} is already certified by another user"
+        msg = f"Reconstruction {run_number} {reconstruction_type} is already certified by another user"
         logger.warning(msg)
         return render(
             request,
@@ -71,61 +73,32 @@ def certify(request, run_number, reco=None):
             status=400,
         )
 
-    # From openruns colored boxes
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
-        name = request.POST.get("name", None)
-        dataset = request.POST.get("dataset", None)
-        description = request.POST.get("description", None)
-        run = OmsRun.objects.get(run_number=run_number)
-
-        if name and description and dataset:
-
-            try:
-                BadReason.objects.get(name=name)
-            except BadReason.DoesNotExist:
-                BadReason.objects.create(name=name, description=description)
-
-            form = CertifyFormWithChecklistForm()
-
-            context = {
-                "run_number": run_number,
-                "reco": reco,
-                "run": run,
-                "dataset": dataset,
-                "form": form,
-            }
-
-            return render(request, "certifier/certify.html", context)
-
     # Used "Certify a new run" button
     dataset = request.GET.get("dataset", None)
     run = None
     try:
         run = retrieve_run(run_number)
         if not dataset:
-            if not reco:
+            if not reconstruction_type:
                 dataset = retrieve_dataset(run_number)
             else:
-                dataset = retrieve_dataset_by_reco(run_number, reco)
-        else:
-            dataset = dataset
+                dataset = retrieve_dataset_by_reco(run_number, reconstruction_type)
 
     except IndexError as e:
         context = {"message": f"Run {run_number} does not exist"}
         logger.error(f"{context['message']} ({repr(e)})")
         return render(request, "certifier/404.html", context, status=404)
-    # TODO replace with cernrequests-specific Exception
     except (ConnectionError, ParseError,) as e:
         if isinstance(e, ConnectionError):
-            msg = f"Unable to connect to external API."
+            msg = "Unable to connect to external API."
         elif isinstance(e, ParseError):
-            msg = f"CERN authentication failed."
+            msg = "CERN authentication failed."
         msg += f" Please proceed to enter the data manually (Error: {e})"
         logger.warning(msg)
 
         # If no reconstruction is specified and there's no connection
         # to RR, we cannot get the next available reconstruction type & dataset
-        if not reco:
+        if not reconstruction_type:
             context = {
                 "message": f"Cannot proceed with certification if no reconstuction type is specified ({e})",
                 "error_num": 400,
@@ -140,21 +113,21 @@ def certify(request, run_number, reco=None):
         logger.exception(repr(e))
         return render(request, "certifier/http_error.html", context, status=500)
 
-    if not reco:
+    if not reconstruction_type:
         if dataset:
-            reco = get_reco_from_dataset(dataset)
+            reconstruction_type = get_reco_from_dataset(dataset)
         else:
-            reco = None
+            reconstruction_type = None
 
     # if this is a POST request we need to process the form data
     if request.method == "POST":
         try:
             runReconstruction = RunReconstruction.objects.get(
-                run__run_number=run_number, reconstruction=reco
+                run__run_number=run_number, reconstruction=reconstruction_type
             )
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                run=run, reconstruction=reco
+                run=run, reconstruction=reconstruction_type
             )
 
         dataset = Dataset.objects.get_or_create(dataset=dataset)
@@ -185,11 +158,37 @@ def certify(request, run_number, reco=None):
 
     # If a GET, we'll create a blank form
     elif request.method == "GET":
+        # From openruns colored boxes
+        if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+            name = request.POST.get("name", None)
+            dataset = request.POST.get("dataset", None)
+            description = request.POST.get("description", None)
+            run = OmsRun.objects.get(run_number=run_number)
+
+            if name and description and dataset:
+                try:
+                    BadReason.objects.get(name=name)
+                except BadReason.DoesNotExist:
+                    BadReason.objects.create(name=name, description=description)
+
+                form = CertifyFormWithChecklistForm()
+
+                context = {
+                    "run_number": run_number,
+                    "reco": reconstruction_type,
+                    "run": run,
+                    "dataset": dataset,
+                    "form": form,
+                }
+
+                return render(request, "certifier/certify.html", context)
+
+        # Default behavior
         form = CertifyFormWithChecklistForm()
 
     context = {
         "run_number": run_number,
-        "reco": reco,
+        "reco": reconstruction_type,
         "run": run,
         "dataset": dataset,
         "form": form,
