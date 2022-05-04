@@ -495,12 +495,12 @@ To automate deployment, use OpenShift's :guilabel:`CronJobs` to create pods base
   ::
 
 	 args:
-	 - curl
-	 - '-X'
-	 - POST
-	 - '-k'
-	 - >-
-	   <the Generic Webhook you copied earlier>
+	   - curl
+	   - '-X'
+	   - POST
+	   - '-k'
+	   - >-
+	     <the Generic Webhook you copied earlier>
 
 A new pod will be created under the crontab schedule you configured, triggering a new build.
 
