@@ -1,9 +1,11 @@
 import logging
+import json
 from xml.etree.ElementTree import ParseError
 from requests.exceptions import SSLError, ConnectionError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
@@ -22,8 +24,34 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-def addBadReason(request):
-    # if this is a POST request we need to process the form data
+def badReason(request):
+    """
+    View for getting and adding Bad reasons
+    for certification
+    """
+    response = {}
+    # Add bad reason
+    if (
+        request.method
+        == "POST"
+        # and request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
+    ):
+        name = request.POST.get("name", None)
+        description = request.POST.get("description", None)
+
+        if name and description:
+            try:
+                BadReason.objects.get(name=name)
+            except BadReason.DoesNotExist:
+                BadReason.objects.create(name=name, description=description)
+
+    response["bad_reasons"] = list(BadReason.objects.all().values())
+
+    return JsonResponse(response)
+
+
+@login_required
+def addBadReasonForm(request):
     form = BadReasonForm()
 
     return render(request, "certifier/badreason.html", {"form": form})
@@ -70,31 +98,6 @@ def certify(request, run_number, reco=None):
             context={"error_num": 400, "message": msg},
             status=400,
         )
-
-    # Add bad reason
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
-        name = request.POST.get("name", None)
-        dataset = request.POST.get("dataset", None)
-        description = request.POST.get("description", None)
-        run = OmsRun.objects.get(run_number=run_number)
-
-        if name and description and dataset:
-            try:
-                BadReason.objects.get(name=name)
-            except BadReason.DoesNotExist:
-                BadReason.objects.create(name=name, description=description)
-
-            form = CertifyFormWithChecklistForm()
-
-            context = {
-                "run_number": run_number,
-                "reco": reco,
-                "run": run,
-                "dataset": dataset,
-                "form": form,
-            }
-
-            return render(request, "certifier/certify.html", context)
 
     dataset = request.GET.get("dataset", None)
     run = None
@@ -182,7 +185,7 @@ def certify(request, run_number, reco=None):
                 form.save_m2m()
                 messages.info(
                     request,
-                    f"Certification for {trackerCertification.runreconstruction.run.run_number} {trackerCertification.runreconstruction.reconstruction} successfully saved",
+                    f"Certification for {runReconstruction.run.run_number} {runReconstruction.reconstruction} successfully saved",
                 )
             return redirect("openruns:openruns")
 

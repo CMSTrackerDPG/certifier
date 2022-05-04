@@ -6,6 +6,7 @@ urlpatterns = [
     path("<int:run_number>/", views.certify, name="certify"),
     path("<int:run_number>/<reco>/", views.certify, name="certify"),
     path("promote/<int:run_number>/<reco>/", views.promoteToReference, name="promote",),
-    path("addbadreasonform/", views.addBadReason, name="addbadreasonform"),
+    path("badreasons/", views.badReason, name="badreasons"),
+    path("addbadreasonform/", views.addBadReasonForm, name="addbadreasonform"),
     path("allRunsRefRuns/", views.runRefRun_list),
 ]

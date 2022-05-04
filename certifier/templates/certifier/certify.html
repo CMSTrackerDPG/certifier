@@ -555,13 +555,12 @@ function add_bad_reason(){
     $.ajax({
         headers: { "X-CSRFToken": '{{csrf_token}}' },
         type: "POST",
-        url: "{% url 'certify' run_number=run_number reco=reco %}",
+        url: "{% url 'badreasons' %}",
         data: {
            'name': $('#id_bad_reason_name').val(),
            'description' : $('#id_bad_reason_desc').val(),
-           'dataset' : "{{ dataset }}"
         },
-        success: function() {
+        success: function(data) {
             if ($('#id_bad_reason option').length == 0) {
                 var $lastValue = 1
             }else{
