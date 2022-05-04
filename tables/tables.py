@@ -1,3 +1,6 @@
+import re
+import logging
+import requests
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
 
@@ -7,10 +10,13 @@ from tables.utilities.utilities import (
     render_boolean_cell,
     render_dataset,
     render_certify_button,
+    render_generic_state,
 )
 from listruns.utilities.luminosity import format_integrated_luminosity
 from certifier.models import TrackerCertification, RunReconstruction
 from openruns.models import OpenRuns
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleRunReconstructionTable(tables.Table):
@@ -25,7 +31,7 @@ class SimpleRunReconstructionTable(tables.Table):
     delete_run = tables.TemplateColumn(
         '<div align="center">'
         "<a href=\"{% url 'delete:delete_reference' run_number=record.run.run_number reco=record.reconstruction%}\">"
-        "Delete"
+        '<i title="Delete" class="bi bi-trash3"></i>'
         "</a>"
         "</div>",
         orderable=False,
@@ -195,12 +201,20 @@ class DeletedTrackerCertificationTable(tables.Table):
 
 
 class RunRegistryComparisonTable(tables.Table):
+    # Map of RR record states to css classes
+    RR_RECORD_STATE_MAP = {
+        "SIGNOFF": "state-mixed",
+        "OPEN": "state-bad",
+        "COMPLETED": "state-neutral",
+    }
+
     runreconstruction__run__run_number = tables.Column(verbose_name="Run Number")
     runreconstruction__run__run_type = tables.Column(verbose_name="Run Type")
     runreconstruction__reconstruction = tables.Column(verbose_name="Reco")
     pixel = tables.Column()
     strip = tables.Column()
     tracking = tables.Column()
+    state = tables.Column()
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered"}
@@ -213,6 +227,9 @@ class RunRegistryComparisonTable(tables.Table):
 
     def render_tracking(self, record):  # pragma: no cover
         return render_component(record.get("tracking"), record.get("tracking_lowstat"))
+
+    def render_state(self, record):  # pragma: no cover
+        return render_generic_state(record.get("state"), self.RR_RECORD_STATE_MAP)
 
 
 class OpenRunsTable(tables.Table):
@@ -332,3 +349,64 @@ class OpenRunsTable(tables.Table):
         #     lambda record: ""
         #     if not hasattr(record.user, 'username') else record.user.username
         # }
+
+
+class ReferenceRunReconstructionTable(tables.Table):
+    """
+    A table to render RunReconstruction entries, mainly used in the addrefrun app
+    """
+
+    run = tables.Column(verbose_name="Run Number", accessor="run.run_number")
+    era = tables.Column(accessor="run.fill.era")
+    apv_mode = tables.Column(empty_values=(), verbose_name="APV mode")
+    b_field = tables.Column(accessor="run.fill.b_field")
+    run_type = tables.Column(accessor="run.run_type")
+    reconstruction = tables.Column()
+    peak_pileup = tables.Column(accessor="run.fill.peak_pileup")
+    colliding_bunches = tables.Column(accessor="run.fill.bunches_colliding")
+    delete_run = tables.TemplateColumn(
+        '<div align="center">'
+        "<a href=\"{% url 'delete:delete_reference' run_number=record.run.run_number reco=record.reconstruction%}\">"
+        '<i title="Permanently delete this reconstruction" class="bi bi-trash3"></i>'
+        "</a>"
+        "</div>",
+        orderable=False,
+        verbose_name="Delete",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.ebutz_response_pattern = re.compile(
+            r"\[\[\"(?P<run_number_ebutz>\d{6})\"\,\"(?P<apv_mode>\w{4,5})\"\]\]"
+        )
+        super().__init__(*args, **kwargs)
+
+    def render_apv_mode(self, record):
+        run_number = record.run.run_number
+        r = requests.get(
+            f"http://ebutz.web.cern.ch/ebutz/cgi-bin/getReadOutmode.pl?RUN={run_number}"
+        )
+        try:
+            m = re.search(self.ebutz_response_pattern, r.text)
+            if m is None:
+                raise ValueError
+        except ValueError:
+            logger.error(f"Could not parse '{r.text}' as a list")
+            return None
+
+        try:
+            run_number_ebutz = int(m.group("run_number_ebutz"))
+        except ValueError:
+            logger.error(f"Could not parse '{m.group('run_number_ebutz')}' as a number")
+            return None
+
+        apv_mode = m.group("apv_mode")
+        if run_number != run_number_ebutz:
+            logger.error(
+                f"API returned wrong results (requested {run_number}, got {run_number_ebutz})"
+            )
+        return apv_mode
+
+    class Meta:
+        model = RunReconstruction
+        fields = ()
+        attrs = {"class": "table table-hover table-bordered table-fixed"}

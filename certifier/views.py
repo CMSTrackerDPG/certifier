@@ -1,4 +1,6 @@
 import logging
+from xml.etree.ElementTree import ParseError
+from requests.exceptions import SSLError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, Http404, JsonResponse
@@ -115,15 +117,18 @@ def certify(request, run_number, reco=None):
         else:
             dataset = dataset
 
-        # print(request)
     except (IndexError, ConnectionError) as e:
         context = {"message": "Run {} does not exist".format(run_number)}
         logger.error(f"{context['message']} ({repr(e)})")
-        return render(request, "certifier/404.html", context)
+        return render(request, "certifier/404.html", context, status=404)
+    except (SSLError, ParseError) as e:
+        context = {"message": f"CERN Authentication error ({e})", "error_num": 500}
+        logger.error(f"{context['message']} ({repr(e)})")
+        return render(request, "certifier/http_error.html", context, status=500)
     except Exception as e:
-        context = {"message": e}
+        context = {"message": e, "error_num": 500}
         logger.exception(repr(e))
-        return render(request, "certifier/404.html", context)
+        return render(request, "certifier/http_error.html", context, status=500)
 
     if not reco:
         reco = get_reco_from_dataset(dataset)

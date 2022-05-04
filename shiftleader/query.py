@@ -17,7 +17,10 @@ from django.db.models import (
 )
 from django.db.models.functions import ExtractWeekDay
 from delete.query import SoftDeletionQuerySet
-from shiftleader.utilities.utilities import convert_run_registry_to_trackercertification, _get_run_type_from_run_class_and_dataset_name
+from shiftleader.utilities.utilities import (
+    convert_run_registry_to_trackercertification,
+    _get_run_type_from_run_class_and_dataset_name,
+)
 from shiftleader.exceptions import CannotAssumeRunTypeException
 import runregistry
 from operator import itemgetter
@@ -28,17 +31,22 @@ logger = logging.getLogger(__name__)
 
 class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def annotate_status(self):
-        return self.annotate(status=Case(
-            When(
-                (Q(runreconstruction__run__run_type="cosmics")
-                 | Q(pixel="good") | Q(pixel_lowstat=True))
-                & (Q(strip="good") | Q(strip_lowstat=True))
-                & (Q(tracking="good") | Q(tracking_lowstat=True)),
-                then=Value("good"),
-            ),
-            default=Value("bad"),
-            output_field=CharField(),
-        ))
+        return self.annotate(
+            status=Case(
+                When(
+                    (
+                        Q(runreconstruction__run__run_type="cosmics")
+                        | Q(pixel="good")
+                        | Q(pixel_lowstat=True)
+                    )
+                    & (Q(strip="good") | Q(strip_lowstat=True))
+                    & (Q(tracking="good") | Q(tracking_lowstat=True)),
+                    then=Value("good"),
+                ),
+                default=Value("bad"),
+                output_field=CharField(),
+            )
+        )
 
     def filter_flag_changed(self, until=None):
         """
@@ -55,28 +63,32 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         run_number_list = [
             run["runreconstruction__run__run_number"]
-            for run in runs.annotate_status().order_by(
-                "runreconstruction__run__run_number").
-            values("runreconstruction__run__run_number", "status").annotate(
-                times_certified=Count("runreconstruction__run__run_number"))
+            for run in runs.annotate_status()
+            .order_by("runreconstruction__run__run_number")
+            .values("runreconstruction__run__run_number", "status")
+            .annotate(times_certified=Count("runreconstruction__run__run_number"))
         ]
 
         changed_flag_runs = [
-            run for run, count in collections.Counter(run_number_list).items()
+            run
+            for run, count in collections.Counter(run_number_list).items()
             if count > 1
         ]
 
-        return self.filter(
-            runreconstruction__run__run_number__in=changed_flag_runs)
+        return self.filter(runreconstruction__run__run_number__in=changed_flag_runs)
 
     def good(self):
         good_criteria = "good"
 
-        return (self.filter(Q(strip=good_criteria) | Q(strip_lowstat=True)).
-                filter(Q(tracking=good_criteria)
-                       | Q(tracking_lowstat=True)).filter(
-                           Q(runreconstruction__run__run_type="cosmics")
-                           | Q(pixel=good_criteria) | Q(pixel_lowstat=True)))
+        return (
+            self.filter(Q(strip=good_criteria) | Q(strip_lowstat=True))
+            .filter(Q(tracking=good_criteria) | Q(tracking_lowstat=True))
+            .filter(
+                Q(runreconstruction__run__run_type="cosmics")
+                | Q(pixel=good_criteria)
+                | Q(pixel_lowstat=True)
+            )
+        )
 
     def bad(self):
         bad_criteria = ["bad", "excluded"]
@@ -84,59 +96,76 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         return self.filter(
             (Q(strip__in=bad_criteria) & Q(strip_lowstat=False))
             | (Q(tracking__in=bad_criteria) & Q(tracking_lowstat=False))
-            | (Q(pixel__in=bad_criteria) & Q(pixel_lowstat=False)
-               & Q(runreconstruction__run__run_type="collisions")))
+            | (
+                Q(pixel__in=bad_criteria)
+                & Q(pixel_lowstat=False)
+                & Q(runreconstruction__run__run_type="collisions")
+            )
+        )
 
     def summary(self):
         """
         Create basic summary with int_luminosity and number_of_ls per type
         """
-        summary_dict = (self.order_by(
-            "runreconstruction__run__run_type",
-            "runreconstruction__reconstruction").values(
-                "runreconstruction__run__run_type",
-                "runreconstruction__reconstruction").annotate(
-                    runs_certified=Count("pk"),
-                    int_luminosity=Sum("runreconstruction__run__recorded_lumi",
-                                       output_field=FloatField()),
-                    number_of_ls=Sum("runreconstruction__run__lumisections"),
-                ))
+        summary_dict = (
+            self.order_by(
+                "runreconstruction__run__run_type", "runreconstruction__reconstruction"
+            )
+            .values(
+                "runreconstruction__run__run_type", "runreconstruction__reconstruction"
+            )
+            .annotate(
+                runs_certified=Count("pk"),
+                int_luminosity=Sum(
+                    "runreconstruction__run__recorded_lumi", output_field=FloatField()
+                ),
+                number_of_ls=Sum("runreconstruction__run__lumisections"),
+            )
+        )
         """
         Add List of run_numbers per type to the summary
         """
         for d in summary_dict:
             runs_per_type = self.filter(
                 runreconstruction__run__run_type=d.get(
-                    "runreconstruction__run__run_type"),
+                    "runreconstruction__run__run_type"
+                ),
                 runreconstruction__reconstruction=d.get(
-                    "runreconstruction__reconstruction")).order_by(
-                        "runreconstruction__run__run_number")
+                    "runreconstruction__reconstruction"
+                ),
+            ).order_by("runreconstruction__run__run_number")
 
             good_run_numbers = [r.run_number for r in runs_per_type.good()]
 
             bad_run_numbers = [r.run_number for r in runs_per_type.bad()]
 
-            d.update({
-                "run_numbers": {
-                    "good": good_run_numbers,
-                    "bad": bad_run_numbers
-                }
-            })
+            d.update(
+                {"run_numbers": {"good": good_run_numbers, "bad": bad_run_numbers}}
+            )
 
         return summary_dict
 
     def summary_per_day(self):
-        summary_dict = (self.order_by(
-            "date", "runreconstruction__run__run_type",
-            "runreconstruction__reconstruction").values(
-                "date", "runreconstruction__run__run_type",
-                "runreconstruction__reconstruction").annotate(
-                    runs_certified=Count("pk"),
-                    int_luminosity=Sum("runreconstruction__run__recorded_lumi",
-                                       output_field=FloatField()),
-                    number_of_ls=Sum("runreconstruction__run__lumisections"),
-                    day=(ExtractWeekDay("date")),
-                ))
+        summary_dict = (
+            self.order_by(
+                "date",
+                "runreconstruction__run__run_type",
+                "runreconstruction__reconstruction",
+            )
+            .values(
+                "date",
+                "runreconstruction__run__run_type",
+                "runreconstruction__reconstruction",
+            )
+            .annotate(
+                runs_certified=Count("pk"),
+                int_luminosity=Sum(
+                    "runreconstruction__run__recorded_lumi", output_field=FloatField()
+                ),
+                number_of_ls=Sum("runreconstruction__run__lumisections"),
+                day=(ExtractWeekDay("date")),
+            )
+        )
         """
         Add List of run_numbers per day and type to the summary
         """
@@ -144,13 +173,14 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             runs = self.filter(
                 date=d.get("date"),
                 runreconstruction__run__run_type=d.get(
-                    "runreconstruction__run__run_type"),
+                    "runreconstruction__run__run_type"
+                ),
                 runreconstruction__reconstruction=d.get(
-                    "runreconstruction__reconstruction"),
+                    "runreconstruction__reconstruction"
+                ),
             ).order_by("runreconstruction__run__run_number")
             run_numbers = [run.run_number for run in runs]
-            d.update(
-                {"run_numbers": self.compare_list_if_certified(run_numbers)})
+            d.update({"run_numbers": self.compare_list_if_certified(run_numbers)})
 
         return summary_dict
 
@@ -182,12 +212,12 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 d["missing"].append(run_number)
             except MultipleObjectsReturned:
                 run_pair = changed_flag_runs.filter(
-                    runreconstruction__run__run_number=run_number)
+                    runreconstruction__run__run_number=run_number
+                )
                 if run_pair.exists():
                     d["different_flags"].append(run_number)
                 else:
-                    r = runs.filter(
-                        runreconstruction__run__run_number=run_number)
+                    r = runs.filter(runreconstruction__run__run_number=run_number)
                     d["{}".format(r[0].status)].append(run_number)
 
         return d
@@ -200,10 +230,13 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         Example: Run was certified good in express and bad promptreco
         """
         return list(
-            set([
-                run.runreconstruction.run.run_number
-                for run in self.filter_flag_changed()
-            ]))
+            set(
+                [
+                    run.runreconstruction.run.run_number
+                    for run in self.filter_flag_changed()
+                ]
+            )
+        )
 
     def today(self):  # pragma: no cover
         pass
@@ -256,9 +289,10 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         :return: sorted list of run numbers (without duplicates)
         """
         return list(
-            self.values_list(
-                "runreconstruction__run__run_number",
-                flat=True).order_by("runreconstruction__run__run_number"))
+            self.values_list("runreconstruction__run__run_number", flat=True).order_by(
+                "runreconstruction__run__run_number"
+            )
+        )
 
     def fill_numbers(self):
         """
@@ -267,16 +301,16 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         if not self.run_numbers():
             return []
 
-        runs = runregistry.get_runs(
-            filter={'run_number': {
-                'or': self.run_numbers()
-            }})
+        runs = runregistry.get_runs(filter={"run_number": {"or": self.run_numbers()}})
         fill_numbers_list = sorted(
-            set({
-                run["oms_attributes"]["fill_number"]
-                for run in runs
-                if run["oms_attributes"]["fill_number"] is not None
-            }))
+            set(
+                {
+                    run["oms_attributes"]["fill_number"]
+                    for run in runs
+                    if run["oms_attributes"]["fill_number"] is not None
+                }
+            )
+        )
         return fill_numbers_list
 
     def pks(self):
@@ -288,17 +322,20 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def integrated_luminosity(self):
         if len(self) == 0:
             return 0
-        print()
         return float(
-            self.aggregate(runreconstruction__run__recorded_lumi__sum=Coalesce(
-                Sum("runreconstruction__run__recorded_lumi"), 0.0))
-            ["runreconstruction__run__recorded_lumi__sum"])
+            self.aggregate(
+                runreconstruction__run__recorded_lumi__sum=Coalesce(
+                    Sum("runreconstruction__run__recorded_lumi"), 0.0
+                )
+            )["runreconstruction__run__recorded_lumi__sum"]
+        )
 
     def lumisections(self):
         if len(self) == 0:
             return 0
-        return self.aggregate(Sum("runreconstruction__run__lumisections")
-                              )["runreconstruction__run__lumisections__sum"]
+        return self.aggregate(Sum("runreconstruction__run__lumisections"))[
+            "runreconstruction__run__lumisections__sum"
+        ]
 
     def total_number(self):
         return len(self)
@@ -311,38 +348,41 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def reference_run_numbers(self):
         ref_dict = (
-            self.order_by("reference_runreconstruction__run__run_number").
-            values("reference_runreconstruction__run__run_number").distinct())
+            self.order_by("reference_runreconstruction__run__run_number")
+            .values("reference_runreconstruction__run__run_number")
+            .distinct()
+        )
 
-        return [
-            ref["reference_runreconstruction__run__run_number"]
-            for ref in ref_dict
-        ]
+        return [ref["reference_runreconstruction__run__run_number"] for ref in ref_dict]
 
     def runs(self):
         from certifier.models import RunReconstruction
 
-        ref_ids = self.values_list(
-            "reference_runreconstruction",
-            flat=True).order_by("reference_runreconstruction")
+        ref_ids = self.values_list("reference_runreconstruction", flat=True).order_by(
+            "reference_runreconstruction"
+        )
         return RunReconstruction.objects.filter(pk__in=ref_ids)
 
     def reference_runs(self):
         from certifier.models import RunReconstruction
 
-        ref_ids = self.values_list(
-            "reference_runreconstruction",
-            flat=True).order_by("reference_runreconstruction")
+        ref_ids = self.values_list("reference_runreconstruction", flat=True).order_by(
+            "reference_runreconstruction"
+        )
         return RunReconstruction.objects.filter(
-            Q(pk__in=ref_ids) & Q(is_reference=True))
+            Q(pk__in=ref_ids) & Q(is_reference=True)
+        )
 
     def types(self):
         from certifier.models import TrackerCertification
 
-        type_ids = self.values(
-            "runreconstruction__run__run_type",
-            "runreconstruction__reconstruction").order_by(
-                "runreconstruction__run__run_type").distinct()
+        type_ids = (
+            self.values(
+                "runreconstruction__run__run_type", "runreconstruction__reconstruction"
+            )
+            .order_by("runreconstruction__run__run_type")
+            .distinct()
+        )
 
         return type_ids
 
@@ -362,10 +402,17 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         return [
             self.filter(
-                Q(runreconstruction__run__run_type=t[
-                    "runreconstruction__run__run_type"])
-                & Q(runreconstruction__reconstruction=t[
-                    "runreconstruction__reconstruction"]))
+                Q(
+                    runreconstruction__run__run_type=t[
+                        "runreconstruction__run__run_type"
+                    ]
+                )
+                & Q(
+                    runreconstruction__reconstruction=t[
+                        "runreconstruction__reconstruction"
+                    ]
+                )
+            )
             for t in self.types()
         ]
 
@@ -376,8 +423,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         :return: list of users (shifters) in the queryset
         """
-        user_ids = list(
-            self.values_list("user", flat=True).order_by("user").distinct())
+        user_ids = list(self.values_list("user", flat=True).order_by("user").distinct())
 
         return get_user_model().objects.filter(pk__in=user_ids)
 
@@ -403,18 +449,22 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         Prints out QuerySet to have an easy Overview
         """
-        print()
-        print("{:10} {:10} {:10} {:10} {:10} {:10}".format(
-            "run number", "type", "reco", "int lumi", "date", "flag"))
+        print(
+            "{:10} {:10} {:10} {:10} {:10} {:10}".format(
+                "run number", "type", "reco", "int lumi", "date", "flag"
+            )
+        )
         for run in self.annotate_status()[:50]:
-            print("{:10} {:10} {:10} {:10} {} {:10}".format(
-                run.runreconstruction.run.run_number,
-                run.runreconstruction.run.run_type,
-                run.runreconstruction.reconstruction,
-                run.runreconstruction.run.recorded_lumi,
-                run.date,
-                run.status,
-            ))
+            print(
+                "{:10} {:10} {:10} {:10} {} {:10}".format(
+                    run.runreconstruction.run.run_number,
+                    run.runreconstruction.run.run_type,
+                    run.runreconstruction.reconstruction,
+                    run.runreconstruction.run.recorded_lumi,
+                    run.date,
+                    run.status,
+                )
+            )
 
     def print_verbose(self):
         """
@@ -435,7 +485,8 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 "tracking",
                 "date",
                 "user",
-            ))
+            )
+        )
 
         for run in self.annotate_status()[:50]:
             print(
@@ -457,28 +508,33 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                     run.tracking,
                     run.date,
                     run.user,
-                ))
+                )
+            )
 
     def print_runs(self):
         for run in self.runs():
-            print("{:10} {:10} {:10} {:10} {:10}".format(
-                run.run.run_type,
-                run.reconstruction,
-                run.run.b_field,
-                run.run.fill_type_party1,
-                run.run.energy,
-            ))
+            print(
+                "{:10} {:10} {:10} {:10} {:10}".format(
+                    run.run.run_type,
+                    run.reconstruction,
+                    run.run.b_field,
+                    run.run.fill_type_party1,
+                    run.run.energy,
+                )
+            )
 
     def print_reference_runs(self):
         for ref in self.reference_runs():
-            print("{:10} {:10} {:10} {:10} {:10} {:10}".format(
-                ref.run.run_number,
-                ref.run.run_type,
-                ref.reconstruction,
-                ref.run.b_field,
-                ref.run.fill_type_party1,
-                ref.run.energy,
-            ))
+            print(
+                "{:10} {:10} {:10} {:10} {:10} {:10}".format(
+                    ref.run.run_number,
+                    ref.run.run_type,
+                    ref.reconstruction,
+                    ref.run.b_field,
+                    ref.run.fill_type_party1,
+                    ref.run.energy,
+                )
+            )
 
     def compare_with_run_registry(self):
         run_numbers = self.run_numbers()
@@ -498,13 +554,10 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         run_registry_entries = runregistry.get_datasets(
             filter={
-                'run_number': {
-                    'or': run_numbers
-                },
-                'dataset_name': {
-                    'notlike': '%online%'
-                }
-            })
+                "run_number": {"or": run_numbers},
+                "dataset_name": {"notlike": "%online%"},
+            }
+        )
 
         # Quick check before conversion to verify that there is enough information
         # to get the run type. If not, do an extra query to get extra oms attributes
@@ -512,30 +565,39 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         for rr_entry in run_registry_entries:
             try:
                 _get_run_type_from_run_class_and_dataset_name(
-                    rr_entry['class'], rr_entry['name'])
+                    rr_entry["class"], rr_entry["name"]
+                )
             except CannotAssumeRunTypeException as e:
                 logger.info(e)
                 # Run extra query for run info, get oms_attributes and insert
                 # them to the entry
-                rr_entry['oms_attributes'] = runregistry.get_run(
-                    run_number=rr_entry['run_number'])['oms_attributes']
+                rr_entry["oms_attributes"] = runregistry.get_run(
+                    run_number=rr_entry["run_number"]
+                )["oms_attributes"]
 
         convert_run_registry_to_trackercertification(run_registry_entries)
+
+        # Dirty fix for #108
         run_registry_tuple_set = {
-            tuple(d[key] for key in keys)
-            for d in run_registry_entries
+            tuple(d[key] for key in [*keys, "state"]) for d in run_registry_entries
         }
 
-        deviating_run_info_tuple_list = sorted(run_info_tuple_set -
-                                               run_registry_tuple_set)
+        deviating_run_info_tuple_list = sorted(
+            run_info_tuple_set - run_registry_tuple_set
+        )
         corresponding_run_registry_runs = []
         for run in deviating_run_info_tuple_list:
             elements = list(
-                filter(lambda x: x[0] == run[0] and x[2] == run[2],
-                       run_registry_tuple_set))
+                filter(
+                    lambda x: x[0] == run[0] and x[2] == run[2], run_registry_tuple_set
+                )
+            )
             if not elements:
                 elements = [("", "", "", "", "", "", False, False, False)]
             corresponding_run_registry_runs.extend(elements)
+
+        # Dirty fix for #108
+        keys.append("state")
 
         deviating_run_info_dict = [
             dict(zip(keys, run)) for run in deviating_run_info_tuple_list
@@ -553,11 +615,10 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
     def group_run_numbers_by_fill_number(self):
         run_numbers = self.run_numbers()
         response = []
-        runs = runregistry.get_runs(filter={'run_number': {'or': run_numbers}})
+        runs = runregistry.get_runs(filter={"run_number": {"or": run_numbers}})
 
         for run in runs:
-            response.append(
-                [run["oms_attributes"]["fill_number"], run["run_number"]])
+            response.append([run["oms_attributes"]["fill_number"], run["run_number"]])
 
         groups = groupby(response, itemgetter(0))
         items = [(key, [item[1] for item in value]) for key, value in groups]

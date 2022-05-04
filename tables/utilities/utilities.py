@@ -1,5 +1,9 @@
+import logging
 from django.utils.safestring import mark_safe
 from certifier.models import TrackerCertification
+
+
+logger = logging.getLogger(__name__)
 
 
 def render_component(component, component_lowstat):  # pragma: no cover
@@ -31,6 +35,16 @@ def render_component(component, component_lowstat):  # pragma: no cover
             '<div class="{}">{}</div>'.format(css_class, component_value.title())
         )
     return component
+
+
+def render_generic_state(state: str = "", state_map: dict = {}):  # pragma: no cover
+    """
+    Renders an HTML div using the state as the key to the state map dict, 
+    containing the classes that should be applied to the div for the state
+    """
+    if not state in state_map:
+        return state
+    return mark_safe(f'<div class="{state_map[state]}">{state}</div>')
 
 
 def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_rereco):
@@ -132,7 +146,7 @@ def render_trackermap(trackermap):  # pragma: no cover
 
 def render_boolean_cell(value):  # pragma: no cover
     boolean_value = False if value is False or value == "0" or value == 0 else True
-    print("{} {}".format(value, boolean_value))
+    logger.debug(f"{value} {boolean_value}")
     glyphicon = "ok" if boolean_value else "remove"
 
     html = '<span class="glyphicon glyphicon-{}"></span>'.format(glyphicon, glyphicon)
