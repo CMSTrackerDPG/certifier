@@ -98,6 +98,18 @@ def certify(request, run_number, reco=None):
             context={"error_num": 400, "message": msg},
             status=400,
         )
+    # If certification exists, redirect to update it
+    elif TrackerCertification.objects.filter(
+        runreconstruction__run__run_number=run_number,
+        runreconstruction__reconstruction=reco,
+    ).exists():
+        certification = TrackerCertification.objects.get(
+            runreconstruction__run__run_number=run_number,
+            runreconstruction__reconstruction=reco,
+        )
+        return redirect(
+            "listruns:update", pk=certification.pk, run_number=run_number, reco=reco
+        )
 
     dataset = request.GET.get("dataset", None)
     run = None
