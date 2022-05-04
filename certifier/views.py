@@ -135,22 +135,21 @@ def certify(request, run_number, reco=None):
         ConnectionError,
         ParseError,
     ) as e:
+        # If no reconstruction is specified and there's no connection
+        # to RR, we cannot get the next available reconstruction type & dataset
+        if not reco:
+            context = {
+                "message": f"Cannot proceed with certification if no reconstruction type is specified ({e})",
+                "error_num": 400,
+            }
+            return render(request, "certifier/http_error.html", context, status=400)
+        # Proceed with warning
         if isinstance(e, ConnectionError):
             msg = "Unable to connect to external API."
         elif isinstance(e, ParseError):
             msg = "CERN authentication failed."
         msg += f" Please proceed to enter the data manually (Error: {e})"
         logger.warning(msg)
-
-        # If no reconstruction is specified and there's no connection
-        # to RR, we cannot get the next available reconstruction type & dataset
-        if not reco:
-            context = {
-                "message": f"Cannot proceed with certification if no reconstuction type is specified ({e})",
-                "error_num": 400,
-            }
-            return render(request, "certifier/http_error.html", context, status=400)
-        # Proceed with warning
         messages.warning(request, msg)
 
     except Exception as e:
