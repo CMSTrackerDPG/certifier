@@ -1,16 +1,61 @@
+import json
 import pytest
 from mixer.backend.django import mixer
-from django.contrib.messages.storage.fallback import FallbackStorage
+from django.urls import reverse
 from django.test import RequestFactory
-from certifier.models import *
-from certifier.forms import *
+from django.contrib.messages.storage.fallback import FallbackStorage
+from certifier.models import BadReason, TrackerCertification, Dataset, RunReconstruction
+from certifier.forms import CertifyForm
 from oms.models import OmsRun
 from certifier import views
 from users.models import User
-from django.urls import reverse
 
 
 pytestmark = pytest.mark.django_db
+
+
+class TestBadReasons:
+    def test_bad_reason_get(self):
+        """
+        Get existing bad reasons
+        """
+        req = RequestFactory().get(reverse("badreasons"))
+        req.user = mixer.blend(User)
+        resp = views.badReason(req)
+        resp_data = json.loads(resp.content)["bad_reasons"]
+        assert len(resp_data) == 0
+
+    def test_bad_reason_post(self):
+        """
+        Add a new bad reason via POST
+        """
+        data = {
+            "name": "giannhs",
+            "description": "ena paidi apo to xwrio den to ksereis",
+        }
+        req = RequestFactory().post(reverse("badreasons"), data=data)
+        req.user = mixer.blend(User)
+
+        resp = views.badReason(req)
+        resp_data = json.loads(resp.content)["bad_reasons"]
+        assert len(resp_data) == 1
+        assert resp_data[0]["name"] == data["name"]
+        assert resp_data[0]["description"] == data["description"]
+
+    def test_bad_reason_existing(self):
+        """
+        Re-add an existing bad reason via POST
+        """
+        bad_reason = mixer.blend(BadReason)
+
+        req = RequestFactory().post(reverse("badreasons"), data=bad_reason.__dict__)
+        req.user = mixer.blend(User)
+        resp = views.badReason(req)
+        resp_data = json.loads(resp.content)["bad_reasons"]
+        assert len(resp_data) == 1
+        assert resp_data[0]["id"] == bad_reason.pk
+        assert resp_data[0]["name"] == bad_reason.name
+        assert resp_data[0]["description"] == bad_reason.description
 
 
 class TestCertify:
