@@ -32,6 +32,5 @@ The user can land on this page from:
 
 Bad Reasons
 ^^^^^^^^^^^
-The form to submit a new bad reason is dynamically loaded via jQuery from the `/addbadreason/` URL and stored in the ``div`` with ``id="addBadReason"``. When the button to submit a new bad reason is pressed, a `POST XMLHttpRequest` is made to `/certify/` with the ``name`` and ``description`` of the new bad reason.
-
+The form to submit a new bad reason is dynamically loaded via jQuery from the `/addbadreason/` URL and stored in the ``div`` with ``id="addBadReason"``. When the button to submit a new bad reason is pressed, a ``POST XMLHttpRequest`` is made to `/certify/` with the ``name`` and ``description`` of the new bad reason.
 
