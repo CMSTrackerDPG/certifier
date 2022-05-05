@@ -2,3 +2,11 @@
     width: 100% !important;
     height: 185px !important;
 }
+
+.card-deck.row {
+    display: flex;
+}
+
+.card {
+    cursor: pointer;
+}
