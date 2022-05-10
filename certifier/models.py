@@ -131,12 +131,26 @@ class TrackerCertification(SoftDeletionModel):
     BAD = "bad"
     EXCLUDED = "excluded"
 
+    TRACKERMAP_EXISTS = "exists"
+    TRACKERMAP_MISSING = "missing"
+
+    CERTIFICATION_INCOMPLETE = "INC"
+    CERTIFICATION_COMPLETE = "COM"
+
     SUBCOMPONENT_STATUS_CHOICES = (
         (GOOD, "Good"),
         (BAD, "Bad"),
         (EXCLUDED, "Excluded"),
     )
-    TRACKERMAP_CHOICES = (("exists", "Exists"), ("missing", "Missing"))
+    TRACKERMAP_CHOICES = (
+        (TRACKERMAP_EXISTS, "Exists"),
+        (TRACKERMAP_MISSING, "Missing"),
+    )
+
+    CERTIFICATION_COMPLETENESS_CHOICES = (
+        (CERTIFICATION_INCOMPLETE, "Incomplete"),
+        (CERTIFICATION_COMPLETE, "Complete"),
+    )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
@@ -157,6 +171,9 @@ class TrackerCertification(SoftDeletionModel):
     )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
+    completeness_status = models.CharField(
+        max_length=4, choices=CERTIFICATION_COMPLETENESS_CHOICES
+    )
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
     strip = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
@@ -185,9 +202,9 @@ class TrackerCertification(SoftDeletionModel):
         """
         Returns True if run_number/reconstruction combination certification does not exist
         OR exists and is certified by the user specified.
-        
+
         Returns False if certification exists and is certified by another user.
-        
+
         """
         try:
             certification = cls.objects.get(
