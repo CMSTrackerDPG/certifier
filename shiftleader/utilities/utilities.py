@@ -79,7 +79,7 @@ def _get_run_type_from_run_class_and_dataset_name(
 
 def convert_run_registry_to_trackercertification(list_of_dictionaries: list):
     """
-    Converts the list of JSON dictionaries into a TrackerCertification 
+    Converts the list of JSON dictionaries into a TrackerCertification
     compatible format, i.e.:
 
     :param list_of_dictionaries:
@@ -113,7 +113,8 @@ def convert_run_registry_to_trackercertification(list_of_dictionaries: list):
                         f" Dataset:{dataset}) does not contain enough info"
                         " to assume its run type"
                     )
-                    raise
+                    # See issue #150
+                    entry["runreconstruction__run__run_type"] = "UKNOWN"
 
         if "express" in dataset:
             entry["runreconstruction__reconstruction"] = "express"  # EXPRESS
