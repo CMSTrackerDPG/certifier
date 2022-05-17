@@ -31,10 +31,27 @@ If the user wants to log in with a local account that is only used by
 the Certhelper website instead, he can do so by clicking "Use local account instead", entering the
 credentials and clicking on "Sign in".
 
+
+Privileges from e-groups
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Logging in with CERN updates the user privileges automatically, such
 that shift leaders are detected by the e-groups the user is a member of.
 The Shift Leader e-group is automatically assigned and does not have to
 be updated manually.
+
+Shifters must be subscribed to the following e-groups:
+
+- ``cms-dqm-runregistry-offline-tracker-certifiers``
+
+Shift Leaders must be subscribed to the following e-groups:
+
+- ``cms-tracker-offline-shiftleader``
+- ``cms-tracker-offline-shiftleaders``
+
+Experts must be subscribed to:
+
+- ``cms-dqm-certification-experts``
 
 Shifter
 -------
