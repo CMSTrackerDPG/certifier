@@ -134,6 +134,8 @@ class TrackerCertification(SoftDeletionModel):
     TRACKERMAP_EXISTS = "exists"
     TRACKERMAP_MISSING = "missing"
 
+    # Incomplete status means missing data from RunRegistry,
+    # OMS etc
     CERTIFICATION_INCOMPLETE = "INC"
     CERTIFICATION_COMPLETE = "COM"
 
@@ -172,7 +174,10 @@ class TrackerCertification(SoftDeletionModel):
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
     completeness_status = models.CharField(
-        max_length=4, choices=CERTIFICATION_COMPLETENESS_CHOICES
+        max_length=4,
+        choices=CERTIFICATION_COMPLETENESS_CHOICES,
+        help_text="Certification's completeness status.",
+        default=CERTIFICATION_INCOMPLETE,
     )
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
