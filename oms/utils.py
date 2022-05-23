@@ -56,6 +56,15 @@ def rr_retrieve_dataset(run_number):  # pragma: no cover
 
 
 def oms_retrieve_fill(fill_number):  # pragma: no cover
+    """
+    Given a fill number, checks if it exists in the DB and
+    if not, queries the OMS API for info and creates a new
+    OmsFill entry.
+
+    Raises:
+    - requests.exceptions.ConnectionError if unable to connect
+    - IndexError if fill number not found in API
+    """
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
     if fill_check.exists():
@@ -140,8 +149,12 @@ def oms_retrieve_run(run_number):  # pragma: no cover
     Helper function that, given a run number, tries to retrieve it
     by looking into the DB first, then the OMS API.
     If not in DB, a new entry is created and returned.
-    If the API returns no results, raises an IndexError
-    If the API is unreachable, raises a requests.exceptions.ConnectionError
+
+    Same for fill number.
+
+    Raises:
+    - IndexError If the API returns no results
+    - requests.exceptions.ConnectionError if the API is unreachable
     """
     run_check = OmsRun.objects.filter(run_number=run_number)
     if run_check.exists():
