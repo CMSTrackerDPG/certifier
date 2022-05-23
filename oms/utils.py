@@ -19,7 +19,7 @@ def get_reco_from_dataset(dataset):
         return "rereco"
 
 
-def retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
+def rr_retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -37,7 +37,7 @@ def retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
     raise Exception(f"Could not find reconstruction:{reco} for run {run_number}")
 
 
-def retrieve_dataset(run_number):  # pragma: no cover
+def rr_retrieve_dataset(run_number):  # pragma: no cover
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -55,7 +55,7 @@ def retrieve_dataset(run_number):  # pragma: no cover
     raise Exception(f"Run {run_number} has been fully certified")
 
 
-def retrieve_fill(fill_number):  # pragma: no cover
+def oms_retrieve_fill(fill_number):  # pragma: no cover
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
     if fill_check.exists():
@@ -66,8 +66,9 @@ def retrieve_fill(fill_number):  # pragma: no cover
     logger.debug(f"Querying OMS API for fill {fill_number}")
     response = get_oms_fill(fill_number)
     if response is None:
-        logger.warning(f"Fill {fill_number} not found in OMS API")
-        raise IndexError
+        msg = f"Fill {fill_number} not found in OMS API"
+        logger.warning(msg)
+        raise IndexError(msg)
 
     include_attribute_keys = [
         "fill_number",
@@ -134,7 +135,7 @@ def retrieve_fill(fill_number):  # pragma: no cover
     return OmsFill.objects.get(fill_number=fill_number)
 
 
-def retrieve_run(run_number):  # pragma: no cover
+def oms_retrieve_run(run_number):  # pragma: no cover
     """
     Helper function that, given a run number, tries to retrieve it
     by looking into the DB first, then the OMS API.
@@ -149,13 +150,14 @@ def retrieve_run(run_number):  # pragma: no cover
 
     response = get_oms_run(run_number)
     if response is None:
-        logger.warning(f"Run {run_number} not found in OMS API")
-        raise IndexError
+        msg = f"Run {run_number} not found in OMS API"
+        logger.warning(msg)
+        raise IndexError(msg)
 
     fill_number = response["attributes"].pop("fill_number")
     # There's a chance there's no fill number, see #127
     if fill_number:
-        fill = retrieve_fill(fill_number=fill_number)
+        fill = oms_retrieve_fill(fill_number=fill_number)
     else:
         fill = None
 

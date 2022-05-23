@@ -12,9 +12,9 @@ from certifier.models import TrackerCertification, RunReconstruction, Dataset, B
 from certifier.api.serializers import RunReferenceRunSerializer
 from openruns.models import OpenRuns
 from oms.utils import (
-    retrieve_run,
-    retrieve_dataset,
-    retrieve_dataset_by_reco,
+    oms_retrieve_run,
+    rr_retrieve_dataset,
+    rr_retrieve_dataset_by_reco,
     get_reco_from_dataset,
 )
 from oms.models import OmsRun
@@ -120,12 +120,15 @@ def certify(request, run_number, reco=None):
 
     run = None
     try:
-        run = retrieve_run(run_number)
+        # The following functions try to fetch
+        # data from RR and/or OMS, may fail to connect
+        run = oms_retrieve_run(run_number)
         if not dataset:
+
             if not reco:
-                dataset = retrieve_dataset(run_number)
+                dataset = rr_retrieve_dataset(run_number)
             else:
-                dataset = retrieve_dataset_by_reco(run_number, reco)
+                dataset = rr_retrieve_dataset_by_reco(run_number, reco)
 
     except IndexError as e:
         context = {"message": f"Run {run_number} does not exist"}
@@ -165,7 +168,6 @@ def certify(request, run_number, reco=None):
 
     # Certification submission
     if request.method == "POST":
-
         try:
             runReconstruction = RunReconstruction.objects.get(
                 run__run_number=run_number, reconstruction=reco
