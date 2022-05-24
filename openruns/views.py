@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from cernrequests.certs import CertificateNotFound
 from urllib3.exceptions import ProtocolError
 from openruns.models import OpenRuns
-from openruns.utilities import get_range_of_open_runs, get_specific_open_runs
+from openruns.utilities import rr_get_range_of_open_runs, rr_get_specific_open_runs
 from tables.tables import OpenRunsTable
 
 
@@ -66,7 +66,7 @@ def openruns(request):
                         request, f"Please search for less than {runs_search_limit} runs"
                     )
                 else:
-                    get_specific_open_runs(runs_list)
+                    rr_get_specific_open_runs(runs_list)
                     show_openruns = OpenRuns.objects.filter(
                         run_number__in=runs_list
                     ).order_by("-run_number")
@@ -78,7 +78,8 @@ def openruns(request):
                 return render(request, "certifier/404.html", context)
             except CertificateNotFound as e:
                 return HttpResponse(
-                    "Incorrect configuration of RunRegistry certificates", status=503,
+                    "Incorrect configuration of RunRegistry certificates",
+                    status=503,
                 )
             except ProtocolError as e:
                 return HttpResponse(f"ProtocolError occurred: {e}", status=503)
@@ -93,7 +94,7 @@ def openruns(request):
                 )
             else:
                 try:
-                    get_range_of_open_runs(min_run_number, max_run_number)
+                    rr_get_range_of_open_runs(min_run_number, max_run_number)
                     show_openruns = OpenRuns.objects.filter(
                         run_number__gte=min_run_number, run_number__lte=max_run_number
                     ).order_by("-run_number")
