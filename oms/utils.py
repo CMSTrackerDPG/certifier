@@ -19,7 +19,12 @@ def get_reco_from_dataset(dataset):
         return "rereco"
 
 
-def rr_retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
+def rr_retrieve_dataset_by_reco(run_number: int, reco: str) -> str:  # pragma: no cover
+    """
+    Function that, given a run_number and a reconstruction type (e.g. "Express"),
+    queries the RunRegistry for datasets and tries to find the information
+    on this specific reconstruction.
+    """
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -34,10 +39,16 @@ def rr_retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
             if "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
                 return dataset["name"]
 
-    raise Exception(f"Could not find reconstruction:{reco} for run {run_number}")
+    raise Exception(f"Could not find reconstruction '{reco}' for run {run_number}")
 
 
-def rr_retrieve_dataset(run_number):  # pragma: no cover
+def rr_retrieve_dataset(run_number: int) -> str:  # pragma: no cover
+    """
+    Function that, given a run_number, queries the RunRegistry
+    for all available datasets associated with it.
+    Those are checked one by one and, the first one that
+    has not a TrackerCertification associated with it is returned.
+    """
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
