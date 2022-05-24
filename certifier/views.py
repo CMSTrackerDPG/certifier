@@ -2,6 +2,8 @@ import logging
 import json
 from xml.etree.ElementTree import ParseError
 from requests.exceptions import SSLError, ConnectionError
+from django.views import View
+from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -89,6 +91,83 @@ def promoteToReference(request, run_number, reco):
     return render(
         request, "certifier/promote.html", {"runReconstruction": runReconstruction}
     )
+
+
+@method_decorator(login_required, name="dispatch")
+class CertifyView(View):
+    form = CertifyFormWithChecklistForm
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
+    def _get_dataset(self, run_number: int, reconstruction: str = None) -> str:
+        dataset = None
+        if reconstruction is not None:
+            dataset = rr_retrieve_dataset_by_reco(run_number, reconstruction)
+        else:
+            dataset = rr_retrieve_next_uncertified_dataset(run_number)
+
+        return dataset
+
+    def get(self, request, run_number: int, reco: str = None):
+        dataset = request.GET.get("dataset", None)
+        if not dataset:
+            dataset = self._get_dataset(run_number, reco)
+        if not reco:
+            reco = get_reco_from_dataset(dataset)
+        run = oms_retrieve_run(run_number)
+
+        context = {
+            "run_number": run_number,
+            "reco": reco,
+            "run": run,
+            "dataset": dataset,
+            "form": self.form(),
+        }
+        return render(request, "certifier/certify.html", context)
+
+    def post(self, request, run_number: int, reco: str = None):
+        try:
+            runReconstruction = RunReconstruction.objects.get(
+                run__run_number=run_number, reconstruction=reco
+            )
+        except RunReconstruction.DoesNotExist:
+            runReconstruction = RunReconstruction.objects.create(
+                run=run, reconstruction=reco
+            )
+
+        dataset, _ = Dataset.objects.get_or_create(dataset=dataset)
+
+        user = User.objects.get(pk=request.user.id)
+
+        # create a form instance and populate it with data from the request:
+        form = self.form(request.POST)
+
+        if form.is_valid():
+            try:
+                trackerCertification = TrackerCertification.objects.get(
+                    runreconstruction=runReconstruction
+                )
+                messages.info(
+                    request,
+                    f"Certification for {trackerCertification.runreconstruction.run.run_number} "
+                    f"{trackerCertification.runreconstruction.reconstruction} already exists",
+                )
+            except TrackerCertification.DoesNotExist:
+                formToSave = form.save(commit=False)
+                formToSave.runreconstruction = runReconstruction
+                formToSave.dataset = dataset
+                formToSave.user = user
+                formToSave.save()
+                form.save_m2m()
+                messages.success(
+                    request,
+                    f"Certification for {runReconstruction.run.run_number} "
+                    f"{runReconstruction.reconstruction} successfully saved",
+                )
+            return redirect("openruns:openruns")
+
+        messages.error(request, "Submitted form was invalid!")
 
 
 @login_required
