@@ -18,6 +18,12 @@ from oms.utils import (
     get_reco_from_dataset,
 )
 from oms.models import OmsRun
+from oms.exceptions import (
+    OmsApiFillNumberNotFound,
+    OmsApiRunNumberNotFound,
+    RunRegistryNoAvailableDatasets,
+    RunRegistryReconstructionNotFound,
+)
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -120,19 +126,20 @@ def certify(request, run_number, reco=None):
 
     run = None
     try:
-        # The following functions try to fetch
-        # data from RR and/or OMS, may fail to connect
         run = oms_retrieve_run(run_number)
         if not dataset:
-
             if not reco:
                 dataset = rr_retrieve_next_uncertified_dataset(run_number)
             else:
                 dataset = rr_retrieve_dataset_by_reco(run_number, reco)
 
-    except IndexError as e:
-        context = {"message": f"Run {run_number} does not exist"}
-        logger.error(f"{context['message']} ({repr(e)})")
+    except (
+        OmsApiRunNumberNotFound,
+        OmsApiFillNumberNotFound,
+        RunRegistryReconstructionNotFound,
+    ) as e:
+        context = {"message": e}
+        logger.error(repr(e))
         return render(request, "certifier/404.html", context, status=404)
     except (
         ConnectionError,
