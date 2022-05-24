@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect, Http404, JsonResponse
 from certifier.forms import CertifyFormWithChecklistForm, BadReasonForm
 from certifier.models import TrackerCertification, RunReconstruction, Dataset, BadReason
 from certifier.api.serializers import RunReferenceRunSerializer
+from certifier.exceptions import RunReconstructionAllDatasetsCertified
 from openruns.models import OpenRuns
 from oms.utils import (
     oms_retrieve_run,
@@ -96,47 +97,144 @@ def promoteToReference(request, run_number, reco):
 @method_decorator(login_required, name="dispatch")
 class CertifyView(View):
     form = CertifyFormWithChecklistForm
+    run = None
+    reco = None
+    dataset = None
 
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Override parent class' dispatch method (i.e. before get() or post()
+        is executed) to make sure we have enough info to proceed
 
-    def _get_dataset(self, run_number: int, reconstruction: str = None) -> str:
-        dataset = None
-        if reconstruction is not None:
-            dataset = rr_retrieve_dataset_by_reco(run_number, reconstruction)
-        else:
-            dataset = rr_retrieve_next_uncertified_dataset(run_number)
+        Notes:
+        - We always have run_number available
+        - Having the dataset, we easily have reco too
+        - Having just run_number but not the dataset means
+        try to find the next available dataset from RR
+        """
+        run_number = kwargs.get("run_number", None)
+        self.reco = kwargs.get("reco", None)
+        self.dataset = request.GET.get("dataset", None)
 
-        return dataset
+        # Make sure that we have the dataset name and the reconstruction type
+        try:
+            if not self.dataset and not self.reco:
+                self.dataset = rr_retrieve_next_uncertified_dataset(run_number)
+                self.reco = get_reco_from_dataset(self.dataset)
+            elif not self.dataset:
+                self.dataset = rr_retrieve_dataset_by_reco(run_number, self.reco)
+            elif not self.reco:
+                self.reco = get_reco_from_dataset(self.dataset)
+        except RunRegistryReconstructionNotFound as e:
+            context = {"message": e}
+            logger.error(repr(e))
+            return render(request, "certifier/404.html", context, status=404)
+        except RunReconstructionAllDatasetsCertified as e:
+            logger.info(repr(e))
+            messages.success(request, repr(e))
+            return redirect("openruns:openruns")
+        except (
+            ConnectionError,
+            ParseError,
+        ) as e:
+            # If no reconstruction is specified and there's no connection
+            # to RR, we cannot get the next available reconstruction type & dataset
+            if not self.reco:
+                context = {
+                    "message": "Cannot proceed with certification if no "
+                    "reconstruction type is specified while RunRegistry or OMS API "
+                    f"are unreachable ({e})",
+                    "error_num": 400,
+                }
+                return render(request, "certifier/http_error.html", context, status=400)
+
+            # Proceed with warning
+            if isinstance(e, ConnectionError):
+                msg = "Unable to connect to external API."
+            elif isinstance(e, ParseError):
+                msg = "CERN authentication failed."
+            msg += f" Please proceed to enter the data manually (Error: {e})"
+            logger.warning(msg)
+            messages.warning(request, msg)
+
+        # Check if specific combination can be certified by current user
+        if not TrackerCertification.can_be_certified_by_user(
+            run_number, self.reco, request.user
+        ):
+            msg = (
+                f"Reconstruction {run_number} {self.reco} "
+                "is already certified by another user"
+            )
+            logger.warning(msg)
+            return render(
+                request,
+                "certifier/http_error.html",
+                context={"error_num": 400, "message": msg},
+                status=400,
+            )
+        # If certification exists, redirect to update it
+        elif TrackerCertification.objects.filter(
+            runreconstruction__run__run_number=run_number,
+            runreconstruction__reconstruction=self.reco,
+        ).exists():
+            certification = TrackerCertification.objects.get(
+                runreconstruction__run__run_number=run_number,
+                runreconstruction__reconstruction=self.reco,
+            )
+            return redirect(
+                "listruns:update",
+                pk=certification.pk,
+                run_number=run_number,
+                reco=self.reco,
+            )
+
+        try:
+            self.run = oms_retrieve_run(run_number)
+        except (
+            OmsApiRunNumberNotFound,
+            OmsApiFillNumberNotFound,
+        ) as e:
+            context = {"message": e}
+            logger.error(repr(e))
+            return render(request, "certifier/404.html", context, status=404)
+        except (
+            ConnectionError,
+            ParseError,
+        ) as e:
+            messages.warning(request, repr(e))
+
+        # All good, proceed with dispatching to the appropriate method
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, run_number: int, reco: str = None):
-        dataset = request.GET.get("dataset", None)
-        if not dataset:
-            dataset = self._get_dataset(run_number, reco)
-        if not reco:
-            reco = get_reco_from_dataset(dataset)
-        run = oms_retrieve_run(run_number)
+        logger.debug(
+            f"Requesting certification of run {run_number} {reco if reco else ''}"
+        )
 
         context = {
             "run_number": run_number,
-            "reco": reco,
-            "run": run,
-            "dataset": dataset,
+            "reco": self.reco,
+            "run": self.run,
+            "dataset": self.dataset,
             "form": self.form(),
         }
         return render(request, "certifier/certify.html", context)
 
     def post(self, request, run_number: int, reco: str = None):
+        logger.debug(
+            f"Submitting certification for run {run_number} {self.reco if self.reco else ''}"
+        )
+
         try:
             runReconstruction = RunReconstruction.objects.get(
                 run__run_number=run_number, reconstruction=reco
             )
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                run=run, reconstruction=reco
+                run=self.run, reconstruction=reco
             )
 
-        dataset, _ = Dataset.objects.get_or_create(dataset=dataset)
+        dataset, _ = Dataset.objects.get_or_create(dataset=self.dataset)
 
         user = User.objects.get(pk=request.user.id)
 
@@ -165,9 +263,9 @@ class CertifyView(View):
                     f"Certification for {runReconstruction.run.run_number} "
                     f"{runReconstruction.reconstruction} successfully saved",
                 )
-            return redirect("openruns:openruns")
-
-        messages.error(request, "Submitted form was invalid!")
+        else:
+            messages.error(request, "Submitted form was invalid!")
+        return redirect("openruns:openruns")
 
 
 @login_required
