@@ -13,7 +13,7 @@ from certifier.api.serializers import RunReferenceRunSerializer
 from openruns.models import OpenRuns
 from oms.utils import (
     oms_retrieve_run,
-    rr_retrieve_dataset,
+    rr_retrieve_next_uncertified_dataset,
     rr_retrieve_dataset_by_reco,
     get_reco_from_dataset,
 )
@@ -126,7 +126,7 @@ def certify(request, run_number, reco=None):
         if not dataset:
 
             if not reco:
-                dataset = rr_retrieve_dataset(run_number)
+                dataset = rr_retrieve_next_uncertified_dataset(run_number)
             else:
                 dataset = rr_retrieve_dataset_by_reco(run_number, reco)
 

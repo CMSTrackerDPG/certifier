@@ -42,7 +42,7 @@ def rr_retrieve_dataset_by_reco(run_number: int, reco: str) -> str:  # pragma: n
     raise Exception(f"Could not find reconstruction '{reco}' for run {run_number}")
 
 
-def rr_retrieve_dataset(run_number: int) -> str:  # pragma: no cover
+def rr_retrieve_next_uncertified_dataset(run_number: int) -> str:  # pragma: no cover
     """
     Function that, given a run_number, queries the RunRegistry
     for all available datasets associated with it.
