@@ -82,9 +82,9 @@ def openruns(request):
                     status=503,
                 )
             except ProtocolError as e:
-                return HttpResponse(f"ProtocolError occurred: {e}", status=503)
+                return HttpResponse(f"ProtocolError occurred: {e}", status=500)
             except ConnectionError as e:
-                return HttpResponse(f"ConnectionError occurred: {e}", status=503)
+                return HttpResponse(f"ConnectionError occurred: {e}", status=500)
 
         elif min_run_number and max_run_number:
             number_of_runs = int(max_run_number) - int(min_run_number)
@@ -106,9 +106,9 @@ def openruns(request):
                         status=503,
                     )
                 except ProtocolError as e:
-                    return HttpResponse(f"ProtocolError occurred: {e}", status=503)
+                    return HttpResponse(f"ProtocolError occurred: {e}", status=500)
                 except ConnectionError as e:
-                    return HttpResponse(f"ConnectionError occurred: {e}", status=503)
+                    return HttpResponse(f"ConnectionError occurred: {e}", status=500)
 
     # Add table, with list of openruns created depending on the filters
     openruns_table = OpenRunsTable(show_openruns)
