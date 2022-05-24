@@ -246,7 +246,7 @@ class OpenRunsTable(tables.Table):
     )
 
     def get_context_data(self, **kwargs):
-        """ 
+        """
         Override class method to make HTTP request for the table available.
         From request, we will use the user that issued it to cross-check which
         which dataset buttons will be enabled or not.

@@ -40,7 +40,7 @@ def render_component(component, component_lowstat):  # pragma: no cover
 
 def render_generic_state(state: str = "", state_map: dict = {}):  # pragma: no cover
     """
-    Renders an HTML div using the state as the key to the state map dict, 
+    Renders an HTML div using the state as the key to the state map dict,
     containing the classes that should be applied to the div for the state
     """
     if not state in state_map:
@@ -49,6 +49,12 @@ def render_generic_state(state: str = "", state_map: dict = {}):  # pragma: no c
 
 
 def render_certify_button(run_number, dataset_express, dataset_prompt, dataset_rereco):
+    """
+    Deprecated!
+
+    Button that redirects to certifying the next available dataset
+    for a given run number.
+    """
     css_class = None
 
     if (
