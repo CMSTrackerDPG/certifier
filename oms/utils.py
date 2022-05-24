@@ -3,7 +3,14 @@ from django.db import IntegrityError, transaction
 import runregistry
 from omsapi.utilities import get_oms_run, get_oms_lumisection_count, get_oms_fill
 from oms.models import OmsFill, OmsRun
+from oms.exceptions import (
+    OmsApiFillNumberNotFound,
+    OmsApiRunNumberNotFound,
+    RunRegistryNoAvailableDatasets,
+    RunRegistryReconstructionNotFound,
+)
 from certifier.models import TrackerCertification
+from certifier.exceptions import RunReconstructionAllDatasetsCertified
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +46,9 @@ def rr_retrieve_dataset_by_reco(run_number: int, reco: str) -> str:  # pragma: n
             if "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
                 return dataset["name"]
 
-    raise Exception(f"Could not find reconstruction '{reco}' for run {run_number}")
+    raise RunRegistryReconstructionNotFound(
+        f"Could not find reconstruction '{reco}' for run {run_number} in Run Registry"
+    )
 
 
 def rr_retrieve_next_uncertified_dataset(run_number: int) -> str:  # pragma: no cover
@@ -50,7 +59,10 @@ def rr_retrieve_next_uncertified_dataset(run_number: int) -> str:  # pragma: no 
     has not a TrackerCertification associated with it is returned.
     """
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
-
+    if len(datasets) == 0:
+        raise RunRegistryNoAvailableDatasets(
+            f"No available datasets for run {run_number}"
+        )
     for dataset in datasets:
         if "online" not in dataset["name"]:
             if not TrackerCertification.objects.filter(
@@ -61,12 +73,12 @@ def rr_retrieve_next_uncertified_dataset(run_number: int) -> str:  # pragma: no 
             ).exists():
                 return dataset["name"]
 
-    if len(datasets) == 0:
-        raise Exception(f"No available datasets for run {run_number}")
-    raise Exception(f"Run {run_number} has been fully certified")
+    raise RunReconstructionAllDatasetsCertified(
+        f"Run {run_number} has been fully certified"
+    )
 
 
-def oms_retrieve_fill(fill_number):  # pragma: no cover
+def oms_retrieve_fill(fill_number: int) -> OmsFill:  # pragma: no cover
     """
     Given a fill number, checks if it exists in the DB and
     if not, queries the OMS API for info and creates a new
@@ -74,7 +86,7 @@ def oms_retrieve_fill(fill_number):  # pragma: no cover
 
     Raises:
     - requests.exceptions.ConnectionError if unable to connect
-    - IndexError if fill number not found in API
+    - OmsApiFillNumberNotFound if fill number not found in API
     """
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
@@ -88,7 +100,7 @@ def oms_retrieve_fill(fill_number):  # pragma: no cover
     if response is None:
         msg = f"Fill {fill_number} not found in OMS API"
         logger.warning(msg)
-        raise IndexError(msg)
+        raise OmsApiFillNumberNotFound(msg)
 
     include_attribute_keys = [
         "fill_number",
@@ -155,7 +167,7 @@ def oms_retrieve_fill(fill_number):  # pragma: no cover
     return OmsFill.objects.get(fill_number=fill_number)
 
 
-def oms_retrieve_run(run_number):  # pragma: no cover
+def oms_retrieve_run(run_number: int) -> OmsRun:  # pragma: no cover
     """
     Helper function that, given a run number, tries to retrieve it
     by looking into the DB first, then the OMS API.
@@ -164,7 +176,7 @@ def oms_retrieve_run(run_number):  # pragma: no cover
     Same for fill number.
 
     Raises:
-    - IndexError If the API returns no results
+    - OmsApiRunNumberNotFound if run number not found
     - requests.exceptions.ConnectionError if the API is unreachable
     """
     run_check = OmsRun.objects.filter(run_number=run_number)
@@ -176,7 +188,7 @@ def oms_retrieve_run(run_number):  # pragma: no cover
     if response is None:
         msg = f"Run {run_number} not found in OMS API"
         logger.warning(msg)
-        raise IndexError(msg)
+        raise OmsApiRunNumberNotFound(msg)
 
     fill_number = response["attributes"].pop("fill_number")
     # There's a chance there's no fill number, see #127
