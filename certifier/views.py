@@ -149,7 +149,9 @@ def certify(request, run_number, reco=None):
         # to RR, we cannot get the next available reconstruction type & dataset
         if not reco:
             context = {
-                "message": f"Cannot proceed with certification if no reconstruction type is specified ({e})",
+                "message": "Cannot proceed with certification if no "
+                "reconstruction type is specified while RunRegistry or OMS API "
+                f"are unreachable ({e})",
                 "error_num": 400,
             }
             return render(request, "certifier/http_error.html", context, status=400)
