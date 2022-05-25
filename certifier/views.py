@@ -100,6 +100,9 @@ class CertifyView(View):
     run = None
     reco = None
     dataset = None
+    external_info_completeness = TrackerCertification.EXTERNAL_INFO_INCOMPLETE
+    _rr_info_updated = False
+    _oms_info_updated = False
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -125,6 +128,7 @@ class CertifyView(View):
                 self.dataset = rr_retrieve_dataset_by_reco(run_number, self.reco)
             elif not self.reco:
                 self.reco = get_reco_from_dataset(self.dataset)
+            self._rr_info_updated = True
         except RunRegistryReconstructionNotFound as e:
             context = {"message": e}
             logger.error(repr(e))
@@ -189,6 +193,8 @@ class CertifyView(View):
             )
 
         try:
+            # This does not raise if run was created
+            # previously, even without remote information
             self.run = oms_retrieve_run(run_number)
         except (
             OmsApiRunNumberNotFound,
@@ -204,6 +210,13 @@ class CertifyView(View):
             messages.warning(request, repr(e))
             self.run = OmsRun.objects.create(run_number=run_number)
 
+        # Update flag
+        self.external_info_completeness = (
+            TrackerCertification.EXTERNAL_INFO_COMPLETE
+            if self._rr_info_updated and self._oms_info_updated
+            else TrackerCertification.EXTERNAL_INFO_INCOMPLETE
+        )
+
         # All good, proceed with dispatching to the appropriate method
         return super().dispatch(request, *args, **kwargs)
 
@@ -211,13 +224,14 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
-
+        form = self.form()
+        form.external_info_completeness = self.external_info_completeness
         context = {
             "run_number": run_number,
             "reco": self.reco,
             "run": self.run,
             "dataset": self.dataset,
-            "form": self.form(),
+            "form": form,
         }
         return render(request, "certifier/certify.html", context)
 
@@ -241,6 +255,8 @@ class CertifyView(View):
 
         # create a form instance and populate it with data from the request:
         form = self.form(request.POST)
+
+        print("!!!!!", self.form)
 
         if form.is_valid():
             try:
@@ -266,6 +282,7 @@ class CertifyView(View):
                 )
         else:
             messages.error(request, "Submitted form was invalid!")
+
         return redirect("openruns:openruns")
 
 

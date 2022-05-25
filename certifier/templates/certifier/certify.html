@@ -406,6 +406,10 @@
                         </button>
                     </div>
                 </div>
+				<!--================================ COMPLETENESS ============================-->
+				<!-- This stays hidden, we only need this to transfer data from GET to POST -->
+                {% render_field form.external_info_completeness class="d-none" %}
+
                 <!--================================ PROBLEMS ============================-->
                 <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
