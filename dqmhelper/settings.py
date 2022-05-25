@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "channels",
     "cablingmap.apps.CablingmapConfig",
     "mlplayground.apps.MlplaygroundConfig",
-    "trackermaps.apps.TrackermapsConfig",
+    "remotescripts",
     "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
     "summary.apps.SummaryConfig",
