@@ -13,7 +13,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 from decouple import config
+from django.contrib.messages import constants as messages
 
+MESSAGE_TAGS = {
+    messages.ERROR: "danger",
+}
 # Version to display in order to keep track of changes
 CERTHELPER_VERSION = "1.4.2"
 
