@@ -3,7 +3,7 @@ import logging
 import threading
 import paramiko
 from django.conf import settings
-from django.views import View
+from django.views.generic import DetailView
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib import messages
@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
+from remotescripts.models import RemoteScriptConfiguration, RemoteScriptOutputFile
 
 logger = logging.getLogger(__name__)
 
@@ -23,16 +24,18 @@ echo Received commands: $1 $2
 
 for i in {1..10}
 do
-	echo "heheheeh kalispera filoi mou" $i
-	sleep 1
+echo "heheheeh kalispera filoi mou" $i
+sleep 1
 done
 """
 
 
-class RemoteScriptExecutionView(LoginRequiredMixin, UserPassesTestMixin, View):
+class RemoteScriptExecutionView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template = ""
     context = {}
     remote_command = None
+    configuration = None
+    model = RemoteScriptConfiguration
 
     def test_func(self):
         """
@@ -46,6 +49,18 @@ class RemoteScriptExecutionView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request):
         return render(request, self.template, self.context)
+
+    def execute_command(self):
+        if not self.remote_command:
+            raise Exception("No command specified!")
+        channel_layer = get_channel_layer()
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.send_channel_message(
+            channel_layer,
+            "output_group",
+            f"-------- CONNECTING TO {self.object.host} --------\n",
+        )
 
     @staticmethod
     def send_channel_message(

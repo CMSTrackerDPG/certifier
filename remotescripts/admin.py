@@ -1,4 +1,4 @@
 from django.contrib import admin
-from remotescripts.models import RemoteSriptConfiguration
+from remotescripts.models import RemoteScriptConfiguration
 
-admin.site.register(RemoteSriptConfiguration)
+admin.site.register(RemoteScriptConfiguration)

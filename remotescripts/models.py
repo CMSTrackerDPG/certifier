@@ -2,13 +2,17 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 
 
-class RemoteSriptConfiguration(models.Model):
+class RemoteScriptConfiguration(models.Model):
     """
     Model storing configuration for executing scripts on remote hosts
     """
 
     CONNECTION_SSH_KB = "ssh_kb"
     CONNECTION_PROTOCOL_CHOICES = [(CONNECTION_SSH_KB, "SSH - keyboard interactive")]
+
+    title = models.CharField(
+        max_length=20, help_text="Script title to display", null=True
+    )
 
     command = models.CharField(
         max_length=500, help_text="Remote command to run", null=False
@@ -49,16 +53,17 @@ class RemoteSriptConfiguration(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class RemoteScriptOutput(models.Model):
+class RemoteScriptOutputFile(models.Model):
     """
     Model representing a file output of a remote script
     """
 
     mother_script = models.ForeignKey(
-        RemoteSriptConfiguration,
+        RemoteScriptConfiguration,
         on_delete=models.CASCADE,
         help_text="Script instance this file is generated from",
         null=False,
+        related_name="output_files",
     )
     directory = models.CharField(
         max_length=255,
