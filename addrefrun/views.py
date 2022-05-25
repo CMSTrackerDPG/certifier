@@ -7,7 +7,7 @@ from certifier.exceptions import (
     RunReconstructionIsAlreadyReference,
     RunReconstructionNotYetCertified,
 )
-from oms.utils import retrieve_run
+from oms.utils import oms_retrieve_run
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def addreference(request):  # pragma: no cover
     if run_number and reco:
         try:
             # Get OmsRun info from DB, create entry if does not exist
-            run = retrieve_run(run_number)
+            run = oms_retrieve_run(run_number)
 
             run_reconstruction, created = RunReconstruction.objects.get_or_create(
                 run_id=run_number, reconstruction=reco

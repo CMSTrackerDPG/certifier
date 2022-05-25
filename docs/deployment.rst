@@ -12,6 +12,7 @@ An overview of the steps is:
 - Add nginx server (`Add nginx Server (not working for now)`_)
 - Setup CERN SSO (`Single Sign-On`_)
 - Deploy (`Deploying a new build`_)
+- Expose the app (`Exposing the app`_)
 
 The procedure can be done completely via the web UI provided by PaaS. However,
 the ``oc`` command line utility can prove very useful. See `oc command line utility`_
@@ -29,6 +30,51 @@ Prerequisites
 Download the ``oc`` command line utility, preferably on your lxplus account.
 
 https://paas.docs.cern.ch/1._Getting_Started/5-installing-cli/
+
+``.s2i`` directory inside the root of your repository
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+We will be using the Software To Image (s2i) approach to deploy on PaaS,
+namely the `Python <https://github.com/sclorg/s2i-python-container>`__ flavor.
+This means that a Docker image is created from our repository on each deployment.
+
+There should be a ``.s2i`` directory inside your repository, with the ``environment`` file in it.
+Inside the ``.s2i`` directory, make sure there is a ``bin`` directory with an ``assemble`` file in
+it.
+
+``environment`` contents
+""""""""""""""""""""""""
+These are environmental variables used by Openshift when creating the
+Docker image. The value of ``APP_SCRIPT`` will be the entrypoint of the created image.
+
+::
+   
+   DISABLE_COLLECTSTATIC=true
+   APP_SCRIPT=openshift-start-up-script.sh
+
+``assemble`` contents
+"""""""""""""""""""""
+This will override the ``assemble`` stage of the s2i procedure, so that
+we can do configuration as needed. Most important configuration change is
+CERN gitlab authentication which is required to ``pip install`` from private
+repositories.
+
+.. code:: bash
+   
+   #!/bin/bash
+   echo "Before assembling"
+   git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cern.ch".insteadOf https://gitlab.cern.ch
+   /usr/libexec/s2i/assemble
+   rc=$?
+
+   if [ $rc -eq 0 ]; then
+     echo "After successful assembling"
+   else
+     echo "After failed assembling"
+   fi
+
+   exit $rc
+
+See `Setup Environmental Variables`_ for the required environmental variables used in the script above.
 
 
 Requesting a website
@@ -169,6 +215,13 @@ Setup Environmental Variables
 		::
 		  
 		   CSRF_TRUSTED_ORIGINS        https://[the hostname you resistered in step 12.a]
+
+	  - To access CERN's gitlab private repositories via ``pip``:
+		::
+			 
+		   CERN_GITLAB_USER           <CERN gitlab username>
+		   CERN_GITLAB_TOKEN          <CERN gitlab access token with read_repository permissions>		   
+	
 15. Save the variables and rebuild the project:
 	.. image:: images/paas-rebuild.png
 
@@ -431,13 +484,29 @@ is taking place.
 
 The ``dev-certhelper`` instance can be updated at will.
 
-To automate deployment, the ``oc start-build <build-config>`` can be used
-as a crontab job. See the `official documentation
-<https://docs.openshift.com/container-platform/3.11/dev_guide/builds/basic_build_operations.html>`__
-for more info
+To automate deployment, use OpenShift's :guilabel:`CronJobs` to create pods based on the ``curlimages/curl`` image:
 
+* Navigate to the project's `BuildConfig <https://paas.cern.ch/k8s/ns/certhelper/buildconfigs/certification-helper>`__, find the :guilabel:`Generic` webhook shown at the bottom of the page and click :guilabel:`Copy URL with Secret`.
+* Navigate to :menuselection:`Administrator --> Workloads --> CronJobs` (`link <https://paas.cern.ch/k8s/ns/certhelper/cronjobs>`__) and create a new :guilabel:`CronJob`.
+* Update ``name`` under ``metadata`` to something meaningful (e.g.: ``scheduled-deployment``)
+* Update ``schedule`` under ``spec`` to the desired crontab (e.g.: ``'0 0 * * 1,5'``, time is in UTC)
+* Use ``curlimages/curl`` as ``image``
+* Under ``args`` paste:
+  ::
 
+	 args:
+	   - curl
+	   - '-X'
+	   - POST
+	   - '-k'
+	   - >-
+	     <the Generic Webhook you copied earlier>
 
+A new pod will be created under the crontab schedule you configured, triggering a new build.
+
+Exposing the app
+----------------
+See the `PaaS docs <https://paas.docs.cern.ch/5._Exposing_The_Application/2-network-visibility/>`__ on how to make the app visible from outside the CERN GPN.
 
 
 

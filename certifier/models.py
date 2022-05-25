@@ -4,7 +4,10 @@ from users.models import User
 from certifier.manager import TrackerCertificationManager
 from oms.models import OmsRun
 from delete.models import SoftDeletionModel
-from certifier.exceptions import RunReconstructionIsAlreadyReference, RunReconstructionNotYetCertified
+from certifier.exceptions import (
+    RunReconstructionIsAlreadyReference,
+    RunReconstructionNotYetCertified,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +27,7 @@ class RunReconstruction(models.Model):
         (RERECOUL, "ReRecoUL"),
     )
     run = models.ForeignKey(OmsRun, on_delete=models.CASCADE)
-    reconstruction = models.CharField(max_length=8,
-                                      choices=RECONSTRUCTION_CHOICES)
+    reconstruction = models.CharField(max_length=8, choices=RECONSTRUCTION_CHOICES)
 
     is_reference = models.BooleanField(default=False)
 
@@ -56,13 +58,16 @@ class RunReconstruction(models.Model):
         if self.is_reference:
             raise RunReconstructionIsAlreadyReference(
                 f"Run reconstruction {self.run_number}"
-                f"({self.reconstruction}) is already a reference")
+                f"({self.reconstruction}) is already a reference"
+            )
 
         # Look into TrackerCertification for the specific run reconstruction
         # to see if it has been certified. RunReconstruction ids are TrackerCertification's
         # primary key
-        if TrackerCertification.objects.filter(runreconstruction=self).exists(
-        ) and self.certification.is_good:
+        if (
+            TrackerCertification.objects.filter(runreconstruction=self).exists()
+            and self.certification.is_good
+        ):
             # Run reconstruction has been certified and is good,
             # so we're promoting it.
             self.is_reference = True
@@ -70,7 +75,8 @@ class RunReconstruction(models.Model):
         else:
             raise RunReconstructionNotYetCertified(
                 f"Run reconstruction {self.run_number}"
-                f"({self.reconstruction}) has not been certified yet")
+                f"({self.reconstruction}) has not been certified yet"
+            )
 
         return True
 
@@ -125,34 +131,58 @@ class TrackerCertification(SoftDeletionModel):
     BAD = "bad"
     EXCLUDED = "excluded"
 
+    TRACKERMAP_EXISTS = "exists"
+    TRACKERMAP_MISSING = "missing"
+
+    # Incomplete status means missing data from RunRegistry,
+    # OMS etc
+    EXTERNAL_INFO_INCOMPLETE = "INC"
+    EXTERNAL_INFO_COMPLETE = "COM"
+
     SUBCOMPONENT_STATUS_CHOICES = (
         (GOOD, "Good"),
         (BAD, "Bad"),
         (EXCLUDED, "Excluded"),
     )
-    TRACKERMAP_CHOICES = (("exists", "Exists"), ("missing", "Missing"))
+    TRACKERMAP_CHOICES = (
+        (TRACKERMAP_EXISTS, "Exists"),
+        (TRACKERMAP_MISSING, "Missing"),
+    )
+
+    EXTERNAL_INFO_COMPLETENESS_CHOICES = (
+        (EXTERNAL_INFO_INCOMPLETE, "Incomplete"),
+        (EXTERNAL_INFO_COMPLETE, "Complete"),
+    )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
-    runreconstruction = models.OneToOneField(RunReconstruction,
-                                             on_delete=models.CASCADE,
-                                             primary_key=True,
-                                             related_name="certification")
+    runreconstruction = models.OneToOneField(
+        RunReconstruction,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="certification",
+    )
 
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True)
 
     reference_runreconstruction = models.ForeignKey(
         RunReconstruction,
         on_delete=models.CASCADE,
         related_name="ref",
-        limit_choices_to={'is_reference': True})
+        limit_choices_to={"is_reference": True},
+    )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
+    external_info_completeness = models.CharField(
+        max_length=4,
+        choices=EXTERNAL_INFO_COMPLETENESS_CHOICES,
+        help_text="OMS/RR Information completeness status.",
+        default=EXTERNAL_INFO_INCOMPLETE,
+    )
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
     strip = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
-    tracking = models.CharField(max_length=8,
-                                choices=SUBCOMPONENT_STATUS_CHOICES)
+    tracking = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
 
     pixel_lowstat = models.BooleanField(default=False)
     strip_lowstat = models.BooleanField(default=False)
@@ -162,14 +192,38 @@ class TrackerCertification(SoftDeletionModel):
     strip_problems = models.ManyToManyField(StripProblem, blank=True)
     tracking_problems = models.ManyToManyField(TrackingProblem, blank=True)
 
-    bad_reason = models.ForeignKey(BadReason,
-                                   null=True,
-                                   blank=True,
-                                   on_delete=models.SET_NULL)
+    bad_reason = models.ForeignKey(
+        BadReason, null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     date = models.DateField()
 
     comment = models.TextField(blank=True)
+
+    @classmethod
+    def can_be_certified_by_user(
+        cls, run_number: int, reconstruction: str, user
+    ) -> bool:
+        """
+        Returns True if run_number/reconstruction combination certification does not exist
+        OR exists and is certified by the user specified.
+
+        Returns False if certification exists and is certified by another user.
+
+        """
+        try:
+            certification = cls.objects.get(
+                runreconstruction__run__run_number=run_number,
+                runreconstruction__reconstruction=reconstruction,
+            )
+            if user != certification.user:
+                return False
+
+        except cls.DoesNotExist:
+            # This specific certification does not exist yet
+            pass
+
+        return True
 
     @property
     def is_good(self):
@@ -182,8 +236,7 @@ class TrackerCertification(SoftDeletionModel):
             candidates_lowstat.append(self.pixel_lowstat)
 
         for i in range(0, len(candidates)):
-            if candidates[i] != good_criteria and candidates_lowstat[
-                    i] != "lowstat":
+            if candidates[i] != good_criteria and candidates_lowstat[i] != "lowstat":
                 return False
         return True
 

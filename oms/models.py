@@ -188,11 +188,11 @@ class OmsRun(models.Model):
         help_text="Run number", verbose_name="Run", unique=True, primary_key=True
     )
 
-    run_type = models.CharField(max_length=10, choices=RUN_TYPE_CHOICES)
+    run_type = models.CharField(max_length=10, choices=RUN_TYPE_CHOICES, null=True)
 
     fill = models.ForeignKey(OmsFill, on_delete=models.CASCADE, null=True)
 
-    lumisections = models.PositiveIntegerField()
+    lumisections = models.PositiveIntegerField(null=True)
 
     b_field = models.FloatField(
         help_text="Magnetic field", verbose_name="B Field", null=True
@@ -249,7 +249,10 @@ class OmsRun(models.Model):
         max_length=25, help_text="Fill type", verbose_name="Fill Type", null=True
     )
     hlt_key = models.CharField(
-        max_length=256, help_text="HLT configuration key", verbose_name="HLT Key"
+        max_length=256,
+        help_text="HLT configuration key",
+        verbose_name="HLT Key",
+        null=True,
     )
     hlt_physics_counter = models.BigIntegerField(
         help_text="HLT triggers  for Physics streams",
@@ -344,16 +347,22 @@ class OmsRun(models.Model):
         null=True,
     )
 
-    b_field_unit = models.CharField(max_length=50, default="T")
-    init_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
-    delivered_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
-    recorded_lumi_unit = models.CharField(max_length=50, default="pb^{-1}")
-    end_lumi_unit = models.CharField(max_length=50, default="10^{34}cm^{-2}s^{-1}")
-    energy_unit = models.CharField(max_length=50, default="GeV")
+    b_field_unit = models.CharField(max_length=50, default="T", null=True)
+    init_lumi_unit = models.CharField(
+        max_length=50, default="10^{34}cm^{-2}s^{-1}", null=True
+    )
+    delivered_lumi_unit = models.CharField(max_length=50, default="pb^{-1}", null=True)
+    recorded_lumi_unit = models.CharField(max_length=50, default="pb^{-1}", null=True)
+    end_lumi_unit = models.CharField(
+        max_length=50, default="10^{34}cm^{-2}s^{-1}", null=True
+    )
+    energy_unit = models.CharField(max_length=50, default="GeV", null=True)
 
     def save(self, *args, **kwargs):
         physics_or_special = (
-            "/cdaq/physics" in self.hlt_key or "/cdaq/special" in self.hlt_key
+            ("/cdaq/physics" in self.hlt_key or "/cdaq/special" in self.hlt_key)
+            if self.hlt_key
+            else False
         )
         is_collisions = physics_or_special and self.stable_beam
         self.run_type = "collisions" if is_collisions else "cosmics"

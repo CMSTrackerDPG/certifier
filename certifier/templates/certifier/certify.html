@@ -406,6 +406,10 @@
                         </button>
                     </div>
                 </div>
+				<!--================================ COMPLETENESS ============================-->
+				<!-- This stays hidden, we only need this to transfer data from GET to POST -->
+                {% render_field form.external_info_completeness class="d-none" %}
+
                 <!--================================ PROBLEMS ============================-->
                 <div class="row mt-4 mr-2">
                     <div class="col-sm-5 col-form-label" style="font-size: 18px;">
@@ -535,7 +539,7 @@ expandTextarea('id_comment_box', 90);
         /**
          * Popup Checklist modal with items when trying to check a checklist checkbox
          */
-        $("#addBadReason").load("{% url 'addbadreason' %}");
+        $("#addBadReason").load("{% url 'addbadreasonform' %}");
         $('[id^="id_checklist_"]').each(function() {
             popupChecklistModal($(this));
         });
@@ -555,13 +559,12 @@ function add_bad_reason(){
     $.ajax({
         headers: { "X-CSRFToken": '{{csrf_token}}' },
         type: "POST",
-        url: "{% url 'certify' run_number=run_number reco=reco %}",
+        url: "{% url 'badreasons' %}",
         data: {
            'name': $('#id_bad_reason_name').val(),
            'description' : $('#id_bad_reason_desc').val(),
-           'dataset' : "{{ dataset }}"
         },
-        success: function() {
+        success: function(data) {
             if ($('#id_bad_reason option').length == 0) {
                 var $lastValue = 1
             }else{
