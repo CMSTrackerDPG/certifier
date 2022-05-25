@@ -136,8 +136,8 @@ class TrackerCertification(SoftDeletionModel):
 
     # Incomplete status means missing data from RunRegistry,
     # OMS etc
-    CERTIFICATION_INCOMPLETE = "INC"
-    CERTIFICATION_COMPLETE = "COM"
+    EXTERNAL_INFO_INCOMPLETE = "INC"
+    EXTERNAL_INFO_COMPLETE = "COM"
 
     SUBCOMPONENT_STATUS_CHOICES = (
         (GOOD, "Good"),
@@ -149,9 +149,9 @@ class TrackerCertification(SoftDeletionModel):
         (TRACKERMAP_MISSING, "Missing"),
     )
 
-    CERTIFICATION_COMPLETENESS_CHOICES = (
-        (CERTIFICATION_INCOMPLETE, "Incomplete"),
-        (CERTIFICATION_COMPLETE, "Complete"),
+    EXTERNAL_INFO_COMPLETENESS_CHOICES = (
+        (EXTERNAL_INFO_INCOMPLETE, "Incomplete"),
+        (EXTERNAL_INFO_COMPLETE, "Complete"),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
@@ -173,11 +173,11 @@ class TrackerCertification(SoftDeletionModel):
     )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
-    completeness_status = models.CharField(
+    external_info_completeness = models.CharField(
         max_length=4,
-        choices=CERTIFICATION_COMPLETENESS_CHOICES,
-        help_text="Certification's completeness status.",
-        default=CERTIFICATION_INCOMPLETE,
+        choices=EXTERNAL_INFO_COMPLETENESS_CHOICES,
+        help_text="OMS/RR Information completeness status.",
+        default=EXTERNAL_INFO_INCOMPLETE,
     )
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
