@@ -20,7 +20,6 @@ Welcome to Certification Helper's documentation!
    references
    faq
    developer-diary
-   internals
 
 Indices and tables
 ==================
