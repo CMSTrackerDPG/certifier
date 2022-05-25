@@ -202,6 +202,7 @@ class CertifyView(View):
             ParseError,
         ) as e:
             messages.warning(request, repr(e))
+            self.run = OmsRun.objects.create(run_number=run_number)
 
         # All good, proceed with dispatching to the appropriate method
         return super().dispatch(request, *args, **kwargs)
@@ -221,9 +222,7 @@ class CertifyView(View):
         return render(request, "certifier/certify.html", context)
 
     def post(self, request, run_number: int, reco: str = None):
-        logger.debug(
-            f"Submitting certification for run {run_number} {self.reco if self.reco else ''}"
-        )
+        logger.debug(f"Submitting certification for run {run_number} {self.reco}")
 
         try:
             runReconstruction = RunReconstruction.objects.get(
@@ -234,7 +233,9 @@ class CertifyView(View):
                 run=self.run, reconstruction=reco
             )
 
-        dataset, _ = Dataset.objects.get_or_create(dataset=self.dataset)
+        dataset = None
+        if self.dataset:
+            dataset, _ = Dataset.objects.get_or_create(dataset=self.dataset)
 
         user = User.objects.get(pk=request.user.id)
 

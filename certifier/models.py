@@ -163,7 +163,7 @@ class TrackerCertification(SoftDeletionModel):
         related_name="certification",
     )
 
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, null=True)
 
     reference_runreconstruction = models.ForeignKey(
         RunReconstruction,
