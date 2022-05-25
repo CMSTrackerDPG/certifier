@@ -31,10 +31,27 @@ If the user wants to log in with a local account that is only used by
 the Certhelper website instead, he can do so by clicking "Use local account instead", entering the
 credentials and clicking on "Sign in".
 
+
+Privileges from e-groups
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Logging in with CERN updates the user privileges automatically, such
 that shift leaders are detected by the e-groups the user is a member of.
 The Shift Leader e-group is automatically assigned and does not have to
 be updated manually.
+
+Shifters must be subscribed to the following e-groups:
+
+- ``cms-dqm-runregistry-offline-tracker-certifiers``
+
+Shift Leaders must be subscribed to the following e-groups:
+
+- ``cms-tracker-offline-shiftleader``
+- ``cms-tracker-offline-shiftleaders``
+
+Experts must be subscribed to:
+
+- ``cms-dqm-certification-experts``
 
 Shifter
 -------
@@ -139,6 +156,35 @@ Once pressed, a daily shift report is generated automatically and can be used by
 
 .. image:: images/daily-shift-report.png
 
+Generate Tracker Maps
+~~~~~~~~~~~~~~~~~~~~~
+
+By using the Tracker Maps tile button you can access the page where you can generate tracker maps.
+
+.. image:: images/tracker-maps-tile.png
+
+In this page, a Shifter or Shift Leader can generate tracker maps for specific runs.
+All they have to do is add the run number list (either comma or space separated
+values) and select the type.
+Once that is done, pressing the :guilabel:`Generate Tracker Maps` button will
+start the process. The Shifter or Shift Leader can follow the process in real time by observing the logs of
+the generating script.
+
+.. image:: images/tracker-maps.png
+
+		   
+.. note::
+
+   If multiple users visit the page, they will all be updated with execution logs of the
+   running scripts at the same time.
+
+
+.. warning::
+
+   Currently, a user can execute the tracker map generation script multiple times. This
+   can overload the ``vocms066`` machine, so please wait for previous map generation to complete
+   before invoking the script again.
+		   
 
 Shift Leader
 ------------
@@ -146,12 +192,14 @@ Shift Leader
 Once a shift leader logs in via CERN SSO, the website automatically
 detects the shift leader status by the e-groups the user is associated
 with. In particular, the current shift leader should always be
-automatically assigned to the e-group "cms-tracker-offline-shiftleader".
+automatically assigned to the e-group ``cms-tracker-offline-shiftleader``
+(see also `Privileges from e-groups`_).
 
-The user can ensure he has shift leader rights by checking if a "Shift
-Leader" or an "Admin Settings" tab appears in the navigation bar.
+The user can ensure he has shift leader rights by checking if an
+:guilabel:`Admin Settings` tab appears in the navigation bar.
 
-Apart from that the shiftleader has access to all the pages/tiles, including the shifter ones.
+Apart from that the ShiftLeader has access to all the pages/tiles, including
+the ones used by Shifters.
 
 .. image:: images/main-page.png
 
@@ -182,41 +230,14 @@ has not been certified yet will prompt the user to certify the run first.
    Therefore, deleting a reference run will also delete all the certifications
    that refer to that specific reference run. 
 
-Generate Tracker Maps
-~~~~~~~~~~~~~~~~~~~~~
-
-By using the Tracker Maps tile button you can access the page where you can generate tracker maps.
-
-.. image:: images/tracker-maps-tile.png
-
-Here the shiftleader can generate tracker maps for specific runs. All they have to do is add the run number
-list (either comma or space separated values) and select the type.
-Once that is done, pressing the :guilabel:`Generate Tracker Maps` button will
-start the process. The shiftleader can follow the process in real time by observing the logs of
-the generating script.
-
-.. image:: images/tracker-maps.png
-
-		   
-.. note::
-
-   If multiple Shift Leader have visited the page, they will all be updated with execution logs of the
-   running scripts at the same time.
-
-
-.. warning::
-
-   Currently, a Shift Leader can execute the tracker map generation script multiple times. This
-   can overload the ``vocms066`` machine, so please wait for previous map generation to complete
-   before invoking the script again.
 
 
 Shift Leader View
 ~~~~~~~~~~~~~~~~~
 
-In the shift leader view, a shift leader receives information about all
+In the Shift Leader View, a Shift Leader receives information about all
 the certified runs for the current week. The page consists of multiple
-tools, which facilitate the shift leader in creating weekly shift leader
+tools, which facilitate the Shift Leader in creating weekly shift leader
 reports. This page can be accessed through the Shift Leader Report tile button.
 
 .. image:: images/shiftleader-report.png
