@@ -67,13 +67,17 @@ class TestCertify:
 
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number)
+        resp = views.CertifyView.as_view()(req, run_number=run_number)
 
-        assert 200 == resp.status_code
+        assert resp.status_code == 200
 
     def test_certify_valid(self):
         run_number = 321123
-        ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
+        ref_runReconstruction = mixer.blend(
+            RunReconstruction,
+            is_reference=True,
+            reconstruction=RunReconstruction.EXPRESS,
+        )
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
         arguments = {"run_number": run_number}
@@ -88,6 +92,7 @@ class TestCertify:
             "comment": "test",
             "trackermap": "exists",
             "date": "2018-01-01",
+            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
         }
 
         form = CertifyForm(data=data)
@@ -102,9 +107,9 @@ class TestCertify:
         setattr(req, "session", "session")
         messages = FallbackStorage(req)
         setattr(req, "_messages", messages)
-        resp = views.certify(req, run_number)
+        resp = views.CertifyView.as_view()(req, run_number=run_number)
 
-        assert 302 == resp.status_code, "should redirect to openruns"
+        assert resp.status_code, "should redirect to openruns" == 302
         assert TrackerCertification.objects.exists()
 
     def test_certify_other_users_certification(self):
@@ -116,7 +121,12 @@ class TestCertify:
         user_b = mixer.blend(User)
         run_number = 321123
         run = mixer.blend(OmsRun, run_number=run_number, run_type=OmsRun.COLLISIONS)
-        run_reconstruction = mixer.blend(RunReconstruction, run=run, is_reference=False)
+        run_reconstruction = mixer.blend(
+            RunReconstruction,
+            run=run,
+            is_reference=False,
+            reconstruction=RunReconstruction.EXPRESS,
+        )
         ref_run_reconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
@@ -150,8 +160,10 @@ class TestCertify:
         req = RequestFactory().post(req_url, data=form.data)
         # Try to certify as user_b
         req.user = user_b
-
-        resp = views.certify(
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
+        resp = views.CertifyView.as_view()(
             req, run_number=run_number, reco=run_reconstruction.reconstruction
         )
         assert resp.status_code == 400
@@ -164,7 +176,12 @@ class TestCertify:
         user_a = mixer.blend(User)
         run_number = 321123
         run = mixer.blend(OmsRun, run_number=run_number, run_type=OmsRun.COLLISIONS)
-        run_reconstruction = mixer.blend(RunReconstruction, run=run, is_reference=False)
+        run_reconstruction = mixer.blend(
+            RunReconstruction,
+            run=run,
+            is_reference=False,
+            reconstruction=RunReconstruction.EXPRESS,
+        )
         ref_run_reconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
         dataset = mixer.blend(Dataset)
@@ -199,8 +216,10 @@ class TestCertify:
 
         # Try to certify as same user
         req.user = user_a
-
-        resp = views.certify(
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
+        resp = views.CertifyView.as_view()(
             req, run_number=run_number, reco=run_reconstruction.reconstruction
         )
 
@@ -231,6 +250,7 @@ class TestCertify:
             "comment": "test",
             "trackermap": "exists",
             "date": "2018-01-01",
+            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
         }
 
         form = CertifyForm(data=data)
@@ -244,10 +264,10 @@ class TestCertify:
 
         req.user = mixer.blend(User)
 
-        resp = views.certify(req, run_number)
+        resp = views.CertifyView.as_view()(req, run_number=run_number)
 
-        assert 404 == resp.status_code, "should not redirect to success view"
-        assert TrackerCertification.objects.exists() == False
+        assert resp.status_code, "should not redirect to success view" == 404
+        assert TrackerCertification.objects.exists() is False
 
     def test_certify_invalid_no_selection(self):
         run_number = 321123
@@ -261,19 +281,22 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
+            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_INCOMPLETE,
         }
 
         form = CertifyForm(data=data)
 
         assert {} != form.errors
-        assert form.is_valid() == False
+        assert form.is_valid() is False
 
         req = RequestFactory().post(
             reverse("certify", kwargs=arguments), data=form.data
         )
         req.user = mixer.blend(User)
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
+        resp = views.CertifyView.as_view()(req, run_number=run_number)
 
-        resp = views.certify(req, run_number)
-
-        assert 200 == resp.status_code, "should not redirect to success view"
-        assert TrackerCertification.objects.exists() == False
+        assert resp.status_code, "should not redirect to success view" == 200
+        assert TrackerCertification.objects.exists() is False

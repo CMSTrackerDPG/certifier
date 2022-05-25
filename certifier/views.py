@@ -129,7 +129,7 @@ class CertifyView(View):
             elif not self.reco:
                 self.reco = get_reco_from_dataset(self.dataset)
             self._rr_info_updated = True
-        except RunRegistryReconstructionNotFound as e:
+        except (RunRegistryReconstructionNotFound, RunRegistryNoAvailableDatasets) as e:
             context = {"message": e}
             logger.error(repr(e))
             return render(request, "certifier/404.html", context, status=404)
@@ -217,6 +217,7 @@ class CertifyView(View):
             else TrackerCertification.EXTERNAL_INFO_INCOMPLETE
         )
 
+        logger.debug(f"Run reconstruction {run_number} {self.reco} ({self.dataset})")
         # All good, proceed with dispatching to the appropriate method
         return super().dispatch(request, *args, **kwargs)
 
@@ -237,14 +238,13 @@ class CertifyView(View):
 
     def post(self, request, run_number: int, reco: str = None):
         logger.debug(f"Submitting certification for run {run_number} {self.reco}")
-
         try:
             runReconstruction = RunReconstruction.objects.get(
-                run__run_number=run_number, reconstruction=reco
+                run__run_number=run_number, reconstruction=self.reco
             )
         except RunReconstruction.DoesNotExist:
             runReconstruction = RunReconstruction.objects.create(
-                run=self.run, reconstruction=reco
+                run=self.run, reconstruction=self.reco
             )
 
         dataset = None
@@ -255,8 +255,6 @@ class CertifyView(View):
 
         # create a form instance and populate it with data from the request:
         form = self.form(request.POST)
-
-        print("!!!!!", self.form)
 
         if form.is_valid():
             try:
@@ -284,151 +282,6 @@ class CertifyView(View):
             messages.error(request, "Submitted form was invalid!")
 
         return redirect("openruns:openruns")
-
-
-@login_required
-def certify(request, run_number, reco=None):
-
-    logger.debug(f"Requesting certification of run {run_number} {reco if reco else ''}")
-
-    # Check if specific combination can be certified by current user
-    if not TrackerCertification.can_be_certified_by_user(
-        run_number, reco, request.user
-    ):
-        msg = f"Reconstruction {run_number} {reco} is already certified by another user"
-        logger.warning(msg)
-        return render(
-            request,
-            "certifier/http_error.html",
-            context={"error_num": 400, "message": msg},
-            status=400,
-        )
-    # If certification exists, redirect to update it
-    elif TrackerCertification.objects.filter(
-        runreconstruction__run__run_number=run_number,
-        runreconstruction__reconstruction=reco,
-    ).exists():
-        certification = TrackerCertification.objects.get(
-            runreconstruction__run__run_number=run_number,
-            runreconstruction__reconstruction=reco,
-        )
-        return redirect(
-            "listruns:update", pk=certification.pk, run_number=run_number, reco=reco
-        )
-
-    # This is only available from openruns colored boxes
-    dataset = request.GET.get("dataset", None)
-
-    run = None
-    try:
-        run = oms_retrieve_run(run_number)
-        if not dataset:
-            if not reco:
-                dataset = rr_retrieve_next_uncertified_dataset(run_number)
-            else:
-                dataset = rr_retrieve_dataset_by_reco(run_number, reco)
-
-    except (
-        OmsApiRunNumberNotFound,
-        OmsApiFillNumberNotFound,
-        RunRegistryReconstructionNotFound,
-    ) as e:
-        context = {"message": e}
-        logger.error(repr(e))
-        return render(request, "certifier/404.html", context, status=404)
-    except (
-        ConnectionError,
-        ParseError,
-    ) as e:
-        # If no reconstruction is specified and there's no connection
-        # to RR, we cannot get the next available reconstruction type & dataset
-        if not reco:
-            context = {
-                "message": "Cannot proceed with certification if no "
-                "reconstruction type is specified while RunRegistry or OMS API "
-                f"are unreachable ({e})",
-                "error_num": 400,
-            }
-            return render(request, "certifier/http_error.html", context, status=400)
-        # Proceed with warning
-        if isinstance(e, ConnectionError):
-            msg = "Unable to connect to external API."
-        elif isinstance(e, ParseError):
-            msg = "CERN authentication failed."
-        msg += f" Please proceed to enter the data manually (Error: {e})"
-        logger.warning(msg)
-        messages.warning(request, msg)
-
-    except Exception as e:
-        context = {"message": e, "error_num": 500}
-        logger.exception(repr(e))
-        return render(request, "certifier/http_error.html", context, status=500)
-
-    if not reco:
-        if dataset:
-            reco = get_reco_from_dataset(dataset)
-        else:
-            reco = None
-
-    # Certification submission
-    if request.method == "POST":
-        try:
-            runReconstruction = RunReconstruction.objects.get(
-                run__run_number=run_number, reconstruction=reco
-            )
-        except RunReconstruction.DoesNotExist:
-            runReconstruction = RunReconstruction.objects.create(
-                run=run, reconstruction=reco
-            )
-
-        dataset, _ = Dataset.objects.get_or_create(dataset=dataset)
-
-        user = User.objects.get(pk=request.user.id)
-
-        # create a form instance and populate it with data from the request:
-        form = CertifyFormWithChecklistForm(request.POST)
-
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            try:
-                trackerCertification = TrackerCertification.objects.get(
-                    runreconstruction=runReconstruction
-                )
-                messages.warning(
-                    request,
-                    f"Certification for {trackerCertification.runreconstruction.run.run_number} {trackerCertification.runreconstruction.reconstruction} already exists",
-                )
-            except TrackerCertification.DoesNotExist:
-                formToSave = form.save(commit=False)
-                formToSave.runreconstruction = runReconstruction
-                formToSave.dataset = dataset
-                formToSave.user = user
-                formToSave.save()
-                form.save_m2m()
-                messages.info(
-                    request,
-                    f"Certification for {runReconstruction.run.run_number} {runReconstruction.reconstruction} successfully saved",
-                )
-            return redirect("openruns:openruns")
-
-        messages.error(request, "Submitted form was invalid!")
-
-    # From openruns openruns page, create a blank form
-    elif request.method == "GET":
-        form = CertifyFormWithChecklistForm()
-
-    context = {
-        "run_number": run_number,
-        "reco": reco,
-        "run": run,
-        "dataset": dataset,
-        "form": form,
-    }
-
-    return render(request, "certifier/certify.html", context)
 
 
 def runRefRun_list(request):
