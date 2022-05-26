@@ -102,9 +102,16 @@ class RemoteScriptView(ScriptExecutionBaseView):
         instance = self.model.objects.get(id=pk)
         form = ScriptExecutionForm.generate_form(instance)(request.POST)
         if form.is_valid():
-            print(form.data)
-            # instance.execute()
-            success = True
+            args = [
+                form.data[key]
+                for key in form.data
+                if str(key).startswith(ScriptExecutionForm.POSITIONAL_FIELD_NAME_PREFIX)
+            ]
+            kwargs = {}
+            try:
+                success = instance.execute(*args, **kwargs)
+            except Exception as e:
+                logger.error(e)
         return JsonResponse({"success": success})
 
 
