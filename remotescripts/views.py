@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
-from remotescripts.models import RemoteScriptConfiguration, RemoteScriptOutputFile
+from remotescripts.models import RemoteScriptConfiguration
 
 logger = logging.getLogger(__name__)
 
