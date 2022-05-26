@@ -36,6 +36,10 @@ class ScriptConfigurationBase(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def _form_command(self, *args, **kwargs) -> str:
+        """
+        Building on the base command, add positional and keyword arguments
+        and return the complete command string to execute
+        """
         cmd = str(self.base_command)
         num_pos_args = self.positional_arguments.count()
         num_kw_args = self.keyword_arguments.count()
@@ -68,6 +72,10 @@ class ScriptConfigurationBase(models.Model):
 
     @abstractclassmethod
     def execute(self, *args, **kwargs):
+        """
+        Abstract class method to be overriden by subclasses.
+        Meant to be run in a thread.
+        """
         pass
 
 
@@ -137,35 +145,42 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             for line in f:
                 yield line
 
-    def execute(self, *args, **kwargs) -> bool:
+    def execute(self, *args, **kwargs) -> int:
         """
-        Method that executes remote script
+        Method that executes the remote script.
+
         """
         cmd_to_execute = self._form_command(*args, **kwargs)
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(
-            self.host,
-            username=getattr(settings, self.env_secret_username),
-            password=getattr(settings, self.env_secret_password),
-            port=self.port,
-        )
+        try:
+            ssh.connect(
+                self.host,
+                username=getattr(settings, self.env_secret_username),
+                password=getattr(settings, self.env_secret_password),
+                port=self.port,
+            )
+        except Exception as e:
+            # Run function configured externally
+            # self.on_connect_failure()
+            pass
         logger.debug(f"Executing '{cmd_to_execute}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             cmd_to_execute, get_pty=True
         )
 
         for line in self._line_buffered(ssh_stdout):
-            # line = line.decode("utf-8", errors="ignore")  # Convert bytes to str
+            # Run function configured externally
+            # self.on_new_output_line(line)
             logger.debug(line)
 
         exit_status = ssh_stdout.channel.recv_exit_status()
         if exit_status:
             logger.warning(f"Remote process exited with status {exit_status}")
-            return False
-        logger.info("Remote process terminated with no errors")
-        return True
+        else:
+            logger.info("Remote process terminated with no errors")
+        return exit_status
 
     def __str__(self) -> str:
         return f"{self.title} ({self.get_connection_protocol_display()})"

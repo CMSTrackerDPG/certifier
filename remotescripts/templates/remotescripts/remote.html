@@ -1,0 +1,27 @@
+{% extends 'dqmhelper/base.html' %}
+{% block title %}Remote script{% endblock %}
+
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+
+{{ remote_script }}
+<ul>
+	<li>Host: {{ remote_script.host }}</li>
+	<li>Command: {{ remote_script.base_command }}</li>			
+</ul>
+
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

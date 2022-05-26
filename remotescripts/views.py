@@ -4,7 +4,7 @@ import threading
 import paramiko
 from django.conf import settings
 from django.views.generic import DetailView
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -13,6 +13,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from channels_redis.core import RedisChannelLayer
 from remotescripts.models import RemoteScriptConfiguration
+from remotescripts.forms import ScriptExecutionForm
 
 logger = logging.getLogger(__name__)
 
@@ -30,12 +31,10 @@ done
 """
 
 
-class RemoteScriptExecutionView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template = ""
     context = {}
-    remote_command = None
-    configuration = None
-    model = RemoteScriptConfiguration
+    queryset = None
 
     def test_func(self):
         """
@@ -74,7 +73,42 @@ class RemoteScriptExecutionView(LoginRequiredMixin, UserPassesTestMixin, DetailV
         )
 
 
-class TrackerMapsView(RemoteScriptExecutionView):
+class AllRemoteScriptsView(ScriptExecutionBaseView):
+    template = "remotescripts/all.html"
+    queryset = RemoteScriptConfiguration.objects.all()
+
+    def get(self, request):
+        self.context = {
+            "remote_scripts": self.queryset,
+        }
+        return super().get(request)
+
+    def post(self, request):
+        pass
+
+
+class RemoteScriptView(ScriptExecutionBaseView):
+    template = "remotescripts/remote.html"
+    model = RemoteScriptConfiguration
+
+    def get(self, request, pk: int):
+        instance = self.model.objects.get(id=pk)
+        form = ScriptExecutionForm.generate_form(instance)
+        self.context = {"remote_script": instance, "form": form}
+        return super().get(request)
+
+    def post(self, request, pk):
+        success = False
+        instance = self.model.objects.get(id=pk)
+        form = ScriptExecutionForm.generate_form(instance)(request.POST)
+        if form.is_valid():
+            print(form.data)
+            # instance.execute()
+            success = True
+        return JsonResponse({"success": success})
+
+
+class TrackerMapsView(ScriptExecutionBaseView):
     template = "remotescripts/trackermaps.html"
 
     def setup(self, request, *args, **kwargs):
