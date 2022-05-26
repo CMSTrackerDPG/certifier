@@ -7,11 +7,13 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from remotescripts.validators import validate_bash_script
+from model_utils.managers import InheritanceManager
 
 logger = logging.getLogger(__name__)
 
 
 class ScriptConfigurationBase(models.Model):
+    objects = InheritanceManager()
     title = models.CharField(
         max_length=20, help_text="Script title to display", null=True
     )
@@ -28,12 +30,12 @@ class ScriptConfigurationBase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def _form_command(self) -> str:
+    def _form_command(self, *args, **kwargs) -> str:
         cmd = str(self.base_command)
         print(type(cmd), cmd)
         if self.positional_arguments.count() > 0:
-            p = self.positional_arguments
-            print(p)
+            pass
+
         if self.keyword_arguments.count() > 0:
             k = self.keyword_arguments
             print(k)
@@ -44,21 +46,21 @@ class ScriptConfigurationBase(models.Model):
         super().save(*args, **kwargs)
 
     @abstractclassmethod
-    def execute(self):
+    def execute(self, *args, **kwargs):
         pass
-
-    def __str__(self) -> str:
-        return f"{self.title} (Local)"
 
 
 class BashScriptConfiguration(ScriptConfigurationBase):
-    def execute(self):
-        cmd_to_execute = self._form_command()
+    def execute(self, *args, **kwargs):
+        cmd_to_execute = self._form_command(*args, **kwargs)
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(cmd_to_execute.encode())
             with subprocess.Popen(["bash", fp.name], stdout=subprocess.PIPE) as process:
                 output, error = process.communicate()
             print(output)
+
+    def __str__(self) -> str:
+        return f"{self.title} (Local)"
 
 
 class RemoteScriptConfiguration(ScriptConfigurationBase):
@@ -104,7 +106,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             for line in f:
                 yield line
 
-    def execute(self) -> bool:
+    def execute(self, *args, **kwargs) -> bool:
         """
         Method that executes remote script
         """
@@ -116,7 +118,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             password=getattr(settings, self.env_secret_password),
             port=self.port,
         )
-        cmd_to_execute = self._form_command()
+        cmd_to_execute = self._form_command(*args, **kwargs)
         logger.debug(f"Executing '{cmd_to_execute}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             cmd_to_execute, get_pty=True
@@ -180,13 +182,16 @@ class ScriptPositionalArgument(ScriptArgumentBase):
         related_name="positional_arguments",
     )
 
+    def __str__(self):
+        return f"Positional argument (Pos:{self.position}) for {ScriptConfigurationBase.objects.get_subclass(id=self.mother_script.pk)}"
+
 
 class ScriptKeywordArgument(ScriptArgumentBase):
     SEPARATOR_SPACE = " "
     SEPARATOR_EQUALS = "="
     SEPARATOR_CHOICES = ((SEPARATOR_SPACE, "Space"), (SEPARATOR_EQUALS, "="))
     keyword = models.CharField(
-        max_length=50, help_text="Keyword name for this argument", null=True
+        max_length=50, help_text="Keyword name for this argument", null=False
     )
     separator = models.CharField(
         max_length=2,
@@ -201,3 +206,6 @@ class ScriptKeywordArgument(ScriptArgumentBase):
         null=False,
         related_name="keyword_arguments",
     )
+
+    def __str__(self):
+        return f"--{self.keyword}{self.separator}"
