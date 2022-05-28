@@ -70,7 +70,6 @@
 			 var message = data['message'];
 			 document.querySelector('#id_command_output').value += (message);
 			 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
-			 console.warn(message)
 		 };
 
 		 command_output_socket.onclose = function(e) {

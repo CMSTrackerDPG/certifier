@@ -96,7 +96,7 @@ class BashScriptConfiguration(ScriptConfigurationBase):
             fp.write(cmd_to_execute.encode())
             with subprocess.Popen(["bash", fp.name], stdout=subprocess.PIPE) as process:
                 output, error = process.communicate()
-            print(output)
+            logger.info(output)
 
     def __str__(self) -> str:
         return f"{self.title} (Local)"
@@ -150,6 +150,18 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         Method that executes the remote script.
 
         """
+        self.on_script_start = lambda: None
+        if "on_script_start" in kwargs:
+            var = kwargs.pop("on_script_start")
+            if callable(var):
+                self.on_script_start = var
+
+        self.on_connect_success = lambda: None
+        if "on_connect_success" in kwargs:
+            var = kwargs.pop("on_connect_success")
+            if callable(var):
+                self.on_connect_success = var
+
         self.on_connect_failure = lambda: None
         if "on_connect_failure" in kwargs:
             var = kwargs.pop("on_connect_failure")
@@ -161,7 +173,13 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             var = kwargs.pop("on_new_output_line")
             if callable(var):
                 self.on_new_output_line = var
+        self.on_script_end = lambda: None
+        if "on_script_end" in kwargs:
+            var = kwargs.pop("on_script_end")
+            if callable(var):
+                self.on_script_end = var
 
+        self.on_script_start()
         cmd_to_execute = self._form_command(*args, **kwargs)
 
         ssh = paramiko.SSHClient()
@@ -173,6 +191,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                 password=getattr(settings, self.env_secret_password),
                 port=self.port,
             )
+            self.on_connect_success(self.host)
         except Exception as e:
             # Run function configured externally
             self.on_connect_failure(e)
@@ -188,6 +207,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             logger.debug(line)
 
         exit_status = ssh_stdout.channel.recv_exit_status()
+        self.on_script_end(exit_status)
         if exit_status:
             logger.warning(f"Remote process exited with status {exit_status}")
         else:

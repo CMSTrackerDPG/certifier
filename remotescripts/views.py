@@ -100,6 +100,19 @@ class RemoteScriptView(ScriptExecutionBaseView):
                 "on_connect_failure": lambda msg: self.send_channel_message(
                     channel_layer, "output_group", msg
                 ),
+                "on_connect_success": lambda host: self.send_channel_message(
+                    channel_layer,
+                    "output_group",
+                    f"-------- CONNECTED TO {host} --------\n",
+                ),
+                "on_script_start": lambda: self.send_channel_message(
+                    channel_layer, "output_group", "-------- SCRIPT STARTED --------\n"
+                ),
+                "on_script_end": lambda exit_status: self.send_channel_message(
+                    channel_layer,
+                    "output_group",
+                    f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                ),
             }
 
             instance_args = (
@@ -117,7 +130,9 @@ class RemoteScriptView(ScriptExecutionBaseView):
                     kwargs[str(key)] = form.data[key]
 
             try:
-                success = instance.execute(*args, **kwargs)
+                threading.Thread(
+                    target=instance.execute, args=args, kwargs=kwargs
+                ).start()
             except Exception as e:
                 logger.error(e)
 
@@ -132,6 +147,7 @@ class TrackerMapsView(ScriptExecutionBaseView):
 
     def post(self, request):
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+
             run_type = request.POST.get("type", None)
             runs_list = request.POST.get("list", None)
             logger.info(
