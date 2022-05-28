@@ -243,6 +243,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                     for ff in ftp.listdir(f.directory):
                         r = re.search(f.filename_regex, ff)
                         if r:
+                            valid_file = True
                             for k, v in r.groupdict().items():
                                 # Expect 'arg' capture groups to match args used
                                 # to run execute()
@@ -255,7 +256,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                                     else:
                                         msg = f"Could not validate '{k}' argument. Expected {args[pos]}, got {v}"
                                         logger.error(msg)
-                                        raise Exception(msg)  # TODO
+                                        valid_file = False
+                                        continue
 
                                 elif k in list(
                                     self.keyword_arguments.all().values_list("keyword")
@@ -264,9 +266,13 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                                         f"Validated '{k}' keyword argument (value = {v})"
                                     )
                                     # TODO
-
-                            logger.info(f"Found output file '{ff}'")
-                            output_files.append(ff)
+                            if valid_file:
+                                logger.info(f"Found output file '{ff}'")
+                                output_files.append(ff)
+                    if len(output_files) < 1:
+                        raise Exception(
+                            f"No files matching regex '{f.filename_regex}' found"
+                        )
 
                 # Get output files from remote machine
                 for i, f in enumerate(output_files):
