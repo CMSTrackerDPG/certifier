@@ -271,7 +271,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                                     # TODO
                             if valid_file:
                                 logger.info(f"Found output file '{ff}'")
-                                output_files.append(ff)
+                                output_files.append((f, ff))
                             else:
                                 logger.debug(f"Skipping non-matching file")
                     if len(output_files) < 1:
@@ -281,9 +281,12 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
 
                 # Get output files from remote machine
                 for i, f in enumerate(output_files):
-                    localpath = os.path.join(tempfile.gettempdir(), f)
-                    logger.info(f"Copying remote file '{f}' to '{localpath}'")
-                    ftp.get(remotepath=f, localpath=localpath)
+                    localpath = os.path.join(tempfile.gettempdir(), f[1])
+                    logger.info(f"Copying remote file '{f[1]}' to '{localpath}'")
+                    ftp.get(
+                        remotepath=os.path.join(f[0].directory, f[1]),
+                        localpath=localpath,
+                    )
                     self.on_new_output_file(i, localpath)
                 ftp.close()
         ssh.close()
