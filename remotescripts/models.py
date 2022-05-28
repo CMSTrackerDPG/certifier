@@ -239,10 +239,13 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             if self.output_files.all().count() > 0:
                 logger.info("Fetching output files")
                 ftp = ssh.open_sftp()
+                # Try to find expected output files
                 for f in self.output_files.all():
                     for ff in ftp.listdir(f.directory):
+                        logger.debug(f"Checking file '{ff}'")
                         r = re.search(f.filename_regex, ff)
                         if r:
+                            logger.debug(f"Matched regex {f.filename_regex}")
                             valid_file = True
                             for k, v in r.groupdict().items():
                                 # Expect 'arg' capture groups to match args used
@@ -269,6 +272,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                             if valid_file:
                                 logger.info(f"Found output file '{ff}'")
                                 output_files.append(ff)
+                            else:
+                                logger.debug(f"Skipping non-matching file")
                     if len(output_files) < 1:
                         raise Exception(
                             f"No files matching regex '{f.filename_regex}' found"
@@ -277,8 +282,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                 # Get output files from remote machine
                 for i, f in enumerate(output_files):
                     localpath = os.path.join(tempfile.gettempdir(), f)
-                    logger.info(f"Copying remote file to '{localpath}'")
-                    ftp.get(remotepath=f, localpath=localpath)
+                    logger.info(f"Copying remote file '{f}' to '{localpath}'")
+                    ftp.get(remotepath=f, localpath=localpgath)
                     self.on_new_output_file(i, localpath)
                 ftp.close()
         ssh.close()
