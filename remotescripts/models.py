@@ -1,3 +1,4 @@
+import os
 import re
 import tempfile
 import logging
@@ -173,6 +174,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             "on_connect_success",
             "on_connect_failure",
             "on_new_output_line",
+            "on_new_output_file",
         ]
 
         for k in ATTR_LIST:
@@ -230,6 +232,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             logger.warning(f"Remote process exited with status {exit_status}")
         else:
             logger.info("Remote process terminated with no errors")
+
+            # Handle output files - TODO: put in a method
             output_files = []
             # Need ssh, args, self
             if self.output_files.all().count() > 0:
@@ -265,8 +269,11 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                             output_files.append(ff)
 
                 # Get output files from remote machine
-                for f in output_files:
-                    ftp.get(remotepath=f, localpath=f"/home/mpliax/{f}")
+                for i, f in enumerate(output_files):
+                    localpath = os.path.join(tempfile.gettempdir(), f)
+                    logger.info(f"Copying remote file to '{localpath}'")
+                    ftp.get(remotepath=f, localpath=localpath)
+                    self.on_new_output_file(i, localpath)
                 ftp.close()
         ssh.close()
         return exit_status

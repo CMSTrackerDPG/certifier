@@ -1,4 +1,6 @@
 import re
+import base64
+import json
 import logging
 import threading
 import paramiko
@@ -70,6 +72,13 @@ class RemoteScriptView(ScriptExecutionBaseView):
     template = "remotescripts/remote.html"
     model = RemoteScriptConfiguration
 
+    @staticmethod
+    def _encode_file_base64(filepath) -> bytes:
+        encoded_file = b""
+        with open(filepath, "rb") as f:
+            encoded_file = base64.b64encode(f.read())
+        return encoded_file
+
     def get(self, request, pk: int):
         instance = self.model.objects.get(id=pk)
         form = ScriptExecutionForm(instance=instance)
@@ -103,6 +112,15 @@ class RemoteScriptView(ScriptExecutionBaseView):
                     channel_layer,
                     "output_group",
                     f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                ),
+                "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
+                    channel_layer,
+                    "output_group",
+                    {
+                        f"file{file_id}": self._encode_file_base64(filepath).decode(
+                            "ascii"
+                        )
+                    },
                 ),
             }
 

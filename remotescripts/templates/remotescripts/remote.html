@@ -48,6 +48,9 @@
 		<div class="card-header">
 			<h5>{{ output_file.filename_regex }}</h5>
 		</div>
+		<div class="card-body">
+			<img id="output-img-{{ output_file.id }}"></img>
+		</div>
 	</div>
 	{% endfor %}
 </div>
@@ -72,24 +75,37 @@
 		 // Clear output button callback
 		 function clearOutput(){
 			 $('#id_command_output').val("");
-		 }
+		 };
 
 		 // Callback run on every new message that
 		 // is received from the WS
 		 command_output_socket.onmessage = function(e) {
 			 var data = JSON.parse(e.data);
-			 var message = data['message'];
-			 document.querySelector('#id_command_output').value += (message);
-			 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+			 if(typeof data['message'] === 'object'){
+				 for(var key of Object.keys(data['message'])){
+					 if (key.startsWith('file'))
+					 {
+						 var file_id = Number(key.substring(key.indexOf('file') + 4)) + 1;
+						 img_div = document.getElementById(`output-img-${file_id}`);
+						 img_div.src = `data:image/png;base64,${data['message'][key]}`
+					 }
+				 }
+			 }
+			 else
+			 {
+				 var message = data['message'];
+				 document.querySelector('#id_command_output').value += (message);
+				 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+			 }
 		 };
 
-		 command_output_socket.onclose = function(e) {
+				 command_output_socket.onclose = function(e) {
 			 console.error('Socket closed unexpectedly: '+ e.message);
 		 };
 	 })
 
 	 var $myForm = $("#remote_script_execution_form");
-	 $myForm.submit(function(ev){
+	 $myForm.on('submit', function(ev){
 		 $("#remote_script_execution_form").find(':input[type=submit]').prop('disabled', true);
 		 // add spinner to button
 		 // if ($('[id=id_run_number]').val() != '') {
@@ -119,9 +135,9 @@
 			  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
 			  console.error(msg);
 			  alert(msg);
-	 });
+		  });
 		 ev.preventDefault();
-		 return false
+		 return false;
 	 });
 	 
 	</script>
