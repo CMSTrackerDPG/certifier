@@ -49,18 +49,6 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     def get(self, request):
         return render(request, self.template, self.context)
 
-    def execute_command(self):
-        if not self.remote_command:
-            raise Exception("No command specified!")
-        channel_layer = get_channel_layer()
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.send_channel_message(
-            channel_layer,
-            "output_group",
-            f"-------- CONNECTING TO {self.object.host} --------\n",
-        )
-
     @staticmethod
     def send_channel_message(
         channel_layer: RedisChannelLayer, group_name: str, message: str
@@ -93,25 +81,46 @@ class RemoteScriptView(ScriptExecutionBaseView):
 
     def get(self, request, pk: int):
         instance = self.model.objects.get(id=pk)
-        form = ScriptExecutionForm.generate_form(instance)
+        form = ScriptExecutionForm(instance=instance)
         self.context = {"remote_script": instance, "form": form}
         return super().get(request)
 
-    def post(self, request, pk):
+    def post(self, request, pk: int):
         success = False
         instance = self.model.objects.get(id=pk)
-        form = ScriptExecutionForm.generate_form(instance)(request.POST)
+        form = ScriptExecutionForm(instance=instance, data=request.POST)
+
         if form.is_valid():
-            args = [
-                form.data[key]
-                for key in form.data
-                if str(key).startswith(ScriptExecutionForm.POSITIONAL_FIELD_NAME_PREFIX)
-            ]
-            kwargs = {}
+            channel_layer = get_channel_layer()
+            args = []
+            kwargs = {
+                "on_new_output_line": lambda msg: self.send_channel_message(
+                    channel_layer, "output_group", msg
+                ),
+                "on_connect_failure": lambda msg: self.send_channel_message(
+                    channel_layer, "output_group", msg
+                ),
+            }
+
+            instance_args = (
+                instance.positional_arguments.all()
+                .order_by("position")
+                .values_list("name", flat=True)
+            )
+            instance_kwargs = instance.keyword_arguments.all().values_list(
+                "name", flat=True
+            )
+            for key in form.data:
+                if str(key) in list(instance_args):
+                    args.append(form.data[key])
+                elif str(key) in list(instance_kwargs):
+                    kwargs[str(key)] = form.data[key]
+
             try:
                 success = instance.execute(*args, **kwargs)
             except Exception as e:
                 logger.error(e)
+
         return JsonResponse({"success": success})
 
 

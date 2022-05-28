@@ -150,6 +150,18 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         Method that executes the remote script.
 
         """
+        self.on_connect_failure = lambda: None
+        if "on_connect_failure" in kwargs:
+            var = kwargs.pop("on_connect_failure")
+            if callable(var):
+                self.on_connect_failure = var
+
+        self.on_new_output_line = lambda: None
+        if "on_new_output_line" in kwargs:
+            var = kwargs.pop("on_new_output_line")
+            if callable(var):
+                self.on_new_output_line = var
+
         cmd_to_execute = self._form_command(*args, **kwargs)
 
         ssh = paramiko.SSHClient()
@@ -163,8 +175,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             )
         except Exception as e:
             # Run function configured externally
-            # self.on_connect_failure()
-            pass
+            self.on_connect_failure(e)
+
         logger.debug(f"Executing '{cmd_to_execute}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             cmd_to_execute, get_pty=True
@@ -172,7 +184,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
 
         for line in self._line_buffered(ssh_stdout):
             # Run function configured externally
-            # self.on_new_output_line(line)
+            self.on_new_output_line(line)
             logger.debug(line)
 
         exit_status = ssh_stdout.channel.recv_exit_status()
