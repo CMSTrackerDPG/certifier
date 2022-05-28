@@ -8,23 +8,24 @@
 
 {% block content %}
 <div class="container-md container-fluid">
-        <div class="row">
-            <div class="mt-4 mb-4 col-lg-12 text-center">
-				<h1>{{ remote_script }}</h1>
-            </div>
+    <div class="row">
+        <div class="mt-4 mb-4 col-lg-12 text-center">
+			<h1>{{ remote_script }}</h1>
         </div>
-	
-	<ul class="list-group">
-		<li class="list-group-item">Host: {{ remote_script.host }}</li>
-		<li class="list-group-item">Command: {{ remote_script.base_command }}</li>			
-	</ul>
+    </div>
+	<div class="container mb-4">
+		<ul class="list-group">
+			<li class="list-group-item">Host: {{ remote_script.host }}</li>
+			<li class="list-group-item">Command: {{ remote_script.base_command }}</li>			
+		</ul>
+	</div>
 
     <div class="container mb-4">
         <div class="card border-light shadow p-3 bg-white rounded mb-4">
             <form
 				method="post"
-				class="justify-content-center align-items-center"
-				id="remote_script_execution_form" >
+						class="justify-content-center align-items-center"
+						id="remote_script_execution_form" >
 				{% csrf_token %}
 				{{ form }}
 				<input type="submit" value="Submit">
@@ -77,7 +78,7 @@
 	 })
 
 	 var $myForm = $("#remote_script_execution_form");
-	 $myForm.submit(function(){
+	 $myForm.submit(function(ev){
 		 $("#remote_script_execution_form").find(':input[type=submit]').prop('disabled', true);
 		 // add spinner to button
 		 // if ($('[id=id_run_number]').val() != '') {
@@ -103,11 +104,12 @@
 		 })
 		  .always(function(){
 		  })
-p		  .fail(function(data){
+		  .fail(function(data){
 			  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
 			  console.error(msg);
 			  alert(msg);
-		  });
+	 });
+		 ev.preventDefault();
 		 return false
 	 });
 	 

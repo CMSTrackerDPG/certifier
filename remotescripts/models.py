@@ -1,3 +1,4 @@
+import re
 import tempfile
 import logging
 from abc import abstractclassmethod
@@ -5,7 +6,7 @@ import subprocess
 import paramiko
 from django.db import models
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from remotescripts.validators import validate_bash_script
 from model_utils.managers import InheritanceManager
 
@@ -34,6 +35,14 @@ class ScriptConfigurationBase(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    help_text = models.TextField(
+        max_length=600,
+        help_text="Help text/instructions for users",
+        default="",
+        null=True,
+        blank=True,
+    )
 
     def _form_command(self, *args, **kwargs) -> str:
         """
@@ -67,6 +76,10 @@ class ScriptConfigurationBase(models.Model):
         return cmd
 
     def save(self, *args, **kwargs):
+        """
+        Override the save method so that we replace carriage returns
+        which are invalid for bash scripts.
+        """
         self.base_command = str(self.base_command).replace("\r", "")
         super().save(*args, **kwargs)
 
@@ -74,7 +87,17 @@ class ScriptConfigurationBase(models.Model):
     def execute(self, *args, **kwargs):
         """
         Abstract class method to be overriden by subclasses.
+        Executes the script specified by this instance.
         Meant to be run in a thread.
+        """
+        pass
+
+    @abstractclassmethod
+    def get_output(self, *args, **kwargs):
+        """
+        Abstract class method to be overriden by subclasses.
+        Fetches the output files related to the execution of
+        the script specified by this instance.
         """
         pass
 
@@ -212,6 +235,43 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             logger.warning(f"Remote process exited with status {exit_status}")
         else:
             logger.info("Remote process terminated with no errors")
+            output_files = []
+            # Need ssh, args, self
+            if self.output_files.all().count() > 0:
+                logger.info("Fetching output files")
+                ftp = ssh.open_sftp()
+                for f in self.output_files.all():
+                    for ff in ftp.listdir(f.directory):
+                        r = re.search(f.filename_regex, ff)
+                        if r:
+                            for k, v in r.groupdict().items():
+                                # Expect 'arg' capture groups to match args used
+                                # to run execute()
+                                if k.startswith("arg"):
+                                    pos = int(k[3:]) - 1  # 0-indexed array
+                                    if v == args[pos]:
+                                        logger.debug(
+                                            f"Validated {k} argument (value = {v})"
+                                        )
+                                    else:
+                                        msg = f"Could not validate '{k}' argument. Expected {args[pos]}, got {v}"
+                                        logger.error(msg)
+                                        raise Exception(msg)  # TODO
+
+                                elif k in list(
+                                    self.keyword_arguments.all().values_list("keyword")
+                                ):
+                                    logger.debug(
+                                        f"Validated '{k}' keyword argument (value = {v})"
+                                    )
+                                    # TODO
+
+                            logger.info(f"Found output file '{ff}'")
+                            output_files.append(ff)
+                for f in output_files:
+                    ftp.get(remotepath=f, localpath=f"/home/mpliax/{f}")
+                ftp.close()
+        ssh.close()
         return exit_status
 
     def __str__(self) -> str:
@@ -224,7 +284,7 @@ class ScriptOutputFile(models.Model):
     """
 
     mother_script = models.ForeignKey(
-        RemoteScriptConfiguration,
+        ScriptConfigurationBase,
         on_delete=models.CASCADE,
         help_text="Script instance this file is generated from",
         null=False,
@@ -238,11 +298,26 @@ class ScriptOutputFile(models.Model):
     filename_regex = models.CharField(
         max_length=100,
         help_text="Regex to use in directory to find the file",
-        default=r"(?P<filename>.+)?\.txt",
+        validators=[RegexValidator],
+        null=False,
     )
+    description = models.CharField(
+        max_length=100,
+        help_text="Output file description",
+        null=True,
+        default="",
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.filename_regex
 
 
 class ScriptArgumentBase(models.Model):
+    """
+    Base model for ScriptConfigurationBase arguments
+    """
+
     ARGUMENT_INT = "INT"
     ARGUMENT_STR = "STR"
     ARGUMENT_CHOICES = ((ARGUMENT_INT, "Integer"), (ARGUMENT_STR, "String"))
@@ -250,12 +325,23 @@ class ScriptArgumentBase(models.Model):
     type = models.CharField(
         max_length=3, choices=ARGUMENT_CHOICES, default=ARGUMENT_STR
     )
+    help_text = models.CharField(
+        max_length=100,
+        help_text="Help related to this argument",
+        null=True,
+        default="",
+        blank=True,
+    )
 
     def __str__(self):
         return f"{self.name} ({self.get_type_display()})"
 
 
 class ScriptPositionalArgument(ScriptArgumentBase):
+    """
+    Positional argument for a ScriptConfigurationBase instance
+    """
+
     position = models.PositiveSmallIntegerField(
         help_text="Position to be placed after command.",
         validators=[MinValueValidator(limit_value=1)],
@@ -279,6 +365,10 @@ class ScriptPositionalArgument(ScriptArgumentBase):
 
 
 class ScriptKeywordArgument(ScriptArgumentBase):
+    """
+    Keyword argument for a ScriptConfigurationBase instance
+    """
+
     SEPARATOR_SPACE = " "
     SEPARATOR_EQUALS = "="
     SEPARATOR_CHOICES = ((SEPARATOR_SPACE, "Space"), (SEPARATOR_EQUALS, "="))
