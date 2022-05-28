@@ -3,7 +3,7 @@ import logging
 import threading
 import paramiko
 from django.conf import settings
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib import messages
@@ -61,18 +61,9 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
         )
 
 
-class AllRemoteScriptsView(ScriptExecutionBaseView):
-    template = "remotescripts/all.html"
-    queryset = RemoteScriptConfiguration.objects.all()
-
-    def get(self, request):
-        self.context = {
-            "remote_scripts": self.queryset,
-        }
-        return super().get(request)
-
-    def post(self, request):
-        pass
+class RemoteScriptListView(ListView):
+    model = RemoteScriptConfiguration
+    paginate_by = 50
 
 
 class RemoteScriptView(ScriptExecutionBaseView):

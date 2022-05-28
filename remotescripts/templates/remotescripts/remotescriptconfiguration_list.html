@@ -1,0 +1,37 @@
+{% extends 'dqmhelper/base.html' %}
+{% block title %}Remote scripts{% endblock %}
+
+{% load static %}
+
+{% block style %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<table class="table">
+		<thead>
+			<tr>
+				<!-- <th scope="col">id</th> -->
+				<th scope="col">Title</th>
+				<th scope="col">Host</th>
+				<th scope="col">Command</th>
+				<th scope="col">Run</th>							
+			</tr>
+			{% for remote_script in object_list %}
+			<tr>
+				<!-- <td>{{ remote_script.id }}</td> -->
+				<td><b>{{ remote_script.title }}</b></td>				
+				<td>{{ remote_script.host }}</td>
+				<td>{{ remote_script.base_command }}</td>
+				<td><a href="{% url 'remotescripts:detail' remote_script.id %}"><i class="bi bi-caret-right"></i></a></td>
+			</tr>
+			{% endfor %}
+		</thead>
+	</table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
