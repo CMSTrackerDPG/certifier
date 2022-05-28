@@ -7,13 +7,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+<div class="container-md container-fluid">
         <div class="row">
             <div class="mt-4 mb-4 col-lg-12 text-center">
 				<h1>{{ remote_script }}</h1>
             </div>
         </div>
-    </div>
 	
 	<ul class="list-group">
 		<li class="list-group-item">Host: {{ remote_script.host }}</li>
@@ -39,8 +38,8 @@
             <textarea class="text-light bg-dark" style="border: none; height: 450px" cols="150" id="id_command_output"></textarea>
         </div>
 	</div>
-
-	{% endblock %}
+</div>
+{% endblock %}
 
 {% block scripts %}
 	<script>
@@ -104,7 +103,7 @@
 		 })
 		  .always(function(){
 		  })
-		  .fail(function(data){
+p		  .fail(function(data){
 			  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
 			  console.error(msg);
 			  alert(msg);
