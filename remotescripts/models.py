@@ -283,7 +283,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                 for i, f in enumerate(output_files):
                     localpath = os.path.join(tempfile.gettempdir(), f)
                     logger.info(f"Copying remote file '{f}' to '{localpath}'")
-                    ftp.get(remotepath=f, localpath=localpgath)
+                    ftp.get(remotepath=f, localpath=localpath)
                     self.on_new_output_file(i, localpath)
                 ftp.close()
         ssh.close()
