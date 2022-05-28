@@ -162,6 +162,27 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         null=True,
     )
 
+    def _configure_callbacks(self, kwargs):
+        """
+        Externally configurable callbacks to run
+        during execute(). Mostly for printing info.
+        """
+        ATTR_LIST = [
+            "on_script_start",
+            "on_script_end",
+            "on_connect_success",
+            "on_connect_failure",
+            "on_new_output_line",
+        ]
+
+        for k in ATTR_LIST:
+            if not hasattr(self, k):
+                setattr(self, k, lambda: None)
+            if k in kwargs:
+                var = kwargs.pop(k)
+                if callable(var):
+                    setattr(self, k, var)
+
     @staticmethod
     def _line_buffered(f):
         while not f.channel.exit_status_ready():
@@ -173,34 +194,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         Method that executes the remote script.
 
         """
-        self.on_script_start = lambda: None
-        if "on_script_start" in kwargs:
-            var = kwargs.pop("on_script_start")
-            if callable(var):
-                self.on_script_start = var
-
-        self.on_connect_success = lambda: None
-        if "on_connect_success" in kwargs:
-            var = kwargs.pop("on_connect_success")
-            if callable(var):
-                self.on_connect_success = var
-
-        self.on_connect_failure = lambda: None
-        if "on_connect_failure" in kwargs:
-            var = kwargs.pop("on_connect_failure")
-            if callable(var):
-                self.on_connect_failure = var
-
-        self.on_new_output_line = lambda: None
-        if "on_new_output_line" in kwargs:
-            var = kwargs.pop("on_new_output_line")
-            if callable(var):
-                self.on_new_output_line = var
-        self.on_script_end = lambda: None
-        if "on_script_end" in kwargs:
-            var = kwargs.pop("on_script_end")
-            if callable(var):
-                self.on_script_end = var
+        self._configure_callbacks(kwargs)
 
         self.on_script_start()
         cmd_to_execute = self._form_command(*args, **kwargs)
@@ -218,6 +212,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         except Exception as e:
             # Run function configured externally
             self.on_connect_failure(e)
+            raise
 
         logger.debug(f"Executing '{cmd_to_execute}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
@@ -268,6 +263,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
 
                             logger.info(f"Found output file '{ff}'")
                             output_files.append(ff)
+
+                # Get output files from remote machine
                 for f in output_files:
                     ftp.get(remotepath=f, localpath=f"/home/mpliax/{f}")
                 ftp.close()
