@@ -170,6 +170,7 @@ generated if, for example, the output filename contains some or all of the input
 specified by the script.
 
 For example, the **Single module occupancy plotter** takes as inputs:
+
 - Positional argument 1: Datataking period
 - Positional argument 2: Reconstruction type
 - Positional argument 3: Run number
@@ -181,7 +182,7 @@ For this case, we want to validate that the output file contains the **Reconstru
 type** (positional argument 2) and the **Run number** (positional argument 3) in the filename.
 To validate the filename, you will need to specify the regex as
 ``(?P<arg2>\w+)_(\w+)__(\w+)__(\w+)_(\w+)_(?P<arg3>\d+).png``, where ``arg2`` is considered
-a special keyword (regex named capture grou) that represents **Positional argument 2**, and
+a special keyword (regex named capture group) that represents **Positional argument 2**, and
 ``arg3`` represents **Positional argument 3**, respectively.
 
 		  
