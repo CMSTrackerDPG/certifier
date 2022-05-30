@@ -280,15 +280,15 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                         )
 
                 # Get output files from remote machine
-                for i, f in enumerate(output_files):
-                    localpath = os.path.join(tempfile.gettempdir(), f[1])
-                    remotepath = os.path.join(f[0].directory, f[1])
+                for f_db, f_remote in output_files:
+                    localpath = os.path.join(tempfile.gettempdir(), f_remote)
+                    remotepath = os.path.join(f_db.directory, f_remote)
                     logger.info(f"Copying remote file '{remotepath}' to '{localpath}'")
                     ftp.get(
                         remotepath=remotepath,
                         localpath=localpath,
                     )
-                    self.on_new_output_file(i, localpath)
+                    self.on_new_output_file(f_db.id, localpath)
                 ftp.close()
         ssh.close()
         return exit_status
