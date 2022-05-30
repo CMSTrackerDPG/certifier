@@ -3,7 +3,14 @@ from django.db import IntegrityError, transaction
 import runregistry
 from omsapi.utilities import get_oms_run, get_oms_lumisection_count, get_oms_fill
 from oms.models import OmsFill, OmsRun
+from oms.exceptions import (
+    OmsApiFillNumberNotFound,
+    OmsApiRunNumberNotFound,
+    RunRegistryNoAvailableDatasets,
+    RunRegistryReconstructionNotFound,
+)
 from certifier.models import TrackerCertification
+from certifier.exceptions import RunReconstructionAllDatasetsCertified
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +26,12 @@ def get_reco_from_dataset(dataset):
         return "rereco"
 
 
-def retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
+def rr_retrieve_dataset_by_reco(run_number: int, reco: str) -> str:  # pragma: no cover
+    """
+    Function that, given a run_number and a reconstruction type (e.g. "Express"),
+    queries the RunRegistry for datasets and tries to find the information
+    on this specific reconstruction.
+    """
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
 
     for dataset in datasets:
@@ -34,12 +46,23 @@ def retrieve_dataset_by_reco(run_number, reco):  # pragma: no cover
             if "rereco" in dataset["name"].lower() and "UL" in dataset["name"]:
                 return dataset["name"]
 
-    raise Exception(f"Could not find reconstruction:{reco} for run {run_number}")
+    raise RunRegistryReconstructionNotFound(
+        f"Could not find reconstruction '{reco}' for run {run_number} in Run Registry"
+    )
 
 
-def retrieve_dataset(run_number):  # pragma: no cover
+def rr_retrieve_next_uncertified_dataset(run_number: int) -> str:  # pragma: no cover
+    """
+    Function that, given a run_number, queries the RunRegistry
+    for all available datasets associated with it.
+    Those are checked one by one and, the first one that
+    has not a TrackerCertification associated with it is returned.
+    """
     datasets = runregistry.get_datasets(filter={"run_number": {"=": run_number}})
-
+    if len(datasets) == 0:
+        raise RunRegistryNoAvailableDatasets(
+            f"No available datasets for run {run_number}"
+        )
     for dataset in datasets:
         if "online" not in dataset["name"]:
             if not TrackerCertification.objects.filter(
@@ -50,12 +73,21 @@ def retrieve_dataset(run_number):  # pragma: no cover
             ).exists():
                 return dataset["name"]
 
-    if len(datasets) == 0:
-        raise Exception(f"No available datasets for run {run_number}")
-    raise Exception(f"Run {run_number} has been fully certified")
+    raise RunReconstructionAllDatasetsCertified(
+        f"Run {run_number} has been fully certified"
+    )
 
 
-def retrieve_fill(fill_number):  # pragma: no cover
+def oms_retrieve_fill(fill_number: int) -> OmsFill:  # pragma: no cover
+    """
+    Given a fill number, checks if it exists in the DB and
+    if not, queries the OMS API for info and creates a new
+    OmsFill entry.
+
+    Raises:
+    - requests.exceptions.ConnectionError if unable to connect
+    - OmsApiFillNumberNotFound if fill number not found in API
+    """
     fill_check = OmsFill.objects.filter(fill_number=fill_number)
 
     if fill_check.exists():
@@ -66,8 +98,9 @@ def retrieve_fill(fill_number):  # pragma: no cover
     logger.debug(f"Querying OMS API for fill {fill_number}")
     response = get_oms_fill(fill_number)
     if response is None:
-        logger.warning(f"Fill {fill_number} not found in OMS API")
-        raise IndexError
+        msg = f"Fill {fill_number} not found in OMS API"
+        logger.warning(msg)
+        raise OmsApiFillNumberNotFound(msg)
 
     include_attribute_keys = [
         "fill_number",
@@ -134,12 +167,17 @@ def retrieve_fill(fill_number):  # pragma: no cover
     return OmsFill.objects.get(fill_number=fill_number)
 
 
-def retrieve_run(run_number):  # pragma: no cover
+def oms_retrieve_run(run_number: int) -> OmsRun:  # pragma: no cover
     """
     Helper function that, given a run number, tries to retrieve it
     by looking into the DB first, then the OMS API.
     If not in DB, a new entry is created and returned.
-    If the API returns no results, raises an IndexError
+
+    Same for fill number.
+
+    Raises:
+    - OmsApiRunNumberNotFound if run number not found
+    - requests.exceptions.ConnectionError if the API is unreachable
     """
     run_check = OmsRun.objects.filter(run_number=run_number)
     if run_check.exists():
@@ -148,13 +186,14 @@ def retrieve_run(run_number):  # pragma: no cover
 
     response = get_oms_run(run_number)
     if response is None:
-        logger.warning(f"Run {run_number} not found in OMS API")
-        raise IndexError
+        msg = f"Run {run_number} not found in OMS API"
+        logger.warning(msg)
+        raise OmsApiRunNumberNotFound(msg)
 
     fill_number = response["attributes"].pop("fill_number")
     # There's a chance there's no fill number, see #127
     if fill_number:
-        fill = retrieve_fill(fill_number=fill_number)
+        fill = oms_retrieve_fill(fill_number=fill_number)
     else:
         fill = None
 

@@ -7,10 +7,10 @@ from openruns.models import OpenRuns
 logger = logging.getLogger(__name__)
 
 
-def get_specific_open_runs(runs_list: List[int]) -> None:
+def rr_get_specific_open_runs(runs_list: List[int]) -> None:
     """
     Function that gets a list of run numbers, queries RR for them,
-    gets the available datasets for these runs and calls get_datasets_of_runs
+    gets the available datasets for these runs and calls rr_get_datasets_of_runs
     """
     logger.info(f"Getting all OPEN RR datasets for run numbers {runs_list}")
     datasets = runregistry.get_datasets(
@@ -23,12 +23,12 @@ def get_specific_open_runs(runs_list: List[int]) -> None:
         }
     )
     logger.info(f"Got {len(datasets)} datasets.")
-    get_datasets_of_runs(datasets)
+    rr_get_datasets_of_runs(datasets)
 
 
-def get_range_of_open_runs(start: int, end: int) -> None:
+def rr_get_range_of_open_runs(start: int, end: int) -> None:
     """
-    Function that gets a range of run numbers and queries RR for 
+    Function that gets a range of run numbers and queries RR for
     the available OPEN datasets for those runs.
     """
     logger.info(f"Getting all OPEN RR datasets for runs {start} to {end}")
@@ -43,16 +43,16 @@ def get_range_of_open_runs(start: int, end: int) -> None:
     )
     logger.info(f"Got {len(datasets)} datasets.")
 
-    get_datasets_of_runs(datasets)
+    rr_get_datasets_of_runs(datasets)
 
 
-def get_datasets_of_runs(datasets: List[Dict]) -> None:
+def rr_get_datasets_of_runs(datasets: List[Dict]) -> None:
     """
     Given a list of RunRegistry datasets, for each one:
     - Creates an OpenRuns object if it does not exist
     - If it exists, update the OpenRuns entry
 
-    datasets is a list with dictionaries with lots of information, 
+    datasets is a list with dictionaries with lots of information,
     including:
     - 'class'
     - 'name'

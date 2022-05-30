@@ -1,5 +1,5 @@
 Developer's Diary
-===============
+=================
 Per-app info and decisions.
 
 ``summary``
