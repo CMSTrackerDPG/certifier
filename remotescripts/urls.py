@@ -5,4 +5,7 @@ app_name = "remotescripts"
 urlpatterns = [
     path("remote/list/", views.RemoteScriptListView.as_view(), name="list"),
     path("remote/<int:pk>/", views.RemoteScriptView.as_view(), name="detail"),
+    path(
+        "trackermaps_standalone/", views.TrackerMapsView.as_view(), name="trackermaps"
+    ),
 ]

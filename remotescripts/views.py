@@ -196,12 +196,12 @@ class TrackerMapsView(ScriptExecutionBaseView):
         Function that connects to vocms066 using the env-supplied username/password
         and executes the script to generate specific tracker maps.
         """
-        # tracker_maps_command = (
-        #     "cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"
-        #     " bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh"
-        #     f" {str(run_type)} {''.join(str(run_number)+' ' for run_number in run_number_list)}"
-        # )
-        tracker_maps_command = TEST_BASH_SCRIPT
+        tracker_maps_command = (
+            "cd /data/users/event_display/ShiftRun3/TkMapGeneration/CMS* &&"
+            " bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh"
+            f" {str(run_type)} {''.join(str(run_number)+' ' for run_number in run_number_list)}"
+        )
+        # tracker_maps_command = TEST_BASH_SCRIPT
 
         channel_layer = get_channel_layer()
 
