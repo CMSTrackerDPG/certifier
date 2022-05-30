@@ -177,7 +177,7 @@ For example, the **Single module occupancy plotter** takes as inputs:
 - Positional argument 4: Module list
 
 The generated file is in the form
-``<Reconstruction type>_<number>__<number>_<number>_<number>_<Run number>.png``
+``<Reconstruction type>_<words>__<words>_<words>_<words>_<Run number>.png``
 For this case, we want to validate that the output file contains the **Reconstruction
 type** (positional argument 2) and the **Run number** (positional argument 3) in the filename.
 To validate the filename, you will need to specify the regex as
