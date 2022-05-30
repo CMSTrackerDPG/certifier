@@ -77,7 +77,7 @@ $myForm.submit(function(){
      $.ajax({
          headers: { "X-CSRFToken": '{{csrf_token}}' },
          type: "POST",
-         url: "{% url 'trackermaps:maps' %}",
+         url: "{% url 'remotescripts:trackermaps' %}",
          data: {
 			 // 'min': $('#id_form_generate_maps [name="min"]').val(),
 			 // 'max' : $('#id_form_generate_maps [name="max"]').val(),
