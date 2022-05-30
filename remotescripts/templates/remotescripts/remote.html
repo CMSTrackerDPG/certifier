@@ -50,7 +50,7 @@
 			<h5>{{ output_file.filename_regex }}</h5>
 		</div>
 		<div class="card-body">
-			<img id="output-img-{{ output_file.id }}"></img>
+			<img class="img-fluid" id="output-img-{{ output_file.id }}"></img>
 		</div>
 	</div>
 	{% endfor %}
@@ -86,7 +86,7 @@
 				 for(var key of Object.keys(data['message'])){
 					 if (key.startsWith('file'))
 					 {
-						 var file_id = Number(key.substring(key.indexOf('file') + 4)) + 1;
+						 var file_id = Number(key.substring(key.indexOf('file') + 4));
 						 img_div = document.getElementById(`output-img-${file_id}`);
 						 img_div.src = `data:image/png;base64,${data['message'][key]}`
 					 }
