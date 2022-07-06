@@ -44,22 +44,29 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <button type="submit" class="btn btn-primary" id="id_add_reference">Add Reference Run</button>
+				<button type="submit" class="btn btn-primary" id="id_add_reference">Add Reference Run<i class="bi bi-plus-lg"></i></button>
             </div>
+			
         </form>
     </div>
 
 
-{% if add_reference_failed %}
-        <div class="alert alert-info alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <strong>Info:</strong> Run: <b>{{run_number}}({{reco}})</b> already in Database. If you want to promote it to a Reference run, click <a href="{% url 'promote' run_number reco %}">here</a>
-        </div> 
+	{% if add_reference_failed %}
+    <div class="alert alert-info alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>Info:</strong> Run: <b>{{run_number}}({{reco}})</b> already in Database. If you want to promote it to a Reference run, click <a href="{% url 'promote' run_number reco %}">here</a>
+    </div> 
 
     {% endif %}
 
+	<div class="row m-3">
+		<button type="submit" class="btn btn-primary" id="id_update_refruns_info"
+		title="Fetches updated info (e.g. APV mode) from external APIs">
+			Get updated info<i class="bi bi-arrow-clockwise"></i>
+		</button>
+	</div>
 
     {% if table %}
     <!-- div class="overflow-auto scrollbar border-light shadow m-1 bg-white" id="style-1"-->
@@ -72,23 +79,44 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-<script>
-var $myForm = $("#id_form_add_reference");
-$myForm.submit(function(){
-    $(this).find(':input[type=submit]').prop('disabled', true);
-    $myForm.submit(function(){
-        return false;
-    });
-});
-$(document).ready(function() {
-    $("#id_add_reference").click(function() {
-        // add spinner to button
-        if ($("#id_form_add_reference")[0].checkValidity()) {
-            $(this).html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        }
-    });
-});
-</script>
+		<script>
+		 var $myForm = $("#id_form_add_reference");
+		 $myForm.submit(function(){
+			 $(this).find(':input[type=submit]').prop('disabled', true);
+			 $myForm.submit(function(){
+				 return false;
+			 });
+		 });
+		 $(document).ready(function() {
+			 $("#id_add_reference").click(function() {
+				 // add spinner to button
+				 if ($("#id_form_add_reference")[0].checkValidity()) {
+					 $(this).html(
+						 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+					 );
+				 }
+			 });
+
+			 // Update refruns info
+			 $("#id_update_refruns_info").click(function() {
+				 $("#id_update_refruns_info").addClass("disabled");
+				 $.ajax({
+					  headers: { "X-CSRFToken": '{{csrf_token}}' },
+					  type: "POST",
+					  url: "{% url 'addrefrun:update_refruns_info' %}",
+					  data: {},
+					  success: function(data) {
+						  if(data.success){
+							  alert("Reference runs info updated! Refresh this page!");
+						  }
+						  else{
+							  alert("Failed to update reference runs info!");
+						  }
+						  $("#id_update_refruns_info").removeClass("disabled");
+					  },
+
+				  });
+			 });	 
+		 });
+		</script>
 {% endblock %}

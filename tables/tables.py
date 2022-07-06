@@ -344,11 +344,6 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        # row_attrs = {
-        #     'user_row':
-        #     lambda record: ""
-        #     if not hasattr(record.user, 'username') else record.user.username
-        # }
 
 
 class ReferenceRunReconstructionTable(tables.Table):
@@ -373,12 +368,6 @@ class ReferenceRunReconstructionTable(tables.Table):
         orderable=False,
         verbose_name="Delete",
     )
-
-    def __init__(self, *args, **kwargs):
-        self.ebutz_response_pattern = re.compile(
-            r"\[\[\"(?P<run_number_ebutz>\d{6})\"\,\"(?P<apv_mode>\w{4,5})\"\]\]"
-        )
-        super().__init__(*args, **kwargs)
 
     def render_apv_mode(self, record):
         return record.run.apv_mode
