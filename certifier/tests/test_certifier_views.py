@@ -233,7 +233,7 @@ class TestCertify:
             },
         )
 
-    def test_certify_invalid_bad_run_number(self):
+    def test_certify_invalid_bad_run_number_no_reco(self):
         run_number = 999999999
         ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
         bad_reason = mixer.blend(BadReason)
@@ -264,10 +264,61 @@ class TestCertify:
 
         req.user = mixer.blend(User)
 
+        # So that messages can work during testing
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
+
         resp = views.CertifyView.as_view()(req, run_number=run_number)
 
-        assert resp.status_code, "should not redirect to success view" == 404
+        assert resp.status_code == 400
         assert TrackerCertification.objects.exists() is False
+
+    def test_certify_invalid_bad_run_number_with_reco(self):
+        """
+        An invalid run number (not found on RR or OMS)
+        with a reconstruction type specified should allow
+        certification to continue with a warning.
+        """
+        run_number = 999999999
+        reco = RunReconstruction.EXPRESS
+        ref_runReconstruction = mixer.blend(RunReconstruction, is_reference=True)
+        bad_reason = mixer.blend(BadReason)
+        dataset = mixer.blend(Dataset)
+        arguments = {"run_number": run_number, "reco": reco}
+
+        data = {
+            "reference_runreconstruction": ref_runReconstruction.pk,
+            "dataset": dataset.pk,
+            "pixel": "good",
+            "strip": "good",
+            "tracking": "good",
+            "bad_reason": bad_reason.pk,
+            "comment": "test",
+            "trackermap": "exists",
+            "date": "2018-01-01",
+            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
+        }
+
+        form = CertifyForm(data=data)
+
+        assert {} == form.errors
+        assert form.is_valid()
+
+        req = RequestFactory().post(
+            reverse("certify", kwargs=arguments), data=form.data
+        )
+
+        req.user = mixer.blend(User)
+
+        # So that messages can work during testing
+        setattr(req, "session", "session")
+        messages = FallbackStorage(req)
+        setattr(req, "_messages", messages)
+
+        resp = views.CertifyView.as_view()(req, run_number=run_number, reco=reco)
+        assert resp.status_code, "should redirect to success view" == 302
+        assert TrackerCertification.objects.exists() is True
 
     def test_certify_invalid_no_selection(self):
         run_number = 321123

@@ -129,10 +129,6 @@ class CertifyView(View):
             elif not self.reco:
                 self.reco = get_reco_from_dataset(self.dataset)
             self._rr_info_updated = True
-        except (RunRegistryReconstructionNotFound, RunRegistryNoAvailableDatasets) as e:
-            context = {"message": e}
-            logger.error(repr(e))
-            return render(request, "certifier/404.html", context, status=404)
         except RunReconstructionAllDatasetsCertified as e:
             logger.info(repr(e))
             messages.success(request, repr(e))
@@ -140,14 +136,15 @@ class CertifyView(View):
         except (
             ConnectionError,
             ParseError,
+            RunRegistryReconstructionNotFound,
+            RunRegistryNoAvailableDatasets,
         ) as e:
             # If no reconstruction is specified and there's no connection
             # to RR, we cannot get the next available reconstruction type & dataset
             if not self.reco:
                 context = {
                     "message": "Cannot proceed with certification if no "
-                    "reconstruction type is specified while RunRegistry or OMS API "
-                    f"are unreachable ({e})",
+                    f"reconstruction type is specified first ({e})",
                     "error_num": 400,
                 }
                 return render(request, "certifier/http_error.html", context, status=400)
@@ -157,6 +154,8 @@ class CertifyView(View):
                 msg = "Unable to connect to external API."
             elif isinstance(e, ParseError):
                 msg = "CERN authentication failed."
+            else:
+                msg = ""
             msg += f" Please proceed to enter the data manually (Error: {e})"
             logger.warning(msg)
             messages.warning(request, msg)
@@ -196,17 +195,16 @@ class CertifyView(View):
             # This does not raise if run was created
             # previously, even without remote information
             self.run = oms_retrieve_run(run_number)
-        except (
-            OmsApiRunNumberNotFound,
-            OmsApiFillNumberNotFound,
-        ) as e:
-            context = {"message": e}
-            logger.error(repr(e))
-            return render(request, "certifier/404.html", context, status=404)
+            self._oms_info_updated = True
         except (
             ConnectionError,
             ParseError,
+            OmsApiRunNumberNotFound,
+            OmsApiFillNumberNotFound,
         ) as e:
+            # If OMS API does not contain the info required,
+            # or OMS is unreachable, create the run with minimal
+            # info
             messages.warning(request, repr(e))
             self.run = OmsRun.objects.create(run_number=run_number)
 
