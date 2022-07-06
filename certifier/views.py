@@ -197,7 +197,7 @@ class CertifyView(View):
             # This does not raise if run was created
             # previously, even without remote information
             self.run = oms_retrieve_run(run_number)
-
+            self._oms_info_updated = True
         except (
             ConnectionError,
             ParseError,
