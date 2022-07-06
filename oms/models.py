@@ -1,4 +1,9 @@
 from django.db import models
+import re
+import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 
@@ -184,6 +189,11 @@ class OmsRun(models.Model):
 
     RUN_TYPE_CHOICES = ((COLLISIONS, "Collisions"), (COSMICS, "Cosmics"))
 
+    DECO = "DECO"
+    PEAK = "PEAK"
+
+    APV_MODE_CHOICES = ((DECO, "DECO"), (PEAK, "PEAK"))
+
     run_number = models.PositiveIntegerField(
         help_text="Run number", verbose_name="Run", unique=True, primary_key=True
     )
@@ -358,6 +368,50 @@ class OmsRun(models.Model):
     )
     energy_unit = models.CharField(max_length=50, default="GeV", null=True)
 
+    apv_mode = models.CharField(
+        max_length=4,
+        null=True,
+        default=None,
+        help_text="APV mode",
+        choices=APV_MODE_CHOICES,
+    )
+
+    def _update_apv_mode(self) -> None:
+        """
+        Fetch apv mode from ebutz.web.cern.ch, given the run_number
+        """
+
+        self.ebutz_response_pattern = re.compile(
+            r"\[\[\"(?P<run_number_ebutz>\d{6})\"\,\"(?P<apv_mode>\w{4,5})\"\]\]"
+        )
+        r = requests.get(
+            f"http://ebutz.web.cern.ch/ebutz/cgi-bin/getReadOutmode.pl?RUN={self.run_number}"
+        )
+        try:
+            m = re.search(self.ebutz_response_pattern, r.text)
+            if m is None:
+                raise ValueError
+
+        except ValueError:
+            msg = f"Could not parse '{r.text}' as a list"
+            logger.error(msg)
+            raise ValueError(msg)
+
+        try:
+            run_number_ebutz = int(m.group("run_number_ebutz"))
+        except ValueError:
+            msg = f"Could not parse '{m.group('run_number_ebutz')}' as a number"
+            logger.error(msg)
+            raise ValueError(msg)
+
+        apv_mode = m.group("apv_mode")
+        if self.run_number != run_number_ebutz:
+            msg = f"API returned wrong results (requested {self.run_number}, got {run_number_ebutz})"
+            logger.error(msg)
+            raise ValueError(msg)
+
+        self.apv_mode = apv_mode
+
     def save(self, *args, **kwargs):
         physics_or_special = (
             ("/cdaq/physics" in self.hlt_key or "/cdaq/special" in self.hlt_key)
@@ -366,4 +420,9 @@ class OmsRun(models.Model):
         )
         is_collisions = physics_or_special and self.stable_beam
         self.run_type = "collisions" if is_collisions else "cosmics"
+        try:
+            self._update_apv_mode()
+        except ValueError:
+            logger.warning(f"Unable to update APV mode for run {self.run_number}")
+
         super(OmsRun, self).save(*args, **kwargs)
