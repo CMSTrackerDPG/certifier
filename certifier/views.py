@@ -129,11 +129,6 @@ class CertifyView(View):
             elif not self.reco:
                 self.reco = get_reco_from_dataset(self.dataset)
             self._rr_info_updated = True
-        except (RunRegistryReconstructionNotFound, RunRegistryNoAvailableDatasets) as e:
-            # Reconstruction not found on RR, continue with warning
-            msg = f"{e}. Please proceed to enter the data manually."
-            logger.warning(msg)
-            messages.warning(request, msg)
         except RunReconstructionAllDatasetsCertified as e:
             logger.info(repr(e))
             messages.success(request, repr(e))
@@ -141,14 +136,15 @@ class CertifyView(View):
         except (
             ConnectionError,
             ParseError,
+            RunRegistryReconstructionNotFound,
+            RunRegistryNoAvailableDatasets,
         ) as e:
             # If no reconstruction is specified and there's no connection
             # to RR, we cannot get the next available reconstruction type & dataset
             if not self.reco:
                 context = {
                     "message": "Cannot proceed with certification if no "
-                    "reconstruction type is specified while RunRegistry or OMS API "
-                    f"are unreachable ({e})",
+                    f"reconstruction type is specified first ({e})",
                     "error_num": 400,
                 }
                 return render(request, "certifier/http_error.html", context, status=400)
@@ -158,6 +154,8 @@ class CertifyView(View):
                 msg = "Unable to connect to external API."
             elif isinstance(e, ParseError):
                 msg = "CERN authentication failed."
+            else:
+                msg = ""
             msg += f" Please proceed to enter the data manually (Error: {e})"
             logger.warning(msg)
             messages.warning(request, msg)
