@@ -392,10 +392,10 @@ class OmsRun(models.Model):
             if m is None:
                 raise ValueError
 
-        except ValueError:
+        except ValueError as e:
             msg = f"Could not parse '{r.text}' as a list"
             logger.error(msg)
-            raise ValueError(msg)
+            raise ValueError(msg) from e
 
         try:
             run_number_ebutz = int(m.group("run_number_ebutz"))
@@ -420,9 +420,6 @@ class OmsRun(models.Model):
         )
         is_collisions = physics_or_special and self.stable_beam
         self.run_type = "collisions" if is_collisions else "cosmics"
-        try:
-            self._update_apv_mode()
-        except ValueError:
-            logger.warning(f"Unable to update APV mode for run {self.run_number}")
+        self._update_apv_mode()
 
         super(OmsRun, self).save(*args, **kwargs)
