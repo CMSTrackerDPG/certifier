@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @user_passes_test(
-    lambda user: hasattr(user, "has_shift_leader_rights")
-    and user.has_shift_leader_rights,
+    lambda user: hasattr(user, "has_shifter_rights") and user.has_shifter_rights,
     redirect_field_name=None,
 )
 def addreference(request):  # pragma: no cover
