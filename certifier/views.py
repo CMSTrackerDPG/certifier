@@ -130,9 +130,10 @@ class CertifyView(View):
                 self.reco = get_reco_from_dataset(self.dataset)
             self._rr_info_updated = True
         except (RunRegistryReconstructionNotFound, RunRegistryNoAvailableDatasets) as e:
-            context = {"message": e}
-            logger.error(repr(e))
-            return render(request, "certifier/404.html", context, status=404)
+            # Reconstruction not found on RR, continue with warning
+            msg = f"{e}. Please proceed to enter the data manually."
+            logger.warning(msg)
+            messages.warning(request, msg)
         except RunReconstructionAllDatasetsCertified as e:
             logger.info(repr(e))
             messages.success(request, repr(e))
@@ -196,17 +197,16 @@ class CertifyView(View):
             # This does not raise if run was created
             # previously, even without remote information
             self.run = oms_retrieve_run(run_number)
-        except (
-            OmsApiRunNumberNotFound,
-            OmsApiFillNumberNotFound,
-        ) as e:
-            context = {"message": e}
-            logger.error(repr(e))
-            return render(request, "certifier/404.html", context, status=404)
+
         except (
             ConnectionError,
             ParseError,
+            OmsApiRunNumberNotFound,
+            OmsApiFillNumberNotFound,
         ) as e:
+            # If OMS API does not contain the info required,
+            # or OMS is unreachable, create the run with minimal
+            # info
             messages.warning(request, repr(e))
             self.run = OmsRun.objects.create(run_number=run_number)
 
