@@ -420,9 +420,12 @@ class OmsRun(models.Model):
         )
         is_collisions = physics_or_special and self.stable_beam
         self.run_type = "collisions" if is_collisions else "cosmics"
-        try:
-            self.update_apv_mode()
-        except ValueError as e:
-            logger.warning(f"Could not update APV mode for {self.run_number}")
+
+        # This slows down every test considerably, since this API
+        # can be pretty slow
+        # try:
+        #     self.update_apv_mode()
+        # except ValueError as e:
+        #     logger.warning(f"Could not update APV mode for {self.run_number}")
 
         super(OmsRun, self).save(*args, **kwargs)
