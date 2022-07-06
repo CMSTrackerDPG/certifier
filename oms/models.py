@@ -376,7 +376,7 @@ class OmsRun(models.Model):
         choices=APV_MODE_CHOICES,
     )
 
-    def _update_apv_mode(self) -> None:
+    def update_apv_mode(self) -> None:
         """
         Fetch apv mode from ebutz.web.cern.ch, given the run_number
         """
@@ -411,6 +411,7 @@ class OmsRun(models.Model):
             raise ValueError(msg)
 
         self.apv_mode = apv_mode
+        self.save()
 
     def save(self, *args, **kwargs):
         physics_or_special = (
@@ -420,6 +421,5 @@ class OmsRun(models.Model):
         )
         is_collisions = physics_or_special and self.stable_beam
         self.run_type = "collisions" if is_collisions else "cosmics"
-        self._update_apv_mode()
 
         super(OmsRun, self).save(*args, **kwargs)
