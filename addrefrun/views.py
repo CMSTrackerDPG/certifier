@@ -1,5 +1,6 @@
 import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from tables.tables import ReferenceRunReconstructionTable
 from certifier.models import RunReconstruction, TrackerCertification
@@ -14,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @user_passes_test(
-    lambda user: hasattr(user, "has_shift_leader_rights")
-    and user.has_shift_leader_rights,
+    lambda user: hasattr(user, "has_shifter_rights") and user.has_shifter_rights,
     redirect_field_name=None,
 )
 def addreference(request):  # pragma: no cover
@@ -72,3 +72,29 @@ def addreference(request):  # pragma: no cover
     context["reco"] = reco
 
     return render(request, "addrefrun/addrefrun.html", context)
+
+
+@user_passes_test(
+    lambda user: hasattr(user, "has_shift_leader_rights")
+    and user.has_shift_leader_rights,
+    redirect_field_name=None,
+)
+def update_refruns_info(request):
+    """
+    View which triggers an update of the Runs associated with
+    all reference reconstructions.
+
+    This is done on demand, because the web app required to
+    acquire the APV mode information is slow.
+    """
+    success = False
+    ref_run_recos = RunReconstruction.objects.filter(is_reference=True)
+    try:
+        for rrr in ref_run_recos:
+            rrr.run.update_apv_mode()
+            rrr.run.save()
+        success = True
+    except Exception as e:
+        logger.error(e)
+
+    return JsonResponse({"success": success})

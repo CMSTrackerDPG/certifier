@@ -1,4 +1,5 @@
 import pytest
+import json
 from mixer.backend.django import mixer
 
 from django.http import QueryDict
@@ -122,3 +123,25 @@ class TestAddReference:
         assert 200 == resp.status_code
         assert RunReconstruction.objects.exists()
         assert RunReconstruction.objects.all().count() == 1
+
+
+class TestUpdateReferenceReconstructionRunsInfo:
+    def test_update_refruns_info(self):
+        """
+        Create a reference runreconstruction and a run
+        corresponding to it, and try the update_refruns_info endpoint
+        """
+        run_number = 321123
+        mixer.blend(
+            RunReconstruction,
+            reconstruction=RunReconstruction.EXPRESS,
+            run=mixer.blend(OmsRun, run_number=run_number),
+            is_reference=True,
+        )
+        req = RequestFactory().get(reverse("addrefrun:update_refruns_info"))
+        req.user = mixer.blend(User, user_privilege=User.SHIFTLEADER)
+        resp = views.update_refruns_info(req)
+
+        # Response is a JSON with a "success" key
+        data = json.loads(resp.content.decode("utf-8"))
+        assert data["success"] is True
