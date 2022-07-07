@@ -344,11 +344,6 @@ class OpenRunsTable(tables.Table):
 
     class Meta:
         attrs = {"class": "table table-stripped", "id": "openruns_table"}
-        # row_attrs = {
-        #     'user_row':
-        #     lambda record: ""
-        #     if not hasattr(record.user, 'username') else record.user.username
-        # }
 
 
 class ReferenceRunReconstructionTable(tables.Table):
@@ -374,37 +369,8 @@ class ReferenceRunReconstructionTable(tables.Table):
         verbose_name="Delete",
     )
 
-    def __init__(self, *args, **kwargs):
-        self.ebutz_response_pattern = re.compile(
-            r"\[\[\"(?P<run_number_ebutz>\d{6})\"\,\"(?P<apv_mode>\w{4,5})\"\]\]"
-        )
-        super().__init__(*args, **kwargs)
-
     def render_apv_mode(self, record):
-        run_number = record.run.run_number
-        r = requests.get(
-            f"http://ebutz.web.cern.ch/ebutz/cgi-bin/getReadOutmode.pl?RUN={run_number}"
-        )
-        try:
-            m = re.search(self.ebutz_response_pattern, r.text)
-            if m is None:
-                raise ValueError
-        except ValueError:
-            logger.error(f"Could not parse '{r.text}' as a list")
-            return None
-
-        try:
-            run_number_ebutz = int(m.group("run_number_ebutz"))
-        except ValueError:
-            logger.error(f"Could not parse '{m.group('run_number_ebutz')}' as a number")
-            return None
-
-        apv_mode = m.group("apv_mode")
-        if run_number != run_number_ebutz:
-            logger.error(
-                f"API returned wrong results (requested {run_number}, got {run_number_ebutz})"
-            )
-        return apv_mode
+        return record.run.apv_mode
 
     class Meta:
         model = RunReconstruction

@@ -39,7 +39,7 @@
 	
 	<div class="container overflow-auto mb-4">
         <div class="card border-light shadow p-2 bg-dark rounded">
-            <button class="btn btn-primary" onClick="clearOutput()" style="position:absolute;top:16px;right:30px;" >Clear</button>
+            <button class="btn btn-primary"  style="position:absolute;top:16px;right:30px;" id="btn-clear">Clear</button>
             <textarea class="text-light bg-dark" style="border: none; height: 450px" cols="150" id="id_command_output"></textarea>
         </div>
 	</div>
@@ -58,14 +58,19 @@
 {% endblock %}
 
 {% block scripts %}
-	<script>
-	 $(document).ready(function() {	 
-		 // WS initialization
-		 if (location.protocol === 'https:') {
-			 // page is secure
-			 var command_output_socket = new WebSocket(
-				 'wss://' + window.location.host +
-				 '/ws/output/');
+<script>
+ // Clear output button callback
+ function clearOutput(){
+	 $('#id_command_output').val("");
+ };
+
+ $(document).ready(function() {	 
+	 // WS initialization
+	 if (location.protocol === 'https:') {
+		 // page is secure
+		 var command_output_socket = new WebSocket(
+			 'wss://' + window.location.host +
+			 '/ws/output/');
 		 }
 		 else{
 			 var command_output_socket = new WebSocket(
@@ -73,10 +78,6 @@
 				 '/ws/output/');
 		 }
 
-		 // Clear output button callback
-		 function clearOutput(){
-			 $('#id_command_output').val("");
-		 };
 
 		 // Callback run on every new message that
 		 // is received from the WS
@@ -104,6 +105,9 @@
 			 console.error('Socket closed unexpectedly: '+ e.message);
 		 };
 	 })
+
+	 var btn_clear = document.getElementById('btn-clear');
+	 btn_clear.onclick = clearOutput;
 
 	 var $myForm = $("#remote_script_execution_form");
 	 $myForm.on('submit', function(ev){

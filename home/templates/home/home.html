@@ -56,13 +56,14 @@
                     <p class="card-text text-center" style="font-size: 18px">Generate shift leader report</p>
                 </div>
             </div>
+			{% endif %}			
             <div class="card col-sm col-md bg-dark text-light" onclick="location.href='{% url 'addrefrun:addrefrun' %}'">
                 <div class="card-header">
-                    <h4 class="text-center font-weight-bold mt-1 mb-1">Add Reference Run</h4>
+                    <h4 class="text-center font-weight-bold mt-1 mb-1">Reference Runs</h4>
                 </div>
                 <img class="card-img-top" src="{% static 'home/img/addReferenceRun.png' %}" alt="Card image cap">
                 <div class="card-body">
-                    <p class="card-text text-center" style="font-size: 18px">Add a new reference run</p>
+                    <p class="card-text text-center" style="font-size: 18px">List/add new reference runs</p>
                 </div>
             </div>
 			<div class="card col-sm col-md bg-dark text-light" onclick="location.href='{% url 'mlplayground:mlplaygroundHome' %}'">
@@ -74,7 +75,6 @@
 					<p class="card-text text-center" style="font-size: 18px">Build ML models</p>
 				</div>
 			</div>
-			{% endif %}
 		</div>
         <div class="card-deck row pt-3">
             {% if user.has_shifter_rights %}
