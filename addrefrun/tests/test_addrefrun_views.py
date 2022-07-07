@@ -148,8 +148,9 @@ class TestUpdateReferenceReconstructionRunsInfo:
 
     def test_update_refruns_info_invalid(self):
         """
-        Create a reference runreconstruction and a run
-        corresponding to it, and try the update_refruns_info endpoint
+        Make sure that invalid run_numbers (which should
+        raise a ValueError when updating apv_mode) do
+        not crash view's loop
         """
         run_numbers = [321123, 999999]
         for run_number in run_numbers:
