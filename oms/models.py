@@ -178,6 +178,9 @@ class OmsFill(models.Model):
         verbose_name="Last run number",
     )
 
+    def __str__(self):
+        return f"{self.fill_number}"
+
 
 class OmsRun(models.Model):
     """
