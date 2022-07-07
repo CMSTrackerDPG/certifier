@@ -48,7 +48,6 @@ CSRF_TRUSTED_ORIGINS = [config("CSRF_TRUSTED_ORIGINS", default="")]
 
 INSTALLED_APPS = [
     "channels",
-    "cablingmap.apps.CablingmapConfig",
     "remotescripts",
     "openruns.apps.OpenrunsConfig",
     "addrefrun.apps.AddrefrunConfig",
