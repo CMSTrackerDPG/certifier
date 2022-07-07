@@ -31,5 +31,4 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("reference/", include("addrefrun.urls")),
     path("admin/", admin.site.urls),
-    path("cablingmap/", include("cablingmap.urls")),
 ]
