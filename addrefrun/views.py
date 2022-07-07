@@ -89,12 +89,14 @@ def update_refruns_info(request):
     """
     success = False
     ref_run_recos = RunReconstruction.objects.filter(is_reference=True)
-    try:
-        for rrr in ref_run_recos:
+    for rrr in ref_run_recos:
+        try:
             rrr.run.update_apv_mode()
             rrr.run.save()
-        success = True
-    except Exception as e:
-        logger.error(e)
+        except Exception as e:
+            # Continue if error occurred, e.g. invalid value
+            # returned from ebutz
+            logger.error(e)
+    success = True
 
     return JsonResponse({"success": success})
