@@ -79,46 +79,50 @@
                 <div class="card shadow-sm bg-white">
                     <div class="card-body">
                         <h6 class="card-title text-primary">Type</h6>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>Run type</strong>
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.run_type class="form-select" %} 
+								{% render_field omsrun_form.run_type class="form-control form-select" %} 
 								{% else %}
                                 {{ run.run_type|capfirst }}
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>B field</strong>
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.b_field class+="form-control" %}
-								{% render_field omsrun_form.b_field_unit class+="form-control" %} 
+								<div class="input-group">
+									{% render_field omsrun_form.b_field class+="form-control" %}
+									{% render_field omsrun_form.b_field_unit class+="form-control" %}
+								</div>
 								{% else %}
                                 \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>Energy</strong>
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.energy class+="form-control" %}
-								{% render_field omsrun_form.energy_unit class+="form-control" %}
+								<div class="input-group">
+									{% render_field omsrun_form.energy class+="form-control" %}
+									{% render_field omsrun_form.energy_unit class+="form-control" %}
+								</div>
 								{% else %}
                                 \({{ run.energy }}\) \({{ run.energy_unit }}\)
 								{% endif %}
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>Particle</strong>
                             </div>
@@ -131,7 +135,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>Era</strong>
                             </div>
@@ -153,7 +157,7 @@
                     <div class="card-body">
 
                         <h6 class="card-title text-success">Lumi</h6>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Lumisections</strong>
                             </div>
@@ -165,54 +169,61 @@
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Recorded lumi</strong>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.recorded_lumi class+="form-control"%}
-								{% render_field omsrun_form.recorded_lumi_unit class+="form-control" %}
+								<div class="input-group">
+									{% render_field omsrun_form.recorded_lumi class+="form-control"%}
+									{% render_field omsrun_form.recorded_lumi_unit class+="form-control" %}
+								</div>
 								{% else %}								
                                 \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Delivered lumi</strong>
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.delivered_lumi class+="form-control" %}
-								{% render_field omsrun_form.delivered_lumi_unit class+="form-control" %}								
+								<div class="input-group">
+									{% render_field omsrun_form.delivered_lumi class+="form-control" %}
+									{% render_field omsrun_form.delivered_lumi_unit class+="form-control" %}
+								</div>
 								{% else %}																
                                 \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Initial lumi</strong>
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.init_lumi class+="form-control" %}
-								{% render_field omsrun_form.init_lumi_unit class+="form-control" %}								
+								<div class="input-group">
+									{% render_field omsrun_form.init_lumi class+="form-control" %}
+									{% render_field omsrun_form.init_lumi_unit class+="form-control" %}
+								</div>
 								{% else %}		
                                 \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
 								{% endif %}
                             </div>
                         </div>
-
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>End lumi</strong>
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.end_lumi class+="form-control" %}
-								{% render_field omsrun_form.end_lumi_unit class+="form-control" %}				
+								<div class="input-group">
+									{% render_field omsrun_form.end_lumi class+="form-control" %}
+									{% render_field omsrun_form.end_lumi_unit class+="form-control" %}
+								</div>
 								{% else %}								
                                 \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
 								{% endif %}
@@ -227,7 +238,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="card-title text-info">Fill</h6>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Fill number</strong>
                             </div>
@@ -241,7 +252,7 @@
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Bunches</strong>
                             </div>
@@ -253,21 +264,22 @@
 								{% endif %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Initial lumi</strong>
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.init_lumi class+="form-control" %}
-								{% render_field omsfill_form.init_lumi_unit class+="form-control" %}
+								<div class="input-group">
+									{% render_field omsfill_form.init_lumi class+="form-control" %}
+									{% render_field omsfill_form.init_lumi_unit class+="form-control" %}
+								</div>
 								{% else %}
                                 \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
 								{% endif %}
                             </div>
                         </div>
-
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Peak lumi</strong>
                             </div>
@@ -282,8 +294,7 @@
 								{% endif %}
                             </div>
                         </div>
-
-                        <div class="row">
+                        <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Peak pileup</strong>
                             </div>
