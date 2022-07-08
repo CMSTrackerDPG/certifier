@@ -139,7 +139,7 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
             return mark_safe(
                 '<i class="bi bi-check-lg text-success font-weight-bold"></i>'
             )
-        return mark_safe('<i class="bi bi-x-lg text-danger font-weight-bold"></i>')
+        return mark_safe('<i class="bi bi-dash-lg font-weight-bold"></i>')
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered table-fixed"}
