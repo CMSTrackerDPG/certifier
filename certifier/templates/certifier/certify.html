@@ -1,30 +1,24 @@
 {% extends 'dqmhelper/base.html' %}
 
 {% load static %}
-
 {% load form_tags %}
-
-{% block style %}
-
-<link rel="stylesheet" type="text/css" href="{% static "certifier/css/style.css" %}">
-
-{% endblock %}
-
 {% load bootstrap3 %}
 {% load widget_tweaks %}
 {% load filters %}
 
-{% block content %}
+{% block head %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+{% endblock %}
 
-{% if not form.external_info_complete %}
-{{ omsrun_form.as_p}}
---------
-{{ omsfill_form.as_p}}
-{% endif %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static "certifier/css/style.css" %}">
+{% endblock %}
+
+{% block content %}
 <div id="addBadReason"></div>
 <form method="POST" action="" id="id_certifier_form" >
     {% csrf_token %}
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
     <div class="container-fluid mx-4">
         <div class="row my-4">
             <div class="col-sm-6">
@@ -86,13 +80,21 @@
                     <div class="card-body">
 
                         <h6 class="card-title text-primary">Type</h6>
+						
+						{% if not form.external_info_complete.value %}
+						<a href="#" class="badge badge-danger">Needs update</a>
+						{% endif %}
 
                         <div class="row">
                             <div class="col-md-4 text-right">
                                 <strong>Run type</strong>
                             </div>
                             <div class="col-md-8">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.run_type }} 
+								{% else %}
                                 {{ run.run_type|capfirst }}
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -100,7 +102,11 @@
                                 <strong>B field</strong>
                             </div>
                             <div class="col-md-8">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.b_field }} {{ omsrun_form.b_field_unit }} 
+								{% else %}
                                 \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -108,7 +114,12 @@
                                 <strong>Energy</strong>
                             </div>
                             <div class="col-md-8">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.energy }}
+								{{ omsrun_form.energy_unit }}
+								{% else %}
                                 \({{ run.energy }}\) \({{ run.energy_unit }}\)
+								{% endif %}
                             </div>
                         </div>
 
@@ -117,7 +128,11 @@
                                 <strong>Particle</strong>
                             </div>
                             <div class="col-md-8">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.fill_type_runtime }}
+								{% else %}
                                 {{ run.fill.fill_type_runtime }}
+								{% endif %}
                             </div>
                         </div>
 
@@ -126,7 +141,11 @@
                                 <strong>Era</strong>
                             </div>
                             <div class="col-md-8">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.era }}
+								{% else %}								
                                 {{ run.fill.era|capfirst }}
+								{% endif %}
                             </div>
                         </div>
                     </div>
@@ -144,7 +163,11 @@
                                 <strong>Lumisections</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.lumisections }}
+								{% else %}
                                 \({{ run.lumisections }}\)
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -152,7 +175,12 @@
                                 <strong>Recorded lumi</strong>
                             </div>
                             <div class="col-md-6">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.recorded_lumi }}
+								{{ omsrun_form.recorded_lumi_unit }}								
+								{% else %}								
                                 \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -160,7 +188,12 @@
                                 <strong>Delivered lumi</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.delivered_lumi }}
+								{{ omsrun_form.delivered_lumi_unit }}								
+								{% else %}																
                                 \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -168,7 +201,12 @@
                                 <strong>Initial lumi</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.init_lumi }}
+								{{ omsrun_form.init_lumi_unit }}								
+								{% else %}		
                                 \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
 
@@ -177,7 +215,12 @@
                                 <strong>End lumi</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsrun_form.end_lumi }}
+								{{ omsrun_form.end_lumi_unit }}								
+								{% else %}								
                                 \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
                     </div>
@@ -189,7 +232,6 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="card-title text-info">Fill</h6>
-						{% if run.fill.fill_number %}
                         <div class="row">
                             <div class="col-md-5 text-right">
                                 <strong>Fill number</strong>
@@ -197,7 +239,11 @@
                             <div class="col-md-7">
 
                                 <a href="https://cmsoms.cern.ch/cms/fills/report?cms_fill={{run.fill.fill_number}}" target="_blank">
+									{% if not form.external_info_complete.value %}
+									{{ omsfill_form.fill_number }}
+									{% else %}
                                     {{ run.fill.fill_number }}
+									{% endif %}
                                 </a>
                             </div>
                         </div>
@@ -206,7 +252,11 @@
                                 <strong>Bunches</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.bunches_colliding }}								
+								{% else %}								
                                 \({{ run.fill.bunches_colliding }}\)
+								{% endif %}
                             </div>
                         </div>
                         <div class="row">
@@ -214,7 +264,12 @@
                                 <strong>Initial lumi</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.init_lumi }}
+								{{ omsfill_form.init_lumi_unit }}
+								{% else %}
                                 \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
 
@@ -223,7 +278,12 @@
                                 <strong>Peak lumi</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.peak_lumi }}
+								{{ omsfill_form.peak_lumi_unit }}								
+								{% else %}								
                                 \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
+								{% endif %}
                             </div>
                         </div>
 
@@ -232,14 +292,13 @@
                                 <strong>Peak pileup</strong>
                             </div>
                             <div class="col-md-7">
+								{% if not form.external_info_complete.value %}
+								{{ omsfill_form.peak_pileup }}
+								{% else %}
                                 \({{ run.fill.peak_pileup|floatformat:3 }}\)
+								{% endif %}
                             </div>
                         </div>
-						{% else %}
-						<div class="alert alert-warning fade show" role="alert">
-							No fill number available for this run
-						</div>
-						{% endif %}
                     </div>
                 </div>
             </div>

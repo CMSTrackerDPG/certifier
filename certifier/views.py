@@ -227,14 +227,14 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
-        form = self.form()
-        form.external_info_complete = self.external_info_complete
         context = {
             "run_number": run_number,
             "reco": self.reco,
             "run": self.run,
             "dataset": self.dataset,
-            "form": form,
+            "form": self.form(
+                initial={"external_info_complete": self.external_info_complete}
+            ),
             "omsrun_form": OmsRunUpdateView(object=self.run).get_form_class(),
             "omsfill_form": OmsFillUpdateView(object=self.run.fill).get_form_class(),
         }
