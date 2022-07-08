@@ -1,6 +1,5 @@
 {% extends "dqmhelper/base.html" %}
 {% load static %}
-<link rel="shortcut icon" type="image/png" href="{% static "img/favicon.png" %}"/>
 {% block title %}TkDQM Doc: Delete Run{% endblock %}
 
 {% block head %}
@@ -9,7 +8,7 @@
 {% block content %}
 <h1 align="center" class="mb-5">Delete Run</h1>
 <h4 align="center">
-Are you sure you want to delete run {{ object.run_number }} {{ object.reconstruction }} ?
+Are you sure you want to delete run reconstruction {{ object.run_number }} {{ object.reconstruction }} ?
 </h4>
 <div class="container">
 	<form action="" method="post" align="center">
@@ -22,7 +21,7 @@ Are you sure you want to delete run {{ object.run_number }} {{ object.reconstruc
 			
 			<button type="button"
 						  class="btn btn-primary"
-						  onclick="location.href='{% url 'shiftleader:shiftleader' %}'">
+						  onclick="location.href={% url 'shiftleader:shiftleader' %}">
 				<!-- <span class="bi bi-x-lg mr-1"></span> -->No
 			</button>
 		</div>
