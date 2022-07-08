@@ -1,19 +1,34 @@
+{% extends "dqmhelper/base.html" %}
 {% load static %}
 <link rel="shortcut icon" type="image/png" href="{% static "img/favicon.png" %}"/>
-<title>TkDQM Doc: Delete Run</title>
+{% block title %}TkDQM Doc: Delete Run{% endblock %}
 
-<script src="{% static "jquery/jquery.min.js" %}"></script>
-<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
-<link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+{% block head %}
+{% endblock %}
 
-<h1 align="center">Delete Run</h1>
-</br>
+{% block content %}
+<h1 align="center" class="mb-5">Delete Run</h1>
 <h4 align="center">
-Are you sure you want to delete that run?
+Are you sure you want to delete run {{ object.run_number }} {{ object.reconstruction }} ?
 </h4>
+<div class="container">
+	<form action="" method="post" align="center">
+		{% csrf_token %}
+		<div align="center">
+			<button type="submit"
+						  class="btn btn-secondary">
+				<span class="bi bi-trash mr-1"></span>Yes
+			</button>
+			
+			<button type="button"
+						  class="btn btn-primary"
+						  onclick="location.href='{% url 'shiftleader:shiftleader' %}'">
+				<!-- <span class="bi bi-x-lg mr-1"></span> -->No
+			</button>
+		</div>
+	</form>
+</div>
+{% endblock %}
 
-<form action="" method="post" align="center">
-        {% csrf_token %}        
-        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> Yes</button>
-        <button type="button" class="btn btn-default "onclick="location.href='{% url 'shiftleader:shiftleader' %}'"><span class="glyphicon glyphicon-remove"></span> No</button>
-</form>
+{% block scripts %}
+{% endblock %}
