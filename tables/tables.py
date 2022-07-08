@@ -134,6 +134,13 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
         verbose_name="Edit",
     )
 
+    def render_is_reference(self, value):
+        if value:
+            return mark_safe(
+                '<i class="bi bi-check-lg text-success font-weight-bold"></i>'
+            )
+        return mark_safe('<i class="bi bi-x-lg text-danger font-weight-bold"></i>')
+
     class Meta:
         attrs = {"class": "table table-hover table-bordered table-fixed"}
 
