@@ -15,6 +15,12 @@
 {% load filters %}
 
 {% block content %}
+
+{% if not form.external_info_complete %}
+{{ omsrun_form.as_p}}
+--------
+{{ omsfill_form.as_p}}
+{% endif %}
 <div id="addBadReason"></div>
 <form method="POST" action="" id="id_certifier_form" >
     {% csrf_token %}
@@ -408,7 +414,7 @@
                 </div>
 				<!--================================ COMPLETENESS ============================-->
 				<!-- This stays hidden, we only need this to transfer data from GET to POST -->
-                {% render_field form.external_info_completeness class="d-none" %}
+                {% render_field form.external_info_complete class="d-none" %}
 
                 <!--================================ PROBLEMS ============================-->
                 <div class="row mt-4 mr-2">

@@ -59,7 +59,7 @@ class CertifyForm(ModelForm):
             "reference_runreconstruction",
             "date",
             "trackermap",
-            "external_info_completeness",
+            "external_info_complete",
         ]
 
 

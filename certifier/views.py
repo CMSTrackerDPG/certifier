@@ -27,6 +27,7 @@ from oms.exceptions import (
     RunRegistryNoAvailableDatasets,
     RunRegistryReconstructionNotFound,
 )
+from oms.views import OmsRunUpdateView, OmsFillUpdateView
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -100,7 +101,7 @@ class CertifyView(View):
     run = None
     reco = None
     dataset = None
-    external_info_completeness = TrackerCertification.EXTERNAL_INFO_INCOMPLETE
+    external_info_complete = False
     _rr_info_updated = False
     _oms_info_updated = False
 
@@ -216,11 +217,7 @@ class CertifyView(View):
             self.run = OmsRun.objects.create(run_number=run_number)
 
         # Update flag
-        self.external_info_completeness = (
-            TrackerCertification.EXTERNAL_INFO_COMPLETE
-            if self._rr_info_updated and self._oms_info_updated
-            else TrackerCertification.EXTERNAL_INFO_INCOMPLETE
-        )
+        self.external_info_complete = self._rr_info_updated and self._oms_info_updated
 
         logger.debug(f"Run reconstruction {run_number} {self.reco} ({self.dataset})")
         # All good, proceed with dispatching to the appropriate method
@@ -231,13 +228,15 @@ class CertifyView(View):
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
         form = self.form()
-        form.external_info_completeness = self.external_info_completeness
+        form.external_info_complete = self.external_info_complete
         context = {
             "run_number": run_number,
             "reco": self.reco,
             "run": self.run,
             "dataset": self.dataset,
             "form": form,
+            "omsrun_form": OmsRunUpdateView(object=self.run).get_form_class(),
+            "omsfill_form": OmsFillUpdateView(object=self.run.fill).get_form_class(),
         }
         return render(request, "certifier/certify.html", context)
 
