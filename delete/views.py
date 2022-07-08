@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from certifier.forms import CertifyForm
 from openruns.models import OpenRuns
 
+
 # Create your views here.
 @method_decorator(login_required, name="dispatch")
 class DeleteRun(generic.DeleteView):
@@ -19,6 +20,7 @@ class DeleteRun(generic.DeleteView):
     success_url = "/shiftleader/"
     template_name = "delete/trackercertification_delete_form.html"
 
+
 @login_required
 def hard_delete_run_view(request, pk, run_number, reco):
     try:
@@ -30,13 +32,19 @@ def hard_delete_run_view(request, pk, run_number, reco):
         trackerCertification.hard_delete()
         return HttpResponseRedirect("/shiftleader/")
 
-    return render(request, "delete/hard_delete.html", {"trackerCertification": trackerCertification})
+    return render(
+        request,
+        "delete/hard_delete.html",
+        {"trackerCertification": trackerCertification},
+    )
 
 
 @login_required
 def hard_delete_reference_run(request, run_number, reco):
     try:
-        runReconstruction = RunReconstruction.objects.get(run__run_number=run_number, reconstruction=reco, is_reference=True)
+        runReconstruction = RunReconstruction.objects.get(
+            run__run_number=run_number, reconstruction=reco, is_reference=True
+        )
     except RunReconstruction.DoesNotExist:
         raise Http404("The run  {} doesnt exist".format(run_number))
 
@@ -44,7 +52,12 @@ def hard_delete_reference_run(request, run_number, reco):
         runReconstruction.delete()
         return HttpResponseRedirect("/reference/")
 
-    return render(request, "delete/hard_delete_reference_run.html", {"runReconstruction": runReconstruction})
+    return render(
+        request,
+        "delete/hard_delete_reference_run.html",
+        {"runReconstruction": runReconstruction},
+    )
+
 
 @login_required
 def hard_delete_open_run(request, run_number):
