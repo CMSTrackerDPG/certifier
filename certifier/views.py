@@ -184,6 +184,13 @@ class CertifyView(View):
                 runreconstruction__run__run_number=run_number,
                 runreconstruction__reconstruction=self.reco,
             )
+
+            if certification.user != request.user:
+                messages.warning(
+                    request, "You are updating another user's certification."
+                )
+            else:
+                messages.info(request, "You are updating an exising certification.")
             return redirect(
                 "listruns:update",
                 pk=certification.pk,
