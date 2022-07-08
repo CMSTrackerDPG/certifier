@@ -8,7 +8,6 @@ from certifier.forms import CertifyForm
 from openruns.models import OpenRuns
 
 
-# Create your views here.
 @method_decorator(login_required, name="dispatch")
 class DeleteRun(generic.DeleteView):
     """
@@ -16,7 +15,7 @@ class DeleteRun(generic.DeleteView):
     """
 
     model = TrackerCertification
-    form_class = CertifyForm
+    # form_class = CertifyForm
     success_url = "/shiftleader/"
     template_name = "delete/trackercertification_delete_form.html"
 
@@ -26,7 +25,7 @@ def hard_delete_run_view(request, pk, run_number, reco):
     try:
         trackerCertification = TrackerCertification.all_objects.get(pk=pk)
     except TrackerCertification.DoesNotExist:
-        raise Http404("The run with the id {} doesnt exist".format(pk))
+        raise Http404("Run {} doesn't exist".format(run_number))
 
     if request.method == "POST":
         trackerCertification.hard_delete()
@@ -64,7 +63,7 @@ def hard_delete_open_run(request, run_number):
     try:
         openrun = OpenRuns.objects.get(run_number=run_number)
     except OpenRuns.DoesNotExist:
-        raise Http404("The run  {} doesnt exist".format(run_number))
+        raise Http404("Run {} doesn't exist".format(run_number))
 
     openrun.delete()
     return HttpResponseRedirect("/openruns/")
