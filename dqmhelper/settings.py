@@ -19,7 +19,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "1.6.1"
+CERTHELPER_VERSION = "1.7.0"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
