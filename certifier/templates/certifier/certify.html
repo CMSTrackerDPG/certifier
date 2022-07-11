@@ -85,7 +85,7 @@
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.run_type class="form-control form-select" %} 
+								{% render_field omsrun_form.run_type class+="form-control form-select" title=omsrun_form.run_type.help_text %}
 								{% else %}
                                 {{ run.run_type|capfirst }}
 								{% endif %}
@@ -98,8 +98,8 @@
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.b_field class+="form-control" %}
-									{% render_field omsrun_form.b_field_unit class+="form-control" %}
+									{% render_field omsrun_form.b_field class+="form-control" title=omsrun_form.b_field.help_text %}
+									{% render_field omsrun_form.b_field_unit class+="form-control" title=omsrun_form.b_field_unit.help_text %}
 								</div>
 								{% else %}
                                 \({{ run.b_field }}\) \({{ run.b_field_unit }}\)
@@ -113,8 +113,8 @@
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.energy class+="form-control" %}
-									{% render_field omsrun_form.energy_unit class+="form-control" %}
+									{% render_field omsrun_form.energy class+="form-control" title=omsrun_form.energy.help_text %}
+									{% render_field omsrun_form.energy_unit class+="form-control" title=omsrun_form.energy_unit.help_text%}
 								</div>
 								{% else %}
                                 \({{ run.energy }}\) \({{ run.energy_unit }}\)
@@ -128,7 +128,7 @@
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.fill_type_runtime class="form-control" %}
+								{% render_field omsfill_form.fill_type_runtime class="form-control" title=omsfill_form.fill_type_runtime.help_text %}
 								{% else %}
                                 {{ run.fill.fill_type_runtime }}
 								{% endif %}
@@ -141,7 +141,7 @@
                             </div>
                             <div class="col-md-8">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.era class+="form-control" %}
+								{% render_field omsfill_form.era class+="form-control" title=omsfill_form.era.help_text %}
 								{% else %}								
                                 {{ run.fill.era|capfirst }}
 								{% endif %}
@@ -163,7 +163,7 @@
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsrun_form.lumisections class+="form-control" %}
+								{% render_field omsrun_form.lumisections class+="form-control" title=omsrun_form.lumisections.help_text %}
 								{% else %}
                                 \({{ run.lumisections }}\)
 								{% endif %}
@@ -176,8 +176,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.recorded_lumi class+="form-control"%}
-									{% render_field omsrun_form.recorded_lumi_unit class+="form-control" %}
+									{% render_field omsrun_form.recorded_lumi class+="form-control" title=omsrun_form.recorded_lumi.help_text %}
+									{% render_field omsrun_form.recorded_lumi_unit class+="form-control" title=omsrun_form.recorded_lumi_unit.help_text %}
 								</div>
 								{% else %}								
                                 \({{ run.recorded_lumi|floatformat:3  }}\) \({{ run.recorded_lumi_unit }}\)
@@ -191,8 +191,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.delivered_lumi class+="form-control" %}
-									{% render_field omsrun_form.delivered_lumi_unit class+="form-control" %}
+									{% render_field omsrun_form.delivered_lumi class+="form-control" title=omsrun_form.delivered_lumi.help_text %}
+									{% render_field omsrun_form.delivered_lumi_unit class+="form-control" title=omsrun_form.delivered_lumi_unit.help_text %}
 								</div>
 								{% else %}																
                                 \({{ run.delivered_lumi|floatformat:3 }}\) \({{ run.delivered_lumi_unit }}\)
@@ -206,8 +206,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.init_lumi class+="form-control" %}
-									{% render_field omsrun_form.init_lumi_unit class+="form-control" %}
+									{% render_field omsrun_form.init_lumi class+="form-control" title=omsrun_form.init_lumi.help_text %}
+									{% render_field omsrun_form.init_lumi_unit class+="form-control" title=omsrun_form.init_lumi_unit.help_text %}
 								</div>
 								{% else %}		
                                 \({{ run.init_lumi|floatformat:3 }}\) &times; \({{ run.init_lumi_unit }}\)
@@ -221,8 +221,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsrun_form.end_lumi class+="form-control" %}
-									{% render_field omsrun_form.end_lumi_unit class+="form-control" %}
+									{% render_field omsrun_form.end_lumi class+="form-control" title=omsrun_form.end_lumi.help_text %}
+									{% render_field omsrun_form.end_lumi_unit class+="form-control" title=omsrun_form.end_lumi_unit.help_text %}
 								</div>
 								{% else %}								
                                 \({{ run.end_lumi|floatformat:3 }}\) &times; \({{ run.end_lumi_unit }}\)
@@ -244,7 +244,7 @@
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.fill_number class+="form-control" %}
+								{% render_field omsfill_form.fill_number class+="form-control" title=omsfill_form.fill_number.help_text %}
 								{% else %}
                                 <a href="https://cmsoms.cern.ch/cms/fills/report?cms_fill={{run.fill.fill_number}}" target="_blank">
                                     {{ run.fill.fill_number }}
@@ -258,7 +258,7 @@
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.bunches_colliding class+="form-control" %}								
+								{% render_field omsfill_form.bunches_colliding class+="form-control" title=omsfill_form.bunches_colliding.help_text %}								
 								{% else %}								
                                 \({{ run.fill.bunches_colliding }}\)
 								{% endif %}
@@ -271,8 +271,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsfill_form.init_lumi class+="form-control" %}
-									{% render_field omsfill_form.init_lumi_unit class+="form-control" %}
+									{% render_field omsfill_form.init_lumi class+="form-control" title=omsfill_form.init_lumi.help_text %}
+									{% render_field omsfill_form.init_lumi_unit class+="form-control" title=omsfill_form.init_lumi_unit.help_text %}
 								</div>
 								{% else %}
                                 \({{ run.fill.init_lumi|floatformat:3 }}\) &times; \({{ run.fill.init_lumi_unit }}\)
@@ -286,8 +286,8 @@
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
 								<div class="input-group">
-									{% render_field omsfill_form.peak_lumi class+="form-control" %}
-									{% render_field omsfill_form.peak_lumi_unit class+="form-control" %}
+									{% render_field omsfill_form.peak_lumi class+="form-control" title=omsfill_form.peak_lumi.help_text %}
+									{% render_field omsfill_form.peak_lumi_unit class+="form-control" title=omsfill_peak.init_lumi_unit.help_text %}
 								</div>
 								{% else %}								
                                 \({{ run.fill.peak_lumi|floatformat:3 }}\) &times; \({{ run.fill.peak_lumi_unit }}\)
@@ -300,7 +300,7 @@
                             </div>
                             <div class="col-md-7">
 								{% if not form.external_info_complete.value %}
-								{% render_field omsfill_form.peak_pileup class+="form-control" %}
+								{% render_field omsfill_form.peak_pileup class+="form-control" title=omsfill_form.peak_pileup.help_text %}
 								{% else %}
                                 \({{ run.fill.peak_pileup|floatformat:3 }}\)
 								{% endif %}
