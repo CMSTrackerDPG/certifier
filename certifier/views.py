@@ -187,12 +187,6 @@ class CertifyView(View):
                 runreconstruction__reconstruction=self.reco,
             )
 
-            if certification.user != request.user:
-                messages.warning(
-                    request, "You are updating another user's certification."
-                )
-            else:
-                messages.info(request, "You are updating an exising certification.")
             return redirect(
                 "listruns:update",
                 pk=certification.pk,
@@ -215,7 +209,7 @@ class CertifyView(View):
             # or OMS is unreachable, create the run with minimal
             # info
             messages.warning(request, repr(e))
-            self.run = OmsRun.objects.get_or_create(run_number=run_number)
+            self.run, _ = OmsRun.objects.get_or_create(run_number=run_number)
 
         # Update flag
         self.external_info_complete = self._rr_info_updated and self._oms_info_updated
@@ -239,7 +233,9 @@ class CertifyView(View):
                 initial={"external_info_complete": self.external_info_complete}
             ),
             "omsrun_form": OmsRunForm(instance=self.run),
-            "omsfill_form": OmsFillForm(),
+            "omsfill_form": OmsFillForm(
+                instance=self.run.fill if self.run.fill else None
+            ),
         }
         return render(request, "certifier/certify.html", context)
 
