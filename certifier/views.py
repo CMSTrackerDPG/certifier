@@ -28,6 +28,7 @@ from oms.exceptions import (
     RunRegistryReconstructionNotFound,
 )
 from oms.views import OmsRunUpdateView, OmsFillUpdateView
+from oms.forms import OmsRunForm, OmsFillForm
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -214,7 +215,7 @@ class CertifyView(View):
             # or OMS is unreachable, create the run with minimal
             # info
             messages.warning(request, repr(e))
-            self.run = OmsRun.objects.create(run_number=run_number)
+            self.run = OmsRun.objects.get_or_create(run_number=run_number)
 
         # Update flag
         self.external_info_complete = self._rr_info_updated and self._oms_info_updated
@@ -227,6 +228,8 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
+        self.run.run_type = OmsRun.COLLISIONS
+
         context = {
             "run_number": run_number,
             "reco": self.reco,
@@ -235,8 +238,8 @@ class CertifyView(View):
             "form": self.form(
                 initial={"external_info_complete": self.external_info_complete}
             ),
-            "omsrun_form": OmsRunUpdateView(object=self.run).get_form_class(),
-            "omsfill_form": OmsFillUpdateView(object=self.run.fill).get_form_class(),
+            "omsrun_form": OmsRunForm(instance=self.run),
+            "omsfill_form": OmsFillForm(),
         }
         return render(request, "certifier/certify.html", context)
 
