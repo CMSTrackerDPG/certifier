@@ -63,7 +63,7 @@ def listruns(request):
 
 
 @method_decorator(login_required, name="dispatch")
-class UpdateRun(UpdateView):
+class UpdateRunView(UpdateView):
     """
     Updates a specific Run from the TrackerCertification table
     """
@@ -115,7 +115,7 @@ class UpdateRun(UpdateView):
                 )
             else:
                 messages.info(request, "You are updating an exising certification.")
-            return super(UpdateRun, self).dispatch(request, *args, **kwargs)
+            return super(UpdateRunView, self).dispatch(request, *args, **kwargs)
         return redirect_to_login(
             request.get_full_path(), login_url=reverse("admin:login")
         )

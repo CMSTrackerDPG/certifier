@@ -81,7 +81,7 @@ class TestListRuns:
 
         req.user = mixer.blend(get_user_model())
 
-        resp = views.UpdateRun.as_view()(req, pk=trackerCertification.pk)
+        resp = views.UpdateRunView.as_view()(req, pk=trackerCertification.pk)
 
         assert 302 == resp.status_code
 
@@ -97,7 +97,7 @@ class TestListRuns:
 
         req.user = AnonymousUser()
 
-        resp = views.UpdateRun.as_view()(req, pk=trackerCertification.pk)
+        resp = views.UpdateRunView.as_view()(req, pk=trackerCertification.pk)
 
         assert 302 == resp.status_code
 
@@ -128,7 +128,7 @@ class TestListRuns:
         req.user = user
 
         view = setup_view(
-            views.UpdateRun(),
+            views.UpdateRunView(),
             req,
             pk=trackerCertification.pk,
             run_number=arguments["run_number"],
@@ -165,7 +165,7 @@ class TestListRuns:
         req.user = user
 
         view = setup_view(
-            views.UpdateRun(),
+            views.UpdateRunView(),
             req,
             pk=trackerCertification.pk,
             run_number=arguments["run_number"],
@@ -202,7 +202,7 @@ class TestListRuns:
         req.user = user
 
         view = setup_view(
-            views.UpdateRun(),
+            views.UpdateRunView(),
             req,
             pk=trackerCertification.pk,
             run_number=arguments["run_number"],
@@ -240,7 +240,7 @@ class TestListRuns:
         req.user = user
 
         view = setup_view(
-            views.UpdateRun(),
+            views.UpdateRunView(),
             req,
             pk=trackerCertification.pk,
             run_number=arguments["run_number"],
