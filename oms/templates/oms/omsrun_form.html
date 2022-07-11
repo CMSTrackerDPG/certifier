@@ -1,0 +1,18 @@
+{% extends 'dqmhelper/base.html' %}
+{% load static %}
+
+{% block style %}
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+	<h2>Update information for  OmsRun {{ object.run_number }}</h2>
+	<form method="post">{% csrf_token %}
+		{{ form.as_p }}
+		<input class="btn btn-primary" type="submit" value="Submit">
+	</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock scripts %}
