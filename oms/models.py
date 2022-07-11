@@ -376,7 +376,6 @@ class OmsRun(models.Model):
     apv_mode = models.CharField(
         max_length=4,
         null=True,
-        default=None,
         help_text="APV mode",
         choices=APV_MODE_CHOICES,
     )
