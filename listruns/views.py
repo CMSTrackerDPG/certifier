@@ -111,7 +111,8 @@ class UpdateRun(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        Check if the user that tries to update the run has the necessary rights
+        Override dispatch method to check if the user that tries to
+        update the run has the necessary rights
         """
 
         if self.same_user_or_shiftleader(request.user):
