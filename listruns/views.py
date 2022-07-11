@@ -1,3 +1,4 @@
+import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.contrib import messages
@@ -7,7 +8,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView
 from django_tables2 import RequestConfig
-from oms.models import OmsRun
+from oms.models import OmsRun, OmsFill
 from oms.forms import OmsRunForm, OmsFillForm
 
 from certifier.models import TrackerCertification
@@ -24,6 +25,8 @@ from listruns.utilities.utilities import (
     get_today_filter_parameter,
 )
 
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 # @login_required
@@ -101,6 +104,45 @@ class UpdateRunView(UpdateView):
             or user.is_superuser
             or user.has_shift_leader_rights
         )
+
+    def post(self, request, pk: int, run_number: int, reco: str = None):
+
+        # Get info on the OmsFill
+        omsfill_form = OmsFillForm(request.POST)
+        fill = None
+
+        if OmsFill.objects.filter(
+            fill_number=omsfill_form.data["fill_number"]
+        ).exists():
+            omsfill_form = OmsFillForm(
+                request.POST,
+                instance=OmsFill.objects.get(
+                    fill_number=omsfill_form.data["fill_number"]
+                ),
+            )
+
+        elif not omsfill_form.is_valid():
+            msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
+            logger.error(msg)
+            messages.error(request, msg)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+        fill = omsfill_form.save()
+
+        # Assumes OmsRun exists!
+        omsrun_form = OmsRunForm(
+            request.POST, instance=self.get_object().runreconstruction.run
+        )
+        if omsrun_form.is_valid():
+            run = omsrun_form.save(commit=False)
+            run.fill = fill
+            run.save()
+        else:
+            msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
+            logger.error(msg)
+            messages.error(request, msg)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        return super().post(self, request, pk, run_number, reco)
 
     def dispatch(self, request, *args, **kwargs):
         """

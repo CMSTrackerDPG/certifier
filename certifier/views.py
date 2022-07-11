@@ -264,14 +264,19 @@ class CertifyView(View):
             if OmsFill.objects.filter(
                 fill_number=omsfill_form.data["fill_number"]
             ).exists():
-                fill = OmsFill.objects.get(fill_number=omsfill_form.data["fill_number"])
-            elif omsfill_form.is_valid():
-                fill = omsfill_form.save()
-            else:
+                omsfill_form = OmsFillForm(
+                    request.POST,
+                    instance=OmsFill.objects.get(
+                        fill_number=omsfill_form.data["fill_number"]
+                    ),
+                )
+            elif not omsfill_form.is_valid():
                 msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
                 logger.error(msg)
                 messages.error(request, msg)
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+            fill = omsfill_form.save()
 
             omsrun_form = OmsRunForm(request.POST, instance=self.run)
             if omsrun_form.is_valid():
