@@ -86,7 +86,8 @@ class UpdateRun(UpdateView):
             runreconstruction__reconstruction=self.kwargs["reco"],
         ).dataset
         context["run"] = OmsRun.objects.get(run_number=self.kwargs["run_number"])
-
+        context["omsrun_form"] = OmsRunForm(instance=context["run"])
+        context["omsfill_form"] = OmsFillForm(instance=context["run"].fill)
         return context
 
     def same_user_or_shiftleader(self, user):
