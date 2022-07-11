@@ -105,43 +105,52 @@ class UpdateRunView(UpdateView):
             or user.has_shift_leader_rights
         )
 
+    def get(self, request, *args, **kwargs):
+        if self.get_object().user != request.user:
+            messages.warning(request, "You are updating another user's certification.")
+        else:
+            messages.info(request, "You are updating an exising certification.")
+        return super().get(request, *args, **kwargs)
+
     def post(self, request, pk: int, run_number: int, reco: str = None):
 
         # Get info on the OmsFill
         omsfill_form = OmsFillForm(request.POST)
         fill = None
 
-        if OmsFill.objects.filter(
-            fill_number=omsfill_form.data["fill_number"]
-        ).exists():
-            omsfill_form = OmsFillForm(
-                request.POST,
-                instance=OmsFill.objects.get(
-                    fill_number=omsfill_form.data["fill_number"]
-                ),
+        if not request.POST.get("external_info_complete"):
+            if OmsFill.objects.filter(
+                fill_number=omsfill_form.data["fill_number"]
+            ).exists():
+                omsfill_form = OmsFillForm(
+                    request.POST,
+                    instance=OmsFill.objects.get(
+                        fill_number=omsfill_form.data["fill_number"]
+                    ),
+                )
+
+            elif not omsfill_form.is_valid():
+                msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+            fill = omsfill_form.save()
+
+            # Assumes OmsRun exists!
+            omsrun_form = OmsRunForm(
+                request.POST, instance=self.get_object().runreconstruction.run
             )
+            if omsrun_form.is_valid():
+                run = omsrun_form.save(commit=False)
+                run.fill = fill
+                run.save()
+            else:
+                msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-        elif not omsfill_form.is_valid():
-            msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
-            logger.error(msg)
-            messages.error(request, msg)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
-
-        fill = omsfill_form.save()
-
-        # Assumes OmsRun exists!
-        omsrun_form = OmsRunForm(
-            request.POST, instance=self.get_object().runreconstruction.run
-        )
-        if omsrun_form.is_valid():
-            run = omsrun_form.save(commit=False)
-            run.fill = fill
-            run.save()
-        else:
-            msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
-            logger.error(msg)
-            messages.error(request, msg)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         return super().post(self, request, pk, run_number, reco)
 
     def dispatch(self, request, *args, **kwargs):
@@ -151,12 +160,6 @@ class UpdateRunView(UpdateView):
         """
 
         if self.same_user_or_shiftleader(request.user):
-            if self.get_object().user != request.user:
-                messages.warning(
-                    request, "You are updating another user's certification."
-                )
-            else:
-                messages.info(request, "You are updating an exising certification.")
             return super(UpdateRunView, self).dispatch(request, *args, **kwargs)
         return redirect_to_login(
             request.get_full_path(), login_url=reverse("admin:login")
