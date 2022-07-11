@@ -171,11 +171,13 @@ class OmsFill(models.Model):
     first_run_number = models.PositiveIntegerField(
         help_text="Run number for the first run in the fill",
         verbose_name="First run number",
+        null=True,
     )
 
     last_run_number = models.PositiveIntegerField(
         help_text="Run number for the last run in the fill",
         verbose_name="Last run number",
+        null=True,
     )
 
     def __str__(self):
