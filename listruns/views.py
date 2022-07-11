@@ -1,36 +1,27 @@
-# import re
-# from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.contrib import messages
-from django.http import HttpResponseRedirect, Http404, JsonResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView
-from django.views.generic import TemplateView
-from django_filters.views import FilterView
-from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
+from django_tables2 import RequestConfig
 from oms.models import OmsRun
+from oms.forms import OmsRunForm, OmsFillForm
 
 from certifier.models import TrackerCertification
 from certifier.forms import CertifyFormWithChecklistForm
 
-from tables.tables import TrackerCertificationTable, SimpleTrackerCertificationTable
+from tables.tables import TrackerCertificationTable
 
 from listruns.filters import (
     TrackerCertificationFilter,
-    ShiftLeaderTrackerCertificationFilter,
-    ComputeLuminosityTrackerCertificationFilter,
-    RunsFilter,
 )
-from users.models import User
 from listruns.utilities.utilities import (
     get_filters_from_request_GET,
     request_contains_filter_parameter,
     get_today_filter_parameter,
-    integer_or_none,
 )
 
 
@@ -95,6 +86,7 @@ class UpdateRun(UpdateView):
             runreconstruction__reconstruction=self.kwargs["reco"],
         ).dataset
         context["run"] = OmsRun.objects.get(run_number=self.kwargs["run_number"])
+
         return context
 
     def same_user_or_shiftleader(self, user):
