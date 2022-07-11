@@ -1,39 +1,33 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-
-from .models import (
-    TrackerCertification,
-    BadReason,
-    PixelProblem,
-    StripProblem,
-    TrackingProblem,
-    Dataset,
-)
 from django.forms import (
     ModelForm,
     RadioSelect,
-    CheckboxSelectMultiple,
-    ModelMultipleChoiceField,
     TextInput,
     Textarea,
 )
 from checklists.forms import ChecklistFormMixin
+from .models import (
+    TrackerCertification,
+    BadReason,
+    Dataset,
+)
 
 
 class CertifyForm(ModelForm):
 
     pixel = forms.ChoiceField(
         choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        widget=forms.RadioSelect(),
+        widget=RadioSelect(),
     )
     strip = forms.ChoiceField(
         choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        widget=forms.RadioSelect(),
+        widget=RadioSelect(),
     )
     tracking = forms.ChoiceField(
         choices=TrackerCertification.SUBCOMPONENT_STATUS_CHOICES,
-        widget=forms.RadioSelect(),
+        widget=RadioSelect(),
     )
 
     date = forms.DateField(
