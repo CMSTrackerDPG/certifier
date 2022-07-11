@@ -6,9 +6,10 @@ class OmsRunForm(forms.ModelForm):
     class Meta:
         model = OmsRun
         template_name = "oms/omsrun_form.html"
+        # Not adding "fill" in fields, since it
+        # will be manually updated after POST
         fields = [
             "run_type",
-            "fill",
             "b_field",
             "b_field_unit",
             "lumisections",

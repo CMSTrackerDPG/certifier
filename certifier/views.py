@@ -20,7 +20,7 @@ from oms.utils import (
     rr_retrieve_dataset_by_reco,
     get_reco_from_dataset,
 )
-from oms.models import OmsRun
+from oms.models import OmsRun, OmsFill
 from oms.exceptions import (
     OmsApiFillNumberNotFound,
     OmsApiRunNumberNotFound,
@@ -256,6 +256,33 @@ class CertifyView(View):
 
         user = User.objects.get(pk=request.user.id)
 
+        omsfill_form = OmsFillForm(request.POST)
+
+        fill = None
+        if OmsFill.objects.filter(
+            fill_number=omsfill_form.data["fill_number"]
+        ).exists():
+            fill = OmsFill.objects.get(fill_number=omsfill_form.data["fill_number"])
+        elif omsfill_form.is_valid():
+            fill = omsfill_form.save()
+        else:
+            msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
+            logger.error(msg)
+            messages.error(request, msg)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+        omsrun_form = OmsRunForm(request.POST, instance=self.run)
+        if omsrun_form.is_valid():
+            self.run = omsrun_form.save(commit=False)
+            self.run.fill = fill
+            self.run.save()
+
+        else:
+            msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
+            logger.error(msg)
+            messages.error(request, msg)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
         # create a form instance and populate it with data from the request:
         form = self.form(request.POST)
 
@@ -282,7 +309,9 @@ class CertifyView(View):
                     f"{runReconstruction.reconstruction} successfully saved",
                 )
         else:
-            messages.error(request, "Submitted form was invalid!")
+            messages.error(
+                request, f"Submitted form was invalid! ({dict(form.errors)})"
+            )
 
         return redirect("openruns:openruns")
 
