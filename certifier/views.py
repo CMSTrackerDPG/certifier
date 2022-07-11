@@ -258,30 +258,32 @@ class CertifyView(View):
 
         omsfill_form = OmsFillForm(request.POST)
 
-        fill = None
-        if OmsFill.objects.filter(
-            fill_number=omsfill_form.data["fill_number"]
-        ).exists():
-            fill = OmsFill.objects.get(fill_number=omsfill_form.data["fill_number"])
-        elif omsfill_form.is_valid():
-            fill = omsfill_form.save()
-        else:
-            msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
-            logger.error(msg)
-            messages.error(request, msg)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        # If manually editing form
+        if not request.POST.get("external_info_complete"):
+            fill = None
+            if OmsFill.objects.filter(
+                fill_number=omsfill_form.data["fill_number"]
+            ).exists():
+                fill = OmsFill.objects.get(fill_number=omsfill_form.data["fill_number"])
+            elif omsfill_form.is_valid():
+                fill = omsfill_form.save()
+            else:
+                msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-        omsrun_form = OmsRunForm(request.POST, instance=self.run)
-        if omsrun_form.is_valid():
-            self.run = omsrun_form.save(commit=False)
-            self.run.fill = fill
-            self.run.save()
+            omsrun_form = OmsRunForm(request.POST, instance=self.run)
+            if omsrun_form.is_valid():
+                self.run = omsrun_form.save(commit=False)
+                self.run.fill = fill
+                self.run.save()
 
-        else:
-            msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
-            logger.error(msg)
-            messages.error(request, msg)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            else:
+                msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
         # create a form instance and populate it with data from the request:
         form = self.form(request.POST)
