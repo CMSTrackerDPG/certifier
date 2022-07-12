@@ -19,7 +19,7 @@ class SummaryReport:
     def runs_checked_per_type(self):
         runs_checked = []
 
-        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
+        for idx, certs_with_specific_type in enumerate(self.runs_per_type):
             column_description = [
                 "Run",
                 "Reference Run",
@@ -33,37 +33,41 @@ class SummaryReport:
 
             data = [
                 [
-                    run.runreconstruction.run.run_number,
-                    run.reference_runreconstruction.run.run_number,
-                    run.runreconstruction.run.lumisections,
+                    certification.runreconstruction.run.run_number,
+                    certification.reference_runreconstruction.run.run_number,
+                    certification.runreconstruction.run.lumisections,
                     format_integrated_luminosity(
-                        run.runreconstruction.run.recorded_lumi, to_ascii=True
+                        certification.runreconstruction.run.recorded_lumi,
+                        luminosity_units=certification.runreconstruction.run.recorded_lumi_unit,
+                        to_ascii=True,
                     ),
-                    run.tracking,
-                    run.pixel,
-                    run.strip,
-                    run.comment,
+                    certification.tracking,
+                    certification.pixel,
+                    certification.strip,
+                    certification.comment,
                 ]
-                for run in runs_with_specific_type
+                for certification in certs_with_specific_type
             ]
 
             headline = (
                 "Type "
                 + str(idx + 1)
                 + ": "
-                + str(runs_with_specific_type[0].runreconstruction.reconstruction)
+                + str(certs_with_specific_type[0].runreconstruction.reconstruction)
                 + " "
-                + str(runs_with_specific_type[0].runreconstruction.run.run_type)
+                + str(certs_with_specific_type[0].runreconstruction.run.run_type)
                 + " "
-                + str(runs_with_specific_type[0].runreconstruction.run.b_field)
+                + str(certs_with_specific_type[0].runreconstruction.run.b_field)
                 + " T "
-                + str(runs_with_specific_type[0].runreconstruction.run.fill_type_party1)
+                + str(
+                    certs_with_specific_type[0].runreconstruction.run.fill_type_party1
+                )
                 + " "
-                + str(runs_with_specific_type[0].runreconstruction.run.energy)
+                + str(certs_with_specific_type[0].runreconstruction.run.energy)
                 + " TeV "
                 + str(
                     TrackerCertification.objects.get(
-                        runreconstruction=runs_with_specific_type[0]
+                        runreconstruction=certs_with_specific_type[0]
                     ).dataset
                 )
             )
@@ -75,15 +79,15 @@ class SummaryReport:
 
     def tracker_maps_per_type(self):
         tracker_maps = []
-        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
+        for idx, certs_with_specific_type in enumerate(self.runs_per_type):
             text = "Type {}".format(idx + 1)
-            tk_map_exists_runs = runs_with_specific_type.filter(trackermap="exists")
+            tk_map_exists_runs = certs_with_specific_type.filter(trackermap="exists")
             if tk_map_exists_runs.exists():
                 run_numbers = tk_map_exists_runs.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
                 text += "\n Exists: {}".format(joined)
 
-            tk_map_missing_runs = runs_with_specific_type.filter(trackermap="missing")
+            tk_map_missing_runs = certs_with_specific_type.filter(trackermap="missing")
             if tk_map_missing_runs.exists():
                 run_numbers = tk_map_missing_runs.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
@@ -93,15 +97,15 @@ class SummaryReport:
 
     def certified_runs_per_type(self):
         certified_run_numbers = []
-        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
+        for idx, certs_with_specific_type in enumerate(self.runs_per_type):
             text = "Type {}".format(idx + 1)
-            good = runs_with_specific_type.good()
+            good = certs_with_specific_type.good()
             if good.exists():
                 run_numbers = good.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
                 text += "\n Good: {}".format(joined)
 
-            bad = runs_with_specific_type.bad()
+            bad = certs_with_specific_type.bad()
             if bad.exists():
                 run_numbers = bad.run_numbers()
                 joined = " ".join(str(run_number) for run_number in run_numbers)
@@ -111,7 +115,7 @@ class SummaryReport:
 
     def sum_of_quantities_per_type(self):
         certified_run_numbers = []
-        for idx, runs_with_specific_type in enumerate(self.runs_per_type):
+        for idx, certs_with_specific_type in enumerate(self.runs_per_type):
             column_description = [
                 "Type {}".format(idx + 1),
                 "Sum of LS",
@@ -119,8 +123,8 @@ class SummaryReport:
             ]
 
             data = []
-            good = runs_with_specific_type.good()
-            bad = runs_with_specific_type.bad()
+            good = certs_with_specific_type.good()
+            bad = certs_with_specific_type.bad()
 
             if good.exists():
                 data.append(

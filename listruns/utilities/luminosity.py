@@ -1,9 +1,10 @@
 from decimal import Decimal
-
 from listruns.utilities.manip import strip_trailing_zeros
 
 
-def format_integrated_luminosity(int_luminosity, to_ascii=False):
+def format_integrated_luminosity(
+    int_luminosity: float = None, luminosity_units: str = "pb^{-1}", to_ascii=False
+):
     """
     Example:
     >>> format_integrated_luminosity(Decimal("0.000000266922"))
@@ -11,22 +12,34 @@ def format_integrated_luminosity(int_luminosity, to_ascii=False):
     >>> format_integrated_luminosity(Decimal("1.12345678901234567890"))
     '1.123 pb⁻¹'
 
-    :param int_luminosity: integrated luminosity value in 1/pb^-1
+    :param int_luminosity: integrated luminosity value
+    :param luminosity_units: units luminosity is counted in
     :return: Formatted luminosity with 3 decimal points precision
     """
-    if int_luminosity == None:
+    CONVERSION_MAP = {
+        r"pb^{-1}": {"ascii": "/pb", "default": "pb⁻¹", "exponent": 12},
+        r"{\mu}b^{-1}": {"ascii": "/ub", "default": "µb⁻¹", "exponent": 6},
+    }
+    if int_luminosity is None:
         int_luminosity = 0
-    value = Decimal(int_luminosity)
-    if '{:.3f}'.format(value) == "0.000":
-        value = Decimal("1E6") * value
-        value_string = "{:.3f}".format(value)
-        formatted_value = strip_trailing_zeros(value_string)
-        if to_ascii:
-            return "{} /ub".format(formatted_value)
-        return "{} µb⁻¹".format(formatted_value)
 
-    value_string = "{:.3f}".format(value)
-    formatted_value = strip_trailing_zeros(value_string)
-    if to_ascii:
-        return "{} /pb".format(formatted_value)
-    return "{} pb⁻¹".format(formatted_value)
+    formatted_luminosity = ""
+    value = Decimal(int_luminosity)
+
+    # Convert /pb to /ub if very small /pb value
+    if f"{value:.3f}" == "0.000" and CONVERSION_MAP[luminosity_units]["exponent"] == 12:
+        value = Decimal("1E6") * value
+        value_string = f"{value:.3f}"
+        formatted_value = strip_trailing_zeros(value_string)
+        formatted_units = CONVERSION_MAP[r"{\mu}b^{-1}"][
+            "ascii" if to_ascii else "default"
+        ]
+    else:
+        value_string = f"{value:.3f}"
+        formatted_value = strip_trailing_zeros(value_string)
+        formatted_units = CONVERSION_MAP[luminosity_units][
+            "ascii" if to_ascii else "default"
+        ]
+
+    formatted_luminosity = f"{formatted_value} {formatted_units}"
+    return formatted_luminosity

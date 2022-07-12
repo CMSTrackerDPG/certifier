@@ -1,6 +1,3 @@
-from decimal import Decimal
-
-
 def strip_trailing_zeros(number_string):
     """
     Example:
