@@ -5,6 +5,7 @@ import logging
 from abc import abstractclassmethod
 import subprocess
 import paramiko
+from decouple import config
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -206,8 +207,8 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         try:
             ssh.connect(
                 self.host,
-                username=getattr(settings, self.env_secret_username),
-                password=getattr(settings, self.env_secret_password),
+                username=config(self.env_secret_username),
+                password=config(self.env_secret_password),
                 port=self.port,
             )
             self.on_connect_success(self.host)

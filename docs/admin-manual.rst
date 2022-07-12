@@ -198,8 +198,8 @@ Adding secrets to CertHelper
    you follow the directions below.
 
 
-Secrets, in this context, are variables loaded by Django at runtime from `dqmhelper/settings.py
-<https://github.com/CMSTrackerDPG/certifier/blob/master/dqmhelper/settings.py>`__
+Secrets, in this context, are variables loaded by Django at runtime using
+`python-decouple<https://pypi.org/project/python-decouple/>`__
 and they should not be publicly available.
 
 To prevent them being stored in a plain-text file like ``settings.py``, they are
@@ -222,20 +222,9 @@ To create a new secret, follow the steps below:
    name of the secret you created on the previous step (e.g. ``vocms-secrets``) and
    the key of the secret you want to use (e.g. ``username``).
    Give the new environmental variable a meaningful name, e.g. ``VOCMS_USERNAME``.
-
-3. By now, the secret is safely stored inside PaaS, but we still need to load it
-   to Django. **You will have to make a commit to the CertHelper repository for this**.
-   Pull the latest code from GitHub and edit ``dqmhelper/settings.py``, adding a new line
-   which loads the environmental variable into a python variable.
-
-   .. code:: python
-
-	  VOCMS_USERNAME = config("VOCMS_USERNAME")
-
-   This will load the ``VOCMS_USERNAME`` environmental variable into
-   a python variable also named ``VOCMS_USERNAME``.
+   The secret is now ready to be used.
    
-4. You will have to rebuild the project for this. See :doc:`deployment`.
+3. You will have to rebuild the project now. See :doc:`deployment`.
    The secret is now safely available in CertHelper.
 
 			 
