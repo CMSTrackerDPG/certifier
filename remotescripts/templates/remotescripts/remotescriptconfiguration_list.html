@@ -17,20 +17,24 @@
 				<th scope="col">Command</th>
 				<th scope="col">Run</th>							
 			</tr>
+		</thead>
+		<tbody>
 			{% for remote_script in object_list %}
 			<tr>
 				<!-- <td>{{ remote_script.id }}</td> -->
 				<td><b>{{ remote_script.title }}</b></td>				
-				<td>{{ remote_script.host }}</td>
-				<td>{{ remote_script.base_command }}</td>
-				<td><button class="btn btn-primary btn-block" title="Run it!!!!">
+				<td><code>{{ remote_script.host }}</code></td>
+				<td><code>{{ remote_script.base_command }}</code></td>
+				<td>
 					<a href="{% url 'remotescripts:detail' remote_script.id %}">
-						<i class="bi bi-caret-right text-white"></i>
+						<button class="btn btn-primary btn-block" title="Show me more!!">
+							<i class="bi bi-caret-right text-white"></i>
+						</button>
 					</a>
-				</button></td>
+				</td>
 			</tr>
 			{% endfor %}
-		</thead>
+		</tbody>
 	</table>
 </div>
 
