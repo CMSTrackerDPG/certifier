@@ -63,43 +63,43 @@
  function clearOutput(){
 	 $('#id_command_output').val("");
  };
-
+ 
  $(document).ready(function() {	 
 	 // WS initialization
 	 if (location.protocol === 'https:') {
 		 // page is secure
 		 var command_output_socket = new WebSocket(
 			 'wss://' + window.location.host +
-			 '/ws/output/');
-		 }
-		 else{
-			 var command_output_socket = new WebSocket(
-				 'ws://' + window.location.host +
-				 '/ws/output/');
-		 }
+			 '/ws/remotescripts/{{remote_script.pk}}/' );
+	 }
+	 else{
+		 var command_output_socket = new WebSocket(
+			 'ws://' + window.location.host +
+			 '/ws/remotescripts/{{remote_script.pk}}/');
+	 }
 
 
-		 // Callback run on every new message that
-		 // is received from the WS
-		 command_output_socket.onmessage = function(e) {
-			 var data = JSON.parse(e.data);
-			 if(typeof data['message'] === 'object'){
-				 for(var key of Object.keys(data['message'])){
-					 if (key.startsWith('file'))
-					 {
-						 var file_id = Number(key.substring(key.indexOf('file') + 4));
-						 img_div = document.getElementById(`output-img-${file_id}`);
-						 img_div.src = `data:image/png;base64,${data['message'][key]}`
-					 }
+	 // Callback run on every new message that
+	 // is received from the WS
+	 command_output_socket.onmessage = function(e) {
+		 var data = JSON.parse(e.data);
+		 if(typeof data['message'] === 'object'){
+			 for(var key of Object.keys(data['message'])){
+				 if (key.startsWith('file'))
+				 {
+					 var file_id = Number(key.substring(key.indexOf('file') + 4));
+					 img_div = document.getElementById(`output-img-${file_id}`);
+					 img_div.src = `data:image/png;base64,${data['message'][key]}`
 				 }
 			 }
-			 else
-			 {
-				 var message = data['message'];
-				 document.querySelector('#id_command_output').value += (message);
-				 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
-			 }
-		 };
+		 }
+		 else
+		 {
+			 var message = data['message'];
+			 document.querySelector('#id_command_output').value += (message);
+			 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+		 }
+	 };
 
 				 command_output_socket.onclose = function(e) {
 			 console.error('Socket closed unexpectedly: '+ e.message);

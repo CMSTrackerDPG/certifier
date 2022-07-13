@@ -124,7 +124,7 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = "/"
 
 # WSGI_APPLICATION = "dqmhelper.wsgi.application"
-ASGI_APPLICATION = "dqmhelper.routing.application"
+ASGI_APPLICATION = "dqmhelper.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {

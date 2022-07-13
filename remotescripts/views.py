@@ -59,7 +59,7 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
         Function that sends a message
         """
         async_to_sync(channel_layer.group_send)(
-            group_name, {"type": "channel_message", "message": message}
+            group_name, {"type": "script.output", "message": message}
         )
 
 
@@ -95,27 +95,27 @@ class RemoteScriptView(ScriptExecutionBaseView):
             args = []
             kwargs = {
                 "on_new_output_line": lambda msg: self.send_channel_message(
-                    channel_layer, "output_group", msg
+                    channel_layer, f"output_{pk}", msg
                 ),
                 "on_connect_failure": lambda msg: self.send_channel_message(
-                    channel_layer, "output_group", msg
+                    channel_layer, f"output_{pk}", msg
                 ),
                 "on_connect_success": lambda host: self.send_channel_message(
                     channel_layer,
-                    "output_group",
+                    f"output_{pk}",
                     f"-------- CONNECTED TO {host} --------\n",
                 ),
                 "on_script_start": lambda: self.send_channel_message(
-                    channel_layer, "output_group", "-------- SCRIPT STARTED --------\n"
+                    channel_layer, f"output_{pk}", "-------- SCRIPT STARTED --------\n"
                 ),
                 "on_script_end": lambda exit_status: self.send_channel_message(
                     channel_layer,
-                    "output_group",
+                    f"output_{pk}",
                     f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
                 ),
                 "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
                     channel_layer,
-                    "output_group",
+                    f"output_{pk}",
                     {
                         f"file{file_id}": self._encode_file_base64(filepath).decode(
                             "ascii"
