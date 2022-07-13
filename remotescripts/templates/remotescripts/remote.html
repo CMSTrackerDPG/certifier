@@ -15,9 +15,23 @@
     </div>
 	<div class="container mb-4">
 		<ul class="list-group">
-			<li class="list-group-item">Host: {{ remote_script.host }}</li>
-			<li class="list-group-item">Command: {{ remote_script.base_command }}</li>
-			{% if remote_script.help_text %}<li class="list-group-item">Help: {{ remote_script.help_text|safe }}</li>{% endif %}			
+			<li class="list-group-item">
+				<strong>Host:</strong> <code>{{ remote_script.host }}</code>
+			</li>
+			<li class="list-group-item">
+				<strong>Command:</strong> <code>{{ remote_script.base_command }}</code>
+			</li>
+			{% if remote_script.help_text %}
+			<li class="list-group-item">
+				<button class="btn btn-secondary"
+						data-toggle="collapse"
+						data-target="#collapse-help"
+						type="button">
+					Help <i class="bi bi-question-lg"></i>
+				</button>
+				<div class="collapse mt-3" id="collapse-help">{{ remote_script.help_text|safe }}</div>
+			</li>
+			{% endif %}			
 		</ul>
 	</div>
 
