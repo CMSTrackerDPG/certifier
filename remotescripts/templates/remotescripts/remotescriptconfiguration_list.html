@@ -23,7 +23,11 @@
 				<td><b>{{ remote_script.title }}</b></td>				
 				<td>{{ remote_script.host }}</td>
 				<td>{{ remote_script.base_command }}</td>
-				<td><a href="{% url 'remotescripts:detail' remote_script.id %}"><i class="bi bi-caret-right"></i></a></td>
+				<td><button class="btn btn-primary btn-block" title="Run it!!!!">
+					<a href="{% url 'remotescripts:detail' remote_script.id %}">
+						<i class="bi bi-caret-right text-white"></i>
+					</a>
+				</button></td>
 			</tr>
 			{% endfor %}
 		</thead>
