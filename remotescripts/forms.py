@@ -35,6 +35,7 @@ class ScriptExecutionForm(forms.ModelForm):
                 arg.help_text if arg.help_text else ""
             )
             if arg.type == ScriptArgumentBase.ARGUMENT_CHO:
+                self.fields[field_name].widget.attrs["class"] += " custom-select"
                 values = split_with_spaces_commas(arg.valid_choices)
                 self.fields[field_name].choices = [(v, v) for v in values]
 
