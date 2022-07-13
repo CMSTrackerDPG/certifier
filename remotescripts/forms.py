@@ -28,13 +28,20 @@ class ScriptExecutionForm(forms.ModelForm):
                 arg.name if arg.name else f"{self.POSITIONAL_FIELD_NAME_PREFIX}{i}"
             )
             self.fields[field_name] = self.ARG_TO_FIELD_MAP[arg.type]()
-
+            self.fields[field_name].widget.attrs["class"] = "form-control"
+            self.fields[field_name].widget.attrs["placeholder"] = (
+                arg.help_text if arg.help_text else ""
+            )
             i += 1
 
         # Add keyword arguments
         for kwarg in ScriptKeywordArgument.objects.filter(mother_script=self.instance):
             field_name = kwarg.name if kwarg.name else kwarg.keyword
             self.fields[field_name] = self.ARG_TO_FIELD_MAP[kwarg.type]()
+            self.fields[field_name].widget.attrs["class"] = "form-control"
+            self.fields[field_name].widget.attrs["placeholder"] = (
+                kwarg.help_text if kwarg.help_text else ""
+            )
 
     class Meta:
         model = ScriptConfigurationBase

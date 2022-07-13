@@ -5,12 +5,14 @@ import logging
 from abc import abstractclassmethod
 import subprocess
 import paramiko
+from ckeditor.fields import RichTextField
 from decouple import config
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from remotescripts.validators import validate_bash_script
 from model_utils.managers import InheritanceManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +40,8 @@ class ScriptConfigurationBase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    help_text = models.TextField(
-        max_length=600,
+    help_text = RichTextField(
+        max_length=1000,
         help_text="Help text/instructions for users",
         default="",
         null=True,
