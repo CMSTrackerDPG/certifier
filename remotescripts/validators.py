@@ -11,6 +11,8 @@ def validate_bash_script(value):
 
 
 def validate_comma_space_separated_values_string(value):
+    if not value:
+        raise ValidationError("At least one value should be entered")
     try:
         values = list(
             map(
