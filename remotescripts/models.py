@@ -41,7 +41,7 @@ class ScriptConfigurationBase(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     help_text = RichTextField(
-        max_length=600,
+        max_length=1000,
         help_text="Help text/instructions for users",
         default="",
         null=True,
