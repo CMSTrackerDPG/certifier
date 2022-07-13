@@ -31,12 +31,22 @@
 						class="justify-content-center align-items-center p-3"
 						id="remote_script_execution_form" >
 				{% csrf_token %}
-				{{ form }}
+				{% for field in form %}
+				<div class="mb-3">
+					{{ field.errors }}
+					{{ field.label_tag }}
+					{{ field }}
+					{% if field.help_text %}
+					<p class="help">{{ field.help_text|safe }}</p>
+					{% endif %}
+				</div>
+				{% endfor %}
+
 				<input type="submit"
 					   value="Submit"
 					   id="form_submit"
 					   title="Execute the script"
-					   class="btn btn-primary">
+					   class="btn btn-primary mt-3">
 			</form>
         </div>
     </div>
