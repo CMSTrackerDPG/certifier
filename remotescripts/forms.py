@@ -9,12 +9,14 @@ from remotescripts.models import (
     ScriptKeywordArgument,
     ScriptOutputFile,
 )
+from remotescripts.utilities import split_with_spaces_commas
 
 
 class ScriptExecutionForm(forms.ModelForm):
     ARG_TO_FIELD_MAP = {
         ScriptArgumentBase.ARGUMENT_INT: forms.IntegerField,
         ScriptArgumentBase.ARGUMENT_STR: forms.CharField,
+        ScriptArgumentBase.ARGUMENT_CHO: forms.ChoiceField,
     }
 
     POSITIONAL_FIELD_NAME_PREFIX = "pos"
@@ -32,6 +34,10 @@ class ScriptExecutionForm(forms.ModelForm):
             self.fields[field_name].widget.attrs["placeholder"] = (
                 arg.help_text if arg.help_text else ""
             )
+            if arg.type == ScriptArgumentBase.ARGUMENT_CHO:
+                values = split_with_spaces_commas(arg.valid_choices)
+                self.fields[field_name].choices = [(v, v) for v in values]
+
             i += 1
 
         # Add keyword arguments
