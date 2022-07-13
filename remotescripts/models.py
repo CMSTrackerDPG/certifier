@@ -10,7 +10,10 @@ from decouple import config
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
-from remotescripts.validators import validate_bash_script
+from remotescripts.validators import (
+    validate_bash_script,
+    validate_comma_space_separated_values_string,
+)
 from model_utils.managers import InheritanceManager
 
 
@@ -340,12 +343,25 @@ class ScriptArgumentBase(models.Model):
     Base model for ScriptConfigurationBase arguments
     """
 
-    ARGUMENT_INT = "INT"
-    ARGUMENT_STR = "STR"
-    ARGUMENT_CHOICES = ((ARGUMENT_INT, "Integer"), (ARGUMENT_STR, "String"))
+    ARGUMENT_INT = "INT"  # Integer
+    ARGUMENT_STR = "STR"  # String
+    ARGUMENT_CHO = "CHO"  # List of choices
+
+    ARGUMENT_CHOICES = (
+        (ARGUMENT_INT, "Integer"),
+        (ARGUMENT_STR, "String"),
+        (ARGUMENT_CHO, "Choices"),
+    )
     name = models.CharField(max_length=20, null=True, default="")
     type = models.CharField(
         max_length=3, choices=ARGUMENT_CHOICES, default=ARGUMENT_STR
+    )
+    valid_choices = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        default="",
+        help_text="A comma separated list of values that the argument will be limited to (Only valid if Type is 'Choices')",
     )
     help_text = models.CharField(
         max_length=100,
@@ -354,6 +370,11 @@ class ScriptArgumentBase(models.Model):
         default="",
         blank=True,
     )
+
+    def clean(self):
+        if self.type == self.ARGUMENT_CHO:
+            validate_comma_space_separated_values_string(self.valid_choices)
+        super().clean()
 
     def __str__(self):
         return f"{self.name} ({self.get_type_display()})"
