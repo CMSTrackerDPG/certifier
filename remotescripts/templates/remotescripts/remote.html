@@ -83,22 +83,25 @@
 	 // is received from the WS
 	 command_output_socket.onmessage = function(e) {
 		 var data = JSON.parse(e.data);
-		 if(typeof data['message'] === 'object'){
-			 for(var key of Object.keys(data['message'])){
-				 if (key.startsWith('file'))
-				 {
-					 var file_id = Number(key.substring(key.indexOf('file') + 4));
-					 img_div = document.getElementById(`output-img-${file_id}`);
-					 img_div.src = `data:image/png;base64,${data['message'][key]}`
-				 }
+		 
+		 for(var key of Object.keys(data['message'])){
+			 if (key.startsWith('file'))
+			 {
+				 var file_id = Number(key.substring(key.indexOf('file') + 4));
+				 img_div = document.getElementById(`output-img-${file_id}`);
+				 img_div.src = `data:image/png;base64,${data['message'][key]}`
+			 }
+			 else if (key.startsWith('stdout')){
+				 var message = data['message']['stdout'];
+				 document.querySelector('#id_command_output').value += (message);
+				 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
+			 }
+			 else if (key.startsWith('status'))
+			 {
+				 // console.log(data['message']['status']);
 			 }
 		 }
-		 else
-		 {
-			 var message = data['message'];
-			 document.querySelector('#id_command_output').value += (message);
-			 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
-		 }
+
 	 };
 
 				 command_output_socket.onclose = function(e) {

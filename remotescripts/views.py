@@ -84,33 +84,40 @@ class RemoteScriptView(ScriptExecutionBaseView):
         return super().get(request)
 
     def post(self, request, pk: int):
+        channel_name = f"output_{pk}"
         success = False
         instance = self.model.objects.get(id=pk)
         form = ScriptExecutionForm(instance=instance, data=request.POST)
 
         if form.is_valid():
-
+            self.send_channel_message(channel_name, {"status": "script_started"})
             args = []
             kwargs = {
                 "on_new_output_line": lambda msg: self.send_channel_message(
-                    f"output_{pk}", msg
+                    channel_name, {"stdout": msg}
                 ),
                 "on_connect_failure": lambda msg: self.send_channel_message(
-                    f"output_{pk}", msg
+                    channel_name, {"status": "connection_failed", "stdout": msg}
                 ),
                 "on_connect_success": lambda host: self.send_channel_message(
-                    f"output_{pk}",
-                    f"-------- CONNECTED TO {host} --------\n",
+                    channel_name,
+                    {
+                        "stdout": f"-------- CONNECTED TO {host} --------\n",
+                        "status": "connection_successful",
+                    },
                 ),
                 "on_script_start": lambda: self.send_channel_message(
-                    f"output_{pk}", "-------- SCRIPT STARTED --------\n"
+                    channel_name, {"stdout": "-------- SCRIPT STARTED --------\n"}
                 ),
                 "on_script_end": lambda exit_status: self.send_channel_message(
-                    f"output_{pk}",
-                    f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                    channel_name,
+                    {
+                        "stdout": f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                        "status": "script_fail" if exit_status else "script_success",
+                    },
                 ),
                 "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
-                    f"output_{pk}",
+                    channel_name,
                     {
                         f"file{file_id}": self._encode_file_base64(filepath).decode(
                             "ascii"

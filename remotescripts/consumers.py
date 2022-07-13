@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class ScriptOutputConsumer(WebsocketConsumer):
     def connect(self):
+        """Runs on websocket connected"""
         self.script_id = self.scope["url_route"]["kwargs"]["script_id"]
         self.group_name = f"output_{self.script_id}"
 
@@ -17,8 +18,8 @@ class ScriptOutputConsumer(WebsocketConsumer):
         self.accept()
         logger.debug(f"Client {self.channel_name} connected to {self.group_name}")
 
-    def disconnect(self, close_code):
-        # Leave group
+    def disconnect(self, code):
+        """Leave group"""
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name, self.channel_name
         )
@@ -34,8 +35,8 @@ class ScriptOutputConsumer(WebsocketConsumer):
     #         self.group_name, {"type": "chat_message", "message": message}
     #     )
 
-    # Receive message from group
     def script_output(self, event):
+        """Receive message from group"""
         message = event["message"]
 
         # Send message to WebSocket
