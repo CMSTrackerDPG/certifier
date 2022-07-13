@@ -37,6 +37,7 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     template = ""
     context = {}
     queryset = None
+    channel_layer = get_channel_layer()
 
     def test_func(self):
         """
@@ -51,14 +52,11 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     def get(self, request):
         return render(request, self.template, self.context)
 
-    @staticmethod
-    def send_channel_message(
-        channel_layer: RedisChannelLayer, group_name: str, message: str
-    ) -> None:
+    def send_channel_message(self, group_name: str, message: str) -> None:
         """
         Function that sends a message
         """
-        async_to_sync(channel_layer.group_send)(
+        async_to_sync(self.channel_layer.group_send)(
             group_name, {"type": "script.output", "message": message}
         )
 
@@ -91,30 +89,27 @@ class RemoteScriptView(ScriptExecutionBaseView):
         form = ScriptExecutionForm(instance=instance, data=request.POST)
 
         if form.is_valid():
-            channel_layer = get_channel_layer()
+
             args = []
             kwargs = {
                 "on_new_output_line": lambda msg: self.send_channel_message(
-                    channel_layer, f"output_{pk}", msg
+                    f"output_{pk}", msg
                 ),
                 "on_connect_failure": lambda msg: self.send_channel_message(
-                    channel_layer, f"output_{pk}", msg
+                    f"output_{pk}", msg
                 ),
                 "on_connect_success": lambda host: self.send_channel_message(
-                    channel_layer,
                     f"output_{pk}",
                     f"-------- CONNECTED TO {host} --------\n",
                 ),
                 "on_script_start": lambda: self.send_channel_message(
-                    channel_layer, f"output_{pk}", "-------- SCRIPT STARTED --------\n"
+                    f"output_{pk}", "-------- SCRIPT STARTED --------\n"
                 ),
                 "on_script_end": lambda exit_status: self.send_channel_message(
-                    channel_layer,
                     f"output_{pk}",
                     f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
                 ),
                 "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
-                    channel_layer,
                     f"output_{pk}",
                     {
                         f"file{file_id}": self._encode_file_base64(filepath).decode(
