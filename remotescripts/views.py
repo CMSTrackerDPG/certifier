@@ -159,6 +159,7 @@ class TrackerMapsView(ScriptExecutionBaseView):
         super().setup(request, *args, **kwargs)
 
     def post(self, request):
+        success = False
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
 
             run_type = request.POST.get("type", None)
@@ -191,6 +192,9 @@ class TrackerMapsView(ScriptExecutionBaseView):
             threading.Thread(
                 target=self.run_tracker_maps, args=(run_type, runs_list)
             ).start()
+            success = True
+
+        return JsonResponse({"success": success}, status=200)
 
     def get(self, request):
         return super().get(request)
@@ -212,7 +216,7 @@ class TrackerMapsView(ScriptExecutionBaseView):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.send_channel_message(
-            channel_layer, "output_group", "-------- CONNECTING TO vocms066 --------\n"
+            "output_group", "-------- CONNECTING TO vocms066 --------\n"
         )
         try:
             ssh.connect(
@@ -222,14 +226,10 @@ class TrackerMapsView(ScriptExecutionBaseView):
             )
         except Exception as e:
             logger.exception(e)
-            self.send_channel_message(channel_layer, "output_group", repr(e))
+            self.send_channel_message("output_group", repr(e))
             raise
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- CONNECTED --------\n"
-        )
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- SCRIPT STARTED --------\n"
-        )
+        self.send_channel_message("output_group", "-------- CONNECTED --------\n")
+        self.send_channel_message("output_group", "-------- SCRIPT STARTED --------\n")
         logger.debug(f"Executing '{tracker_maps_command}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             tracker_maps_command, get_pty=True
@@ -250,15 +250,13 @@ class TrackerMapsView(ScriptExecutionBaseView):
         for line in line_buffered(ssh_stdout):
             # line = line.decode('utf-8', errors='ignore')  # Convert bytes to str
             logger.debug(line)
-            self.send_channel_message(channel_layer, "output_group", f"{line}")
+            self.send_channel_message("output_group", f"{line}")
 
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- SCRIPT STOPPED --------\n"
-        )
+        self.send_channel_message("output_group", "-------- SCRIPT STOPPED --------\n")
 
         for line in line_buffered(ssh_stdin):
             line = line.decode("utf-8", errors="ignore")  # Convert bytes to str
-            self.send_channel_message(channel_layer, "output_group", f"{line}")
+            self.send_channel_message("output_group", f"{line}")
 
         # Verify script's exit status
         exit_status = ssh_stdout.channel.recv_exit_status()

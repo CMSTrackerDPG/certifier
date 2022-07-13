@@ -14,7 +14,7 @@ class OutputSocket(WebsocketConsumer):
         )
 
     # Receive message from the group
-    def channel_message(self, event):
+    def script_output(self, event):
         message = event["message"]
 
         # Send message to WebSocket
