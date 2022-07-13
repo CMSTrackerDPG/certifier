@@ -90,7 +90,7 @@ class RemoteScriptView(ScriptExecutionBaseView):
         form = ScriptExecutionForm(instance=instance, data=request.POST)
 
         if form.is_valid():
-            self.send_channel_message(channel_name, {"status": "script_started"})
+            self.send_channel_message(channel_name, {"status": "script_start"})
             args = []
             kwargs = {
                 "on_new_output_line": lambda msg: self.send_channel_message(
@@ -113,7 +113,9 @@ class RemoteScriptView(ScriptExecutionBaseView):
                     channel_name,
                     {
                         "stdout": f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
-                        "status": "script_fail" if exit_status else "script_success",
+                        "status": "script_end_fail"
+                        if exit_status
+                        else "script_end_success",
                     },
                 ),
                 "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
