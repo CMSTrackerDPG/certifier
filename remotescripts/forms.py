@@ -25,7 +25,9 @@ class ScriptExecutionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         i = 0
         # Add positional arguments
-        for arg in ScriptPositionalArgument.objects.filter(mother_script=self.instance):
+        for arg in ScriptPositionalArgument.objects.filter(
+            mother_script=self.instance
+        ).order_by("position"):
             field_name = (
                 arg.name if arg.name else f"{self.POSITIONAL_FIELD_NAME_PREFIX}{i}"
             )
@@ -49,6 +51,10 @@ class ScriptExecutionForm(forms.ModelForm):
             self.fields[field_name].widget.attrs["placeholder"] = (
                 kwarg.help_text if kwarg.help_text else ""
             )
+            if kwarg.type == ScriptArgumentBase.ARGUMENT_CHO:
+                self.fields[field_name].widget.attrs["class"] += " custom-select"
+                values = split_with_spaces_commas(kwarg.valid_choices)
+                self.fields[field_name].choices = [(v, v) for v in values]
 
     class Meta:
         model = ScriptConfigurationBase
