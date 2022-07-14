@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from decouple import config
 from django.contrib.messages import constants as messages
@@ -22,7 +23,7 @@ MESSAGE_TAGS = {
 CERTHELPER_VERSION = "1.7.0"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -100,7 +101,7 @@ ROOT_URLCONF = "dqmhelper.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [(BASE_DIR / "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -199,12 +200,12 @@ LOGGING = {
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "home/static"),
-    os.path.join(BASE_DIR, "checklists/static"),
-    os.path.join(BASE_DIR, "listruns/static"),
+    BASE_DIR / "home" / "static",
+    BASE_DIR / "checklists" / "static",
+    BASE_DIR / "listruns" / "static",
 )
 # STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi/static')
-STATIC_ROOT = os.path.join(BASE_DIR, "/sock/asgi/static")
+STATIC_ROOT = BASE_DIR / "sock" / "asgi" / "static"
 
 AUTH_USER_MODEL = "users.User"
 
