@@ -30,7 +30,6 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("users/", include("users.urls")),
     path("reference/", include("addrefrun.urls")),
+    path("oms/", include("oms.urls")),
     path("admin/", admin.site.urls),
-    path("mlplayground/", include("mlplayground.urls", namespace="mlplayground")),
-    path("cablingmap/", include("cablingmap.urls")),
 ]

@@ -145,3 +145,26 @@ class TestUpdateReferenceReconstructionRunsInfo:
         # Response is a JSON with a "success" key
         data = json.loads(resp.content.decode("utf-8"))
         assert data["success"] is True
+
+    def test_update_refruns_info_invalid(self):
+        """
+        Make sure that invalid run_numbers (which should
+        raise a ValueError when updating apv_mode) do
+        not crash view's loop
+        """
+        run_numbers = [321123, 999999]
+        for run_number in run_numbers:
+            mixer.blend(
+                RunReconstruction,
+                reconstruction=RunReconstruction.EXPRESS,
+                run=mixer.blend(OmsRun, run_number=run_number),
+                is_reference=True,
+            )
+
+        req = RequestFactory().get(reverse("addrefrun:update_refruns_info"))
+        req.user = mixer.blend(User, user_privilege=User.SHIFTLEADER)
+        resp = views.update_refruns_info(req)
+
+        # Response is a JSON with a "success" key
+        data = json.loads(resp.content.decode("utf-8"))
+        assert data["success"] is True

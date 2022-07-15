@@ -173,11 +173,8 @@ class TrackerCertification(SoftDeletionModel):
     )
 
     trackermap = models.CharField(max_length=7, choices=TRACKERMAP_CHOICES)
-    external_info_completeness = models.CharField(
-        max_length=4,
-        choices=EXTERNAL_INFO_COMPLETENESS_CHOICES,
-        help_text="OMS/RR Information completeness status.",
-        default=EXTERNAL_INFO_INCOMPLETE,
+    external_info_complete = models.BooleanField(
+        help_text="OMS/RR Information completeness.", default=False
     )
 
     pixel = models.CharField(max_length=8, choices=SUBCOMPONENT_STATUS_CHOICES)
@@ -202,7 +199,7 @@ class TrackerCertification(SoftDeletionModel):
 
     @classmethod
     def can_be_certified_by_user(
-        cls, run_number: int, reconstruction: str, user
+        cls, run_number: int, reconstruction: str, user: User
     ) -> bool:
         """
         Returns True if run_number/reconstruction combination certification does not exist
@@ -216,7 +213,8 @@ class TrackerCertification(SoftDeletionModel):
                 runreconstruction__run__run_number=run_number,
                 runreconstruction__reconstruction=reconstruction,
             )
-            if user != certification.user:
+            # If shift leader, allow certification of any run
+            if not user.has_shift_leader_rights and user != certification.user:
                 return False
 
         except cls.DoesNotExist:

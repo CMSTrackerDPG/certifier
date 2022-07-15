@@ -20,13 +20,15 @@ from oms.utils import (
     rr_retrieve_dataset_by_reco,
     get_reco_from_dataset,
 )
-from oms.models import OmsRun
+from oms.models import OmsRun, OmsFill
 from oms.exceptions import (
     OmsApiFillNumberNotFound,
     OmsApiRunNumberNotFound,
     RunRegistryNoAvailableDatasets,
     RunRegistryReconstructionNotFound,
 )
+from oms.views import OmsRunUpdateView, OmsFillUpdateView
+from oms.forms import OmsRunForm, OmsFillForm
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -100,7 +102,7 @@ class CertifyView(View):
     run = None
     reco = None
     dataset = None
-    external_info_completeness = TrackerCertification.EXTERNAL_INFO_INCOMPLETE
+    external_info_complete = False
     _rr_info_updated = False
     _oms_info_updated = False
 
@@ -184,6 +186,7 @@ class CertifyView(View):
                 runreconstruction__run__run_number=run_number,
                 runreconstruction__reconstruction=self.reco,
             )
+
             return redirect(
                 "listruns:update",
                 pk=certification.pk,
@@ -206,14 +209,10 @@ class CertifyView(View):
             # or OMS is unreachable, create the run with minimal
             # info
             messages.warning(request, repr(e))
-            self.run = OmsRun.objects.create(run_number=run_number)
+            self.run, _ = OmsRun.objects.get_or_create(run_number=run_number)
 
         # Update flag
-        self.external_info_completeness = (
-            TrackerCertification.EXTERNAL_INFO_COMPLETE
-            if self._rr_info_updated and self._oms_info_updated
-            else TrackerCertification.EXTERNAL_INFO_INCOMPLETE
-        )
+        self.external_info_complete = self._rr_info_updated and self._oms_info_updated
 
         logger.debug(f"Run reconstruction {run_number} {self.reco} ({self.dataset})")
         # All good, proceed with dispatching to the appropriate method
@@ -223,14 +222,20 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
-        form = self.form()
-        form.external_info_completeness = self.external_info_completeness
+        self.run.run_type = OmsRun.COLLISIONS
+
         context = {
             "run_number": run_number,
             "reco": self.reco,
             "run": self.run,
             "dataset": self.dataset,
-            "form": form,
+            "form": self.form(
+                initial={"external_info_complete": self.external_info_complete}
+            ),
+            "omsrun_form": OmsRunForm(instance=self.run),
+            "omsfill_form": OmsFillForm(
+                instance=self.run.fill if self.run.fill else None
+            ),
         }
         return render(request, "certifier/certify.html", context)
 
@@ -250,6 +255,40 @@ class CertifyView(View):
             dataset, _ = Dataset.objects.get_or_create(dataset=self.dataset)
 
         user = User.objects.get(pk=request.user.id)
+
+        omsfill_form = OmsFillForm(request.POST)
+
+        # If manually editing form
+        if not request.POST.get("external_info_complete"):
+            fill = None
+            if OmsFill.objects.filter(
+                fill_number=omsfill_form.data["fill_number"]
+            ).exists():
+                omsfill_form = OmsFillForm(
+                    request.POST,
+                    instance=OmsFill.objects.get(
+                        fill_number=omsfill_form.data["fill_number"]
+                    ),
+                )
+            elif not omsfill_form.is_valid():
+                msg = f"OmsFill form has errors! {dict(omsfill_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+            fill = omsfill_form.save()
+
+            omsrun_form = OmsRunForm(request.POST, instance=self.run)
+            if omsrun_form.is_valid():
+                self.run = omsrun_form.save(commit=False)
+                self.run.fill = fill
+                self.run.save()
+
+            else:
+                msg = f"OmsRun form has errors! {dict(omsrun_form.errors)}"
+                logger.error(msg)
+                messages.error(request, msg)
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
         # create a form instance and populate it with data from the request:
         form = self.form(request.POST)
@@ -277,7 +316,9 @@ class CertifyView(View):
                     f"{runReconstruction.reconstruction} successfully saved",
                 )
         else:
-            messages.error(request, "Submitted form was invalid!")
+            messages.error(
+                request, f"Submitted form was invalid! ({dict(form.errors)})"
+            )
 
         return redirect("openruns:openruns")
 

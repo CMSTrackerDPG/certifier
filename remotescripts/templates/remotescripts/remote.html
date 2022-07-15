@@ -15,9 +15,23 @@
     </div>
 	<div class="container mb-4">
 		<ul class="list-group">
-			<li class="list-group-item">Host: {{ remote_script.host }}</li>
-			<li class="list-group-item">Command: {{ remote_script.base_command }}</li>
-			{% if remote_script.help_text %}<li class="list-group-item">Help: {{ remote_script.help_text }}</li>{% endif %}			
+			<li class="list-group-item">
+				<strong>Host:</strong> <code>{{ remote_script.host }}</code>
+			</li>
+			<li class="list-group-item">
+				<strong>Command:</strong> <code>{{ remote_script.base_command }}</code>
+			</li>
+			{% if remote_script.help_text %}
+			<li class="list-group-item">
+				<button class="btn btn-secondary"
+						data-toggle="collapse"
+						data-target="#collapse-help"
+						type="button">
+					Help <i class="bi bi-question-lg"></i>
+				</button>
+				<div class="collapse mt-3" id="collapse-help">{{ remote_script.help_text|safe }}</div>
+			</li>
+			{% endif %}			
 		</ul>
 	</div>
 
@@ -31,8 +45,22 @@
 						class="justify-content-center align-items-center p-3"
 						id="remote_script_execution_form" >
 				{% csrf_token %}
-				{{ form }}
-				<input type="submit" value="Submit">
+				{% for field in form %}
+				<div class="mb-3">
+					{{ field.errors }}
+					{{ field.label_tag }}
+					{{ field }}
+					{% if field.help_text %}
+					<p class="help">{{ field.help_text|safe }}</p>
+					{% endif %}
+				</div>
+				{% endfor %}
+
+				<input type="submit"
+					   value="Submit"
+					   id="form_submit"
+					   title="Execute the script"
+					   class="btn btn-primary mt-3">
 			</form>
         </div>
     </div>
@@ -63,87 +91,107 @@
  function clearOutput(){
 	 $('#id_command_output').val("");
  };
-
+ 
+// Prevent buttons from being clicked while script is running
+ function disableControls(){
+	 $('#form_submit').prop('disabled', true)
+					  .prop('title', "Wait for script execution to finish");
+ }
+ 
+ // Reenable buttons once script ends
+ function enableControls(){
+	 $('#form_submit').prop('disabled', false)
+					  .prop('title', "Execute the script");
+ }
+ 
  $(document).ready(function() {	 
 	 // WS initialization
 	 if (location.protocol === 'https:') {
 		 // page is secure
 		 var command_output_socket = new WebSocket(
 			 'wss://' + window.location.host +
-			 '/ws/output/');
-		 }
-		 else{
-			 var command_output_socket = new WebSocket(
-				 'ws://' + window.location.host +
-				 '/ws/output/');
-		 }
+			 '/ws/remotescripts/{{remote_script.pk}}/' );
+	 }
+	 else{
+		 var command_output_socket = new WebSocket(
+			 'ws://' + window.location.host +
+			 '/ws/remotescripts/{{remote_script.pk}}/');
+	 }
 
 
-		 // Callback run on every new message that
-		 // is received from the WS
-		 command_output_socket.onmessage = function(e) {
-			 var data = JSON.parse(e.data);
-			 if(typeof data['message'] === 'object'){
-				 for(var key of Object.keys(data['message'])){
-					 if (key.startsWith('file'))
-					 {
-						 var file_id = Number(key.substring(key.indexOf('file') + 4));
-						 img_div = document.getElementById(`output-img-${file_id}`);
-						 img_div.src = `data:image/png;base64,${data['message'][key]}`
-					 }
-				 }
-			 }
-			 else
+	 // Callback run on every new message that
+	 // is received from the WS
+	 command_output_socket.onmessage = function(e) {
+		 var data = JSON.parse(e.data);
+		 
+		 for(var key of Object.keys(data['message'])){
+			 if (key.startsWith('file'))
 			 {
-				 var message = data['message'];
+				 var file_id = Number(key.substring(key.indexOf('file') + 4));
+				 img_div = document.getElementById(`output-img-${file_id}`);
+				 img_div.src = `data:image/png;base64,${data['message'][key]}`
+			 }
+			 else if (key.startsWith('stdout')){
+				 var message = data['message']['stdout'];
 				 document.querySelector('#id_command_output').value += (message);
 				 document.getElementById('id_command_output').scrollTop = document.getElementById('id_command_output').scrollHeight;
 			 }
-		 };
-
-				 command_output_socket.onclose = function(e) {
-			 console.error('Socket closed unexpectedly: '+ e.message);
-		 };
-	 })
-
-	 var btn_clear = document.getElementById('btn-clear');
-	 btn_clear.onclick = clearOutput;
-
-	 var $myForm = $("#remote_script_execution_form");
-	 $myForm.on('submit', function(ev){
-		 $("#remote_script_execution_form").find(':input[type=submit]').prop('disabled', true);
-		 // add spinner to button
-		 // if ($('[id=id_run_number]').val() != '') {
-		 // 			 $('#id_run_number_list').removeAttr('required');
-		 // 		 }
-		 // if ($("#id_form_generate_maps")[0].checkValidity()) {
-		 // 			 $("#id_generate_maps").html(
-		 // 				 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-		 // 			 );
-		 // 		 }
-		 var $inputs = $('#remote_script_execution_form :input');
-		 var values = {};
-		 $inputs.each(function() {
-			 if(this.name !== ""){
-				 values[this.name] = $(this).val();
+			 else if (key.startsWith('status'))
+			 {
+				 // console.log(data['message']['status']);
+				 var status = data['message']['status'];
+				 if(status === 'script_start'){
+					 disableControls();
+				 }
+				 else if(status.startsWith('script_end')){
+					 enableControls();
+				 }
 			 }
-		 });
-		 $.ajax({
-			 headers: { "X-CSRFToken": '{{csrf_token}}' },
-			 type: "POST",
-			 // url: "",// Not needed
-			 data: values,
-		 })
-		  .always(function(){
-		  })
-		  .fail(function(data){
-			  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
-			  console.error(msg);
-			  alert(msg);
-		  });
-		 ev.preventDefault();
-		 return false;
+		 }
+	 };
+	 command_output_socket.onclose = function(e) {
+		 console.error('Socket closed unexpectedly: '+ e.message);
+	 };
+ })
+
+ var btn_clear = document.getElementById('btn-clear');
+ btn_clear.onclick = clearOutput;
+
+ var $myForm = $("#remote_script_execution_form");
+ $myForm.on('submit', function(ev){
+	 $("#remote_script_execution_form").find(':input[type=submit]').prop('disabled', true);
+	 // add spinner to button
+	 // if ($('[id=id_run_number]').val() != '') {
+	 // 			 $('#id_run_number_list').removeAttr('required');
+	 // 		 }
+	 // if ($("#id_form_generate_maps")[0].checkValidity()) {
+	 // 			 $("#id_generate_maps").html(
+	 // 				 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+	 // 			 );
+	 // 		 }
+	 var $inputs = $('#remote_script_execution_form :input');
+	 var values = {};
+	 $inputs.each(function() {
+		 if(this.name !== ""){
+			 values[this.name] = $(this).val();
+		 }
 	 });
-	 
-	</script>
+	 $.ajax({
+		 headers: { "X-CSRFToken": '{{csrf_token}}' },
+		 type: "POST",
+		 // url: "",// Not needed
+		 data: values,
+	 })
+	  .always(function(){
+	  })
+	  .fail(function(data){
+		  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
+		  console.error(msg);
+		  alert(msg);
+	  });
+	 ev.preventDefault();
+	 return false;
+ });
+ 
+</script>
 {% endblock %}

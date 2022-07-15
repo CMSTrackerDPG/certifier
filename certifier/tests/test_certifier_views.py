@@ -92,7 +92,7 @@ class TestCertify:
             "comment": "test",
             "trackermap": "exists",
             "date": "2018-01-01",
-            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
+            "external_info_complete": True,
         }
 
         form = CertifyForm(data=data)
@@ -107,6 +107,7 @@ class TestCertify:
         setattr(req, "session", "session")
         messages = FallbackStorage(req)
         setattr(req, "_messages", messages)
+
         resp = views.CertifyView.as_view()(req, run_number=run_number)
 
         assert resp.status_code, "should redirect to openruns" == 302
@@ -250,7 +251,7 @@ class TestCertify:
             "comment": "test",
             "trackermap": "exists",
             "date": "2018-01-01",
-            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
+            "external_info_complete": True,
         }
 
         form = CertifyForm(data=data)
@@ -297,7 +298,7 @@ class TestCertify:
             "comment": "test",
             "trackermap": "exists",
             "date": "2018-01-01",
-            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_COMPLETE,
+            "external_info_complete": True,
         }
 
         form = CertifyForm(data=data)
@@ -332,7 +333,7 @@ class TestCertify:
             "tracking": "good",
             "bad_reason": bad_reason.pk,
             "comment": "test",
-            "external_info_completeness": TrackerCertification.EXTERNAL_INFO_INCOMPLETE,
+            "external_info_complete": True,
         }
 
         form = CertifyForm(data=data)
