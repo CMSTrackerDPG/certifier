@@ -171,12 +171,17 @@ class OmsFill(models.Model):
     first_run_number = models.PositiveIntegerField(
         help_text="Run number for the first run in the fill",
         verbose_name="First run number",
+        null=True,
     )
 
     last_run_number = models.PositiveIntegerField(
         help_text="Run number for the last run in the fill",
         verbose_name="Last run number",
+        null=True,
     )
+
+    def __str__(self):
+        return f"{self.fill_number}"
 
 
 class OmsRun(models.Model):
@@ -371,7 +376,6 @@ class OmsRun(models.Model):
     apv_mode = models.CharField(
         max_length=4,
         null=True,
-        default=None,
         help_text="APV mode",
         choices=APV_MODE_CHOICES,
     )

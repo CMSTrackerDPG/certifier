@@ -16,7 +16,6 @@ Welcome to Certification Helper's documentation!
    development
    project-code
    testing
-   deployment
    references
    faq
    developer-diary

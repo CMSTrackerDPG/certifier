@@ -122,17 +122,24 @@ class TrackerCertificationTable(SimpleTrackerCertificationTable):
         '<div align="center">'
         "<a href=\"{% url 'listruns:update' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
         "{% if user == record.user or user.has_shift_leader_rights %}"
-        '<button class="btn btn-block btn-danger" id="id_certificaion_update">'
+        '<button class="btn btn-block btn-primary" id="id_certification_update">'
         "{% else %}"
-        '<button class="btn btn-block btn-danger" id="id_certificaion_update" disabled>'
+        '<button class="btn btn-block btn-primary" id="id_certification_update" disabled>'
         "{% endif %}"
-        "Edit"
+        '<i class="bi bi-pencil"></i>'
         "</button>"
         "</a>"
         "</div>",
         orderable=False,
         verbose_name="Edit",
     )
+
+    def render_is_reference(self, value):
+        if value:
+            return mark_safe(
+                '<i class="bi bi-check-lg text-success font-weight-bold"></i>'
+            )
+        return mark_safe('<i class="bi bi-dash-lg font-weight-bold"></i>')
 
     class Meta:
         attrs = {"class": "table table-hover table-bordered table-fixed"}
@@ -146,7 +153,7 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
     delete_run = tables.TemplateColumn(
         '<div align="center">'
         "<a href=\"{% url 'delete:delete' pk=record.pk run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
-        "Delete"
+        '<button class="btn btn-danger"><i class="bi bi-trash3" title="Delete this run reconstruction certification"></i></button>'
         "</a>"
         "</div>",
         orderable=False,
@@ -156,7 +163,7 @@ class ShiftleaderTrackerCertificationTable(TrackerCertificationTable):
     promote_run = tables.TemplateColumn(
         '<div align="center">'
         "<a href=\"{% url 'promote' run_number=record.runreconstruction.run.run_number reco=record.runreconstruction.reconstruction%}\">"
-        "Promote"
+        '<button class="btn btn-success"><i class="bi bi-award" title="Promote this run reconstruction certification to reference"></i></button>'
         "</a>"
         "</div>",
         orderable=False,

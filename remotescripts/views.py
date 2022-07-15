@@ -37,6 +37,7 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     template = ""
     context = {}
     queryset = None
+    channel_layer = get_channel_layer()
 
     def test_func(self):
         """
@@ -51,15 +52,12 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     def get(self, request):
         return render(request, self.template, self.context)
 
-    @staticmethod
-    def send_channel_message(
-        channel_layer: RedisChannelLayer, group_name: str, message: str
-    ) -> None:
+    def send_channel_message(self, group_name: str, message: str) -> None:
         """
         Function that sends a message
         """
-        async_to_sync(channel_layer.group_send)(
-            group_name, {"type": "channel_message", "message": message}
+        async_to_sync(self.channel_layer.group_send)(
+            group_name, {"type": "script.output", "message": message}
         )
 
 
@@ -86,36 +84,42 @@ class RemoteScriptView(ScriptExecutionBaseView):
         return super().get(request)
 
     def post(self, request, pk: int):
+        channel_name = f"output_{pk}"
         success = False
         instance = self.model.objects.get(id=pk)
         form = ScriptExecutionForm(instance=instance, data=request.POST)
 
         if form.is_valid():
-            channel_layer = get_channel_layer()
+            self.send_channel_message(channel_name, {"status": "script_start"})
             args = []
             kwargs = {
                 "on_new_output_line": lambda msg: self.send_channel_message(
-                    channel_layer, "output_group", msg
+                    channel_name, {"stdout": msg}
                 ),
                 "on_connect_failure": lambda msg: self.send_channel_message(
-                    channel_layer, "output_group", msg
+                    channel_name, {"status": "connection_failed", "stdout": msg}
                 ),
                 "on_connect_success": lambda host: self.send_channel_message(
-                    channel_layer,
-                    "output_group",
-                    f"-------- CONNECTED TO {host} --------\n",
+                    channel_name,
+                    {
+                        "stdout": f"-------- CONNECTED TO {host} --------\n",
+                        "status": "connection_successful",
+                    },
                 ),
                 "on_script_start": lambda: self.send_channel_message(
-                    channel_layer, "output_group", "-------- SCRIPT STARTED --------\n"
+                    channel_name, {"stdout": "-------- SCRIPT STARTED --------\n"}
                 ),
                 "on_script_end": lambda exit_status: self.send_channel_message(
-                    channel_layer,
-                    "output_group",
-                    f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                    channel_name,
+                    {
+                        "stdout": f"-------- SCRIPT STOPPED (exit status: {exit_status}) --------\n",
+                        "status": "script_end_fail"
+                        if exit_status
+                        else "script_end_success",
+                    },
                 ),
                 "on_new_output_file": lambda file_id, filepath: self.send_channel_message(
-                    channel_layer,
-                    "output_group",
+                    channel_name,
                     {
                         f"file{file_id}": self._encode_file_base64(filepath).decode(
                             "ascii"
@@ -155,6 +159,7 @@ class TrackerMapsView(ScriptExecutionBaseView):
         super().setup(request, *args, **kwargs)
 
     def post(self, request):
+        success = False
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
 
             run_type = request.POST.get("type", None)
@@ -187,6 +192,9 @@ class TrackerMapsView(ScriptExecutionBaseView):
             threading.Thread(
                 target=self.run_tracker_maps, args=(run_type, runs_list)
             ).start()
+            success = True
+
+        return JsonResponse({"success": success}, status=200)
 
     def get(self, request):
         return super().get(request)
@@ -208,7 +216,7 @@ class TrackerMapsView(ScriptExecutionBaseView):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.send_channel_message(
-            channel_layer, "output_group", "-------- CONNECTING TO vocms066 --------\n"
+            "output_group", "-------- CONNECTING TO vocms066 --------\n"
         )
         try:
             ssh.connect(
@@ -218,14 +226,10 @@ class TrackerMapsView(ScriptExecutionBaseView):
             )
         except Exception as e:
             logger.exception(e)
-            self.send_channel_message(channel_layer, "output_group", repr(e))
+            self.send_channel_message("output_group", repr(e))
             raise
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- CONNECTED --------\n"
-        )
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- SCRIPT STARTED --------\n"
-        )
+        self.send_channel_message("output_group", "-------- CONNECTED --------\n")
+        self.send_channel_message("output_group", "-------- SCRIPT STARTED --------\n")
         logger.debug(f"Executing '{tracker_maps_command}'")
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
             tracker_maps_command, get_pty=True
@@ -246,15 +250,13 @@ class TrackerMapsView(ScriptExecutionBaseView):
         for line in line_buffered(ssh_stdout):
             # line = line.decode('utf-8', errors='ignore')  # Convert bytes to str
             logger.debug(line)
-            self.send_channel_message(channel_layer, "output_group", f"{line}")
+            self.send_channel_message("output_group", f"{line}")
 
-        self.send_channel_message(
-            channel_layer, "output_group", "-------- SCRIPT STOPPED --------\n"
-        )
+        self.send_channel_message("output_group", "-------- SCRIPT STOPPED --------\n")
 
         for line in line_buffered(ssh_stdin):
             line = line.decode("utf-8", errors="ignore")  # Convert bytes to str
-            self.send_channel_message(channel_layer, "output_group", f"{line}")
+            self.send_channel_message("output_group", f"{line}")
 
         # Verify script's exit status
         exit_status = ssh_stdout.channel.recv_exit_status()
