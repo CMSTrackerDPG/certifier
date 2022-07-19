@@ -300,7 +300,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         return exit_status
 
     def __str__(self) -> str:
-        return f"{self.title} ({self.get_connection_protocol_display()})"
+        return f"{self.title}"
 
 
 class ScriptOutputFile(models.Model):
