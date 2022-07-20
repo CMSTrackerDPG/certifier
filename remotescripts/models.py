@@ -10,6 +10,7 @@ from decouple import config
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
 from remotescripts.validators import (
     validate_bash_script,
     validate_comma_space_separated_values_string,
@@ -363,6 +364,13 @@ class ScriptArgumentBase(models.Model):
         default="",
         help_text="A comma separated list of values that the argument will be limited to (Only valid if Type is 'Choices')",
     )
+
+    default_value = models.CharField(
+        max_length=50,
+        help_text="Default value for this argument",
+        null=True,
+        blank=True,
+    )
     help_text = models.CharField(
         max_length=100,
         help_text="Help related to this argument",
@@ -373,7 +381,17 @@ class ScriptArgumentBase(models.Model):
 
     def clean(self):
         if self.type == self.ARGUMENT_CHO:
-            validate_comma_space_separated_values_string(self.valid_choices)
+            values = validate_comma_space_separated_values_string(self.valid_choices)
+            # Validate default value
+            if self.default_value and self.default_value not in values:
+                raise ValidationError(f"{self.default_value} not found in {values}")
+        elif self.type == self.ARGUMENT_INT:
+            if self.default_value:
+                try:
+                    int(self.default_value)
+                except ValueError as e:
+                    raise ValidationError(f"{self.default_value} is not an int") from e
+
         super().clean()
 
     def __str__(self):
