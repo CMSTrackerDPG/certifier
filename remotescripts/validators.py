@@ -22,3 +22,4 @@ def validate_comma_space_separated_values_string(value):
         raise ValidationError(
             "Value should contain only strings separated by comma or space"
         )
+    return values
