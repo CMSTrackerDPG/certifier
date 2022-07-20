@@ -34,18 +34,19 @@ def format_integrated_luminosity(
     formatted_luminosity = ""
 
     value = convert_luminosity_to_pb(int_luminosity, luminosity_units)
+
     # Convert /pb to /ub if very small /pb value
-    # if f"{value:.3f}" == "0.000":
-    # value = Decimal("1E6") * value
-    #     value_string = f"{value:.3f}"
-    #     formatted_value = strip_trailing_zeros(value_string)
-    #     formatted_units = CONVERSION_MAP[r"{\mu}b^{-1}"][
-    #         "ascii" if to_ascii else "default"
-    #     ]
-    # else:
-    value_string = f"{value:.3f}"
-    formatted_value = strip_trailing_zeros(value_string)
-    formatted_units = CONVERSION_MAP["pb^{-1}"]["ascii" if to_ascii else "default"]
+    if f"{value:.3f}" == "0.000":
+        value = 1e6 * value
+        value_string = f"{value:.3f}"
+        formatted_value = strip_trailing_zeros(value_string)
+        formatted_units = CONVERSION_MAP[r"{\mu}b^{-1}"][
+            "ascii" if to_ascii else "default"
+        ]
+    else:
+        value_string = f"{value:.3f}"
+        formatted_value = strip_trailing_zeros(value_string)
+        formatted_units = CONVERSION_MAP["pb^{-1}"]["ascii" if to_ascii else "default"]
 
     formatted_luminosity = f"{formatted_value} {formatted_units}"
     return formatted_luminosity
