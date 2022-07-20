@@ -25,6 +25,7 @@ from shiftleader.exceptions import CannotAssumeRunTypeException
 import runregistry
 from operator import itemgetter
 from itertools import groupby
+from listruns.utilities.luminosity import convert_luminosity_to_pb
 
 logger = logging.getLogger(__name__)
 
@@ -320,15 +321,36 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         return list(self.values_list("pk", flat=True).order_by("pk"))
 
     def integrated_luminosity(self):
+        """
+        Sum the recorded luminosity for each run of this
+        queryset.
+
+        Previously done with Sum and Coalesce, assuming
+        that recorded_lumi was always in the same units
+        """
         if len(self) == 0:
             return 0
-        return float(
-            self.aggregate(
-                runreconstruction__run__recorded_lumi__sum=Coalesce(
-                    Sum("runreconstruction__run__recorded_lumi"), 0.0
-                )
-            )["runreconstruction__run__recorded_lumi__sum"]
-        )
+
+        integrated_luminosity = 0
+        for cert in self:
+            integrated_luminosity += convert_luminosity_to_pb(
+                int_luminosity=cert.runreconstruction.run.recorded_lumi,
+                luminosity_units=cert.runreconstruction.run.recorded_lumi_unit,
+            )
+        # Cannot just use Sum here, since luminosity may have different units
+        # print("!!!", self.aggregate(
+        #         runreconstruction__run__recorded_lumi__sum=Coalesce(
+        #             Sum("runreconstruction__run__recorded_lumi"), 0.0
+        #         )
+        #     ))
+        # return float(
+        #     self.aggregate(
+        #         runreconstruction__run__recorded_lumi__sum=Coalesce(
+        #             Sum("runreconstruction__run__recorded_lumi"), 0.0
+        #         )
+        #     )["runreconstruction__run__recorded_lumi__sum"]
+        # )
+        return integrated_luminosity
 
     def lumisections(self):
         if len(self) == 0:
