@@ -1,11 +1,16 @@
 import logging
+import tempfile
+from pathlib import Path
 from xml.etree.ElementTree import ParseError
 from requests.exceptions import SSLError
-from django.http import HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponseRedirect, FileResponse
 from django_filters.views import FilterView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.decorators import method_decorator
+from django.views.generic.base import View
+
 from django_tables2 import SingleTableMixin
 from tables.tables import (
     ShiftleaderTrackerCertificationTable,
@@ -18,6 +23,7 @@ from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
+from shiftleader.utilities.odp_presentation import ShiftLeaderReportPresentation
 from summary.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
 
@@ -82,3 +88,30 @@ class ShiftLeaderView(SingleTableMixin, FilterView):
             )
 
         return context
+
+
+class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    Class based view for generating and returning Shiftleader reports
+    in ODP format.
+    """
+
+    def test_func(self):
+        """
+        Function used by the UserPassesTestMixin to
+        test rights before allowing acess to the View
+        """
+        return (
+            hasattr(self.request.user, "has_shift_leader_rights")
+            and self.request.user.has_shift_leader_rights
+        )
+
+    def get(self, request, week_number: int = 0, **kwargs):
+        filepath = Path(
+            tempfile.gettempdir(), f"shiftleader_report_week_{week_number}.odp"
+        )
+        p = ShiftLeaderReportPresentation(
+            week_number=week_number, requesting_user=request.user
+        )
+        p.save(filename=filepath)
+        return FileResponse(open(filepath, "rb"))
