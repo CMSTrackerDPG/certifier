@@ -25,3 +25,4 @@ whitenoise
 factory_boy
 prettytable
 git+https://gitlab.cern.ch/cmsoms/oms-api-client
+git+https://github.com/eea/odfpy.git
