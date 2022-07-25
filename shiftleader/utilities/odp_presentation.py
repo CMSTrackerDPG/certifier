@@ -1,8 +1,10 @@
 """
 OpenDocumentPresentation generator for shiftleader reports
 """
-from django.conf import settings
+from typing import List
+import logging
 from datetime import datetime
+from django.conf import settings
 from odf.opendocument import OpenDocumentPresentation
 from odf.style import (
     Style,
@@ -20,12 +22,33 @@ from odf.presentation import Header
 from odf.draw import Page, Frame, TextBox, Image
 
 
+logger = logging.getLogger(__name__)
+
+
 class ShiftLeaderReportPresentation(object):
+    """
+    ODF Presentation generator for Shiftleader Reports.
+
+    - Title page
+    - Recorded Luminosity
+    - List of LHC Fills
+    - Day by day notes
+    - Week summary
+    - Weekly certification
+    """
+
     def __init__(
         self,
         requesting_user: str = "",
         certhelper_version: str = settings.CERTHELPER_VERSION,
+        week_number: str = "",
+        name_shift_leader: str = "",
+        name_shifters: List[str] = [""],
+        name_oncall: List[str] = [""],
     ):
+        logger.info(
+            f"ShiftLeader presentation generation requested by {requesting_user}"
+        )
         self.doc = OpenDocumentPresentation()
 
         pagelayout = PageLayout(name="MyLayout")
@@ -90,3 +113,6 @@ class ShiftLeaderReportPresentation(object):
                 text=f"CertHelper version {certhelper_version}, requested by {requesting_user}"
             )
         )
+
+    def save(self, filename: str) -> None:
+        self.doc.save(outputfile=filename)
