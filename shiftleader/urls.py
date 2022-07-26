@@ -7,7 +7,7 @@ app_name = "shiftleader"
 urlpatterns = [
     path("", views.shiftleader_view, name="shiftleader"),
     path(
-        "generate_presentation/<int:week_number>/",
+        "generate_presentation/<int:year>/<int:week_number>/",
         views.ShiftLeaderReportPresentationView.as_view(),
         name="generate_presentation",
     ),
