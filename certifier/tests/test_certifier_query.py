@@ -4,8 +4,8 @@ import pytest
 from mixer.backend.django import mixer
 from oms.models import OmsRun
 from certifier.models import TrackerCertification, RunReconstruction
-from shiftleader.utilities.utilities import to_date, to_weekdayname
 from certifier.utilities.utilities import uniquely_sorted
+from shiftleader.utilities.utilities import to_date, to_weekdayname
 from utilities.utilities import create_runs
 from utilities.credentials import SHIFTER1_USERNAME
 
