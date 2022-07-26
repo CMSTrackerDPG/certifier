@@ -50,12 +50,23 @@ def shiftleader_view(request):
 
 
 # TODO lazy load summary
-@method_decorator(login_required, name="dispatch")
-class ShiftLeaderView(SingleTableMixin, FilterView):
+class ShiftLeaderView(
+    LoginRequiredMixin, UserPassesTestMixin, SingleTableMixin, FilterView
+):
     table_class = ShiftleaderTrackerCertificationTable
     model = TrackerCertification
     template_name = "shiftleader/shiftleader.html"
     filterset_class = ShiftLeaderTrackerCertificationFilter
+
+    def test_func(self):
+        """
+        Function used by the UserPassesTestMixin to
+        test rights before allowing acess to the View
+        """
+        return (
+            hasattr(self.request.user, "has_shift_leader_rights")
+            and self.request.user.has_shift_leader_rights
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
