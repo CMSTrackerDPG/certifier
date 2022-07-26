@@ -10,6 +10,8 @@ CONVERSION_MAP = {
 def convert_luminosity_to_pb(
     int_luminosity: float = None, luminosity_units: str = "pb^{-1}"
 ) -> float:
+    if int_luminosity is None:
+        int_luminosity = 0
     return float(int_luminosity * CONVERSION_MAP[luminosity_units]["factor"])
 
 
@@ -27,9 +29,6 @@ def format_integrated_luminosity(
     :param luminosity_units: units luminosity is counted in
     :return: Formatted luminosity with 3 decimal points precision
     """
-
-    if int_luminosity is None:
-        int_luminosity = 0
 
     formatted_luminosity = ""
 
