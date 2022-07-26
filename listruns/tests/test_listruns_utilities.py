@@ -30,6 +30,7 @@ def test_manip():
 def test_luminosity():
     result = format_integrated_luminosity(Decimal("0.000000266922"))
     assert "0.267 µb⁻¹" == result
+    # assert "0 pb⁻¹" == result
     result = format_integrated_luminosity(Decimal("1.12345678901234567890"))
     assert "1.123 pb⁻¹" == result
 

@@ -41,6 +41,8 @@ class ScriptExecutionForm(forms.ModelForm):
                 values = split_with_spaces_commas(arg.valid_choices)
                 self.fields[field_name].choices = [(v, v) for v in values]
 
+            if arg.default_value:
+                self.fields[field_name].initial = arg.default_value
             i += 1
 
         # Add keyword arguments
@@ -55,6 +57,8 @@ class ScriptExecutionForm(forms.ModelForm):
                 self.fields[field_name].widget.attrs["class"] += " custom-select"
                 values = split_with_spaces_commas(kwarg.valid_choices)
                 self.fields[field_name].choices = [(v, v) for v in values]
+            if kwarg.default_value:
+                self.fields[field_name].initial = kwarg.default_value
 
     class Meta:
         model = ScriptConfigurationBase
