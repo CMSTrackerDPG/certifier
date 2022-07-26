@@ -237,6 +237,7 @@ def oms_retrieve_run(run_number: int) -> OmsRun:  # pragma: no cover
         if attribute_key in response["attributes"].keys():
             run_kwargs[attribute_key] = response["attributes"][attribute_key]
 
+    # Get luminosity units
     for meta_key in include_meta_keys:
         meta_key_unit = meta_key + "_unit"
         if "meta" in response.keys():
