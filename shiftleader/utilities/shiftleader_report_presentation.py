@@ -5,6 +5,7 @@ from typing import List
 import logging
 from datetime import datetime
 from django.conf import settings
+from shiftleader.query import TrackerCertificationQuerySet
 from odf.opendocument import OpenDocumentPresentation
 from odf.style import (
     Style,
@@ -46,6 +47,7 @@ class ShiftLeaderReportPresentation(object):
         name_shift_leader: str = "",
         names_shifters: List[str] = [""],
         names_oncall: List[str] = [""],
+        certification_queryset: TrackerCertificationQuerySet = None,
     ):
         logger.info(
             f"ShiftLeader presentation generation for week {week_number} requested by {requesting_user}"
@@ -58,6 +60,7 @@ class ShiftLeaderReportPresentation(object):
         self.name_shift_leader = name_shift_leader
         self.names_shifters = names_shifters
         self.names_oncall = names_oncall
+        self.queryset = certification_queryset
 
         self.doc = OpenDocumentPresentation()
 
