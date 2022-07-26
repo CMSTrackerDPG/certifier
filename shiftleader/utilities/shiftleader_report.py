@@ -4,9 +4,16 @@ from shiftleader.utilities.utilities import to_weekdayname
 class ShiftLeaderReportBase:
     """
     Base class for the shift leader report
-    Just wraps the RunInfoQuerySet filter functions
+    Just wraps the RunInfoQuerySet filter functions.
+
+    The `type(self)()` typecasting allows chaining
+    those methods, e.g.:
+
+    s = ShiftLeaderReport()
+    s.collisions().express().fills()
     """
-    def online(self): # pragma: no cover
+
+    def online(self):  # pragma: no cover
         return type(self)(self.runs.online())
 
     def prompt(self):
