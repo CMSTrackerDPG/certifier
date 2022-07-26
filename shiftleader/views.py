@@ -111,7 +111,11 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             tempfile.gettempdir(), f"shiftleader_report_week_{week_number}.odp"
         )
         p = ShiftLeaderReportPresentation(
-            week_number=week_number, requesting_user=request.user
+            week_number=week_number,
+            requesting_user=request.user,
+            name_shift_leader="",
+            names_shifters=[],
+            names_oncall=[],
         )
         p.save(filename=filepath)
         return FileResponse(open(filepath, "rb"))
