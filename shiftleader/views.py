@@ -23,7 +23,9 @@ from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
-from shiftleader.utilities.odp_presentation import ShiftLeaderReportPresentation
+from shiftleader.utilities.shiftleader_report_presentation import (
+    ShiftLeaderReportPresentation,
+)
 from summary.utilities.SummaryReport import SummaryReport
 from checklists.models import Checklist
 
