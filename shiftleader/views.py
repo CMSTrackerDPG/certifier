@@ -3,12 +3,13 @@ import tempfile
 from pathlib import Path
 from xml.etree.ElementTree import ParseError
 from requests.exceptions import SSLError
-from datetime import date, timedelta
+from datetime import date
 from django.http import HttpResponseRedirect, FileResponse
 from django_filters.views import FilterView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django_tables2 import SingleTableMixin
@@ -20,7 +21,10 @@ from tables.tables import (
 from certifier.models import TrackerCertification
 from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
-from shiftleader.utilities.utilities import get_this_week_filter_parameter
+from shiftleader.utilities.utilities import (
+    get_this_week_filter_parameter,
+    calculate_week_start_end,
+)
 from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.utilities.shiftleader_report_presentation import (
     ShiftLeaderReportPresentation,
@@ -118,17 +122,25 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             and self.request.user.has_shift_leader_rights
         )
 
-    def get(self, request, week_number: int = 0, **kwargs):
+    def get(
+        self, request, year: int = timezone.now().year, week_number: int = 1, **kwargs
+    ):
         filepath = Path(
-            tempfile.gettempdir(), f"shiftleader_report_week_{week_number}.odp"
+            tempfile.gettempdir(), f"shiftleader_report_{year}_week_{week_number}.odp"
         )
 
-        # TODO: correctly select timespan
+        # Get first day of week requested
+        d = date.fromisocalendar(year=year, week=week_number, day=1)
+
+        week_start, week_end = calculate_week_start_end(d)
+
         queryset = TrackerCertification.objects.filter(
-            date__lte=date.today(), date__gte=date.today() - timedelta(7)
+            date__gte=week_start,
+            date__lte=week_end,
         )
 
         p = ShiftLeaderReportPresentation(
+            year=year,
             week_number=week_number,
             requesting_user=f"{request.user.first_name} {request.user.last_name}"
             if request.user.first_name

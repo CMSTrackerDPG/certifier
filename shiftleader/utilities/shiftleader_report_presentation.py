@@ -16,11 +16,14 @@ from odf.style import (
     GraphicProperties,
     ParagraphProperties,
     DrawingPageProperties,
+    TableProperties,
 )
 from odf import dc
 from odf.text import P
 from odf.presentation import Header
 from odf.draw import Page, Frame, TextBox, Image
+from odf.table import Table, TableColumn, TableRow, TableCell
+from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 
 
 logger = logging.getLogger(__name__)
@@ -61,10 +64,15 @@ class ShiftLeaderReportPresentation(object):
         self.names_shifters = names_shifters
         self.names_oncall = names_oncall
         self.queryset = certification_queryset
-
+        logger.debug(
+            f"TrackerCertification queryset contains {self.queryset.count()} objects"
+        )
         self.doc = OpenDocumentPresentation()
 
         self._configure_styles()
+
+        # Do some heavy lifting
+        self.slreport = ShiftLeaderReport(self.queryset)
 
         # Add pages
         self._add_page_title()
@@ -153,6 +161,14 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.masterstyles.addElement(self.masterpagecontent)
 
+        self.tablemaster = MasterPage(name="MyTable", pagelayoutname=pagelayout)
+        self.doc.masterstyles.addElement(self.tablemaster)
+
+        self.masterpagecontent = MasterPage(
+            name="MyMasterContent", pagelayoutname=pagelayout
+        )
+        self.doc.masterstyles.addElement(self.masterpagecontent)
+
         # Metadata
         self.doc.meta.addElement(
             dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
@@ -214,8 +230,104 @@ class ShiftLeaderReportPresentation(object):
         # TODO: add content
 
     def _add_page_list_lhc_fills(self):
-        page = self._create_content_page(title="List of LHC Fills")
-        # TODO: add content
+        if not self.queryset.run_numbers():
+            logger.debug("No runs certified")
+            return
+
+        # Sample data for testing
+        fills = [
+            {"fill_number": 7963, "certified_runs": [355407]},
+            {"fill_number": 7963, "certified_runs": [355407]},
+            {"fill_number": 7963, "certified_runs": [355407]},
+            {"fill_number": 7963, "certified_runs": [355407]},
+            {
+                "fill_number": 7963,
+                "certified_runs": [355407, 355407, 355407, 355407],
+            },
+        ]
+        # table_names = {
+        #     "Collisions Express": {"fills": fills},
+        #     "Collisions Prompt": {"fills": fills},
+        #     "Cosmics Express": {"fills": fills},
+        #     "Cosmics Prompt": {"fills": fills},
+        # }
+
+        logger.debug("Getting information on collisions express")
+        collisions_express = self.slreport.collisions().express().fills()
+        logger.debug("Getting information on collisions prompt")
+        collisions_prompt = self.slreport.collisions().prompt().fills()
+        logger.debug("Getting information on cosmics express")
+        cosmics_express = self.slreport.cosmics().express().fills()
+        logger.debug("Getting information on cocmics prompt")
+        cosmics_prompt = self.slreport.cosmics().prompt().fills()
+        table_names = {
+            "Collisions Express": {"fills": collisions_express},
+            "Collisions Prompt": {"fills": collisions_prompt},
+            "Cosmics Express": {"fills": cosmics_express},
+            "Cosmics Prompt": {"fills": cosmics_prompt},
+        }
+
+        logger.debug("Done.")
+
+        # Iterate over all required tables
+        for table_name, table_config in table_names.items():
+            logger.debug(f"Creating table {table_name}")
+            page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
+
+            # Frame style
+            self.frametablestyle = Style(name="MyMaster-table", family="presentation")
+            self.frametablestyle.addElement(
+                ParagraphProperties(textalign="left", verticalalign="middle")
+            )
+            self.frametablestyle.addElement(TextProperties(fontfamily="sans"))
+            self.frametablestyle.addElement(
+                TableProperties(
+                    backgroundcolor="#ffffff",
+                )
+            )
+            self.doc.styles.addElement(self.frametablestyle)
+
+            table_frame = Frame(
+                stylename=self.frametablestyle,
+                width="648pt",
+                height="105pt",
+                x="40pt",
+                y="117pt",
+            )
+
+            table = self._create_table()
+            tablecontents = Style(name="Table Contents", family="paragraph")
+            tablecontents.addElement(
+                ParagraphProperties(numberlines="false", linenumber="0")
+            )
+
+            # tablecontents.addElement(GraphicProperties())
+            self.doc.styles.addElement(tablecontents)
+
+            # Two columns
+            table.addElement(TableColumn())
+            table.addElement(TableColumn())
+
+            # Header
+            tr = TableRow()
+            table.addElement(tr)
+            for col_name in ["Fill Number", "Certified Runs"]:
+                tc = TableCell()
+                tc.addElement(P(text=col_name, stylename=tablecontents))
+                tr.addElement(tc)
+
+            # Add fill information
+            for fill in table_config["fills"]:
+                tr = TableRow()
+                table.addElement(tr)
+                # keys: fill_number, certified_runs
+                for k, v in fill.items():
+                    tc = TableCell()
+                    tr.addElement(tc)
+                    tc.addElement(P(text=v, stylename=tablecontents))
+
+            table_frame.addElement(table)
+            page.addElement(table_frame)
 
     def _add_page_day_by_day(self):
         days = []
@@ -255,6 +367,10 @@ class ShiftLeaderReportPresentation(object):
         textbox.addElement(P(text=title))
         page.addElement(titleframe)
         return page
+
+    def _create_table(self):
+        table = Table()
+        return table
 
     def save(self, filename: str = "") -> None:
         if not filename or filename == "":
