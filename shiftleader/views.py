@@ -145,7 +145,9 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             requesting_user=f"{request.user.first_name} {request.user.last_name}"
             if request.user.first_name
             else request.user.username,
-            name_shift_leader="",
+            name_shift_leader=f"{request.user.first_name} {request.user.last_name}"
+            if request.user.first_name
+            else request.user.username,
             names_shifters=[],
             names_oncall=[],
             certification_queryset=queryset,

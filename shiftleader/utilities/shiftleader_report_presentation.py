@@ -330,9 +330,10 @@ class ShiftLeaderReportPresentation(object):
             page.addElement(table_frame)
 
     def _add_page_day_by_day(self):
-        days = []
-        for day in days:
-            page = self._create_content_page(title=f"Day by day notes: {day}")
+        for day in self.slreport.day_by_day():
+            page = self._create_content_page(
+                title=f"Day by day notes: {day.name()}, {day.date()}"
+            )
             # TODO: add content
 
     def _add_page_summary(self):
