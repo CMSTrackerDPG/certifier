@@ -42,13 +42,21 @@ class ShiftLeaderReportPresentation(object):
         requesting_user: str = "",
         certhelper_version: str = settings.CERTHELPER_VERSION,
         week_number: str = "",
+        year: int = datetime.now().year,
         name_shift_leader: str = "",
-        name_shifters: List[str] = [""],
-        name_oncall: List[str] = [""],
+        names_shifters: List[str] = [""],
+        names_oncall: List[str] = [""],
     ):
         logger.info(
-            f"ShiftLeader presentation generation requested by {requesting_user}"
+            f"ShiftLeader presentation generation for week {week_number} requested by {requesting_user}"
         )
+
+        self.week_number = week_number
+        self.year = year
+        self.name_shift_leader = name_shift_leader
+        self.names_shifters = names_shifters
+        self.names_oncall = names_oncall
+
         self.doc = OpenDocumentPresentation()
 
         pagelayout = PageLayout(name="MyLayout")
@@ -104,7 +112,7 @@ class ShiftLeaderReportPresentation(object):
 
         # Metadata
         self.doc.meta.addElement(
-            dc.Title(text="Shiftleader Report for week <week num>")
+            dc.Title(text="Shiftleader Report for {self.year} week {self.week}")
         )
         self.doc.meta.addElement(dc.Date(text=datetime.now().isoformat()))
         # self.doc.meta.addElement(dc.Subject(text="Shiftleader Report"))
@@ -114,5 +122,10 @@ class ShiftLeaderReportPresentation(object):
             )
         )
 
-    def save(self, filename: str) -> None:
+    def _generate_filename(self) -> str:
+        return f"shiftleader_report_{self.year}_week_{self.week_number}.odp"
+
+    def save(self, filename: str = "") -> None:
+        if not filename or filename == "":
+            filename = self._generate_filename()
         self.doc.save(outputfile=filename)
