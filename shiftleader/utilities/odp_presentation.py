@@ -142,14 +142,12 @@ class ShiftLeaderReportPresentation(object):
         )
         textbox = TextBox()
         titleframe.addElement(textbox)
-        textbox.addElement(
-            P(text=f"Offline Shift Leader Report\nWeek {self.week_number}")
-        )
+        textbox.addElement(P(text="Offline Shift Leader Report"))
+        textbox.addElement(P(text=f"Week {self.week_number}"))
         page.addElement(titleframe)
 
         c_frame = Frame(
             stylename=self.subtitlestyle,
-            # stylename=self.titlestyle,
             width="633.6pt",
             height="138pt",
             x="43.2pt",
