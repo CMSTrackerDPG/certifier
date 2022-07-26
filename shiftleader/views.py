@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 from xml.etree.ElementTree import ParseError
 from requests.exceptions import SSLError
+from datetime import date, timedelta
 from django.http import HttpResponseRedirect, FileResponse
 from django_filters.views import FilterView
 from django.contrib import messages
@@ -10,7 +11,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
-
 from django_tables2 import SingleTableMixin
 from tables.tables import (
     ShiftleaderTrackerCertificationTable,
@@ -18,8 +18,6 @@ from tables.tables import (
     RunRegistryComparisonTable,
 )
 from certifier.models import TrackerCertification
-from certifier.query import TrackerCertificationQuerySet
-
 from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
@@ -125,7 +123,11 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             tempfile.gettempdir(), f"shiftleader_report_week_{week_number}.odp"
         )
 
-        # queryset = TrackerCertificationQuerySet().filter(
+        # TODO: correctly select timespan
+        queryset = TrackerCertification.objects.filter(
+            date__lte=date.today(), date__gte=date.today() - timedelta(7)
+        )
+
         p = ShiftLeaderReportPresentation(
             week_number=week_number,
             requesting_user=f"{request.user.first_name} {request.user.last_name}"
@@ -134,6 +136,7 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             name_shift_leader="",
             names_shifters=[],
             names_oncall=[],
+            certification_queryset=queryset,
         )
         p.save(filename=filepath)
         return FileResponse(open(filepath, "rb"))
