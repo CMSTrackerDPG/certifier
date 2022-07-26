@@ -125,7 +125,9 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
         )
         p = ShiftLeaderReportPresentation(
             week_number=week_number,
-            requesting_user=request.user,
+            requesting_user=f"{request.user.first_name} {request.user.last_name}"
+            if request.user.first_name
+            else request.user.username,
             name_shift_leader="",
             names_shifters=[],
             names_oncall=[],
