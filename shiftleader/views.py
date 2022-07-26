@@ -22,7 +22,7 @@ from certifier.models import TrackerCertification
 from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
-from shiftleader.utilities.ShiftLeaderReport import ShiftLeaderReport
+from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.utilities.shiftleader_report_presentation import (
     ShiftLeaderReportPresentation,
 )

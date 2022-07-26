@@ -3,7 +3,7 @@ import pytest
 import os
 from django.utils import timezone
 from certifier.models import TrackerCertification
-from shiftleader.utilities.ShiftLeaderReport import (
+from shiftleader.utilities.shiftleader_report import (
     ShiftLeaderReport,
     ShiftLeaderReportDay,
 )
