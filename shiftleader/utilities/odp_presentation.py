@@ -64,8 +64,8 @@ class ShiftLeaderReportPresentation(object):
         pagelayout.addElement(
             PageLayoutProperties(
                 margin="0cm",
-                pagewidth="28cm",
-                pageheight="21cm",
+                pagewidth="720pt",
+                pageheight="540pt",
                 printorientation="landscape",
             )
         )
@@ -76,20 +76,22 @@ class ShiftLeaderReportPresentation(object):
         # or "photo").
         self.titlestyle = Style(name="MyMaster-title", family="presentation")
         self.titlestyle.addElement(ParagraphProperties(textalign="center"))
-        self.titlestyle.addElement(TextProperties(fontsize="30pt", fontfamily="sans"))
+        self.titlestyle.addElement(TextProperties(fontsize="44pt", fontfamily="sans"))
         self.titlestyle.addElement(
             GraphicProperties(fillcolor="#ffffff", strokecolor="#ffffff")
         )
         self.doc.styles.addElement(self.titlestyle)
 
         # Style for adding content
-        self.teststyle = Style(name="MyMaster-subtitle", family="presentation")
-        self.teststyle.addElement(ParagraphProperties(textalign="left"))
-        self.teststyle.addElement(TextProperties(fontsize="14pt", fontfamily="sans"))
-        self.teststyle.addElement(
+        self.subtitlestyle = Style(name="MyMaster-subtitle", family="presentation")
+        self.subtitlestyle.addElement(ParagraphProperties(textalign="center"))
+        self.subtitlestyle.addElement(
+            TextProperties(fontsize="32pt", fontfamily="sans", color="#8b8b8b")
+        )
+        self.subtitlestyle.addElement(
             GraphicProperties(fillcolor="#ffffff", strokecolor="#ffffff")
         )
-        self.doc.styles.addElement(self.teststyle)
+        self.doc.styles.addElement(self.subtitlestyle)
 
         # Style for images
         # self.photostyle = Style(name="MyMaster-photo", family="presentation")
@@ -122,8 +124,43 @@ class ShiftLeaderReportPresentation(object):
             )
         )
 
+        # Add pages
+        self._add_title_page()
+
     def _generate_filename(self) -> str:
         return f"shiftleader_report_{self.year}_week_{self.week_number}.odp"
+
+    def _add_title_page(self):
+        page = Page(stylename=self.dpstyle, masterpagename=self.masterpage)
+        self.doc.presentation.addElement(page)
+        titleframe = Frame(
+            stylename=self.titlestyle,
+            width="612pt",
+            height="115.7pt",
+            x="54pt",
+            y="167.8pt",
+        )
+        textbox = TextBox()
+        titleframe.addElement(textbox)
+        textbox.addElement(
+            P(text=f"Offline Shift Leader Report\nWeek {self.week_number}")
+        )
+        page.addElement(titleframe)
+
+        c_frame = Frame(
+            stylename=self.subtitlestyle,
+            # stylename=self.titlestyle,
+            width="633.6pt",
+            height="138pt",
+            x="43.2pt",
+            y="306pt",
+        )
+        c_text = TextBox()
+        c_frame.addElement(c_text)
+        c_text.addElement(P(text=f"SL: {self.name_shift_leader}"))
+        c_text.addElement(P(text=f"Shifters: {self.names_shifters}"))
+        c_text.addElement(P(text=f"On-call: {self.names_oncall}"))
+        page.addElement(c_frame)
 
     def save(self, filename: str = "") -> None:
         if not filename or filename == "":
