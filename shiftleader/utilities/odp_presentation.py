@@ -53,12 +53,26 @@ class ShiftLeaderReportPresentation(object):
 
         self.week_number = week_number
         self.year = year
+        self.requesting_user = requesting_user
+        self.certhelper_version = certhelper_version
         self.name_shift_leader = name_shift_leader
         self.names_shifters = names_shifters
         self.names_oncall = names_oncall
 
         self.doc = OpenDocumentPresentation()
 
+        self._configure_styles()
+
+        # Add pages
+        self._add_page_title()
+        self._add_page_recorded_luminosity()
+        self._add_page_list_lhc_fills()
+        self._add_page_day_by_day()
+        self._add_page_summary()
+        self._add_page_list_express()
+        self._add_page_list_prompt()
+
+    def _configure_styles(self):
         pagelayout = PageLayout(name="MyLayout")
         self.doc.automaticstyles.addElement(pagelayout)
         pagelayout.addElement(
@@ -75,12 +89,31 @@ class ShiftLeaderReportPresentation(object):
         # The name after the dash *also* matters (should be "title", "subtitle"
         # or "photo").
         self.titlestyle = Style(name="MyMaster-title", family="presentation")
-        self.titlestyle.addElement(ParagraphProperties(textalign="center"))
+        self.titlestyle.addElement(
+            ParagraphProperties(textalign="center", verticalalign="middle")
+        )
         self.titlestyle.addElement(TextProperties(fontsize="44pt", fontfamily="sans"))
         self.titlestyle.addElement(
             GraphicProperties(fillcolor="#ffffff", strokecolor="#ffffff")
         )
         self.doc.styles.addElement(self.titlestyle)
+
+        # Different style for content titles
+        self.titlestyle_content = Style(
+            name="MyMasterContent-title", family="presentation"
+        )
+        self.titlestyle_content.addElement(
+            ParagraphProperties(textalign="center", verticalalign="middle")
+        )
+        self.titlestyle_content.addElement(
+            TextProperties(fontsize="44pt", fontfamily="sans", color="#00b0f0")
+        )
+        self.titlestyle_content.addElement(
+            GraphicProperties(
+                fillcolor="#ffffff", strokecolor="#ffffff", overflowbehavior="clip"
+            )
+        )
+        self.doc.styles.addElement(self.titlestyle_content)
 
         # Style for adding content
         self.subtitlestyle = Style(name="MyMaster-subtitle", family="presentation")
@@ -112,25 +145,30 @@ class ShiftLeaderReportPresentation(object):
         self.masterpage = MasterPage(name="MyMaster", pagelayoutname=pagelayout)
         self.doc.masterstyles.addElement(self.masterpage)
 
+        self.masterpagecontent = MasterPage(
+            name="MyMasterContent", pagelayoutname=pagelayout
+        )
+        self.doc.masterstyles.addElement(self.masterpagecontent)
+
         # Metadata
         self.doc.meta.addElement(
-            dc.Title(text="Shiftleader Report for {self.year} week {self.week}")
+            dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
         )
         self.doc.meta.addElement(dc.Date(text=datetime.now().isoformat()))
         # self.doc.meta.addElement(dc.Subject(text="Shiftleader Report"))
         self.doc.meta.addElement(
             dc.Creator(
-                text=f"CertHelper version {certhelper_version}, requested by {requesting_user}"
+                text=f"CertHelper version {self.certhelper_version}, requested by {self.requesting_user}"
             )
         )
-
-        # Add pages
-        self._add_title_page()
 
     def _generate_filename(self) -> str:
         return f"shiftleader_report_{self.year}_week_{self.week_number}.odp"
 
-    def _add_title_page(self):
+    def _add_page_title(self):
+        """
+        Add title page to presentation
+        """
         page = Page(stylename=self.dpstyle, masterpagename=self.masterpage)
         self.doc.presentation.addElement(page)
         titleframe = Frame(
@@ -161,8 +199,59 @@ class ShiftLeaderReportPresentation(object):
                 text=f"""Shifters: {str(self.names_shifters).replace('[', '').replace(']', '').replace("'", '')}"""
             )
         )
-        c_text.addElement(P(text=f"On-call: {str(self.names_oncall).replace('[', '').replace(']', '').replace("'", '')}"))
+        c_text.addElement(
+            P(
+                text=f"""On-call: {str(self.names_oncall).replace('[', '').replace(']', '').replace("'", '')}"""
+            )
+        )
         page.addElement(c_frame)
+
+    def _add_page_recorded_luminosity(self):
+        page = self._create_content_page(title="Recorded Luminosity")
+        # TODO: add content
+
+    def _add_page_list_lhc_fills(self):
+        page = self._create_content_page(title="List of LHC Fills")
+        # TODO: add content
+
+    def _add_page_day_by_day(self):
+        days = []
+        for day in days:
+            page = self._create_content_page(title=f"Day by day notes: {day}")
+            # TODO: add content
+
+    def _add_page_summary(self):
+        page = self._create_content_page(title=f"Summary of week {self.week_number}")
+        # TODO: add content
+
+    def _add_page_list_express(self):
+        page = self._create_content_page(title="List of runs certified PromptReco")
+        # TODO: add content
+
+    def _add_page_list_prompt(self):
+        page = self._create_content_page(title="List of runs certified StreamExpress")
+        # TODO: add content
+
+    def _create_content_page(self, title: str):
+        """
+        Generic content page skeleton generator.
+        Only adds title.
+        """
+        page = Page(stylename=self.dpstyle, masterpagename=self.masterpagecontent)
+        self.doc.presentation.addElement(page)
+
+        titleframe = Frame(
+            stylename=self.titlestyle_content,
+            width="648pt",
+            height="90pt",
+            x="36pt",
+            y="3.5pt",
+        )
+        textbox = TextBox()
+        titleframe.addElement(textbox)
+        textbox.addElement(P(text=title))
+        page.addElement(titleframe)
+        return page
 
     def save(self, filename: str = "") -> None:
         if not filename or filename == "":
