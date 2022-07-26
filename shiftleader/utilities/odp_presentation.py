@@ -156,8 +156,12 @@ class ShiftLeaderReportPresentation(object):
         c_text = TextBox()
         c_frame.addElement(c_text)
         c_text.addElement(P(text=f"SL: {self.name_shift_leader}"))
-        c_text.addElement(P(text=f"Shifters: {self.names_shifters}"))
-        c_text.addElement(P(text=f"On-call: {self.names_oncall}"))
+        c_text.addElement(
+            P(
+                text=f"""Shifters: {str(self.names_shifters).replace('[', '').replace(']', '').replace("'", '')}"""
+            )
+        )
+        c_text.addElement(P(text=f"On-call: {str(self.names_oncall).replace('[', '').replace(']', '').replace("'", '')}"))
         page.addElement(c_frame)
 
     def save(self, filename: str = "") -> None:
