@@ -1,10 +1,9 @@
 from decimal import Decimal
-
 from django.db import models
-
-from shiftleader.query import TrackerCertificationQuerySet
+from certifier.query import TrackerCertificationQuerySet
 from certifier.utilities.utilities import uniquely_sorted
 from delete.manager import SoftDeletionManager
+
 
 class TrackerCertificationManager(SoftDeletionManager):
     def get_queryset(self):
@@ -23,7 +22,9 @@ class TrackerCertificationManager(SoftDeletionManager):
 
         # TODO use self.get_queryset() instead of TrackerCertificationQuerySet(self.model).filter
         runs = TrackerCertificationQuerySet(self.model).filter(deleted_at=None)
-        runs = runs.filter(runreconstruction__run__run_number__in=list_of_run_numbers).annotate_status()
+        runs = runs.filter(
+            runreconstruction__run__run_number__in=list_of_run_numbers
+        ).annotate_status()
 
         def do_check(runs):
             flags = {
@@ -43,23 +44,26 @@ class TrackerCertificationManager(SoftDeletionManager):
             flags["bad"] = bad_runs.run_numbers()
 
             non_missing_prompt_run_numbers = [
-                run["runreconstruction__run__run_number"] for run in prompt_runs
-                    .order_by("runreconstruction__run__run_number")
-                    .values("runreconstruction__run__run_number")
-                    .distinct()
+                run["runreconstruction__run__run_number"]
+                for run in prompt_runs.order_by("runreconstruction__run__run_number")
+                .values("runreconstruction__run__run_number")
+                .distinct()
             ]
 
             non_missing_run_numbers = [
-                run["runreconstruction__run__run_number"] for run in runs
-                    .order_by("runreconstruction__run__run_number")
-                    .values("runreconstruction__run__run_number")
-                    .distinct()
+                run["runreconstruction__run__run_number"]
+                for run in runs.order_by("runreconstruction__run__run_number")
+                .values("runreconstruction__run__run_number")
+                .distinct()
             ]
 
             flags["prompt_missing"] = list(
-                set(non_missing_run_numbers) - set(non_missing_prompt_run_numbers))
+                set(non_missing_run_numbers) - set(non_missing_prompt_run_numbers)
+            )
 
-            express_runs = runs.express().filter(runreconstruction__run__run_number__in=non_missing_run_numbers)
+            express_runs = runs.express().filter(
+                runreconstruction__run__run_number__in=non_missing_run_numbers
+            )
             good_express = express_runs.good().run_numbers()
             bad_express = express_runs.bad().run_numbers()
 
@@ -79,7 +83,7 @@ class TrackerCertificationManager(SoftDeletionManager):
 
         check_dictionary = {
             "collisions": do_check(runs.collisions()),
-            "cosmics": do_check(runs.cosmics())
+            "cosmics": do_check(runs.cosmics()),
         }
 
         non_missing_run_numbers = []
@@ -113,6 +117,7 @@ class TrackerCertificationManager(SoftDeletionManager):
         """
 
         from certifier.models import TrackerCertification, RunReconstruction
+
         try:
             if trackerCertification.runreconstruction.reconstruction == "rereco":
                 return {}
@@ -132,7 +137,7 @@ class TrackerCertificationManager(SoftDeletionManager):
             "tracking",
             "pixel_lowstat",
             "strip_lowstat",
-            "tracking_lowstat"
+            "tracking_lowstat",
         ]
         decimal_attributes_to_be_checked = [
             "recorded_lumi",
@@ -141,36 +146,61 @@ class TrackerCertificationManager(SoftDeletionManager):
         mismatches = {}
 
         try:
-            counterpart_reco = "express" if trackerCertification.runreconstruction.reconstruction == "prompt" else "prompt"
+            counterpart_reco = (
+                "express"
+                if trackerCertification.runreconstruction.reconstruction == "prompt"
+                else "prompt"
+            )
 
             counterpart_run = self.get_queryset().get(
                 runreconstruction__run__run_number=trackerCertification.runreconstruction.run.run_number,
-                runreconstruction__reconstruction=counterpart_reco
+                runreconstruction__reconstruction=counterpart_reco,
             )
             counterpart_oms_run = counterpart_run.runreconstruction.run
 
-            assert counterpart_run.runreconstruction.reconstruction != trackerCertification.runreconstruction.reconstruction
+            assert (
+                counterpart_run.runreconstruction.reconstruction
+                != trackerCertification.runreconstruction.reconstruction
+            )
 
-            mismatches.update({
-                attribute: getattr(counterpart_oms_run, attribute)
-                for attribute in type_attributes_to_be_checked
-                if getattr(trackerCertification.runreconstruction.run, attribute) is not None and
-                   getattr(counterpart_oms_run, attribute) != getattr(trackerCertification.runreconstruction.run, attribute)
-            })
+            mismatches.update(
+                {
+                    attribute: getattr(counterpart_oms_run, attribute)
+                    for attribute in type_attributes_to_be_checked
+                    if getattr(trackerCertification.runreconstruction.run, attribute)
+                    is not None
+                    and getattr(counterpart_oms_run, attribute)
+                    != getattr(trackerCertification.runreconstruction.run, attribute)
+                }
+            )
 
-            mismatches.update({
-                attribute: getattr(counterpart_run, attribute)
-                for attribute in run_attributes_to_be_checked
-                if getattr(trackerCertification, attribute) is not None and
-                   getattr(counterpart_run, attribute) != getattr(trackerCertification, attribute)
-            })
+            mismatches.update(
+                {
+                    attribute: getattr(counterpart_run, attribute)
+                    for attribute in run_attributes_to_be_checked
+                    if getattr(trackerCertification, attribute) is not None
+                    and getattr(counterpart_run, attribute)
+                    != getattr(trackerCertification, attribute)
+                }
+            )
 
-            mismatches.update({
-                attribute: getattr(counterpart_oms_run, attribute)
-                for attribute in decimal_attributes_to_be_checked
-                if getattr(trackerCertification.runreconstruction.run, attribute) is not None and
-                abs(Decimal(getattr(counterpart_oms_run, attribute)) - Decimal(getattr(trackerCertification.runreconstruction.run, attribute))) > Decimal("0.11")
-            })
+            mismatches.update(
+                {
+                    attribute: getattr(counterpart_oms_run, attribute)
+                    for attribute in decimal_attributes_to_be_checked
+                    if getattr(trackerCertification.runreconstruction.run, attribute)
+                    is not None
+                    and abs(
+                        Decimal(getattr(counterpart_oms_run, attribute))
+                        - Decimal(
+                            getattr(
+                                trackerCertification.runreconstruction.run, attribute
+                            )
+                        )
+                    )
+                    > Decimal("0.11")
+                }
+            )
 
             return mismatches
         except TrackerCertification.DoesNotExist:

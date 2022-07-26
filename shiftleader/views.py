@@ -18,10 +18,11 @@ from tables.tables import (
     RunRegistryComparisonTable,
 )
 from certifier.models import TrackerCertification
+from certifier.query import TrackerCertificationQuerySet
 
 from listruns.utilities.utilities import request_contains_filter_parameter
-from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
+from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.utilities.shiftleader_report_presentation import (
     ShiftLeaderReportPresentation,
@@ -123,6 +124,8 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
         filepath = Path(
             tempfile.gettempdir(), f"shiftleader_report_week_{week_number}.odp"
         )
+
+        # queryset = TrackerCertificationQuerySet().filter(
         p = ShiftLeaderReportPresentation(
             week_number=week_number,
             requesting_user=f"{request.user.first_name} {request.user.last_name}"

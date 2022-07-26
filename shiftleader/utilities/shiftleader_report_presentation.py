@@ -5,7 +5,7 @@ from typing import List
 import logging
 from datetime import datetime
 from django.conf import settings
-from shiftleader.query import TrackerCertificationQuerySet
+from certifier.query import TrackerCertificationQuerySet
 from odf.opendocument import OpenDocumentPresentation
 from odf.style import (
     Style,
