@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from shiftleader.utilities.odp_presentation import ShiftLeaderReportPresentation
+from shiftleader.utilities.shiftleader_report_presentation import (
+    ShiftLeaderReportPresentation,
+)
 
 
 class Command(BaseCommand):
