@@ -1,7 +1,7 @@
 """
 OpenDocumentPresentation generator for shiftleader reports
 """
-from typing import List
+from typing import List as tList
 import logging
 from datetime import datetime
 from django.conf import settings
@@ -19,7 +19,7 @@ from odf.style import (
     TableProperties,
 )
 from odf import dc
-from odf.text import P
+from odf.text import P, List, ListItem, ListLevelStyleBullet
 from odf.presentation import Header
 from odf.draw import Page, Frame, TextBox, Image
 from odf.table import Table, TableColumn, TableRow, TableCell
@@ -48,8 +48,8 @@ class ShiftLeaderReportPresentation(object):
         week_number: str = "",
         year: int = datetime.now().year,
         name_shift_leader: str = "",
-        names_shifters: List[str] = [""],
-        names_oncall: List[str] = [""],
+        names_shifters: tList[str] = [""],
+        names_oncall: tList[str] = [""],
         certification_queryset: TrackerCertificationQuerySet = None,
     ):
         logger.info(
@@ -126,6 +126,22 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.styles.addElement(self.titlestyle_content)
 
+        self.textstyle_content = Style(
+            name="MyMasterContent-subtitle", family="presentation"
+        )
+        self.textstyle_content.addElement(
+            ParagraphProperties(textalign="left", verticalalign="middle")
+        )
+        self.textstyle_content.addElement(
+            TextProperties(fontsize="12pt", fontfamily="sans", color="#000000")
+        )
+        self.textstyle_content.addElement(
+            GraphicProperties(
+                fillcolor="#ffffff", strokecolor="#ffffff", overflowbehavior="clip"
+            )
+        )
+        self.doc.styles.addElement(self.textstyle_content)
+
         # Style for adding content
         self.subtitlestyle = Style(name="MyMaster-subtitle", family="presentation")
         self.subtitlestyle.addElement(ParagraphProperties(textalign="center"))
@@ -161,14 +177,6 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.masterstyles.addElement(self.masterpagecontent)
 
-        self.tablemaster = MasterPage(name="MyTable", pagelayoutname=pagelayout)
-        self.doc.masterstyles.addElement(self.tablemaster)
-
-        self.masterpagecontent = MasterPage(
-            name="MyMasterContent", pagelayoutname=pagelayout
-        )
-        self.doc.masterstyles.addElement(self.masterpagecontent)
-
         # Metadata
         self.doc.meta.addElement(
             dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
@@ -180,6 +188,14 @@ class ShiftLeaderReportPresentation(object):
                 text=f"CertHelper version {self.certhelper_version}, requested by {self.requesting_user}"
             )
         )
+
+    def _generate_list(self, list_items: list) -> List:
+        l = List()
+        for item in list_items:
+            li = ListItem()
+            li.addElement(P(text=item))
+            l.addElement(li)
+        return l
 
     def _generate_filename(self) -> str:
         return f"shiftleader_report_{self.year}_week_{self.week_number}.odp"
@@ -245,29 +261,28 @@ class ShiftLeaderReportPresentation(object):
                 "certified_runs": [355407, 355407, 355407, 355407],
             },
         ]
-        # table_names = {
-        #     "Collisions Express": {"fills": fills},
-        #     "Collisions Prompt": {"fills": fills},
-        #     "Cosmics Express": {"fills": fills},
-        #     "Cosmics Prompt": {"fills": fills},
-        # }
-
-        logger.debug("Getting information on collisions express")
-        collisions_express = self.slreport.collisions().express().fills()
-        logger.debug("Getting information on collisions prompt")
-        collisions_prompt = self.slreport.collisions().prompt().fills()
-        logger.debug("Getting information on cosmics express")
-        cosmics_express = self.slreport.cosmics().express().fills()
-        logger.debug("Getting information on cocmics prompt")
-        cosmics_prompt = self.slreport.cosmics().prompt().fills()
         table_names = {
-            "Collisions Express": {"fills": collisions_express},
-            "Collisions Prompt": {"fills": collisions_prompt},
-            "Cosmics Express": {"fills": cosmics_express},
-            "Cosmics Prompt": {"fills": cosmics_prompt},
+            "Collisions Express": {"fills": fills},
+            "Collisions Prompt": {"fills": fills},
+            "Cosmics Express": {"fills": fills},
+            "Cosmics Prompt": {"fills": fills},
         }
 
-        logger.debug("Done.")
+        # logger.debug("Getting information on collisions express")
+        # collisions_express = self.slreport.collisions().express().fills()
+        # logger.debug("Getting information on collisions prompt")
+        # collisions_prompt = self.slreport.collisions().prompt().fills()
+        # logger.debug("Getting information on cosmics express")
+        # cosmics_express = self.slreport.cosmics().express().fills()
+        # logger.debug("Getting information on cocmics prompt")
+        # cosmics_prompt = self.slreport.cosmics().prompt().fills()
+        # table_names = {
+        #     "Collisions Express": {"fills": collisions_express},
+        #     "Collisions Prompt": {"fills": collisions_prompt},
+        #     "Cosmics Express": {"fills": cosmics_express},
+        #     "Cosmics Prompt": {"fills": cosmics_prompt},
+        # }
+        # logger.debug("Done.")
 
         # Iterate over all required tables
         for table_name, table_config in table_names.items():
@@ -334,7 +349,12 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
             )
-            # TODO: add content
+            frame = self._create_full_page_content_frame()
+            tb = TextBox()
+            tb.addElement(P(text="TESTT"))
+            tb.addElement(self._generate_list(["asdfasd", "sadfsadf"]))
+            frame.addElement(tb)
+            page.addElement(frame)
 
     def _add_page_summary(self):
         page = self._create_content_page(title=f"Summary of week {self.week_number}")
@@ -347,6 +367,15 @@ class ShiftLeaderReportPresentation(object):
     def _add_page_list_prompt(self):
         page = self._create_content_page(title="List of runs certified StreamExpress")
         # TODO: add content
+
+    def _create_full_page_content_frame(self):
+        return Frame(
+            stylename=self.textstyle_content,
+            width="648pt",
+            height=f"410pt",
+            x="36pt",
+            y="110pt",
+        )
 
     def _create_content_page(self, title: str):
         """
