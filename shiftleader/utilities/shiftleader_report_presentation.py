@@ -99,7 +99,7 @@ class ShiftLeaderReportPresentation(object):
         # The name attribute *must* start with the name of the masterpage
         # The name after the dash *also* matters (should be "title", "subtitle"
         # or "photo").
-        self.titlestyle = Style(name="MyMaster-title", family="presentation")
+        self.titlestyle = Style(name="TitleOnly-title", family="presentation")
         self.titlestyle.addElement(
             ParagraphProperties(textalign="center", verticalalign="middle")
         )
@@ -111,7 +111,7 @@ class ShiftLeaderReportPresentation(object):
 
         # Different style for content titles
         self.titlestyle_content = Style(
-            name="MyMasterContent-title", family="presentation"
+            name="TitleAndContent-title", family="presentation"
         )
         self.titlestyle_content.addElement(
             ParagraphProperties(textalign="center", verticalalign="middle")
@@ -127,7 +127,7 @@ class ShiftLeaderReportPresentation(object):
         self.doc.styles.addElement(self.titlestyle_content)
 
         self.textstyle_content = Style(
-            name="MyMasterContent-subtitle", family="presentation"
+            name="TitleAndContent-subtitle", family="presentation"
         )
         self.textstyle_content.addElement(
             ParagraphProperties(textalign="left", verticalalign="middle")
@@ -143,7 +143,7 @@ class ShiftLeaderReportPresentation(object):
         self.doc.styles.addElement(self.textstyle_content)
 
         # Style for adding content
-        self.subtitlestyle = Style(name="MyMaster-subtitle", family="presentation")
+        self.subtitlestyle = Style(name="TitleOnly-subtitle", family="presentation")
         self.subtitlestyle.addElement(ParagraphProperties(textalign="center"))
         self.subtitlestyle.addElement(
             TextProperties(fontsize="32pt", fontfamily="sans", color="#8b8b8b")
@@ -154,7 +154,7 @@ class ShiftLeaderReportPresentation(object):
         self.doc.styles.addElement(self.subtitlestyle)
 
         # Style for images
-        # self.photostyle = Style(name="MyMaster-photo", family="presentation")
+        # self.photostyle = Style(name="TitleOnly-photo", family="presentation")
         # self.doc.styles.addElement(self.photostyle)
 
         # Style for pages and transitions
@@ -169,11 +169,11 @@ class ShiftLeaderReportPresentation(object):
         self.doc.automaticstyles.addElement(self.dpstyle)
 
         # Every drawing page must have a master page assigned to it.
-        self.masterpage = MasterPage(name="MyMaster", pagelayoutname=pagelayout)
+        self.masterpage = MasterPage(name="TitleOnly", pagelayoutname=pagelayout)
         self.doc.masterstyles.addElement(self.masterpage)
 
         self.masterpagecontent = MasterPage(
-            name="MyMasterContent", pagelayoutname=pagelayout
+            name="TitleAndContent", pagelayoutname=pagelayout
         )
         self.doc.masterstyles.addElement(self.masterpagecontent)
 
@@ -290,7 +290,7 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
             # Frame style
-            self.frametablestyle = Style(name="MyMaster-table", family="presentation")
+            self.frametablestyle = Style(name="TitleOnly-table", family="presentation")
             self.frametablestyle.addElement(
                 ParagraphProperties(textalign="left", verticalalign="middle")
             )
