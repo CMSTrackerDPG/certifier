@@ -104,9 +104,7 @@ class ShiftLeaderReportPresentation(object):
             ParagraphProperties(textalign="center", verticalalign="middle")
         )
         self.titlestyle.addElement(TextProperties(fontsize="44pt", fontfamily="sans"))
-        self.titlestyle.addElement(
-            GraphicProperties(fillcolor="#ffffff", strokecolor="#ffffff")
-        )
+        self.titlestyle.addElement(GraphicProperties(fill="none", stroke="none"))
         self.doc.styles.addElement(self.titlestyle)
 
         # Different style for content titles
@@ -120,9 +118,7 @@ class ShiftLeaderReportPresentation(object):
             TextProperties(fontsize="44pt", fontfamily="sans", color="#00b0f0")
         )
         self.titlestyle_content.addElement(
-            GraphicProperties(
-                fillcolor="#ffffff", strokecolor="#ffffff", overflowbehavior="clip"
-            )
+            GraphicProperties(fill="none", stroke="none", overflowbehavior="clip")
         )
         self.doc.styles.addElement(self.titlestyle_content)
 
@@ -136,9 +132,7 @@ class ShiftLeaderReportPresentation(object):
             TextProperties(fontsize="12pt", fontfamily="sans", color="#000000")
         )
         self.textstyle_content.addElement(
-            GraphicProperties(
-                fillcolor="#ffffff", strokecolor="#ffffff", overflowbehavior="clip"
-            )
+            GraphicProperties(fill="none", stroke="none", overflowbehavior="clip")
         )
         self.doc.styles.addElement(self.textstyle_content)
 
@@ -148,9 +142,7 @@ class ShiftLeaderReportPresentation(object):
         self.subtitlestyle.addElement(
             TextProperties(fontsize="32pt", fontfamily="sans", color="#8b8b8b")
         )
-        self.subtitlestyle.addElement(
-            GraphicProperties(fillcolor="#ffffff", strokecolor="#ffffff")
-        )
+        self.subtitlestyle.addElement(GraphicProperties(fill="none", stroke="none"))
         self.doc.styles.addElement(self.subtitlestyle)
 
         # Style for images
@@ -197,11 +189,7 @@ class ShiftLeaderReportPresentation(object):
             ParagraphProperties(textalign="left", verticalalign="middle")
         )
         self.frametablestyle.addElement(TextProperties(fontfamily="sans"))
-        self.frametablestyle.addElement(
-            TableProperties(
-                backgroundcolor="#ffffff",
-            )
-        )
+        self.frametablestyle.addElement(TableProperties())
         self.doc.styles.addElement(self.frametablestyle)
 
     def _generate_list(self, list_items: list) -> List:
