@@ -189,6 +189,21 @@ class ShiftLeaderReportPresentation(object):
             )
         )
 
+        # Table style
+        self.frametablestyle = Style(
+            name="TitleAndContent-table", family="presentation"
+        )
+        self.frametablestyle.addElement(
+            ParagraphProperties(textalign="left", verticalalign="middle")
+        )
+        self.frametablestyle.addElement(TextProperties(fontfamily="sans"))
+        self.frametablestyle.addElement(
+            TableProperties(
+                backgroundcolor="#ffffff",
+            )
+        )
+        self.doc.styles.addElement(self.frametablestyle)
+
     def _generate_list(self, list_items: list) -> List:
         l = List()
         for item in list_items:
@@ -288,19 +303,6 @@ class ShiftLeaderReportPresentation(object):
         for table_name, table_config in table_names.items():
             logger.debug(f"Creating table {table_name}")
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
-
-            # Frame style
-            self.frametablestyle = Style(name="TitleOnly-table", family="presentation")
-            self.frametablestyle.addElement(
-                ParagraphProperties(textalign="left", verticalalign="middle")
-            )
-            self.frametablestyle.addElement(TextProperties(fontfamily="sans"))
-            self.frametablestyle.addElement(
-                TableProperties(
-                    backgroundcolor="#ffffff",
-                )
-            )
-            self.doc.styles.addElement(self.frametablestyle)
 
             table_frame = Frame(
                 stylename=self.frametablestyle,
