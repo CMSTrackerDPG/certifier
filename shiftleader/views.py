@@ -2,15 +2,14 @@ import logging
 import tempfile
 from pathlib import Path
 from xml.etree.ElementTree import ParseError
+from datetime import date, timedelta
 from requests.exceptions import SSLError
-from datetime import date
 from django.http import HttpResponseRedirect, FileResponse
 from django_filters.views import FilterView
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils import timezone
-from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django_tables2 import SingleTableMixin
 from tables.tables import (
@@ -21,10 +20,7 @@ from tables.tables import (
 from certifier.models import TrackerCertification
 from listruns.utilities.utilities import request_contains_filter_parameter
 from shiftleader.filters import ShiftLeaderTrackerCertificationFilter
-from shiftleader.utilities.utilities import (
-    get_this_week_filter_parameter,
-    calculate_week_start_end,
-)
+from shiftleader.utilities.utilities import get_this_week_filter_parameter
 from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.utilities.shiftleader_report_presentation import (
     ShiftLeaderReportPresentation,
@@ -130,9 +126,9 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
         )
 
         # Get first day of week requested
-        d = date.fromisocalendar(year=year, week=week_number, day=1)
+        week_start = date.fromisocalendar(year=year, week=week_number, day=1)
 
-        week_start, week_end = calculate_week_start_end(d)
+        week_end = week_start + timedelta(days=6)
 
         queryset = TrackerCertification.objects.filter(
             date__gte=week_start,
