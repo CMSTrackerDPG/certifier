@@ -6,7 +6,6 @@ import logging
 from datetime import datetime, date, timedelta
 from django.conf import settings
 from certifier.models import TrackerCertification
-from certifier.query import TrackerCertificationQuerySet
 from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.templatetags.shiftleaderfilters import join_good_runs
 from listruns.utilities.luminosity import format_integrated_luminosity
@@ -20,13 +19,11 @@ from odf.style import (
     GraphicProperties,
     ParagraphProperties,
     DrawingPageProperties,
-    TableProperties,
     ListLevelProperties,
 )
 from odf import dc
 from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle
-from odf.presentation import Header
-from odf.draw import Page, Frame, TextBox, Image
+from odf.draw import Page, Frame, TextBox
 from odf.table import Table, TableColumn, TableRow, TableCell
 
 
