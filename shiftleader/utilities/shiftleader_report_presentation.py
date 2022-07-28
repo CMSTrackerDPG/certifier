@@ -6,6 +6,9 @@ import logging
 from datetime import datetime
 from django.conf import settings
 from certifier.query import TrackerCertificationQuerySet
+from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
+from shiftleader.templatetags.shiftleaderfilters import join_good_runs
+from listruns.utilities.luminosity import format_integrated_luminosity
 from odf.opendocument import OpenDocumentPresentation
 from odf.style import (
     Style,
@@ -24,7 +27,6 @@ from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle
 from odf.presentation import Header
 from odf.draw import Page, Frame, TextBox, Image
 from odf.table import Table, TableColumn, TableRow, TableCell
-from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 
 
 logger = logging.getLogger(__name__)
@@ -399,16 +401,35 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
             )
-
             frame = self._create_full_page_content_frame(self.style_frame_list)
-
             tb = TextBox()
-            tb.addElement(P(text="TESTT"))
             list1 = self._generate_list(
-                list_items=["asdfasd", "sadfsadf", ["test1", "test2"]]
+                list_items=[
+                    f"Fills {str(day.collisions().express().fill_numbers())}",
+                    [
+                        "[insert here] colliding bunches, peak lumi [insert here] x 10³⁴ cm²/s",
+                    ],
+                    "Number of runs certified:",
+                    [
+                        f"Collisions: {day.collisions().express().total_number()} in Stream-Express ({format_integrated_luminosity(day.collisions().express().integrated_luminosity())}), {day.collisions().prompt().total_number()} in Prompt-Reco ({format_integrated_luminosity(day.collisions().prompt().integrated_luminosity())})",
+                        f"Cosmics: {day.cosmics().express().total_number()} in Stream-Express, {day.cosmics().prompt().total_number()} in Prompt-Reco",
+                    ],
+                    f"Total number of BAD runs = {day.bad().total_number()} ({format_integrated_luminosity(day.bad().integrated_luminosity())})",
+                    [
+                        f"Number of changed flags from Express to Prompt={day.flag_changed().total_number()}"
+                        + f" ({day.flag_changed().good().run_numbers()})"  # TODO, format as green?
+                        if day.flag_changed().total_number() > 0
+                        else ""
+                    ],
+                    "Conditions update:",
+                    "Issues reported in the Elog and feedback to Online:",
+                    "On calls:",
+                ]
             )
-
             tb.addElement(list1)
+            tb.addElement(P(text="Daily Shifter Summaries:"))
+            tb.addElement(P(text="Prompt Feedback plots:"))
+
             frame.addElement(tb)
             page.addElement(frame)
 
