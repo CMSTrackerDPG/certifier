@@ -3,8 +3,9 @@ OpenDocumentPresentation generator for shiftleader reports
 """
 from typing import List as tList
 import logging
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.conf import settings
+from certifier.models import TrackerCertification
 from certifier.query import TrackerCertificationQuerySet
 from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.templatetags.shiftleaderfilters import join_good_runs
@@ -53,7 +54,7 @@ class ShiftLeaderReportPresentation(object):
         name_shift_leader: str = "",
         names_shifters: tList[str] = [""],
         names_oncall: tList[str] = [""],
-        certification_queryset: TrackerCertificationQuerySet = None,
+        # certification_queryset: TrackerCertificationQuerySet = None,
     ):
         logger.info(
             f"ShiftLeader presentation generation for week {week_number} requested by {requesting_user}"
@@ -66,7 +67,18 @@ class ShiftLeaderReportPresentation(object):
         self.name_shift_leader = name_shift_leader
         self.names_shifters = names_shifters
         self.names_oncall = names_oncall
-        self.queryset = certification_queryset
+
+        # Get first day of week requested
+        week_start = date.fromisocalendar(year=year, week=week_number, day=1)
+
+        week_end = week_start + timedelta(days=6)
+
+        queryset = TrackerCertification.objects.filter(
+            date__gte=week_start,
+            date__lte=week_end,
+        )
+
+        self.queryset = queryset
         logger.debug(
             f"TrackerCertification queryset contains {self.queryset.count()} objects"
         )

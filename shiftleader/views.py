@@ -125,16 +125,6 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             tempfile.gettempdir(), f"shiftleader_report_{year}_week_{week_number}.odp"
         )
 
-        # Get first day of week requested
-        week_start = date.fromisocalendar(year=year, week=week_number, day=1)
-
-        week_end = week_start + timedelta(days=6)
-
-        queryset = TrackerCertification.objects.filter(
-            date__gte=week_start,
-            date__lte=week_end,
-        )
-
         p = ShiftLeaderReportPresentation(
             year=year,
             week_number=week_number,
@@ -146,7 +136,6 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             else request.user.username,
             names_shifters=[],
             names_oncall=[],
-            certification_queryset=queryset,
         )
         p.save(filename=filepath)
         return FileResponse(open(filepath, "rb"))
