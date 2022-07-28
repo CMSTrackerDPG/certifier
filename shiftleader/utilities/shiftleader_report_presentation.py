@@ -475,7 +475,35 @@ class ShiftLeaderReportPresentation(object):
 
     def _add_page_list_prompt(self):
         page = self._create_content_page(title="List of runs certified Prompt")
-        # TODO: add content
+        frame = self._create_full_page_content_frame(self.style_frame_list)
+        tb = TextBox()
+        list1 = self._generate_list(
+            list_items=[
+                "Collisions",
+                [
+                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    + (
+                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        if len(day.bad().run_numbers()) > 0
+                        else ""
+                    )
+                    for day in self.slreport.collisions().prompt().day_by_day()
+                ],
+                "Cosmics",
+                [
+                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    + (
+                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        if len(day.bad().run_numbers()) > 0
+                        else ""
+                    )
+                    for day in self.slreport.cosmics().prompt().day_by_day()
+                ],
+            ]
+        )
+        tb.addElement(list1)
+        frame.addElement(tb)
+        page.addElement(frame)
 
     def _create_full_page_content_frame(self, stylename: str = None):
         """
