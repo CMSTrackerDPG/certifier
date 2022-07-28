@@ -184,7 +184,26 @@ class ShiftLeaderReportPresentation(object):
         # Table cell style
         self.style_cell = Style(name="ce1", family="table-cell")
         self.style_cell.addElement(GraphicProperties(fillcolor="#ffffff"))
+        self.style_cell.addElement(ParagraphProperties(border="0.03pt solid #000000"))
         self.doc.automaticstyles.addElement(self.style_cell)
+
+        # Header Cell style
+        self.style_header_cell = Style(name="ce2", family="table-cell")
+        self.style_header_cell.addElement(
+            GraphicProperties(fillcolor="#999999", textareaverticalalign="middle")
+        )
+        self.style_header_cell.addElement(
+            ParagraphProperties(border="0.03pt solid #000000")
+        )
+        self.style_header_cell.addElement(
+            TextProperties(
+                color="#000000",
+                fontweight="bold",
+                fontweightasian="bold",
+                fontweightcomplex="bold",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_header_cell)
 
     def _generate_list(self, list_items: list) -> List:
         l = List()
@@ -295,26 +314,6 @@ class ShiftLeaderReportPresentation(object):
 
             table = self._create_table()
 
-            # Cell style
-            tablecell_header_style = Style(
-                name="TitleAndContent-ce1", family="table-cell"
-            )
-            tablecell_header_style.addElement(
-                GraphicProperties(fillcolor="#999999", textareaverticalalign="middle")
-            )
-            tablecell_header_style.addElement(
-                ParagraphProperties(border="0.03pt solid #000000")
-            )
-            tablecell_header_style.addElement(
-                TextProperties(
-                    color="#000000",
-                    fontweight="bold",
-                    fontweightasian="bold",
-                    fontweightcomplex="bold",
-                )
-            )
-            self.doc.styles.addElement(tablecell_header_style)
-
             # Two columns
             table.addElement(TableColumn())
             table.addElement(TableColumn())
@@ -323,7 +322,7 @@ class ShiftLeaderReportPresentation(object):
             tr = TableRow(defaultcellstylename=self.style_cell)
             table.addElement(tr)
             for col_name in ["Fill Number", "Certified Runs"]:
-                tc = TableCell(stylename=tablecell_header_style)
+                tc = TableCell(stylename=self.style_header_cell)
                 tc.addElement(P(text=col_name))
                 tr.addElement(tc)
 
