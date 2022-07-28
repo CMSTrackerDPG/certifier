@@ -334,28 +334,28 @@ class ShiftLeaderReportPresentation(object):
                 "certified_runs": [355407, 355407, 355407, 355407],
             },
         ]
-        table_names = {
-            "Collisions Express": {"fills": fills},
-            "Collisions Prompt": {"fills": fills},
-            "Cosmics Express": {"fills": fills},
-            "Cosmics Prompt": {"fills": fills},
-        }
-
-        # logger.debug("Getting information on collisions express")
-        # collisions_express = self.slreport.collisions().express().fills()
-        # logger.debug("Getting information on collisions prompt")
-        # collisions_prompt = self.slreport.collisions().prompt().fills()
-        # logger.debug("Getting information on cosmics express")
-        # cosmics_express = self.slreport.cosmics().express().fills()
-        # logger.debug("Getting information on cocmics prompt")
-        # cosmics_prompt = self.slreport.cosmics().prompt().fills()
         # table_names = {
-        #     "Collisions Express": {"fills": collisions_express},
-        #     "Collisions Prompt": {"fills": collisions_prompt},
-        #     "Cosmics Express": {"fills": cosmics_express},
-        #     "Cosmics Prompt": {"fills": cosmics_prompt},
+        #     "Collisions Express": {"fills": fills},
+        #     "Collisions Prompt": {"fills": fills},
+        #     "Cosmics Express": {"fills": fills},
+        #     "Cosmics Prompt": {"fills": fills},
         # }
-        # logger.debug("Done.")
+
+        logger.debug("Getting information on collisions express")
+        collisions_express = self.slreport.collisions().express().fills()
+        logger.debug("Getting information on collisions prompt")
+        collisions_prompt = self.slreport.collisions().prompt().fills()
+        logger.debug("Getting information on cosmics express")
+        cosmics_express = self.slreport.cosmics().express().fills()
+        logger.debug("Getting information on cocmics prompt")
+        cosmics_prompt = self.slreport.cosmics().prompt().fills()
+        table_names = {
+            "Collisions Express": {"fills": collisions_express},
+            "Collisions Prompt": {"fills": collisions_prompt},
+            "Cosmics Express": {"fills": cosmics_express},
+            "Cosmics Prompt": {"fills": cosmics_prompt},
+        }
+        logger.debug("Done.")
 
         # Iterate over all required tables
         for table_name, table_config in table_names.items():
