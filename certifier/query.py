@@ -1,4 +1,6 @@
+import http
 import collections
+import requests
 import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -301,8 +303,23 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         if not self.run_numbers():
             return []
+        logger.debug(f"Querying RR for runs {self.run_numbers()}")
+        counter = 2
+        while True:
+            try:
+                runs = runregistry.get_runs(
+                    filter={"run_number": {"or": self.run_numbers()}},
+                )
+                break
+            except requests.exceptions.ConnectionError as e:
+                logger.warning(f"Error when getting runs from RR: ({e})")
+                counter -= 1
+                if counter <= 0:
+                    logger.error(
+                        f"Failed to get runs {self.run_numbers()} after 2 tries"
+                    )
+                    raise e
 
-        runs = runregistry.get_runs(filter={"run_number": {"or": self.run_numbers()}})
         fill_numbers_list = sorted(
             set(
                 {
@@ -635,9 +652,25 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         return len(deviating) == 0
 
     def group_run_numbers_by_fill_number(self):
+        if not self.run_numbers():
+            return []
         run_numbers = self.run_numbers()
+        logger.debug(f"Querying RR for runs {run_numbers}")
         response = []
-        runs = runregistry.get_runs(filter={"run_number": {"or": run_numbers}})
+        counter = 2
+        while True:
+            try:
+                runs = runregistry.get_runs(filter={"run_number": {"or": run_numbers}})
+                break
+            except (
+                requests.exceptions.ConnectionError,
+                http.client.RemoteDisconnected,
+            ) as e:
+                logger.warning(f"Error when getting runs from RR: ({e})")
+                counter -= 1
+                if counter <= 0:
+                    logger.error(f"Failed to get runs {run_numbers} after 2 tries")
+                    raise e
 
         for run in runs:
             response.append([run["oms_attributes"]["fill_number"], run["run_number"]])
