@@ -597,4 +597,8 @@ class ShiftLeaderReportPresentation(object):
     def save(self, filename: str = "") -> None:
         if not filename or filename == "":
             filename = self._generate_filename()
-        self.doc.save(outputfile=filename)
+        try:
+            self.doc.save(outputfile=filename)
+            logger.info(f"Presentation saved at '{filename}'!")
+        except Exception as e:
+            logger.exception(repr(e))
