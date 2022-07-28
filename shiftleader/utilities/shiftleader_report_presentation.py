@@ -181,16 +181,10 @@ class ShiftLeaderReportPresentation(object):
             )
         )
 
-        # Table style
-        self.frametablestyle = Style(
-            name="TitleAndContent-table", family="presentation"
-        )
-        self.frametablestyle.addElement(
-            ParagraphProperties(textalign="left", verticalalign="middle")
-        )
-        self.frametablestyle.addElement(TextProperties(fontfamily="sans"))
-        self.frametablestyle.addElement(TableProperties())
-        self.doc.styles.addElement(self.frametablestyle)
+        # Table cell style
+        self.style_cell = Style(name="ce1", family="table-cell")
+        self.style_cell.addElement(GraphicProperties(fillcolor="#ffffff"))
+        self.doc.automaticstyles.addElement(self.style_cell)
 
     def _generate_list(self, list_items: list) -> List:
         l = List()
@@ -293,7 +287,6 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
             table_frame = Frame(
-                stylename=self.frametablestyle,
                 width="648pt",
                 height="105pt",
                 x="40pt",
@@ -301,35 +294,48 @@ class ShiftLeaderReportPresentation(object):
             )
 
             table = self._create_table()
-            tablecontents = Style(name="Table Contents", family="paragraph")
-            tablecontents.addElement(
-                ParagraphProperties(numberlines="false", linenumber="0")
-            )
 
-            # tablecontents.addElement(GraphicProperties())
-            self.doc.styles.addElement(tablecontents)
+            # Cell style
+            tablecell_header_style = Style(
+                name="TitleAndContent-ce1", family="table-cell"
+            )
+            tablecell_header_style.addElement(
+                GraphicProperties(fillcolor="#999999", textareaverticalalign="middle")
+            )
+            tablecell_header_style.addElement(
+                ParagraphProperties(border="0.03pt solid #000000")
+            )
+            tablecell_header_style.addElement(
+                TextProperties(
+                    color="#000000",
+                    fontweight="bold",
+                    fontweightasian="bold",
+                    fontweightcomplex="bold",
+                )
+            )
+            self.doc.styles.addElement(tablecell_header_style)
 
             # Two columns
             table.addElement(TableColumn())
             table.addElement(TableColumn())
 
             # Header
-            tr = TableRow()
+            tr = TableRow(defaultcellstylename=self.style_cell)
             table.addElement(tr)
             for col_name in ["Fill Number", "Certified Runs"]:
-                tc = TableCell()
-                tc.addElement(P(text=col_name, stylename=tablecontents))
+                tc = TableCell(stylename=tablecell_header_style)
+                tc.addElement(P(text=col_name))
                 tr.addElement(tc)
 
             # Add fill information
             for fill in table_config["fills"]:
-                tr = TableRow()
+                tr = TableRow(defaultcellstylename=self.style_cell)
                 table.addElement(tr)
                 # keys: fill_number, certified_runs
                 for k, v in fill.items():
                     tc = TableCell()
                     tr.addElement(tc)
-                    tc.addElement(P(text=v, stylename=tablecontents))
+                    tc.addElement(P(text=v))
 
             table_frame.addElement(table)
             page.addElement(table_frame)
