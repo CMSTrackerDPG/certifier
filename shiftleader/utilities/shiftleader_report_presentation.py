@@ -17,9 +17,10 @@ from odf.style import (
     ParagraphProperties,
     DrawingPageProperties,
     TableProperties,
+    ListLevelProperties,
 )
 from odf import dc
-from odf.text import P, List, ListItem, ListLevelStyleBullet
+from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle
 from odf.presentation import Header
 from odf.draw import Page, Frame, TextBox, Image
 from odf.table import Table, TableColumn, TableRow, TableCell
@@ -122,19 +123,19 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.styles.addElement(self.titlestyle_content)
 
-        self.textstyle_content = Style(
+        self.style_content_subtitle = Style(
             name="TitleAndContent-subtitle", family="presentation"
         )
-        self.textstyle_content.addElement(
+        self.style_content_subtitle.addElement(
             ParagraphProperties(textalign="left", verticalalign="middle")
         )
-        self.textstyle_content.addElement(
+        self.style_content_subtitle.addElement(
             TextProperties(fontsize="12pt", fontfamily="sans", color="#000000")
         )
-        self.textstyle_content.addElement(
+        self.style_content_subtitle.addElement(
             GraphicProperties(fill="none", stroke="none", overflowbehavior="clip")
         )
-        self.doc.styles.addElement(self.textstyle_content)
+        self.doc.styles.addElement(self.style_content_subtitle)
 
         # Style for adding content
         self.subtitlestyle = Style(name="TitleOnly-subtitle", family="presentation")
@@ -190,7 +191,7 @@ class ShiftLeaderReportPresentation(object):
         # Header Cell style
         self.style_header_cell = Style(name="ce2", family="table-cell")
         self.style_header_cell.addElement(
-            GraphicProperties(fillcolor="#999999", textareaverticalalign="middle")
+            GraphicProperties(fillcolor="#dddddd", textareaverticalalign="middle")
         )
         self.style_header_cell.addElement(
             ParagraphProperties(border="0.03pt solid #000000")
@@ -205,8 +206,40 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_header_cell)
 
-    def _generate_list(self, list_items: list) -> List:
-        l = List()
+        # List style
+        self.list_style = ListStyle(name="L1")
+        list_level_style_bullet = ListLevelStyleBullet(level="1", bulletchar="●")
+        list_level_style_bullet.addElement(
+            ListLevelProperties(spacebefore="0.3cm", minlabelwidth="0.9cm")
+        )
+        list_level_style_bullet.addElement(
+            TextProperties(
+                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="45%"
+            )
+        )
+
+        self.list_style.addElement(list_level_style_bullet)
+        self.doc.automaticstyles.addElement(self.list_style)
+
+        #
+        self.style_frame_list = Style(
+            name="pr1", family="presentation", liststylename=self.list_style
+        )
+        self.style_frame_list.addElement(
+            GraphicProperties(
+                stroke="none",
+                fill="none",
+                textareaverticalalign="top",
+                fittosize="shrink-to-fit",
+                shrinktofit="true",
+                paddingtop="0.127cm",
+                paddingbottom="0.127cm",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_frame_list)
+
+    def _generate_list(self, list_items: list, stylename: str = None) -> List:
+        l = List(stylename=stylename if stylename else self.list_style)
         for item in list_items:
             li = ListItem()
             li.addElement(P(text=item))
@@ -344,10 +377,14 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
             )
-            frame = self._create_full_page_content_frame()
+
+            frame = self._create_full_page_content_frame(self.style_frame_list)
+
             tb = TextBox()
             tb.addElement(P(text="TESTT"))
-            tb.addElement(self._generate_list(["asdfasd", "sadfsadf"]))
+            tb.addElement(
+                self._generate_list(["asdfasd", "sadfsadf"]),
+            )
             frame.addElement(tb)
             page.addElement(frame)
 
@@ -363,9 +400,9 @@ class ShiftLeaderReportPresentation(object):
         page = self._create_content_page(title="List of runs certified StreamExpress")
         # TODO: add content
 
-    def _create_full_page_content_frame(self):
+    def _create_full_page_content_frame(self, stylename: str = None):
         return Frame(
-            stylename=self.textstyle_content,
+            stylename=stylename if stylename else self.style_content_subtitle,
             width="648pt",
             height=f"410pt",
             x="36pt",
