@@ -226,7 +226,7 @@ class ShiftLeaderReportPresentation(object):
 
         # List style L2
         self.list_style_l2 = ListStyle(name="L1-2")
-        list_level_style_bullet = ListLevelStyleBullet(level="2", bulletchar="-")
+        list_level_style_bullet = ListLevelStyleBullet(level="2", bulletchar="◦")
         list_level_style_bullet.addElement(
             ListLevelProperties(spacebefore="1.5cm", minlabelwidth="0.9cm")
         )
@@ -239,6 +239,20 @@ class ShiftLeaderReportPresentation(object):
         self.list_style_l2.addElement(list_level_style_bullet)
         self.doc.automaticstyles.addElement(self.list_style_l2)
 
+        # List style L3
+        self.list_style_l3 = ListStyle(name="L1-3")
+        list_level_style_bullet = ListLevelStyleBullet(level="3", bulletchar="▪")
+        list_level_style_bullet.addElement(
+            ListLevelProperties(spacebefore="3.3cm", minlabelwidth="0.9cm")
+        )
+        list_level_style_bullet.addElement(
+            TextProperties(
+                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="45%"
+            )
+        )
+
+        self.list_style_l3.addElement(list_level_style_bullet)
+        self.doc.automaticstyles.addElement(self.list_style_l3)
         #
         self.style_frame_list = Style(
             name="pr1", family="presentation", liststylename=self.list_style_l1
@@ -320,6 +334,9 @@ class ShiftLeaderReportPresentation(object):
         # TODO: add content
 
     def _add_page_list_lhc_fills(self):
+        """
+        LHC fills only
+        """
         if not self.queryset.run_numbers():
             logger.debug("No runs certified")
             return
@@ -380,6 +397,9 @@ class ShiftLeaderReportPresentation(object):
             page.addElement(table_frame)
 
     def _add_page_day_by_day(self):
+        """
+        Day-by-day certification report
+        """
         for day in self.slreport.day_by_day():
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
@@ -417,7 +437,43 @@ class ShiftLeaderReportPresentation(object):
             page.addElement(frame)
 
     def _add_page_weekly_certification(self):
+        """
+        Weekly certification page
+        """
         page = self._create_content_page(title=f"Weekly certification")
+        frame = self._create_full_page_content_frame(self.style_frame_list)
+        tb = TextBox()
+        list1 = self._generate_list(
+            list_items=[
+                "Collisions",
+                [
+                    f"Prompt-Reco: total number={self.slreport.collisions().prompt().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.collisions().prompt().integrated_luminosity())}",
+                    [
+                        f"BAD runs: total number={self.slreport.bad().collisions().prompt().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().collisions().prompt().integrated_luminosity())}"
+                    ],
+                    f"Stream-Express: total number={self.slreport.collisions().express().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.collisions().express().integrated_luminosity())}",
+                    [
+                        f"BAD runs: total number={self.slreport.bad().collisions().express().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().collisions().express().integrated_luminosity())}"
+                    ],
+                ],
+                "Cosmics",
+                [
+                    f"Prompt-Reco: total number={self.slreport.cosmics().prompt().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.cosmics().prompt().integrated_luminosity())}",
+                    [
+                        f"BAD runs: total number={self.slreport.bad().cosmics().prompt().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().cosmics().prompt().integrated_luminosity())}"
+                    ],
+                    f"Stream-Express: total number={self.slreport.cosmics().express().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.cosmics().express().integrated_luminosity())}",
+                    [
+                        f"BAD runs: total number={self.slreport.bad().cosmics().express().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().cosmics().express().integrated_luminosity())}"
+                    ],
+                ],
+                "Central certification:",
+                ["list of runs:", "deadline has been met?"],
+            ]
+        )
+        tb.addElement(list1)
+        frame.addElement(tb)
+        page.addElement(frame)
 
     def _add_page_summary(self):
         page = self._create_content_page(title=f"Summary of week {self.week_number}")
