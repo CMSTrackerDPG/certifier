@@ -410,7 +410,7 @@ class ShiftLeaderReportPresentation(object):
                 list_items=[
                     f"Fills {str(day.collisions().express().fill_numbers())}",
                     [
-                        "[insert here] colliding bunches, peak lumi [insert here] x 10³⁴ cm²/s",
+                        "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
                     ],
                     "Number of runs certified:",
                     [
