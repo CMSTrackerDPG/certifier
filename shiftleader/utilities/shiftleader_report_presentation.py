@@ -206,8 +206,8 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_header_cell)
 
-        # List style
-        self.list_style = ListStyle(name="L1")
+        # List style L1-1
+        self.list_style_l1 = ListStyle(name="L1-1")
         list_level_style_bullet = ListLevelStyleBullet(level="1", bulletchar="●")
         list_level_style_bullet.addElement(
             ListLevelProperties(spacebefore="0.3cm", minlabelwidth="0.9cm")
@@ -218,12 +218,27 @@ class ShiftLeaderReportPresentation(object):
             )
         )
 
-        self.list_style.addElement(list_level_style_bullet)
-        self.doc.automaticstyles.addElement(self.list_style)
+        self.list_style_l1.addElement(list_level_style_bullet)
+        self.doc.automaticstyles.addElement(self.list_style_l1)
+
+        # List style L2
+        self.list_style_l2 = ListStyle(name="L1-2")
+        list_level_style_bullet = ListLevelStyleBullet(level="2", bulletchar="-")
+        list_level_style_bullet.addElement(
+            ListLevelProperties(spacebefore="1.5cm", minlabelwidth="0.9cm")
+        )
+        list_level_style_bullet.addElement(
+            TextProperties(
+                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="45%"
+            )
+        )
+
+        self.list_style_l2.addElement(list_level_style_bullet)
+        self.doc.automaticstyles.addElement(self.list_style_l2)
 
         #
         self.style_frame_list = Style(
-            name="pr1", family="presentation", liststylename=self.list_style
+            name="pr1", family="presentation", liststylename=self.list_style_l1
         )
         self.style_frame_list.addElement(
             GraphicProperties(
@@ -238,11 +253,18 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_frame_list)
 
-    def _generate_list(self, list_items: list, stylename: str = None) -> List:
-        l = List(stylename=stylename if stylename else self.list_style)
+    def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
+        stylename = f"L1-{identation_level}"
+        l = List(stylename=stylename)
         for item in list_items:
             li = ListItem()
-            li.addElement(P(text=item))
+
+            if isinstance(item, list):
+                item = self._generate_list(item, identation_level + 1)
+                li.addElement(item)
+            else:
+                li.addElement(P(text=item))
+
             l.addElement(li)
         return l
 
@@ -382,9 +404,11 @@ class ShiftLeaderReportPresentation(object):
 
             tb = TextBox()
             tb.addElement(P(text="TESTT"))
-            tb.addElement(
-                self._generate_list(["asdfasd", "sadfsadf"]),
+            list1 = self._generate_list(
+                list_items=["asdfasd", "sadfsadf", ["test1", "test2"]]
             )
+
+            tb.addElement(list1)
             frame.addElement(tb)
             page.addElement(frame)
 
