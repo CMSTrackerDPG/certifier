@@ -1,3 +1,4 @@
+from certifier.query import TrackerCertificationQuerySet
 from shiftleader.utilities.utilities import to_weekdayname
 
 
@@ -12,6 +13,9 @@ class ShiftLeaderReportBase:
     s = ShiftLeaderReport()
     s.collisions().express().fills()
     """
+
+    def __init__(self, runs: TrackerCertificationQuerySet, *args, **kwargs):
+        pass
 
     def online(self):  # pragma: no cover
         return type(self)(self.runs.online())
@@ -54,7 +58,7 @@ class ShiftLeaderReportBase:
 
 
 class ShiftLeaderReportDay(ShiftLeaderReportBase):
-    def __init__(self, runs):
+    def __init__(self, runs, *args, **kwargs):
         self.runs = runs
         try:
             day = runs[0].date
@@ -62,6 +66,7 @@ class ShiftLeaderReportDay(ShiftLeaderReportBase):
             self.day_date = day
         except IndexError:
             pass
+        super().__init__(runs, *args, **kwargs)
 
     def name(self):
         return self.day_name
@@ -75,8 +80,9 @@ class ShiftLeaderReportDay(ShiftLeaderReportBase):
 
 
 class ShiftLeaderReport(ShiftLeaderReportBase):
-    def __init__(self, runs):
+    def __init__(self, runs, *args, **kwargs):
         self.runs = runs
+        super().__init__(runs, *args, **kwargs)
 
     def day_by_day(self):
         return [ShiftLeaderReportDay(day) for day in self.runs.per_day()]
