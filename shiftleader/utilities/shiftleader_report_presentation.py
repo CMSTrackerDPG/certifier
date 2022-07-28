@@ -458,13 +458,13 @@ class ShiftLeaderReportPresentation(object):
                 ],
                 "Cosmics",
                 [
-                    f"Prompt-Reco: total number={self.slreport.cosmics().prompt().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.cosmics().prompt().integrated_luminosity())}",
+                    f"Prompt-Reco: total number={self.slreport.cosmics().prompt().total_number()}",
                     [
-                        f"BAD runs: total number={self.slreport.bad().cosmics().prompt().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().cosmics().prompt().integrated_luminosity())}"
+                        f"BAD runs: total number={self.slreport.bad().cosmics().prompt().total_number()}"
                     ],
-                    f"Stream-Express: total number={self.slreport.cosmics().express().total_number()}, Integrated lumi={format_integrated_luminosity(self.slreport.cosmics().express().integrated_luminosity())}",
+                    f"Stream-Express: total number={self.slreport.cosmics().express().total_number()}",
                     [
-                        f"BAD runs: total number={self.slreport.bad().cosmics().express().total_number()}, Integrated luminosity={format_integrated_luminosity(self.slreport.bad().cosmics().express().integrated_luminosity())}"
+                        f"BAD runs: total number={self.slreport.bad().cosmics().express().total_number()}"
                     ],
                 ],
                 "Central certification:",
