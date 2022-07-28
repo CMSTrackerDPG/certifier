@@ -82,6 +82,7 @@ class ShiftLeaderReportPresentation(object):
         self._add_page_recorded_luminosity()
         self._add_page_list_lhc_fills()
         self._add_page_day_by_day()
+        self._add_page_weekly_certification()
         self._add_page_summary()
         self._add_page_list_express()
         self._add_page_list_prompt()
@@ -433,23 +434,61 @@ class ShiftLeaderReportPresentation(object):
             frame.addElement(tb)
             page.addElement(frame)
 
+    def _add_page_weekly_certification(self):
+        page = self._create_content_page(title=f"Weekly certification")
+
     def _add_page_summary(self):
         page = self._create_content_page(title=f"Summary of week {self.week_number}")
         # TODO: add content
 
     def _add_page_list_express(self):
-        page = self._create_content_page(title="List of runs certified PromptReco")
-        # TODO: add content
+        page = self._create_content_page(title="List of runs certified StreamExpress")
+        frame = self._create_full_page_content_frame(self.style_frame_list)
+        tb = TextBox()
+        list1 = self._generate_list(
+            list_items=[
+                "Collisions",
+                [
+                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    + (
+                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        if len(day.bad().run_numbers()) > 0
+                        else ""
+                    )
+                    for day in self.slreport.collisions().express().day_by_day()
+                ],
+                "Cosmics",
+                [
+                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    + (
+                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        if len(day.bad().run_numbers()) > 0
+                        else ""
+                    )
+                    for day in self.slreport.cosmics().express().day_by_day()
+                ],
+            ]
+        )
+        tb.addElement(list1)
+        frame.addElement(tb)
+        page.addElement(frame)
 
     def _add_page_list_prompt(self):
-        page = self._create_content_page(title="List of runs certified StreamExpress")
+        page = self._create_content_page(title="List of runs certified Prompt")
         # TODO: add content
 
     def _create_full_page_content_frame(self, stylename: str = None):
+        """
+        Helper method to create a generic frame with appropriate
+        dimensions, suitable for this document's size.
+
+        A stylename can be given, or the default style_content_subtitle
+        is used.
+        """
         return Frame(
             stylename=stylename if stylename else self.style_content_subtitle,
             width="648pt",
-            height=f"410pt",
+            height="410pt",
             x="36pt",
             y="110pt",
         )
@@ -457,7 +496,8 @@ class ShiftLeaderReportPresentation(object):
     def _create_content_page(self, title: str):
         """
         Generic content page skeleton generator.
-        Only adds title.
+        Creates a page, adds a title and returns the
+        created page.
         """
         page = Page(stylename=self.dpstyle, masterpagename=self.masterpagecontent)
         self.doc.presentation.addElement(page)
