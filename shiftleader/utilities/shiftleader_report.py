@@ -5,7 +5,7 @@ from shiftleader.utilities.utilities import to_weekdayname
 class ShiftLeaderReportBase:
     """
     Base class for the shift leader report
-    Just wraps the RunInfoQuerySet filter functions.
+    Just wraps the TrackerCertificationQuerySet filter functions.
 
     The `type(self)()` typecasting allows chaining
     those methods, e.g.:
@@ -15,6 +15,7 @@ class ShiftLeaderReportBase:
     """
 
     def __init__(self, runs: TrackerCertificationQuerySet, *args, **kwargs):
+        self.runs = runs
         pass
 
     def online(self):  # pragma: no cover
@@ -59,7 +60,6 @@ class ShiftLeaderReportBase:
 
 class ShiftLeaderReportDay(ShiftLeaderReportBase):
     def __init__(self, runs, *args, **kwargs):
-        self.runs = runs
         try:
             day = runs[0].date
             self.day_name = to_weekdayname(day)
@@ -81,7 +81,6 @@ class ShiftLeaderReportDay(ShiftLeaderReportBase):
 
 class ShiftLeaderReport(ShiftLeaderReportBase):
     def __init__(self, runs, *args, **kwargs):
-        self.runs = runs
         super().__init__(runs, *args, **kwargs)
 
     def day_by_day(self):
