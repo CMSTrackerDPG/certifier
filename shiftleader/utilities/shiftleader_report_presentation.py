@@ -324,24 +324,6 @@ class ShiftLeaderReportPresentation(object):
             logger.debug("No runs certified")
             return
 
-        # Sample data for testing
-        fills = [
-            {"fill_number": 7963, "certified_runs": [355407]},
-            {"fill_number": 7963, "certified_runs": [355407]},
-            {"fill_number": 7963, "certified_runs": [355407]},
-            {"fill_number": 7963, "certified_runs": [355407]},
-            {
-                "fill_number": 7963,
-                "certified_runs": [355407, 355407, 355407, 355407],
-            },
-        ]
-        # table_names = {
-        #     "Collisions Express": {"fills": fills},
-        #     "Collisions Prompt": {"fills": fills},
-        #     "Cosmics Express": {"fills": fills},
-        #     "Cosmics Prompt": {"fills": fills},
-        # }
-
         logger.debug("Getting information on collisions express")
         collisions_express = self.slreport.collisions().express().fills()
         logger.debug("Getting information on collisions prompt")

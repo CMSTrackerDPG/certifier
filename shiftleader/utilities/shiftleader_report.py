@@ -1,5 +1,8 @@
+import logging
 from certifier.query import TrackerCertificationQuerySet
 from shiftleader.utilities.utilities import to_weekdayname
+
+logger = logging.getLogger(__name__)
 
 
 class ShiftLeaderReportBase:
@@ -7,16 +10,22 @@ class ShiftLeaderReportBase:
     Base class for the shift leader report
     Just wraps the TrackerCertificationQuerySet filter functions.
 
-    The `type(self)()` typecasting allows chaining
-    those methods, e.g.:
+    Each of the methods returns a *new* ShiftLeaderReport
+    instance, instanciated with a more filtered queryset.
 
-    s = ShiftLeaderReport()
-    s.collisions().express().fills()
+    e.g., the code below:
+
+    ```
+    s = ShiftLeaderReport(TrackerCertification.objects.all())
+    s = s.collisions().express()
+    ```
+
+    will return a new ShiftLeaderReport, where the queryset
+    is limited to the TrackerCertifications of express collisions.
     """
 
     def __init__(self, runs: TrackerCertificationQuerySet, *args, **kwargs):
         self.runs = runs
-        pass
 
     def online(self):  # pragma: no cover
         return type(self)(self.runs.online())
