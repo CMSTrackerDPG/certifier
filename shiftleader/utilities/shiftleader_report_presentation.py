@@ -221,7 +221,7 @@ class ShiftLeaderReportPresentation(object):
         )
         self.style_cell.addElement(
             ParagraphProperties(
-                border="0.03pt solid #000000", writingmode="lr-tb", textalign="right"
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
             )
         )
         self.doc.automaticstyles.addElement(self.style_cell)
@@ -432,12 +432,10 @@ class ShiftLeaderReportPresentation(object):
             style_row.addElement(TableRowProperties(rowheight=f"{HEIGHT_ROW}pt"))
             self.doc.automaticstyles.addElement(style_row)
 
-            # Header
+            # Header row
             tr = TableRow(
                 defaultcellstylename=self.style_header_cell, stylename=style_row
             )
-            table.addElement(tr)
-
             # Two columns
             for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
                 style_column = Style(name=f"co{i}", family="table-column")
@@ -455,6 +453,8 @@ class ShiftLeaderReportPresentation(object):
                 p.addElement(Span(text=col_name, stylename=self.style_span))
                 tc.addElement(p)
                 tr.addElement(tc)
+
+            table.addElement(tr)
 
             # Add fill information
             for fill in table_config["fills"]:
