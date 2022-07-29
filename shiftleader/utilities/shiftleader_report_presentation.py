@@ -25,7 +25,15 @@ from odf.style import (
     TableRowProperties,
 )
 from odf import dc
-from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle, Span
+from odf.text import (
+    P,
+    List,
+    ListItem,
+    ListLevelStyleBullet,
+    ListStyle,
+    Span,
+    PageNumber,
+)
 from odf.draw import Page, Frame, TextBox
 from odf.table import Table, TableColumn, TableRow, TableCell
 
@@ -326,6 +334,29 @@ class ShiftLeaderReportPresentation(object):
             )
         )
         self.doc.automaticstyles.addElement(self.style_span_header)
+
+        # Paragraph for pagenumber
+        self.style_p_pagenumber = Style(name="ppn", family="paragraph")
+        self.style_p_pagenumber.addElement(ParagraphProperties(textalign="end"))
+        self.style_p_pagenumber.addElement(
+            GraphicProperties(
+                stroke="none",
+                fill="none",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_p_pagenumber)
+
+        # Span for pagenumber
+        self.style_span_pagenumber = Style(name="sppn", family="text")
+        self.style_span_pagenumber.addElement(
+            TextProperties(
+                fontsize="12pt",
+                fontsizeasian="12pt",
+                fontsizecomplex="1pt",
+                fontfamily="sans",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_span_pagenumber)
 
     def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
         stylename = f"L1-{identation_level}"
@@ -661,6 +692,19 @@ class ShiftLeaderReportPresentation(object):
         titleframe.addElement(textbox)
         textbox.addElement(P(text=title))
         page.addElement(titleframe)
+
+        frame_pagenumber = Frame(
+            width="81.1pt", height="26.5pt", x="639.6pt", y="506.3pt"
+        )
+
+        textbox = TextBox()
+        p = P(stylename=self.style_p_pagenumber)
+        span = Span(stylename=self.style_span_pagenumber)
+        span.addElement(PageNumber())
+        p.addElement(span)
+        textbox.addElement(p)
+        frame_pagenumber.addElement(textbox)
+        page.addElement(frame_pagenumber)
         return page
 
     def _create_table(self):
