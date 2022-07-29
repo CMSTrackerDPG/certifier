@@ -237,14 +237,7 @@ class ShiftLeaderReportPresentation(object):
                 border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
             )
         )
-        self.style_cell_header.addElement(
-            TextProperties(
-                color="#000000",
-                fontweight="bold",
-                fontweightasian="bold",
-                fontweightcomplex="bold",
-            )
-        )
+
         self.style_cell_header.addElement(
             TableCellProperties(
                 paddingtop="0.1in",
