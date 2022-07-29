@@ -233,7 +233,7 @@ class ShiftLeaderReportPresentation(object):
         )
         self.style_header_cell.addElement(
             ParagraphProperties(
-                border="0.03pt solid #000000", writingmode="lr-tb", textalign="right"
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
             )
         )
         self.style_header_cell.addElement(
@@ -254,11 +254,6 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_header_cell)
 
-        # Column cell style
-        self.style_column = Style(name="co1", family="table-column")
-        self.style_column.addElement(TableColumnProperties(columnwidth="20pt"))
-        self.doc.automaticstyles.addElement(self.style_column)
-
         # List style L1-1
         self.list_style_l1 = ListStyle(name="L1-1")
         list_level_style_bullet = ListLevelStyleBullet(level="1", bulletchar="●")
@@ -267,7 +262,7 @@ class ShiftLeaderReportPresentation(object):
         )
         list_level_style_bullet.addElement(
             TextProperties(
-                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="45%"
+                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="60%"
             )
         )
 
@@ -276,7 +271,7 @@ class ShiftLeaderReportPresentation(object):
 
         # List style L2
         self.list_style_l2 = ListStyle(name="L1-2")
-        list_level_style_bullet = ListLevelStyleBullet(level="2", bulletchar="◦")
+        list_level_style_bullet = ListLevelStyleBullet(level="2", bulletchar="⃝")
         list_level_style_bullet.addElement(
             ListLevelProperties(spacebefore="1.5cm", minlabelwidth="0.9cm")
         )
@@ -291,13 +286,13 @@ class ShiftLeaderReportPresentation(object):
 
         # List style L3
         self.list_style_l3 = ListStyle(name="L1-3")
-        list_level_style_bullet = ListLevelStyleBullet(level="3", bulletchar="▪")
+        list_level_style_bullet = ListLevelStyleBullet(level="3", bulletchar="■")
         list_level_style_bullet.addElement(
             ListLevelProperties(spacebefore="3.3cm", minlabelwidth="0.9cm")
         )
         list_level_style_bullet.addElement(
             TextProperties(
-                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="45%"
+                fontfamily="StarSymbol", usewindowfontcolor="true", fontsize="60%"
             )
         )
 
@@ -320,6 +315,11 @@ class ShiftLeaderReportPresentation(object):
             )
         )
         self.doc.automaticstyles.addElement(self.style_frame_list)
+
+        # Span for tables
+        self.style_span = Style(name="sp1", family="text")
+        self.style_span.addElement(TextProperties(fontfamily="sans"))
+        self.doc.automaticstyles.addElement(self.style_span)
 
     def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
         stylename = f"L1-{identation_level}"
@@ -413,69 +413,61 @@ class ShiftLeaderReportPresentation(object):
             logger.debug(f"Creating table {table_name}")
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
+            WIDTH_FRAME = 648
+            WIDTH_COL = 300
+            HEIGHT_FRAME = 105
+            HEIGHT_ROW = 50
+
             table_frame = Frame(
-                width="648pt",
-                height="105pt",
+                width=f"{WIDTH_FRAME}pt",
+                height=f"{HEIGHT_FRAME}pt",
                 x="40pt",
                 y="117pt",
             )
 
             table = self._create_table()
 
+            # Style for rows
+            style_row = Style(name="roh", family="table-row")
+            style_row.addElement(TableRowProperties(rowheight=f"{HEIGHT_ROW}pt"))
+            self.doc.automaticstyles.addElement(style_row)
+
             # Header
-            tr = TableRow(defaultcellstylename=self.style_cell)
+            tr = TableRow(
+                defaultcellstylename=self.style_header_cell, stylename=style_row
+            )
             table.addElement(tr)
 
             # Two columns
             for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
                 style_column = Style(name=f"co{i}", family="table-column")
-                style_column.addElement(TableColumnProperties(columnwidth="20pt"))
+                style_column.addElement(
+                    TableColumnProperties(columnwidth=f"{WIDTH_COL}pt")
+                )
                 self.doc.automaticstyles.addElement(style_column)
-                table.addElement(TableColumn(stylename=style_column))
 
-                # Header Cell style
-                style_header_cell = Style(name=f"ceh{i}", family="table-cell")
-                style_header_cell.addElement(
-                    GraphicProperties(
-                        fillcolor="#dddddd", textareaverticalalign="middle"
-                    )
+                table.addElement(
+                    TableColumn(stylename=style_column, defaultcellstylename="")
                 )
-                style_header_cell.addElement(
-                    ParagraphProperties(border="0.03pt solid #000000")
-                )
-                style_header_cell.addElement(
-                    TableCellProperties(
-                        paddingtop="1in",
-                        paddingleft="0.1in",
-                        paddingright="0.1in",
-                        backgroundcolor="#dddddd",
-                    )
-                )
-                style_header_cell.addElement(
-                    TextProperties(
-                        color="#000000",
-                        fontweight="bold",
-                        fontweightasian="bold",
-                        fontweightcomplex="bold",
-                    )
-                )
-                self.doc.automaticstyles.addElement(style_header_cell)
-                # End header cell style
 
-                tc = TableCell(stylename=style_header_cell)
-                tc.addElement(P(text=col_name))
+                tc = TableCell()
+                p = P()
+                p.addElement(Span(text=col_name, stylename=self.style_span))
+                tc.addElement(p)
                 tr.addElement(tc)
 
             # Add fill information
             for fill in table_config["fills"]:
 
-                tr = TableRow(defaultcellstylename=self.style_cell)
+                tr = TableRow(defaultcellstylename=self.style_cell, stylename=style_row)
                 table.addElement(tr)
                 # keys: fill_number, certified_runs
                 for k, v in fill.items():
                     tc = TableCell()
                     tr.addElement(tc)
-                    tc.addElement(P(text=v))
+                    p = P()
+                    p.addElement(Span(text=v, stylename=self.style_span))
+                    tc.addElement(p)
 
             table_frame.addElement(table)
             page.addElement(table_frame)
