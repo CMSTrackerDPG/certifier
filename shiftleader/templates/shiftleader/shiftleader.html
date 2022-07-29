@@ -92,7 +92,7 @@
             </div>
 
             <div id="shiftleader-report" class="tab-pane fade in active">
-                {% if filter.qs %}
+				{% if filter.qs %}
                 <div class="page-header">
                     {% load shiftleaderfilters %}
                     {% load l10n %}
@@ -100,6 +100,16 @@
                 </div>
                 {% if slreport %}
                 {% include "shiftleader/shift-leader-report.html" %}
+				<!-- Button to generate report -->
+				<div class="row mb-2 mt-2">
+					<div class="col">
+						<button class="btn btn-primary"
+								id="shiftleader-report-presentation">
+							Generate presentation<i class="bi bi-easel3-fill pl-1"></i>
+						</button>
+					</div>
+				</div>
+
                 {% else %}
                 <div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
                 {% endif %}
@@ -176,6 +186,15 @@
             });
 
             colorize_components();
+
+			{% if filter.qs %}
+			// Add onclick to presentation generation button
+			let btn_pres_gen = document.getElementById('shiftleader-report-presentation');
+			btn_pres_gen.onclick = function(){
+				window.open("{% url 'shiftleader:generate_presentation' filter.qs.year filter.qs.week_number %}");
+				
+			};
+			{% endif %}
         });
     </script>
 {% endblock scripts %}

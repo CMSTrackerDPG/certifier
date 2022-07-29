@@ -478,6 +478,14 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             return "{}-{}".format(min_week, max_week)
         return min_week
 
+    def year(self) -> int:
+        """
+        :return: year the runs were certified in
+        """
+        if not self.exists():
+            return ""
+        return self.aggregate(Min("date"))["date__min"].isocalendar()[0]
+
     def order_by_run_number(self):
         return self.order_by("runreconstruction__run__run_number")
 
