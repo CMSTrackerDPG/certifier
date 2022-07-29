@@ -20,10 +20,12 @@ from odf.style import (
     ParagraphProperties,
     DrawingPageProperties,
     ListLevelProperties,
+    TableCellProperties,
     TableColumnProperties,
+    TableRowProperties,
 )
 from odf import dc
-from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle
+from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle, Span
 from odf.draw import Page, Frame, TextBox
 from odf.table import Table, TableColumn, TableRow, TableCell
 
@@ -184,6 +186,8 @@ class ShiftLeaderReportPresentation(object):
                 transitiontype="none",
                 # transitionstyle="move-from-top",
                 duration="PT00S",
+                displayfooter="true",
+                displaypagenumber="true",
             )
         )
         self.doc.automaticstyles.addElement(self.dpstyle)
@@ -201,8 +205,25 @@ class ShiftLeaderReportPresentation(object):
 
         # Table cell style
         self.style_cell = Style(name="ce1", family="table-cell")
-        self.style_cell.addElement(GraphicProperties(fillcolor="#ffffff"))
-        self.style_cell.addElement(ParagraphProperties(border="0.03pt solid #000000"))
+        self.style_cell.addElement(
+            GraphicProperties(
+                fillcolor="#ffffff",
+                textareaverticalalign="middle",
+            )
+        )
+        self.style_cell.addElement(
+            TableCellProperties(
+                paddingtop="1in",
+                paddingleft="0.1in",
+                paddingright="0.1in",
+                backgroundcolor="#ffffff",
+            )
+        )
+        self.style_cell.addElement(
+            ParagraphProperties(
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="right"
+            )
+        )
         self.doc.automaticstyles.addElement(self.style_cell)
 
         # Header Cell style
@@ -211,7 +232,9 @@ class ShiftLeaderReportPresentation(object):
             GraphicProperties(fillcolor="#dddddd", textareaverticalalign="middle")
         )
         self.style_header_cell.addElement(
-            ParagraphProperties(border="0.03pt solid #000000")
+            ParagraphProperties(
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="right"
+            )
         )
         self.style_header_cell.addElement(
             TextProperties(
@@ -219,6 +242,14 @@ class ShiftLeaderReportPresentation(object):
                 fontweight="bold",
                 fontweightasian="bold",
                 fontweightcomplex="bold",
+            )
+        )
+        self.style_cell.addElement(
+            TableCellProperties(
+                paddingtop="1in",
+                paddingleft="0.1in",
+                paddingright="0.1in",
+                backgroundcolor="#dddddd",
             )
         )
         self.doc.automaticstyles.addElement(self.style_header_cell)
@@ -391,21 +422,53 @@ class ShiftLeaderReportPresentation(object):
 
             table = self._create_table()
 
-            # Two columns
-            table.addElement(
-                TableColumn(numbercolumnsrepeated=2, stylename=self.style_column)
-            )
-
             # Header
             tr = TableRow(defaultcellstylename=self.style_cell)
             table.addElement(tr)
-            for col_name in ["Fill Number", "Certified Runs"]:
-                tc = TableCell(stylename=self.style_header_cell)
+
+            # Two columns
+            for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
+                style_column = Style(name=f"co{i}", family="table-column")
+                style_column.addElement(TableColumnProperties(columnwidth="20pt"))
+                self.doc.automaticstyles.addElement(style_column)
+                table.addElement(TableColumn(stylename=style_column))
+
+                # Header Cell style
+                style_header_cell = Style(name=f"ceh{i}", family="table-cell")
+                style_header_cell.addElement(
+                    GraphicProperties(
+                        fillcolor="#dddddd", textareaverticalalign="middle"
+                    )
+                )
+                style_header_cell.addElement(
+                    ParagraphProperties(border="0.03pt solid #000000")
+                )
+                style_header_cell.addElement(
+                    TableCellProperties(
+                        paddingtop="1in",
+                        paddingleft="0.1in",
+                        paddingright="0.1in",
+                        backgroundcolor="#dddddd",
+                    )
+                )
+                style_header_cell.addElement(
+                    TextProperties(
+                        color="#000000",
+                        fontweight="bold",
+                        fontweightasian="bold",
+                        fontweightcomplex="bold",
+                    )
+                )
+                self.doc.automaticstyles.addElement(style_header_cell)
+                # End header cell style
+
+                tc = TableCell(stylename=style_header_cell)
                 tc.addElement(P(text=col_name))
                 tr.addElement(tc)
 
             # Add fill information
             for fill in table_config["fills"]:
+
                 tr = TableRow(defaultcellstylename=self.style_cell)
                 table.addElement(tr)
                 # keys: fill_number, certified_runs
