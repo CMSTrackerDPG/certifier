@@ -20,6 +20,7 @@ from odf.style import (
     ParagraphProperties,
     DrawingPageProperties,
     ListLevelProperties,
+    TableColumnProperties,
 )
 from odf import dc
 from odf.text import P, List, ListItem, ListLevelStyleBullet, ListStyle
@@ -81,9 +82,22 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc = OpenDocumentPresentation()
 
+        # Metadata
+        self.doc.meta.addElement(
+            dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
+        )
+        self.doc.meta.addElement(dc.Date(text=datetime.now().isoformat()))
+        # self.doc.meta.addElement(dc.Subject(text="Shiftleader Report"))
+        self.doc.meta.addElement(
+            dc.Creator(
+                text=f"CertHelper version {self.certhelper_version}, requested by {self.requesting_user}"
+            )
+        )
+
+        # Styles
         self._configure_styles()
 
-        # Do some heavy lifting
+        # Create a shiftleader report instance
         self.slreport = ShiftLeaderReport(self.queryset)
 
         # Add pages
@@ -120,7 +134,7 @@ class ShiftLeaderReportPresentation(object):
         self.titlestyle.addElement(GraphicProperties(fill="none", stroke="none"))
         self.doc.styles.addElement(self.titlestyle)
 
-        # Different style for content titles
+        # Style for Frame which has a title in it
         self.titlestyle_content = Style(
             name="TitleAndContent-title", family="presentation"
         )
@@ -135,6 +149,7 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.styles.addElement(self.titlestyle_content)
 
+        # Style for frame which has a subtitle in it (used in content pages)
         self.style_content_subtitle = Style(
             name="TitleAndContent-subtitle", family="presentation"
         )
@@ -149,7 +164,7 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.styles.addElement(self.style_content_subtitle)
 
-        # Style for adding content
+        # Style for frame which has a subtitle in it (used in main title page)
         self.subtitlestyle = Style(name="TitleOnly-subtitle", family="presentation")
         self.subtitlestyle.addElement(ParagraphProperties(textalign="center"))
         self.subtitlestyle.addElement(
@@ -174,25 +189,15 @@ class ShiftLeaderReportPresentation(object):
         self.doc.automaticstyles.addElement(self.dpstyle)
 
         # Every drawing page must have a master page assigned to it.
+        # Master page for title-only slide
         self.masterpage = MasterPage(name="TitleOnly", pagelayoutname=pagelayout)
         self.doc.masterstyles.addElement(self.masterpage)
 
+        # Master page for content pages
         self.masterpagecontent = MasterPage(
             name="TitleAndContent", pagelayoutname=pagelayout
         )
         self.doc.masterstyles.addElement(self.masterpagecontent)
-
-        # Metadata
-        self.doc.meta.addElement(
-            dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
-        )
-        self.doc.meta.addElement(dc.Date(text=datetime.now().isoformat()))
-        # self.doc.meta.addElement(dc.Subject(text="Shiftleader Report"))
-        self.doc.meta.addElement(
-            dc.Creator(
-                text=f"CertHelper version {self.certhelper_version}, requested by {self.requesting_user}"
-            )
-        )
 
         # Table cell style
         self.style_cell = Style(name="ce1", family="table-cell")
@@ -217,6 +222,11 @@ class ShiftLeaderReportPresentation(object):
             )
         )
         self.doc.automaticstyles.addElement(self.style_header_cell)
+
+        # Column cell style
+        self.style_column = Style(name="co1", family="table-column")
+        self.style_column.addElement(TableColumnProperties(columnwidth="20pt"))
+        self.doc.automaticstyles.addElement(self.style_column)
 
         # List style L1-1
         self.list_style_l1 = ListStyle(name="L1-1")
@@ -262,7 +272,8 @@ class ShiftLeaderReportPresentation(object):
 
         self.list_style_l3.addElement(list_level_style_bullet)
         self.doc.automaticstyles.addElement(self.list_style_l3)
-        #
+
+        # Style for frame which has list in it (??)
         self.style_frame_list = Style(
             name="pr1", family="presentation", liststylename=self.list_style_l1
         )
@@ -381,8 +392,9 @@ class ShiftLeaderReportPresentation(object):
             table = self._create_table()
 
             # Two columns
-            table.addElement(TableColumn())
-            table.addElement(TableColumn())
+            table.addElement(
+                TableColumn(numbercolumnsrepeated=2, stylename=self.style_column)
+            )
 
             # Header
             tr = TableRow(defaultcellstylename=self.style_cell)
