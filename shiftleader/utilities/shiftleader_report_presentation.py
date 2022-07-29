@@ -337,13 +337,7 @@ class ShiftLeaderReportPresentation(object):
 
         # Paragraph for pagenumber
         self.style_p_pagenumber = Style(name="ppn", family="paragraph")
-        self.style_p_pagenumber.addElement(ParagraphProperties(textalign="end"))
-        self.style_p_pagenumber.addElement(
-            GraphicProperties(
-                stroke="none",
-                fill="none",
-            )
-        )
+        self.style_p_pagenumber.addElement(ParagraphProperties(textalign="right"))
         self.doc.automaticstyles.addElement(self.style_p_pagenumber)
 
         # Span for pagenumber
@@ -693,10 +687,28 @@ class ShiftLeaderReportPresentation(object):
         textbox.addElement(P(text=title))
         page.addElement(titleframe)
 
+        # Style for frame containing the page numbers
+        style_frame_pagenumber = Style(name="fpn", family="graphic")
+        style_frame_pagenumber.addElement(
+            GraphicProperties(
+                stroke="none",
+                fill="none",
+                textareaverticalalign="middle",
+            )
+        )
+        self.doc.automaticstyles.addElement(style_frame_pagenumber)
+
+        # Frame for holding the page number
         frame_pagenumber = Frame(
-            width="81.1pt", height="26.5pt", x="639.6pt", y="506.3pt"
+            stylename=style_frame_pagenumber,
+            textstylename=self.style_p_pagenumber,
+            width="75pt",
+            height="26.5pt",
+            x="635pt",
+            y="506pt",
         )
 
+        # textbox -> p -> span -> page number
         textbox = TextBox()
         p = P(stylename=self.style_p_pagenumber)
         span = Span(stylename=self.style_span_pagenumber)
