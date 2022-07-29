@@ -93,20 +93,20 @@
 
             <div id="shiftleader-report" class="tab-pane fade in active">
                 {% if filter.qs %}
-                    <div class="page-header">
-                        {% load shiftleaderfilters %}
-                        {% load l10n %}
-                        <h3>Shift Leader Report - Week {{ filter.qs.week_number }} <small>{{ filter.qs.days|first|as_date|localize }} - {{ filter.qs.days|last|as_date|localize }}</small></h3>
-                    </div>
-                    {% if slreport %}
-                        {% include "shiftleader/shift-leader-report.html" %}
-                    {% else %}
-                        <div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
-                    {% endif %}
+                <div class="page-header">
+                    {% load shiftleaderfilters %}
+                    {% load l10n %}
+                    <h3>Shift Leader Report - Week {{ filter.qs.week_number }} <small>{{ filter.qs.days|first|as_date|localize }} - {{ filter.qs.days|last|as_date|localize }}</small></h3>
+                </div>
+                {% if slreport %}
+                {% include "shiftleader/shift-leader-report.html" %}
                 {% else %}
-                    <div class="alert alert-danger" role="alert">
-                        No runs have been certified in the specified filter criteria.
-                    </div>
+                <div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
+                {% endif %}
+                {% else %}
+                <div class="alert alert-danger" role="alert">
+                    No runs have been certified in the specified filter criteria.
+                </div>
                 {% endif %}
             </div>
         </div>
