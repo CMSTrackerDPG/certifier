@@ -213,9 +213,10 @@ class ShiftLeaderReportPresentation(object):
         )
         self.style_cell.addElement(
             TableCellProperties(
-                paddingtop="1in",
+                paddingtop="0.1in",
                 paddingleft="0.1in",
                 paddingright="0.1in",
+                paddingbottom="0.1in",
                 backgroundcolor="#ffffff",
             )
         )
@@ -227,16 +228,16 @@ class ShiftLeaderReportPresentation(object):
         self.doc.automaticstyles.addElement(self.style_cell)
 
         # Header Cell style
-        self.style_header_cell = Style(name="ce2", family="table-cell")
-        self.style_header_cell.addElement(
+        self.style_cell_header = Style(name="ceh", family="table-cell")
+        self.style_cell_header.addElement(
             GraphicProperties(fillcolor="#dddddd", textareaverticalalign="middle")
         )
-        self.style_header_cell.addElement(
+        self.style_cell_header.addElement(
             ParagraphProperties(
                 border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
             )
         )
-        self.style_header_cell.addElement(
+        self.style_cell_header.addElement(
             TextProperties(
                 color="#000000",
                 fontweight="bold",
@@ -244,15 +245,16 @@ class ShiftLeaderReportPresentation(object):
                 fontweightcomplex="bold",
             )
         )
-        self.style_cell.addElement(
+        self.style_cell_header.addElement(
             TableCellProperties(
-                paddingtop="1in",
+                paddingtop="0.1in",
                 paddingleft="0.1in",
                 paddingright="0.1in",
+                paddingbottom="0.1in",
                 backgroundcolor="#dddddd",
             )
         )
-        self.doc.automaticstyles.addElement(self.style_header_cell)
+        self.doc.automaticstyles.addElement(self.style_cell_header)
 
         # List style L1-1
         self.list_style_l1 = ListStyle(name="L1-1")
@@ -320,6 +322,17 @@ class ShiftLeaderReportPresentation(object):
         self.style_span = Style(name="sp1", family="text")
         self.style_span.addElement(TextProperties(fontfamily="sans"))
         self.doc.automaticstyles.addElement(self.style_span)
+
+        self.style_span_header = Style(name="sph", family="text")
+        self.style_span_header.addElement(
+            TextProperties(
+                fontfamily="sans",
+                fontweight="bold",
+                fontweightasian="bold",
+                fontweightcomplex="bold",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_span_header)
 
     def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
         stylename = f"L1-{identation_level}"
@@ -434,7 +447,7 @@ class ShiftLeaderReportPresentation(object):
 
             # Header row
             tr = TableRow(
-                defaultcellstylename=self.style_header_cell, stylename=style_row
+                defaultcellstylename=self.style_cell_header, stylename=style_row
             )
             # Two columns
             for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
@@ -450,7 +463,7 @@ class ShiftLeaderReportPresentation(object):
 
                 tc = TableCell()
                 p = P()
-                p.addElement(Span(text=col_name, stylename=self.style_span))
+                p.addElement(Span(text=col_name, stylename=self.style_span_header))
                 tc.addElement(p)
                 tr.addElement(tc)
 
