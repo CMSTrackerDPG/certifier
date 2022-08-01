@@ -1,15 +1,22 @@
 import datetime
-
+import random
 from mixer.backend.django import mixer
 
 
-def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
+def create_runs(
+    amount, first_run_number, runtype, reco, good=True, date=None, fill_number=None
+):
     if runtype not in ["collisions", "cosmics"]:
         raise ValueError("Unknown run type: {}".format(runtype))
     if reco not in ["express", "prompt", "rereco"]:
         raise ValueError("Unknown reco type: {}".format(runtype))
 
     for i in range(first_run_number, first_run_number + amount):
+        fill = mixer.blend(
+            "oms.OmsFill",
+            fill_number=fill_number if fill_number else random.randint(7000, 7500),
+        )
+
         if runtype == "collisions":
             if good:
                 if not date:
@@ -24,6 +31,7 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                                 run_type="collisions",
                                 hlt_key="/cdaq/physics",
                                 stable_beam=True,
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -42,6 +50,7 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                                 run_type="collisions",
                                 hlt_key="/cdaq/physics",
                                 stable_beam=True,
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -63,6 +72,7 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                                 run_type="collisions",
                                 hlt_key="/cdaq/physics",
                                 stable_beam=True,
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -81,6 +91,7 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                                 run_type="collisions",
                                 hlt_key="/cdaq/physics",
                                 stable_beam=True,
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -97,7 +108,10 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                             "certifier.RunReconstruction",
                             reconstruction=reco,
                             run=mixer.blend(
-                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="cosmics",
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -111,7 +125,10 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                             "certifier.RunReconstruction",
                             reconstruction=reco,
                             run=mixer.blend(
-                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="cosmics",
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -127,7 +144,10 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                             "certifier.RunReconstruction",
                             reconstruction=reco,
                             run=mixer.blend(
-                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="cosmics",
+                                fill=fill,
                             ),
                         ),
                         pixel="good",
@@ -141,7 +161,10 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                             "certifier.RunReconstruction",
                             reconstruction=reco,
                             run=mixer.blend(
-                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="cosmics",
+                                fill=fill,
                             ),
                         ),
                         pixel="good",

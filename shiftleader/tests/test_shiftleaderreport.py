@@ -254,10 +254,10 @@ class TestShiftLeaderReport:
         reason="skipped due to GitHub actions not being able to run it",
     )
     def test_fill_numbers(self):
-        create_runs(1, 321177, "cosmics", "express")
-        create_runs(1, 321178, "cosmics", "express")
-        create_runs(1, 321218, "cosmics", "express")
-        create_runs(1, 323500, "cosmics", "express")
+        create_runs(1, 321177, "cosmics", "express", fill_number=7048)
+        create_runs(1, 321178, "cosmics", "express", fill_number=7048)
+        create_runs(1, 321218, "cosmics", "express", fill_number=7052)
+        create_runs(1, 323500, "cosmics", "express", fill_number=7052)
 
         runs = TrackerCertification.objects.all().order_by(
             "runreconstruction__run__run_number"
@@ -271,11 +271,17 @@ class TestShiftLeaderReport:
         reason="skipped due to GitHub actions not being able to run it",
     )
     def test_fills(self):
-        create_runs(1, 321171, "cosmics", "express")
-        create_runs(1, 321179, "cosmics", "express")
-        create_runs(1, 321181, "cosmics", "express")
-        create_runs(1, 321182, "cosmics", "express")
-        create_runs(1, 321185, "cosmics", "express")
+        create_runs(1, 321171, "cosmics", "express", fill_number=7048)
+        create_runs(
+            1,
+            321179,
+            "cosmics",
+            "express",
+            fill_number=7048,
+        )
+        create_runs(1, 321181, "cosmics", "express", fill_number=7048)
+        create_runs(1, 321182, "cosmics", "express", fill_number=7049)
+        create_runs(1, 321185, "cosmics", "express", fill_number=7049)
 
         runs = TrackerCertification.objects.all().order_by(
             "runreconstruction__run__run_number"
