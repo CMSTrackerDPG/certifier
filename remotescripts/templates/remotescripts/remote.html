@@ -104,7 +104,13 @@
 					  .prop('title', "Execute the script");
  }
  
- $(document).ready(function() {	 
+ $(document).ready(function() {
+	 // Initial check for clients connecting after
+	 // script started running
+	 if ("{{remote_script.is_running}}" === "True")
+	 {
+		 disableControls();
+	 }
 	 // WS initialization
 	 if (location.protocol === 'https:') {
 		 // page is secure
