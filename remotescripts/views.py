@@ -61,9 +61,19 @@ class ScriptExecutionBaseView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
         )
 
 
-class RemoteScriptListView(ListView):
+class RemoteScriptListView(UserPassesTestMixin, ListView):
     model = RemoteScriptConfiguration
     paginate_by = 50
+
+    def test_func(self):
+        """
+        Function used by the UserPassesTestMixin to
+        test rights before allowing acess to the View
+        """
+        return (
+            hasattr(self.request.user, "has_shifter_rights")
+            and self.request.user.has_shifter_rights
+        )
 
 
 class RemoteScriptView(ScriptExecutionBaseView):
