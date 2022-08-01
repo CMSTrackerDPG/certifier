@@ -194,6 +194,38 @@ the generating script.
 
 .. image:: images/remotescripts-trackermaps-running.png
 
+Reference Runs
+--------------
+
+This page lists all the run reconstructions which serve as reference for
+certifying new ones.
+
+.. image:: images/referenceruns-list.png
+
+Shiftleader-only features
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A new reference run can be added by clicking on the :guilabel:`Add Reference Run` tile.
+
+.. image:: images/add-reference-run-tile.png
+
+Here the user can either permanently delete a reference run that was added by mistake or promote a
+certified one by using the run number and type of the run.
+
+Since a reference run reconstruction must have been certified first, adding a run reconstruction that
+has not been certified yet will prompt the user to certify the run first.
+
+.. note::
+
+   To promote an existing one to reference, you can also use the `Shift Leader View`_.
+
+.. warning::
+
+   A certification without a reference run reconstruction is no longer valid.
+   Therefore, deleting a reference run will also delete all the certifications
+   that refer to that specific reference run. 
+
+
 
 Shift Leader
 ============
@@ -211,33 +243,6 @@ Apart from that the ShiftLeader has access to all the pages/tiles, including
 the ones used by Shifters.
 
 .. image:: images/main-page.png
-
-Add Reference Run
------------------
-
-A new reference run can be added by clicking on the :guilabel:`Add Reference Run` tile.
-
-.. image:: images/add-reference-run-tile.png
-		   
-Once clicked you are presented with the following page:
-
-.. image:: images/add-reference-run.png
-
-Here the user can either permanently delete a reference run that was added by mistake or promote a
-certified one by using the run number and type of the run.
-
-Since a reference run reconstruction must have been certified first, adding a run reconstruction that
-has not been certified yet will prompt the user to certify the run first.
-
-.. note::
-
-   To promote an existing one to reference, you can also use the `Shift Leader View`_.
-
-.. warning::
-
-   A certification without a reference run reconstruction is no longer valid.
-   Therefore, deleting a reference run will also delete all the certifications
-   that refer to that specific reference run. 
 
 
 
