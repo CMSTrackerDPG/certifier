@@ -309,7 +309,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         return [
             fill["fill_number"]
-            for fill in OmsFill.objects.filter(oms_run__run_number__in=run_numbers)
+            for fill in OmsFill.objects.filter(oms_runs__run_number__in=run_numbers)
             .distinct()
             .values("fill_number")
         ]
@@ -638,7 +638,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_numbers = self.run_numbers()
 
         fills = (
-            OmsFill.objects.filter(oms_run__run_number__in=run_numbers)
+            OmsFill.objects.filter(oms_runs__run_number__in=run_numbers)
             .order_by("-fill_number")
             .distinct()
         )
@@ -649,7 +649,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                     "fill_number": fill.fill_number,
                     "run_number": [
                         run["run_number"]
-                        for run in fill.oms_run.order_by("-run_number").values(
+                        for run in fill.oms_runs.order_by("-run_number").values(
                             "run_number"
                         )
                     ],

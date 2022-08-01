@@ -27,7 +27,7 @@ class RunReconstruction(models.Model):
         (RERECOUL, "ReRecoUL"),
     )
     run = models.ForeignKey(
-        OmsRun, on_delete=models.CASCADE, related_name="reconstruction"
+        OmsRun, on_delete=models.CASCADE, related_name="reconstructions"
     )
     reconstruction = models.CharField(max_length=8, choices=RECONSTRUCTION_CHOICES)
 
