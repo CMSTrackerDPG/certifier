@@ -191,7 +191,7 @@
 			// Add onclick to presentation generation button
 			let btn_pres_gen = document.getElementById('shiftleader-report-presentation');
 			btn_pres_gen.onclick = function(){
-				window.open("{% url 'shiftleader:generate_presentation' filter.qs.year filter.qs.week_number %}");
+				window.open("{% url 'shiftleader:generate_presentation' filter.form.cleaned_data.date__gte filter.form.cleaned_data.date__lte %}");
 				
 			};
 			{% endif %}
