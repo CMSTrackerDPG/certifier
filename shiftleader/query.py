@@ -24,7 +24,6 @@ from shiftleader.utilities.utilities import (
     convert_run_registry_to_trackercertification,
     _get_run_type_from_run_class_and_dataset_name,
 )
-from shiftleader.utilities.cache_rr import CacheRunRegistry
 from shiftleader.exceptions import CannotAssumeRunTypeException
 from listruns.utilities.luminosity import convert_luminosity_to_pb
 from oms.models import OmsFill
