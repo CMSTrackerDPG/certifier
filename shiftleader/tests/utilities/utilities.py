@@ -4,7 +4,13 @@ from mixer.backend.django import mixer
 
 
 def create_runs(
-    amount, first_run_number, runtype, reco, good=True, date=None, fill_number=None
+    amount,
+    first_run_number,
+    runtype,
+    reco,
+    good=True,
+    date=None,
+    fill_number: int = None,
 ):
     if runtype not in ["collisions", "cosmics"]:
         raise ValueError("Unknown run type: {}".format(runtype))

@@ -8,7 +8,7 @@ from shiftleader.utilities.shiftleader_report import (
     ShiftLeaderReportDay,
 )
 from shiftleader.utilities.utilities import to_date
-from utilities.utilities import create_runs
+from shiftleader.tests.utilities.utilities import create_runs
 
 pytestmark = pytest.mark.django_db
 
