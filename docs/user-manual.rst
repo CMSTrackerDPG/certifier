@@ -200,17 +200,20 @@ Reference Runs
 This page lists all the run reconstructions which serve as reference for
 certifying new ones.
 
-.. image:: images/referenceruns-list.png
-
-Shiftleader-only features
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A new reference run can be added by clicking on the :guilabel:`Add Reference Run` tile.
-
 .. image:: images/add-reference-run-tile.png
 
-Here the user can either permanently delete a reference run that was added by mistake or promote a
+Shifters can just display the list of Reference runs.
+
+.. image:: images/referenceruns-list.png
+
+Shift Leader-only features
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to listing the reference runs, the Shift Leader can also **permanently
+delete** a reference run that was added by mistake or **promote** an already
 certified one by using the run number and type of the run.
+
+.. image:: images/referenceruns-list-shiftleader.png
 
 Since a reference run reconstruction must have been certified first, adding a run reconstruction that
 has not been certified yet will prompt the user to certify the run first.
