@@ -55,35 +55,29 @@ class ShiftLeaderReportPresentation(object):
 
     def __init__(
         self,
+        date_from: datetime,
+        date_to: datetime,
         requesting_user: str = "",
         certhelper_version: str = settings.CERTHELPER_VERSION,
-        week_number: str = "",
-        year: int = datetime.now().year,
         name_shift_leader: str = "",
         names_shifters: tList[str] = [""],
         names_oncall: tList[str] = [""],
-        # certification_queryset: TrackerCertificationQuerySet = None,
     ):
         logger.info(
-            f"ShiftLeader presentation generation for week {week_number} requested by {requesting_user}"
+            f"ShiftLeader presentation generation from {date_from} to {date_to} requested by {requesting_user}"
         )
 
-        self.week_number = week_number
-        self.year = year
+        self.date_from = date_from
+        self.date_to = date_to
         self.requesting_user = requesting_user
         self.certhelper_version = certhelper_version
         self.name_shift_leader = name_shift_leader
         self.names_shifters = names_shifters
         self.names_oncall = names_oncall
 
-        # Get first day of week requested
-        week_start = date.fromisocalendar(year=year, week=week_number, day=1)
-
-        week_end = week_start + timedelta(days=6)
-
         queryset = TrackerCertification.objects.filter(
-            date__gte=week_start,
-            date__lte=week_end,
+            date__gte=date_from,
+            date__lte=date_to,
         )
 
         self.queryset = queryset
@@ -94,7 +88,7 @@ class ShiftLeaderReportPresentation(object):
 
         # Metadata
         self.doc.meta.addElement(
-            dc.Title(text=f"Shiftleader Report for {self.year} week {self.week_number}")
+            dc.Title(text=f"Shiftleader Report for {date_from} to {date_to}")
         )
         self.doc.meta.addElement(dc.Date(text=datetime.now().isoformat()))
         # self.doc.meta.addElement(dc.Subject(text="Shiftleader Report"))
@@ -368,7 +362,7 @@ class ShiftLeaderReportPresentation(object):
         return l
 
     def _generate_filename(self) -> str:
-        return f"shiftleader_report_{self.year}_week_{self.week_number}.odp"
+        return (f"shiftleader_report_{self.date_from}_{self.date_to}.odp",)
 
     def _add_page_title(self):
         """
@@ -386,7 +380,7 @@ class ShiftLeaderReportPresentation(object):
         textbox = TextBox()
         titleframe.addElement(textbox)
         textbox.addElement(P(text="Offline Shift Leader Report"))
-        textbox.addElement(P(text=f"Week {self.week_number}"))
+        textbox.addElement(P(text=f"Week {self.slreport.runs.week_number()}"))
         page.addElement(titleframe)
 
         c_frame = Frame(
@@ -583,7 +577,9 @@ class ShiftLeaderReportPresentation(object):
         page.addElement(frame)
 
     def _add_page_summary(self):
-        page = self._create_content_page(title=f"Summary of week {self.week_number}")
+        page = self._create_content_page(
+            title=f"Summary of week {self.slreport.runs.week_number()}"
+        )
         # TODO: add content
 
     def _add_page_list_express(self):

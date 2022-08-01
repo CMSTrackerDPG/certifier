@@ -119,15 +119,21 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
         )
 
     def get(
-        self, request, year: int = timezone.now().year, week_number: int = 1, **kwargs
+        self,
+        request,
+        date_from: str = timezone.now(),
+        date_to: int = timezone.now(),
+        **kwargs,
     ):
         filepath = Path(
-            tempfile.gettempdir(), f"shiftleader_report_{year}_week_{week_number}.odp"
+            tempfile.gettempdir(),
+            f"shiftleader_report_{date_from}_{date_to}.odp",
         )
+        print("!!!!!", date_from, date_to)
 
         p = ShiftLeaderReportPresentation(
-            year=year,
-            week_number=week_number,
+            date_from=date_from,
+            date_to=date_to,
             requesting_user=f"{request.user.first_name} {request.user.last_name}"
             if request.user.first_name
             else request.user.username,
