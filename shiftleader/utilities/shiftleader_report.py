@@ -1,12 +1,33 @@
+import logging
+from certifier.query import TrackerCertificationQuerySet
 from shiftleader.utilities.utilities import to_weekdayname
+
+logger = logging.getLogger(__name__)
 
 
 class ShiftLeaderReportBase:
     """
     Base class for the shift leader report
-    Just wraps the RunInfoQuerySet filter functions
+    Just wraps the TrackerCertificationQuerySet filter functions.
+
+    Each of the methods returns a *new* ShiftLeaderReport
+    instance, instanciated with a more filtered queryset.
+
+    e.g., the code below:
+
+    ```
+    s = ShiftLeaderReport(TrackerCertification.objects.all())
+    s = s.collisions().express()
+    ```
+
+    will return a new ShiftLeaderReport, where the queryset
+    is limited to the TrackerCertifications of express collisions.
     """
-    def online(self): # pragma: no cover
+
+    def __init__(self, runs: TrackerCertificationQuerySet, *args, **kwargs):
+        self.runs = runs
+
+    def online(self):  # pragma: no cover
         return type(self)(self.runs.online())
 
     def prompt(self):
@@ -47,14 +68,14 @@ class ShiftLeaderReportBase:
 
 
 class ShiftLeaderReportDay(ShiftLeaderReportBase):
-    def __init__(self, runs):
-        self.runs = runs
+    def __init__(self, runs, *args, **kwargs):
         try:
             day = runs[0].date
             self.day_name = to_weekdayname(day)
             self.day_date = day
         except IndexError:
             pass
+        super().__init__(runs, *args, **kwargs)
 
     def name(self):
         return self.day_name
@@ -68,8 +89,8 @@ class ShiftLeaderReportDay(ShiftLeaderReportBase):
 
 
 class ShiftLeaderReport(ShiftLeaderReportBase):
-    def __init__(self, runs):
-        self.runs = runs
+    def __init__(self, runs, *args, **kwargs):
+        super().__init__(runs, *args, **kwargs)
 
     def day_by_day(self):
         return [ShiftLeaderReportDay(day) for day in self.runs.per_day()]

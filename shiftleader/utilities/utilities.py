@@ -19,10 +19,14 @@ def to_weekdayname(date, formatstring="%Y-%m-%d"):
     return to_date(date, formatstring).strftime("%A")
 
 
-def get_this_week_filter_parameter():
-    start_of_week = timezone.now() - timezone.timedelta(timezone.now().weekday())
-    end_of_week = start_of_week + timezone.timedelta(6)
+def calculate_week_start_end(date: datetime.datetime = timezone.now()):
+    week_start = date - timezone.timedelta(date.weekday())
+    week_end = week_start + timezone.timedelta(6)
+    return week_start, week_end
 
+
+def get_this_week_filter_parameter():
+    start_of_week, end_of_week = calculate_week_start_end()
     date_gte = (
         str(start_of_week.year)
         + "-"
