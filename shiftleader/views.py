@@ -129,7 +129,6 @@ class ShiftLeaderReportPresentationView(LoginRequiredMixin, UserPassesTestMixin,
             tempfile.gettempdir(),
             f"shiftleader_report_{date_from}_{date_to}.odp",
         )
-        print("!!!!!", date_from, date_to)
 
         p = ShiftLeaderReportPresentation(
             date_from=date_from,
