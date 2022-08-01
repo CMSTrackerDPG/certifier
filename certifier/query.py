@@ -306,22 +306,6 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
         if not run_numbers:
             return []
-        logger.debug(f"Querying RR for runs {self.run_numbers()}")
-        counter = 2
-        while True:
-            try:
-                runs = runregistry.get_runs(
-                    filter={"run_number": {"or": self.run_numbers()}},
-                )
-                break
-            except requests.exceptions.ConnectionError as e:
-                logger.warning(f"Error when getting runs from RR: ({e})")
-                counter -= 1
-                if counter <= 0:
-                    logger.error(
-                        f"Failed to get runs {self.run_numbers()} after 2 tries"
-                    )
-                    raise e
 
         return [
             fill["fill_number"]
