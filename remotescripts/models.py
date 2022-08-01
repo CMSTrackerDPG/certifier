@@ -52,6 +52,10 @@ class ScriptConfigurationBase(models.Model):
         blank=True,
     )
 
+    is_running = models.BooleanField(
+        help_text="Flag set to True while the script is executing", default=False
+    )
+
     def _form_command(self, *args, **kwargs) -> str:
         """
         Building on the base command, add positional and keyword arguments
@@ -91,6 +95,14 @@ class ScriptConfigurationBase(models.Model):
         self.base_command = str(self.base_command).replace("\r", "")
         super().save(*args, **kwargs)
 
+    def before_execution(self):
+        self.is_running = True
+        self.save()
+
+    def after_execution(self):
+        self.is_running = False
+        self.save()
+
     @abstractclassmethod
     def execute(self, *args, **kwargs):
         """
@@ -122,12 +134,18 @@ class BashScriptConfiguration(ScriptConfigurationBase):
 
         Not tested a lot, but the main idea works.
         """
+        if self.is_running:
+            logger.warning("{self} is already running!")
+            return
+
         cmd_to_execute = self._form_command(*args, **kwargs)
+        self.before_execution()
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(cmd_to_execute.encode())
             with subprocess.Popen(["bash", fp.name], stdout=subprocess.PIPE) as process:
                 output, error = process.communicate()
             logger.info(output)
+        self.after_execution()
 
     def __str__(self) -> str:
         return f"{self.title} (Local)"
@@ -203,6 +221,11 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
         Method that executes the remote script.
 
         """
+        if self.is_running:
+            logger.warning("{self} is already running!")
+            return
+
+        self.before_execution()
         self._configure_callbacks(kwargs)
 
         self.on_script_start()
@@ -298,6 +321,7 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                     self.on_new_output_file(f_db.id, localpath)
                 ftp.close()
         ssh.close()
+        self.after_execution()
         return exit_status
 
     def __str__(self) -> str:
