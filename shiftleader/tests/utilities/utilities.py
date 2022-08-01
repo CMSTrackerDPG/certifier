@@ -15,7 +15,17 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                 if not date:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="collisions",
+                                hlt_key="/cdaq/physics",
+                                stable_beam=True,
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="good",
@@ -23,18 +33,38 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                 else:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="collisions",
+                                hlt_key="/cdaq/physics",
+                                stable_beam=True,
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="good",
-                        date=date
+                        date=date,
                     )
 
             else:
                 if not date:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="collisions",
+                                hlt_key="/cdaq/physics",
+                                stable_beam=True,
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="bad",
@@ -42,18 +72,34 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                 else:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="collisions", hlt_key="/cdaq/physics", stable_beam=True)),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun",
+                                run_number=i,
+                                run_type="collisions",
+                                hlt_key="/cdaq/physics",
+                                stable_beam=True,
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="bad",
-                        date=date
+                        date=date,
                     )
         else:
             if good:
                 if not date:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="cosmics")),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="good",
@@ -61,17 +107,29 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                 else:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="cosmics")),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="good",
-                        date=date
+                        date=date,
                     )
             else:
                 if not date:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="cosmics")),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="bad",
@@ -79,11 +137,17 @@ def create_runs(amount, first_run_number, runtype, reco, good=True, date=None):
                 else:
                     mixer.blend(
                         "certifier.TrackerCertification",
-                        runreconstruction=mixer.blend("certifier.RunReconstruction", reconstruction=reco, run=mixer.blend("oms.OmsRun", run_number=i, run_type="cosmics")),
+                        runreconstruction=mixer.blend(
+                            "certifier.RunReconstruction",
+                            reconstruction=reco,
+                            run=mixer.blend(
+                                "oms.OmsRun", run_number=i, run_type="cosmics"
+                            ),
+                        ),
                         pixel="good",
                         strip="good",
                         tracking="bad",
-                        date=date
+                        date=date,
                     )
 
 
@@ -92,4 +156,11 @@ def create_recent_run(run_number=None):
     if not run_number:
         mixer.blend("certifier.TrackerCertification", date=today)
     else:
-        mixer.blend("certifier.TrackerCertification", date=today, runreconstruction=mixer.blend("certifier.RunReconstruction", run=mixer.blend("oms.OmsRun", run_number=run_number)))
+        mixer.blend(
+            "certifier.TrackerCertification",
+            date=today,
+            runreconstruction=mixer.blend(
+                "certifier.RunReconstruction",
+                run=mixer.blend("oms.OmsRun", run_number=run_number),
+            ),
+        )
