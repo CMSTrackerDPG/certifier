@@ -27,8 +27,14 @@
 				<td><code>{{ remote_script.base_command }}</code></td>
 				<td>
 					<a href="{% url 'remotescripts:detail' remote_script.id %}">
-						<button class="btn btn-primary btn-block" title="Show me more!!">
-							<i class="bi bi-caret-right text-white"></i>
+						<button
+							{% if not remote_script.is_running %}
+							class="btn btn-primary btn-block" title="Show me more!!"
+							{% else %}
+							class="btn btn-danger btn-block" title="Script is currently running!!"
+							{% endif %}
+						>
+							<i class="bi bi-caret-right-fill text-white"></i>
 						</button>
 					</a>
 				</td>
