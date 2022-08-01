@@ -1,8 +1,11 @@
 import collections
 import logging
+import requests
+from operator import itemgetter
+from itertools import groupby
+import runregistry
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db.models.functions import Coalesce
 from django.db.models import (
     Q,
     Count,
@@ -22,10 +25,8 @@ from shiftleader.utilities.utilities import (
     _get_run_type_from_run_class_and_dataset_name,
 )
 from shiftleader.exceptions import CannotAssumeRunTypeException
-import runregistry
-from operator import itemgetter
-from itertools import groupby
 from listruns.utilities.luminosity import convert_luminosity_to_pb
+from oms.models import OmsFill
 
 logger = logging.getLogger(__name__)
 
@@ -299,20 +300,17 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         """
         :return: sorted list of fill numbers (without duplicates)
         """
-        if not self.run_numbers():
+        run_numbers = self.run_numbers()
+
+        if not run_numbers:
             return []
 
-        runs = runregistry.get_runs(filter={"run_number": {"or": self.run_numbers()}})
-        fill_numbers_list = sorted(
-            set(
-                {
-                    run["oms_attributes"]["fill_number"]
-                    for run in runs
-                    if run["oms_attributes"]["fill_number"] is not None
-                }
-            )
-        )
-        return fill_numbers_list
+        return [
+            fill["fill_number"]
+            for fill in OmsFill.objects.filter(oms_run__run_number__in=run_numbers)
+            .distinct()
+            .values("fill_number")
+        ]
 
     def pks(self):
         """
@@ -337,19 +335,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
                 int_luminosity=cert.runreconstruction.run.recorded_lumi,
                 luminosity_units=cert.runreconstruction.run.recorded_lumi_unit,
             )
-        # Cannot just use Sum here, since luminosity may have different units
-        # print("!!!", self.aggregate(
-        #         runreconstruction__run__recorded_lumi__sum=Coalesce(
-        #             Sum("runreconstruction__run__recorded_lumi"), 0.0
-        #         )
-        #     ))
-        # return float(
-        #     self.aggregate(
-        #         runreconstruction__run__recorded_lumi__sum=Coalesce(
-        #             Sum("runreconstruction__run__recorded_lumi"), 0.0
-        #         )
-        #     )["runreconstruction__run__recorded_lumi__sum"]
-        # )
+
         return integrated_luminosity
 
     def lumisections(self):
@@ -585,6 +571,7 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         # to get the run type. If not, do an extra query to get extra oms attributes
         # Issue #100
         for rr_entry in run_registry_entries:
+
             try:
                 _get_run_type_from_run_class_and_dataset_name(
                     rr_entry["class"], rr_entry["name"]
@@ -635,32 +622,28 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         return len(deviating) == 0
 
     def group_run_numbers_by_fill_number(self):
+        if not self.run_numbers():
+            return []
+
         run_numbers = self.run_numbers()
-        response = []
-        runs = runregistry.get_runs(filter={"run_number": {"or": run_numbers}})
 
-        for run in runs:
-            response.append([run["oms_attributes"]["fill_number"], run["run_number"]])
-
-        groups = groupby(response, itemgetter(0))
-        items = [(key, [item[1] for item in value]) for key, value in groups]
-        keys = ["fill_number", "run_number"]
-        fill_run_group = [dict(zip(keys, item)) for item in items]
-        return fill_run_group
-
-    '''
-    def annotate_fill_number(self):
-        """
-        Adds the lhc fill number from the Run Registry
-
-        :return: QuerySet with added LHC fill number
-        """
-        run_registry = TrackerRunRegistryClient()
-        fills = run_registry.get_fill_number_by_run_number(self.run_numbers())
-        for run in self:
-            fills_list=list(
-                filter(lambda x: x["run_number"] == run.run_number, fills)
+        fills = (
+            OmsFill.objects.filter(oms_run__run_number__in=run_numbers)
+            .order_by("-fill_number")
+            .distinct()
+        )
+        fill_run_group = []
+        for fill in fills:
+            fill_run_group.append(
+                {
+                    "fill_number": fill.fill_number,
+                    "run_number": [
+                        run["run_number"]
+                        for run in fill.oms_run.order_by("-run_number").values(
+                            "run_number"
+                        )
+                    ],
+                }
             )
-            if(fills_list):
-                run.fill_number = fills_list[0]["fill_number"]
-    '''
+
+        return fill_run_group
