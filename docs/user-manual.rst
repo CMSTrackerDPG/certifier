@@ -357,4 +357,19 @@ colored green if the run was certified "Good" and red for "Bad".
 
 .. image:: images/shiftleader-report-list-of-runs.png
 
+Generate Presentation
+~~~~~~~~~~~~~~~~~~~~~
 
+An OpenDocumentPresentation (`.odp`) can also be automatically generated
+for the currently selected week, by clicking the :guilabel:`Generate Presentation`
+button:
+
+.. image:: images/shiftleader-generatepresentation.png
+
+Once the presentation file is ready, you will be prompted to download
+it through your browser. E.g. if you're using Firefox:
+
+.. image:: images/shiftleader-generatepresentation-download.png
+
+.. note:: This procedure might take a long time to complete, so grab some
+		  popcorn first!
