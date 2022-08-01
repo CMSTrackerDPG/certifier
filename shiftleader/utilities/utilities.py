@@ -7,6 +7,16 @@ from shiftleader.exceptions import CannotAssumeRunTypeException
 logger = logging.getLogger(__name__)
 
 
+class DateConverter:
+    regex = "\d{4}-\d{2}-\d{2}"
+
+    def to_python(self, value):
+        return datetime.datetime.strptime(value, "%Y-%m-%d").date()
+
+    def to_url(self, value):
+        return value
+
+
 def to_date(date, formatstring="%Y-%m-%d"):
     if isinstance(date, datetime.datetime):
         return date.date()

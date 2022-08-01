@@ -362,7 +362,7 @@ class ShiftLeaderReportPresentation(object):
         return l
 
     def _generate_filename(self) -> str:
-        return (f"shiftleader_report_{self.date_from}_{self.date_to}.odp",)
+        return f"shiftleader_report_{self.date_from}_{self.date_to}.odp"
 
     def _add_page_title(self):
         """
