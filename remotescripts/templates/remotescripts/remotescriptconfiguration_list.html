@@ -7,11 +7,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-md container-fluid">
+<div class="container-md container-fluid pt-3">
+	<h2>Remote scripts</h2>
+	<p>
+		List of available scripts running on remote machines. Click on the <span class="bg-primary"><i class="bi bi-caret-right-fill text-white"></i></span>
+		button to execute it.
+	</p>
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<!-- <th scope="col">id</th> -->
 				<th scope="col">Title</th>
 				<th scope="col">Host</th>
 				<th scope="col">Command</th>
@@ -27,8 +31,14 @@
 				<td><code>{{ remote_script.base_command }}</code></td>
 				<td>
 					<a href="{% url 'remotescripts:detail' remote_script.id %}">
-						<button class="btn btn-primary btn-block" title="Show me more!!">
-							<i class="bi bi-caret-right text-white"></i>
+						<button
+							{% if not remote_script.is_running %}
+							class="btn btn-primary btn-block" title="Show me more!!"
+							{% else %}
+							class="btn btn-danger btn-block" title="Script is currently running!!"
+							{% endif %}
+						>
+							<i class="bi bi-caret-right-fill text-white"></i>
 						</button>
 					</a>
 				</td>

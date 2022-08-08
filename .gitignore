@@ -273,4 +273,6 @@ modules.xml
 wsgi/static/
 
 # End of https://www.gitignore.io/api/django,python,pycharm+all
-users/migrations/0002_auto_20210329_1345.py
+
+*.odp
+

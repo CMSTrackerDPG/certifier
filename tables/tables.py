@@ -379,6 +379,14 @@ class ReferenceRunReconstructionTable(tables.Table):
     def render_apv_mode(self, record):
         return record.run.apv_mode
 
+    def before_render(self, request):
+        """
+        Hook provided by django-tables especially for
+        conditionallly hiding columns
+        """
+        if not request.user.has_shift_leader_rights:
+            self.columns.hide("delete_run")
+
     class Meta:
         model = RunReconstruction
         fields = ()

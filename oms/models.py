@@ -205,7 +205,9 @@ class OmsRun(models.Model):
 
     run_type = models.CharField(max_length=10, choices=RUN_TYPE_CHOICES, null=True)
 
-    fill = models.ForeignKey(OmsFill, on_delete=models.CASCADE, null=True)
+    fill = models.ForeignKey(
+        OmsFill, on_delete=models.CASCADE, null=True, related_name="oms_runs"
+    )
 
     lumisections = models.PositiveIntegerField(null=True)
 

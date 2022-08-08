@@ -56,7 +56,8 @@
                     <p class="card-text text-center" style="font-size: 18px">Generate shift leader report</p>
                 </div>
             </div>
-			{% endif %}			
+			{% endif %}
+			{% if user.has_shifter_rights %}
             <div class="card col-sm col-md bg-dark text-light" onclick="location.href='{% url 'addrefrun:addrefrun' %}'">
                 <div class="card-header">
                     <h4 class="text-center font-weight-bold mt-1 mb-1">Reference Runs</h4>
@@ -75,6 +76,7 @@
 					<p class="card-text text-center" style="font-size: 18px">Build ML models</p>
 				</div>
 			</div>
+			{% endif %}
 		</div>
         <div class="card-deck row pt-3">
             {% if user.has_shifter_rights %}

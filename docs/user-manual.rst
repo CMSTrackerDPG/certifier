@@ -3,11 +3,12 @@
 .. role:: green
 .. role:: yellow
 
-User manual
-===========
+=============
+ User manual
+=============
 
 Roles
------
+=====
 
 The Certhelper distinguishes between 3 different Roles
 
@@ -19,7 +20,7 @@ Each role has their set of rights which are explained in the following
 chapters.
 
 Login
------
+=====
 
 The first thing a user has to do in order to be able to modify data is
 to login. The recommended way of logging is using CERN Single
@@ -33,7 +34,7 @@ credentials and clicking on "Sign in".
 
 
 Privileges from e-groups
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 Logging in with CERN updates the user privileges automatically, such
 that shift leaders are detected by the e-groups the user is a member of.
@@ -54,10 +55,10 @@ Experts must be subscribed to:
 - ``cms-dqm-certification-experts``
 
 Shifter
--------
+=======
 
 Certification
-~~~~~~~~~~~~~~~~~~~
+-------------
 
 Adding a new run certification can be done by clicking the accessing the Certification tile button on the main page.
 
@@ -116,7 +117,7 @@ Assuming the are no problems with the run the shifter has to fill the Reference 
 The Submit won't let you complete the action if the form is not filled correctly.
 
 Checklists
-^^^^^^^^^^
+~~~~~~~~~~
 
 The "Checklists" have to be checked to be
 able to submit a new run certification. The checklists consist of
@@ -134,7 +135,7 @@ wants to edit a certified run, he can do so by clicking on the "Edit"
 button in the list of certified runs.
 
 List Runs
-~~~~~~~~~~~~~~~~~~~
+---------
 Seeing the certified runs can be done by clicking the List Runs tile button on the main page.
 
 .. image:: images/listruns-tile.png
@@ -146,7 +147,7 @@ Here the shiftleader or shifter could see all the certified runs he/she has cert
 This page contains a table with all the certified runs that defaults for those certified in the current day and a filter where you can choose different day ranges, run numbers ranges and many more for precisely listing the desired runs.
 
 Daily Shift Report
-~~~~~~~~~~~~~~~~~~~
+------------------
 
 Clicking the Daily Shift Report tile button take you to the shifter report.
 
@@ -156,66 +157,63 @@ Once pressed, a daily shift report is generated automatically and can be used by
 
 .. image:: images/daily-shift-report.png
 
-Generate Tracker Maps
-~~~~~~~~~~~~~~~~~~~~~
+Remote Scripts
+--------------
 
-By using the Tracker Maps tile button you can access the page where you can generate tracker maps.
+By using the Remote Scripts tile button you can access the page where you can generate tracker maps.
 
-.. image:: images/tracker-maps-tile.png
+.. image:: images/remotescripts-tile.png
 
-In this page, a Shifter or Shift Leader can generate tracker maps for specific runs.
-All they have to do is add the run number list (either comma or space separated
-values) and select the type.
-Once that is done, pressing the :guilabel:`Generate Tracker Maps` button will
+From this page, a Shifter or Shift Leader can select to run scripts
+(such as **Tracker Maps generation**) which can retrieve extre information
+which can help during certification.
+
+A list of currently available scripts can be seen below:
+
+.. image:: images/remotescripts-list.png
+
+.. note::
+
+   If multiple users try to use the same script at the same time,
+   they will all be updated with execution logs of the
+   running scripts at the same time.
+		   
+
+Tracker Maps Generation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This script accepts the following arguments:
+
+- The **type** (i.e. :guilabel:`StreamExpress`, :guilabel:`ZeroBias`, :guilabel:`StreamExpressCosmics` or
+  :guilabel:`Cosmics`)
+- A **Run number list** (either comma or space separated values) and
+			
+Once that is done, pressing the :guilabel:`Submit` button will
 start the process. The Shifter or Shift Leader can follow the process in real time by observing the logs of
 the generating script.
 
-.. image:: images/tracker-maps.png
+.. image:: images/remotescripts-trackermaps-running.png
 
-		   
-.. note::
+Reference Runs
+--------------
 
-   If multiple users visit the page, they will all be updated with execution logs of the
-   running scripts at the same time.
-
-
-.. warning::
-
-   Currently, a user can execute the tracker map generation script multiple times. This
-   can overload the ``vocms066`` machine, so please wait for previous map generation to complete
-   before invoking the script again.
-		   
-
-Shift Leader
-------------
-
-Once a shift leader logs in via CERN SSO, the website automatically
-detects the shift leader status by the e-groups the user is associated
-with. In particular, the current shift leader should always be
-automatically assigned to the e-group ``cms-tracker-offline-shiftleader``
-(see also `Privileges from e-groups`_).
-
-The user can ensure he has shift leader rights by checking if an
-:guilabel:`Admin Settings` tab appears in the navigation bar.
-
-Apart from that the ShiftLeader has access to all the pages/tiles, including
-the ones used by Shifters.
-
-.. image:: images/main-page.png
-
-Add Reference Run
-~~~~~~~~~~~~~~~~~
-
-A new reference run can be added by clicking on the :guilabel:`Add Reference Run` tile.
+This page lists all the run reconstructions which serve as reference for
+certifying new ones.
 
 .. image:: images/add-reference-run-tile.png
-		   
-Once clicked you are presented with the following page:
 
-.. image:: images/add-reference-run.png
+Shifters can just display the list of Reference runs.
 
-Here the user can either permanently delete a reference run that was added by mistake or promote a
+.. image:: images/referenceruns-list.png
+
+Shift Leader-only features
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to listing the reference runs, the Shift Leader can also **permanently
+delete** a reference run that was added by mistake or **promote** an already
 certified one by using the run number and type of the run.
+
+.. image:: images/referenceruns-list-shiftleader.png
 
 Since a reference run reconstruction must have been certified first, adding a run reconstruction that
 has not been certified yet will prompt the user to certify the run first.
@@ -232,8 +230,27 @@ has not been certified yet will prompt the user to certify the run first.
 
 
 
+Shift Leader
+============
+
+Once a shift leader logs in via CERN SSO, the website automatically
+detects the shift leader status by the e-groups the user is associated
+with. In particular, the current shift leader should always be
+automatically assigned to the e-group ``cms-tracker-offline-shiftleader``
+(see also `Privileges from e-groups`_).
+
+The user can ensure he has shift leader rights by checking if an
+:guilabel:`Admin Settings` tab appears in the navigation bar.
+
+Apart from that the ShiftLeader has access to all the pages/tiles, including
+the ones used by Shifters.
+
+.. image:: images/main-page.png
+
+
+
 Shift Leader View
-~~~~~~~~~~~~~~~~~
+-----------------
 
 In the Shift Leader View, a Shift Leader receives information about all
 the certified runs for the current week. The page consists of multiple
@@ -243,7 +260,7 @@ reports. This page can be accessed through the Shift Leader Report tile button.
 .. image:: images/shiftleader-report.png
 
 Filter
-~~~~~~
+------
 
 At the top of the page, the shift leader can filter the certified runs
 by his needs. If no filters were specified, then the current week is
@@ -257,7 +274,7 @@ whole shift leader page gets updated according to the specified
 criteria.
 
 Certified Runs tab
-~~~~~~~~~~~~~~~~~~
+------------------
 
 In the "Certified Runs" tab a tabular list of all the certified runs for
 the current week (or specified filter criteria) is shown. The shift
@@ -268,7 +285,7 @@ of certified runs correct in order to generate accurate shift leader reports.
 .. image:: images/shiftleader-list-of-certified-runs.png
 
 Run Registry Comparison tab
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 In the "Run Registry Comparison" tab, the shifter can verify that the
 runs in the Certification helper match with the entries in the Run
@@ -279,7 +296,7 @@ accordingly.
 .. image:: images/shiftleader-comparison.png
 
 Overview tab
-~~~~~~~~~~~~
+------------
 
 In the "Overview" tab a quick overview of the certified runs can be
 seen. It also consists of the list of shifters for that week.
@@ -287,27 +304,27 @@ seen. It also consists of the list of shifters for that week.
 .. image:: images/shiftleader-overview.png
 
 Delete Certifications
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 If a run gets deleted by shift leader it can still be restored in the
 "Deleted Certifications" tab. If the shift leader wishes he can also
 irrevocably delete the certification of the run there.
 
 Summary tab
-~~~~~~~~~~~
+-----------
 
 In the "Summary" tab the shift leader can generate the same kind of
 summary report that the shifters submit to the ELOG. It is just a
 textual version of all the certifications.
 
 Shift Leader Report tab
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 The most useful tab for shift leaders is the "Shift leader Report" tab.
 It automatically generates slides for the weekly shift leader report.
 
 List of LHC Fills
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 
 This page lists all the LHC fills that were part in a certification that
 week. The LHC fill number is taken from the Run Registry via the resthub
@@ -316,7 +333,7 @@ API.
 .. image:: images/shiftleader-report-fills.png
 
 Weekly Certification
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~
 
 This tab generates the slide called "Weekly certification". It sums up
 the number of certified runs for each type and the corresponding
@@ -325,14 +342,14 @@ integrated luminosity.
 .. image:: images/shiftleader-report-weekly.png
 
 Day by Day
-^^^^^^^^^^
+~~~~~~~~~~
 
 The "Day by day" notes give a quick overview for each day of the week.
 
 .. image:: images/shiftleader-report-day-by-day-menu.png
 
 List of runs
-^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 This page list all the run numbers of runs certified that were certified
 that week, grouped by reconstruction type and day. The run numbers are
@@ -340,4 +357,19 @@ colored green if the run was certified "Good" and red for "Bad".
 
 .. image:: images/shiftleader-report-list-of-runs.png
 
+Generate Presentation
+~~~~~~~~~~~~~~~~~~~~~
 
+An OpenDocumentPresentation (`.odp`) can also be automatically generated
+for the currently selected week, by clicking the :guilabel:`Generate Presentation`
+button:
+
+.. image:: images/shiftleader-generatepresentation.png
+
+Once the presentation file is ready, you will be prompted to download
+it through your browser. E.g. if you're using Firefox:
+
+.. image:: images/shiftleader-generatepresentation-download.png
+
+.. note:: This procedure might take a long time to complete, so grab some
+		  popcorn first!
