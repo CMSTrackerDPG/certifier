@@ -95,16 +95,26 @@
 // Prevent buttons from being clicked while script is running
  function disableControls(){
 	 $('#form_submit').prop('disabled', true)
-					  .prop('title', "Wait for script execution to finish");
+					  .prop('title', "Wait for script execution to finish")
+					  .addClass('btn-danger')
+					  .removeClass('btn-primary');
  }
  
  // Reenable buttons once script ends
  function enableControls(){
 	 $('#form_submit').prop('disabled', false)
-					  .prop('title', "Execute the script");
+					  .prop('title', "Execute the script")
+					  .addClass('btn-primary')
+					  .removeClass('btn-danger');
  }
  
- $(document).ready(function() {	 
+ $(document).ready(function() {
+	 // Initial check for clients connecting after
+	 // script started running
+	 if ("{{remote_script.is_running}}" === "True")
+	 {
+		 disableControls();
+	 }
 	 // WS initialization
 	 if (location.protocol === 'https:') {
 		 // page is secure

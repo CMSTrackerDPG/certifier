@@ -99,7 +99,8 @@ to add a new configuration for the script to run.
 
 Give it a :guilabel:`Title` to distinguish it from other scripts, e.g. "Trackermaps generation".
 
-Enter the :guilabel:`Base command` which is the command to run on the remote machine, e.g. "bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh".
+Enter the :guilabel:`Base command` which is the command to run on the remote machine, e.g.
+"bash /data/users/event_display/ShiftRun3/TkMapGeneration/tkmapsFromCertHelper.sh".
 
 Enter the :guilabel:`Host` to run the command on (e.g. "vocms066"), :guilabel:`Connection protocol`
 and :guilabel:`Port` to use to connect to it (e.g. "SSH - Keyboard interactive" and "22" for ``ssh``).
@@ -108,6 +109,10 @@ Then, if connecting with Username & password, provide the **names of the CertHel
 created previously** (not the actual values of the username and password!!!) under the
 :guilabel:`Env secret username` and :guilabel:`Env secret password` fields
 (e.g. "VOCMS_USERNAME" and "VOCMS_PASSWORD").
+
+It is also recommended to add some :guilabel:`Help text`, describing the script's functionality,
+and some example values for its arguments. The :guilabel:`Help text` field accepts formatting
+such as **bold**, *italics*, hyperlinks, etc. 
 
 Click on :guilabel:`SAVE`.
 
@@ -199,7 +204,7 @@ Adding secrets to CertHelper
 
 
 Secrets, in this context, are variables loaded by Django at runtime using
-`python-decouple<https://pypi.org/project/python-decouple/>`__
+`python-decouple <https://pypi.org/project/python-decouple/>`__
 and they should not be publicly available.
 
 To prevent them being stored in a plain-text file like ``settings.py``, they are
@@ -224,7 +229,8 @@ To create a new secret, follow the steps below:
    Give the new environmental variable a meaningful name, e.g. ``VOCMS_USERNAME``.
    The secret is now ready to be used.
    
-3. You will have to rebuild the project now. See :doc:`deployment`.
+3. You will have to rebuild the project now. See `deployment
+   <https://cmstrackerdpg.github.io/cms-tkdpg-software-knowledge-transfer/certhelper/deploying/guide/#deploying-a-new-build>`__.
    The secret is now safely available in CertHelper.
 
 			 
