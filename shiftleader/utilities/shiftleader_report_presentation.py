@@ -568,10 +568,15 @@ class ShiftLeaderReportPresentation(object):
                     text=self._format_list_to_str(runs.good().run_numbers()),
                     stylename=self.style_span_good,
                 )
-                sp3 = Span(text=")")
+                sp3 = Span(
+                    text=self._format_list_to_str(runs.bad().run_numbers()),
+                    stylename=self.style_span_bad,
+                )
+                sp4 = Span(text=")")
                 p.addElement(sp1)
                 p.addElement(sp2)
                 p.addElement(sp3)
+                p.addElement(sp4)
 
             return p
 
