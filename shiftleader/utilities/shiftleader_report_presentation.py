@@ -228,6 +228,11 @@ class ShiftLeaderReportPresentation(object):
                 border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
             )
         )
+        self.style_cell.addElement(
+            TextProperties(
+                fontsize="13pt", fontsizeasian="13pt", fontsizecomplex="13pt"
+            )
+        )
         self.doc.automaticstyles.addElement(self.style_cell)
 
         # Header Cell style
@@ -532,7 +537,7 @@ class ShiftLeaderReportPresentation(object):
                     p = P()
                     p.addElement(
                         Span(
-                            text=self._format_list_to_str(v)
+                            text=self._format_list_to_str(v, comma=True)
                             if isinstance(v, list)
                             else v,
                             stylename=self.style_span,
