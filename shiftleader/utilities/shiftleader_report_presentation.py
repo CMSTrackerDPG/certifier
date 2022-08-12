@@ -568,6 +568,7 @@ class ShiftLeaderReportPresentation(object):
                     text=self._format_list_to_str(runs.good().run_numbers()),
                     stylename=self.style_span_good,
                 )
+                spbl = Span(text=" ")
                 sp3 = Span(
                     text=self._format_list_to_str(runs.bad().run_numbers()),
                     stylename=self.style_span_bad,
@@ -575,6 +576,7 @@ class ShiftLeaderReportPresentation(object):
                 sp4 = Span(text=")")
                 p.addElement(sp1)
                 p.addElement(sp2)
+                p.addElement(spbl)
                 p.addElement(sp3)
                 p.addElement(sp4)
 
@@ -659,18 +661,25 @@ class ShiftLeaderReportPresentation(object):
 
     def _generate_daily_good_bad_run_list_element(self, day_queryset) -> Element:
         p = P()
-        sp0 = Span(text=f"{day_queryset.name()}: Good: ")
-        sp1 = Span(
-            text=self._format_list_to_str(
-                [run_number for run_number in day_queryset.good().run_numbers()]
-            ),
-            stylename=self.style_span_good,
-        )
-        p.addElement(sp0)
-        p.addElement(sp1)
+        sps = Span(text=f"{day_queryset.name()}: ")
+        p.addElement(sps)
+
+        if len(day_queryset.good().run_numbers()) > 0:
+            sp0 = Span(text="Good: ")
+            sp1 = Span(
+                text=self._format_list_to_str(
+                    [run_number for run_number in day_queryset.good().run_numbers()]
+                ),
+                stylename=self.style_span_good,
+            )
+            p.addElement(sp0)
+            p.addElement(sp1)
+            if len(day_queryset.bad().run_numbers()) > 0:
+                spbl = Span(text=" ")
+                p.addElement(spbl)
 
         if len(day_queryset.bad().run_numbers()) > 0:
-            sp2 = Span(text=f", Bad: ")
+            sp2 = Span(text=f"Bad: ")
             sp3 = Span(
                 text=self._format_list_to_str(
                     [run_number for run_number in day_queryset.bad().run_numbers()]
