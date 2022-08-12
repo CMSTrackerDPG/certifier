@@ -392,10 +392,13 @@ class ShiftLeaderReportPresentation(object):
         return f"shiftleader_report_{self.date_from}_{self.date_to}.odp"
 
     @staticmethod
-    def _format_list_to_str(l: list) -> str:
+    def _format_list_to_str(l: list, comma=False) -> str:
         if not isinstance(l, list):
             raise ValueError(f"Invalid argument {l}, list expected")
-        return str(l).replace("[", "").replace("]", "").replace(",", "")
+        s = str(l).replace("[", "").replace("]", "")
+        if not comma:
+            s = s.replace(",", "")
+        return s
 
     def _add_page_title(self):
         """
@@ -575,7 +578,7 @@ class ShiftLeaderReportPresentation(object):
             tb = TextBox()
             list1 = self._generate_list(
                 list_items=[
-                    f"Fills {str(day.collisions().express().fill_numbers())}",
+                    f"Fills {self._format_list_to_str(day.collisions().express().fill_numbers(), comma=True)}",
                     [
                         "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
                     ],
