@@ -441,7 +441,7 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
             WIDTH_FRAME = 648
-            WIDTH_COL = 300
+            WIDTH_COL = 70
             HEIGHT_FRAME = 105
             HEIGHT_ROW = 50
 
@@ -463,11 +463,16 @@ class ShiftLeaderReportPresentation(object):
             tr = TableRow(
                 defaultcellstylename=self.style_cell_header, stylename=style_row
             )
+
+            col_names = ["Fill", "Run"]
+
             # Two columns
-            for i, col_name in enumerate(["Fill", "Run"]):
+            for i, col_name in enumerate(col_names):
                 style_column = Style(name=f"co{i}", family="table-column")
                 style_column.addElement(
-                    TableColumnProperties(columnwidth=f"{WIDTH_COL}pt")
+                    TableColumnProperties(
+                        columnwidth=f"{WIDTH_COL if i < len(col_names)-1 else WIDTH_FRAME-i*WIDTH_COL}pt"
+                    )
                 )
                 self.doc.automaticstyles.addElement(style_column)
 
