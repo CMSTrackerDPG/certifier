@@ -544,6 +544,29 @@ class ShiftLeaderReportPresentation(object):
         """
         Day-by-day certification report
         """
+
+        def _generate_flag_changed_good_run_list_element(runs) -> Element:
+            """
+            Nested helper function for formatting good runs for changed flags runs
+            """
+            p = P()
+            sp0 = Span(
+                text=f"Number of changed flags from Express to Prompt={runs.total_number()}"
+            )
+            p.addElement(sp0)
+            if runs.total_number() > 0:
+                sp1 = Span(text=" (")
+                sp2 = Span(
+                    text=self._format_list_to_str(runs.good().run_numbers()),
+                    stylename=self.style_span_good,
+                )
+                sp3 = Span(text=")")
+                p.addElement(sp1)
+                p.addElement(sp2)
+                p.addElement(sp3)
+
+            return p
+
         for day in self.slreport.day_by_day():
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
@@ -562,12 +585,7 @@ class ShiftLeaderReportPresentation(object):
                         f"Cosmics: {day.cosmics().express().total_number()} in Stream-Express, {day.cosmics().prompt().total_number()} in Prompt-Reco",
                     ],
                     f"Total number of BAD runs = {day.bad().total_number()} ({format_integrated_luminosity(day.bad().integrated_luminosity())})",
-                    [
-                        f"Number of changed flags from Express to Prompt={day.flag_changed().total_number()}"
-                        + f" ({day.flag_changed().good().run_numbers()})"  # TODO, format as green
-                        if day.flag_changed().total_number() > 0
-                        else ""
-                    ],
+                    [_generate_flag_changed_good_run_list_element(day.flag_changed())],
                     "Conditions update:",
                     "Issues reported in the Elog and feedback to Online:",
                     "On calls:",
@@ -584,6 +602,7 @@ class ShiftLeaderReportPresentation(object):
         """
         Weekly certification page
         """
+
         page = self._create_content_page(title=f"Weekly certification")
         frame = self._create_full_page_content_frame(self.style_frame_list)
         tb = TextBox()
