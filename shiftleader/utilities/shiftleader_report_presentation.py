@@ -464,7 +464,7 @@ class ShiftLeaderReportPresentation(object):
                 defaultcellstylename=self.style_cell_header, stylename=style_row
             )
             # Two columns
-            for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
+            for i, col_name in enumerate(["Fill", "Run"]):
                 style_column = Style(name=f"co{i}", family="table-column")
                 style_column.addElement(
                     TableColumnProperties(columnwidth=f"{WIDTH_COL}pt")
