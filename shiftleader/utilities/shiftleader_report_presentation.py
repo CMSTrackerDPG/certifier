@@ -364,6 +364,12 @@ class ShiftLeaderReportPresentation(object):
     def _generate_filename(self) -> str:
         return f"shiftleader_report_{self.date_from}_{self.date_to}.odp"
 
+    @staticmethod
+    def _format_list_to_str(l: list) -> str:
+        if not isinstance(l, list):
+            raise ValueError(f"Invalid argument {l}, list expected")
+        return str(l).replace("[", "").replace("]", "").replace(",", "")
+
     def _add_page_title(self):
         """
         Add title page to presentation
@@ -394,14 +400,10 @@ class ShiftLeaderReportPresentation(object):
         c_frame.addElement(c_text)
         c_text.addElement(P(text=f"SL: {self.name_shift_leader}"))
         c_text.addElement(
-            P(
-                text=f"""Shifters: {str(self.names_shifters).replace('[', '').replace(']', '').replace("'", '')}"""
-            )
+            P(text=f"""Shifters: {self._format_list_to_str(self.names_shifters)}""")
         )
         c_text.addElement(
-            P(
-                text=f"""On-call: {str(self.names_oncall).replace('[', '').replace(']', '').replace("'", '')}"""
-            )
+            P(text=f"""On-call: {self._format_list_to_str(self.names_oncall)}""")
         )
         page.addElement(c_frame)
 
@@ -491,7 +493,14 @@ class ShiftLeaderReportPresentation(object):
                     tc = TableCell()
                     tr.addElement(tc)
                     p = P()
-                    p.addElement(Span(text=v, stylename=self.style_span))
+                    p.addElement(
+                        Span(
+                            text=self._format_list_to_str(v)
+                            if isinstance(v, list)
+                            else v,
+                            stylename=self.style_span,
+                        )
+                    )
                     tc.addElement(p)
 
             table_frame.addElement(table)
@@ -590,9 +599,9 @@ class ShiftLeaderReportPresentation(object):
             list_items=[
                 "Collisions",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    f"{day.name()}: Good: {self._format_list_to_str([run_number for run_number in day.good().run_numbers()])}"
                     + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        f", Bad: {self._format_list_to_str([run_number for run_number in day.bad().run_numbers()])}"
                         if len(day.bad().run_numbers()) > 0
                         else ""
                     )
@@ -600,9 +609,9 @@ class ShiftLeaderReportPresentation(object):
                 ],
                 "Cosmics",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    f"{day.name()}: Good: {self._format_list_to_str([run_number for run_number in day.good().run_numbers()])}"
                     + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        f", Bad: {self._format_list_to_str([run_number for run_number in day.bad().run_numbers()])}"
                         if len(day.bad().run_numbers()) > 0
                         else ""
                     )
@@ -622,9 +631,9 @@ class ShiftLeaderReportPresentation(object):
             list_items=[
                 "Collisions",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    f"{day.name()}: Good: {self._format_list_to_str([run_number for run_number in day.good().run_numbers()])}"
                     + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        f", Bad: {self._format_list_to_str([run_number for run_number in day.bad().run_numbers()])}"
                         if len(day.bad().run_numbers()) > 0
                         else ""
                     )
@@ -632,9 +641,9 @@ class ShiftLeaderReportPresentation(object):
                 ],
                 "Cosmics",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
+                    f"{day.name()}: Good: {self._format_list_to_str([run_number for run_number in day.good().run_numbers()])}"
                     + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
+                        f", Bad: {self._format_list_to_str([run_number for run_number in day.bad().run_numbers()])}"
                         if len(day.bad().run_numbers()) > 0
                         else ""
                     )
