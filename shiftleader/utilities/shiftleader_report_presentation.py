@@ -10,6 +10,7 @@ from shiftleader.utilities.shiftleader_report import ShiftLeaderReport
 from shiftleader.templatetags.shiftleaderfilters import join_good_runs
 from listruns.utilities.luminosity import format_integrated_luminosity
 from odf.opendocument import OpenDocumentPresentation
+from odf.element import Element
 from odf.style import (
     Style,
     MasterPage,
@@ -146,7 +147,7 @@ class ShiftLeaderReportPresentation(object):
             ParagraphProperties(textalign="center", verticalalign="middle")
         )
         self.titlestyle_content.addElement(
-            TextProperties(fontsize="44pt", fontfamily="sans", color="#00b0f0")
+            TextProperties(fontsize="28pt", fontfamily="sans", color="#00b0f0")
         )
         self.titlestyle_content.addElement(
             GraphicProperties(fill="none", stroke="none", overflowbehavior="clip")
@@ -225,6 +226,11 @@ class ShiftLeaderReportPresentation(object):
         self.style_cell.addElement(
             ParagraphProperties(
                 border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
+            )
+        )
+        self.style_cell.addElement(
+            TextProperties(
+                fontsize="13pt", fontsizeasian="13pt", fontsizecomplex="13pt"
             )
         )
         self.doc.automaticstyles.addElement(self.style_cell)
@@ -346,14 +352,40 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_span_pagenumber)
 
+        # Good runs style
+        self.style_span_good = Style(name="spgood", family="text")
+        self.style_span_good.addElement(
+            TextProperties(
+                color="#008000",
+                fontweight="bold",
+                fontweightasian="bold",
+                fontweightcomplex="bold",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_span_good)
+
+        # Bad runs style
+        self.style_span_bad = Style(name="spbad", family="text")
+        self.style_span_bad.addElement(
+            TextProperties(
+                color="#ff0000",
+                fontweight="bold",
+                fontweightasian="bold",
+                fontweightcomplex="bold",
+            )
+        )
+        self.doc.automaticstyles.addElement(self.style_span_bad)
+
     def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
         stylename = f"L1-{identation_level}"
         l = List(stylename=stylename)
         for item in list_items:
             li = ListItem()
 
-            if isinstance(item, list):
+            if isinstance(item, list):  # Recursion
                 item = self._generate_list(item, identation_level + 1)
+                li.addElement(item)
+            elif isinstance(item, Element):
                 li.addElement(item)
             else:
                 li.addElement(P(text=item))
@@ -363,6 +395,15 @@ class ShiftLeaderReportPresentation(object):
 
     def _generate_filename(self) -> str:
         return f"shiftleader_report_{self.date_from}_{self.date_to}.odp"
+
+    @staticmethod
+    def _format_list_to_str(l: list, comma=False) -> str:
+        if not isinstance(l, list):
+            raise ValueError(f"Invalid argument {l}, list expected")
+        s = str(l).replace("[", "").replace("]", "")
+        if not comma:
+            s = s.replace(",", "")
+        return s
 
     def _add_page_title(self):
         """
@@ -394,14 +435,10 @@ class ShiftLeaderReportPresentation(object):
         c_frame.addElement(c_text)
         c_text.addElement(P(text=f"SL: {self.name_shift_leader}"))
         c_text.addElement(
-            P(
-                text=f"""Shifters: {str(self.names_shifters).replace('[', '').replace(']', '').replace("'", '')}"""
-            )
+            P(text=f"""Shifters: {self._format_list_to_str(self.names_shifters)}""")
         )
         c_text.addElement(
-            P(
-                text=f"""On-call: {str(self.names_oncall).replace('[', '').replace(']', '').replace("'", '')}"""
-            )
+            P(text=f"""On-call: {self._format_list_to_str(self.names_oncall)}""")
         )
         page.addElement(c_frame)
 
@@ -439,7 +476,7 @@ class ShiftLeaderReportPresentation(object):
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
             WIDTH_FRAME = 648
-            WIDTH_COL = 300
+            WIDTH_COL = 70
             HEIGHT_FRAME = 105
             HEIGHT_ROW = 50
 
@@ -461,11 +498,18 @@ class ShiftLeaderReportPresentation(object):
             tr = TableRow(
                 defaultcellstylename=self.style_cell_header, stylename=style_row
             )
+
+            col_names = ["Fill", "Run"]
+
             # Two columns
-            for i, col_name in enumerate(["Fill Number", "Certified Runs"]):
+            for i, col_name in enumerate(col_names):
                 style_column = Style(name=f"co{i}", family="table-column")
+                # Last column is given the rest of the total frame width,
+                # this was the only way to set a width for the first column
                 style_column.addElement(
-                    TableColumnProperties(columnwidth=f"{WIDTH_COL}pt")
+                    TableColumnProperties(
+                        columnwidth=f"{WIDTH_COL if i < len(col_names)-1 else WIDTH_FRAME-i*WIDTH_COL}pt"
+                    )
                 )
                 self.doc.automaticstyles.addElement(style_column)
 
@@ -491,7 +535,14 @@ class ShiftLeaderReportPresentation(object):
                     tc = TableCell()
                     tr.addElement(tc)
                     p = P()
-                    p.addElement(Span(text=v, stylename=self.style_span))
+                    p.addElement(
+                        Span(
+                            text=self._format_list_to_str(v, comma=True)
+                            if isinstance(v, list)
+                            else v,
+                            stylename=self.style_span,
+                        )
+                    )
                     tc.addElement(p)
 
             table_frame.addElement(table)
@@ -501,6 +552,36 @@ class ShiftLeaderReportPresentation(object):
         """
         Day-by-day certification report
         """
+
+        def _generate_flag_changed_good_run_list_element(runs) -> Element:
+            """
+            Nested helper function for formatting good runs for changed flags runs
+            """
+            p = P()
+            sp0 = Span(
+                text=f"Number of changed flags from Express to Prompt={runs.total_number()}"
+            )
+            p.addElement(sp0)
+            if runs.total_number() > 0:
+                sp1 = Span(text=" (")
+                sp2 = Span(
+                    text=self._format_list_to_str(runs.good().run_numbers()),
+                    stylename=self.style_span_good,
+                )
+                spbl = Span(text=" ")
+                sp3 = Span(
+                    text=self._format_list_to_str(runs.bad().run_numbers()),
+                    stylename=self.style_span_bad,
+                )
+                sp4 = Span(text=")")
+                p.addElement(sp1)
+                p.addElement(sp2)
+                p.addElement(spbl)
+                p.addElement(sp3)
+                p.addElement(sp4)
+
+            return p
+
         for day in self.slreport.day_by_day():
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
@@ -509,7 +590,7 @@ class ShiftLeaderReportPresentation(object):
             tb = TextBox()
             list1 = self._generate_list(
                 list_items=[
-                    f"Fills {str(day.collisions().express().fill_numbers())}",
+                    f"Fills {self._format_list_to_str(day.collisions().express().fill_numbers(), comma=True)}",
                     [
                         "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
                     ],
@@ -519,12 +600,7 @@ class ShiftLeaderReportPresentation(object):
                         f"Cosmics: {day.cosmics().express().total_number()} in Stream-Express, {day.cosmics().prompt().total_number()} in Prompt-Reco",
                     ],
                     f"Total number of BAD runs = {day.bad().total_number()} ({format_integrated_luminosity(day.bad().integrated_luminosity())})",
-                    [
-                        f"Number of changed flags from Express to Prompt={day.flag_changed().total_number()}"
-                        + f" ({day.flag_changed().good().run_numbers()})"  # TODO, format as green?
-                        if day.flag_changed().total_number() > 0
-                        else ""
-                    ],
+                    [_generate_flag_changed_good_run_list_element(day.flag_changed())],
                     "Conditions update:",
                     "Issues reported in the Elog and feedback to Online:",
                     "On calls:",
@@ -541,6 +617,7 @@ class ShiftLeaderReportPresentation(object):
         """
         Weekly certification page
         """
+
         page = self._create_content_page(title=f"Weekly certification")
         frame = self._create_full_page_content_frame(self.style_frame_list)
         tb = TextBox()
@@ -582,6 +659,38 @@ class ShiftLeaderReportPresentation(object):
         )
         # TODO: add content
 
+    def _generate_daily_good_bad_run_list_element(self, day_queryset) -> Element:
+        p = P()
+        sps = Span(text=f"{day_queryset.name()}: ")
+        p.addElement(sps)
+
+        if len(day_queryset.good().run_numbers()) > 0:
+            sp0 = Span(text="Good: ")
+            sp1 = Span(
+                text=self._format_list_to_str(
+                    [run_number for run_number in day_queryset.good().run_numbers()]
+                ),
+                stylename=self.style_span_good,
+            )
+            p.addElement(sp0)
+            p.addElement(sp1)
+            if len(day_queryset.bad().run_numbers()) > 0:
+                spbl = Span(text=" ")
+                p.addElement(spbl)
+
+        if len(day_queryset.bad().run_numbers()) > 0:
+            sp2 = Span(text=f"Bad: ")
+            sp3 = Span(
+                text=self._format_list_to_str(
+                    [run_number for run_number in day_queryset.bad().run_numbers()]
+                ),
+                stylename=self.style_span_bad,
+            )
+            p.addElement(sp2)
+            p.addElement(sp3)
+
+        return p
+
     def _add_page_list_express(self):
         page = self._create_content_page(title="List of runs certified StreamExpress")
         frame = self._create_full_page_content_frame(self.style_frame_list)
@@ -590,22 +699,12 @@ class ShiftLeaderReportPresentation(object):
             list_items=[
                 "Collisions",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
-                    + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
-                        if len(day.bad().run_numbers()) > 0
-                        else ""
-                    )
+                    self._generate_daily_good_bad_run_list_element(day)
                     for day in self.slreport.collisions().express().day_by_day()
                 ],
                 "Cosmics",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
-                    + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
-                        if len(day.bad().run_numbers()) > 0
-                        else ""
-                    )
+                    self._generate_daily_good_bad_run_list_element(day)
                     for day in self.slreport.cosmics().express().day_by_day()
                 ],
             ]
@@ -622,22 +721,12 @@ class ShiftLeaderReportPresentation(object):
             list_items=[
                 "Collisions",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
-                    + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
-                        if len(day.bad().run_numbers()) > 0
-                        else ""
-                    )
+                    self._generate_daily_good_bad_run_list_element(day)
                     for day in self.slreport.collisions().prompt().day_by_day()
                 ],
                 "Cosmics",
                 [
-                    f"{day.name()}: Good: {[run_number for run_number in day.good().run_numbers()]}, "
-                    + (
-                        f"Bad: {[run_number for run_number in day.bad().run_numbers()]}"
-                        if len(day.bad().run_numbers()) > 0
-                        else ""
-                    )
+                    self._generate_daily_good_bad_run_list_element(day)
                     for day in self.slreport.cosmics().prompt().day_by_day()
                 ],
             ]
