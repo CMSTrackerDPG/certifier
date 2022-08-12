@@ -146,7 +146,7 @@ class ShiftLeaderReportPresentation(object):
             ParagraphProperties(textalign="center", verticalalign="middle")
         )
         self.titlestyle_content.addElement(
-            TextProperties(fontsize="44pt", fontfamily="sans", color="#00b0f0")
+            TextProperties(fontsize="28pt", fontfamily="sans", color="#00b0f0")
         )
         self.titlestyle_content.addElement(
             GraphicProperties(fill="none", stroke="none", overflowbehavior="clip")
