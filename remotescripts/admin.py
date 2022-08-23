@@ -49,6 +49,7 @@ class ScriptOutputFileAdmin(admin.ModelAdmin):
 class RemoteScriptConfigurationAdmin(admin.ModelAdmin):
     list_display = ("title", "num_pos_args", "num_kw_args", "num_output_files")
     actions = [execute]
+    exclude = ["is_running"]
 
     def num_pos_args(self, obj):
         return obj.positional_arguments.count()
