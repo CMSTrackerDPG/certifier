@@ -121,6 +121,9 @@ class ScriptConfigurationBase(models.Model):
         """
         pass
 
+    class Meta:
+        ordering = ["id"]
+
 
 class BashScriptConfiguration(ScriptConfigurationBase):
     """
