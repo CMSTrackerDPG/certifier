@@ -573,7 +573,9 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_registry_entries = runregistry.get_datasets(
             filter={
                 "run_number": {"or": run_numbers},
-                "dataset_name": {"notlike": "%online%"},
+                "dataset_name": {
+                    "and": [{"notlike": "%online%"}, {"notlike": "%commissioning%"}]
+                },
             }
         )
 
@@ -642,11 +644,12 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             .order_by("-fill_number")
             .distinct()
         )
+
         fill_run_group = []
         for fill in fills:
             fill_run_group.append(
                 {
-                    "fill_number": fill.fill_number,
+                    "fill": fill,
                     "run_number": [
                         run["run_number"]
                         for run in fill.oms_runs.order_by("-run_number").values(
