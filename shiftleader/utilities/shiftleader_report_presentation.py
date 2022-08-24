@@ -591,9 +591,9 @@ class ShiftLeaderReportPresentation(object):
             list1 = self._generate_list(
                 list_items=[
                     f"Fills {self._format_list_to_str(day.collisions().express().fill_numbers(), comma=True)}",
-                    [
-                        "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
-                    ],
+                    # [
+                    #     "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
+                    # ],
                     "Number of runs certified:",
                     [
                         f"Collisions: {day.collisions().express().total_number()} in Stream-Express ({format_integrated_luminosity(day.collisions().express().integrated_luminosity())}), {day.collisions().prompt().total_number()} in Prompt-Reco ({format_integrated_luminosity(day.collisions().prompt().integrated_luminosity())})",
