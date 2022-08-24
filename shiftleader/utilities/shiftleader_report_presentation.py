@@ -237,15 +237,40 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_cell)
 
+        # Small cells
+        self.style_cell_small = Style(name="ce1-sm", family="table-cell")
+        self.style_cell_small.addElement(
+            GraphicProperties(
+                fillcolor="#ffffff",
+                textareaverticalalign="middle",
+            )
+        )
+        self.style_cell_small.addElement(
+            TableCellProperties(
+                paddingtop="0.1in",
+                paddingleft="0.1in",
+                paddingright="0.1in",
+                paddingbottom="0.1in",
+                backgroundcolor="#ffffff",
+            )
+        )
+        self.style_cell_small.addElement(
+            ParagraphProperties(
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
+            )
+        )
+        self.style_cell_small.addElement(
+            TextProperties(fontsize="6pt", fontsizeasian="6pt", fontsizecomplex="6pt")
+        )
+        self.doc.automaticstyles.addElement(self.style_cell_small)
+
         # Header Cell style
         self.style_cell_header = Style(name="ceh", family="table-cell")
         self.style_cell_header.addElement(
             GraphicProperties(fillcolor="#dddddd", textareaverticalalign="middle")
         )
         self.style_cell_header.addElement(
-            TextProperties(
-                fontsize="13pt", fontsizeasian="13pt", fontsizecomplex="13pt"
-            )
+            TextProperties(fontsize="9pt", fontsizeasian="9pt", fontsizecomplex="9pt")
         )
         self.style_cell_header.addElement(
             ParagraphProperties(
@@ -455,7 +480,7 @@ class ShiftLeaderReportPresentation(object):
         WIDTH_FRAME = 648
         WIDTH_COL = 70
         HEIGHT_FRAME = 105
-        HEIGHT_ROW = 50
+        HEIGHT_ROW = 30
 
         table_frame = Frame(
             width=f"{WIDTH_FRAME}pt",
@@ -474,9 +499,13 @@ class ShiftLeaderReportPresentation(object):
         tr = TableRow(defaultcellstylename=self.style_cell_header, stylename=style_row)
 
         col_names = {
-            "Fill Number": "fill_number",
+            "Fill": "fill_number",
+            # "Type": "fill_type_runtime",
             "Run Min": "first_run_number",
             "Run Max": "last_run_number",
+            "Del. Lumi": "delivered_lumi",
+            "Rec. Lumi": "recorded_lumi",
+            "Eff By Lumi %": "efficiency_lumi",
             "Peak Lumi": "peak_lumi",
             "Peak PU": "peak_pileup",
             "Nb. Bunches": "bunches_colliding",
@@ -506,7 +535,13 @@ class ShiftLeaderReportPresentation(object):
 
         # Create a row for each fill
         for fill in self.slreport.fills():
-            tr = TableRow(defaultcellstylename=self.style_cell, stylename=style_row)
+            # Skip fills without recorded luminosity
+            if fill["fill"].bunches_colliding is None:
+                continue
+
+            tr = TableRow(
+                defaultcellstylename=self.style_cell_small, stylename=style_row
+            )
             table.addElement(tr)
             for attr_name in col_names.values():
                 tc = TableCell()
