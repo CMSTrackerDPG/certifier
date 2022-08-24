@@ -1,27 +1,18 @@
 {% if queryset.run_numbers %}
-<!-- <div style="max-width: 700px;"> -->
-<div>
+<div style="max-width: 700px;">
     <h4>{{ caption }}</h4>
-    <table class="table table-hover">
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">Fill Number</th>
-                <th scope="col">Certified Runs</th>
-                <!-- <th scope="col">Ini Lumi</th> -->
-                <!-- <th scope="col">Peak Lumi</th> -->
-				<!-- <th scope="col">Peak PU</th> -->
-                <!-- <th scope="col">Nb. Bunches</th> -->
+                <th class="col-sm-3" scope="col">Fill Number</th>
+                <th class="col-sm-9" scope="col">Certified Runs</th>
             </tr>
         </thead>
         <tbody>
             {% for fill in queryset.fills %}
             <tr>
-                <td>{{ fill.fill.fill_number}}</td>
-                <td>{{ fill.run_number|join:", " }}</td>
-                <!-- <td>\({{ fill.fill.init_lumi|floatformat:2 }}\) \({{ fill.fill.init_lumi_unit }}\)</td> -->
-                <!-- <td>\({{ fill.fill.peak_lumi|floatformat:2 }}\) \({{ fill.fill.peak_lumi_unit }}\)</td> -->
-				<!-- <td>{{ fill.fill.peak_pileup }}</td>					 -->
-				<!-- <td>{{ fill.fill.bunches_colliding }}</td>	 -->
+                <td scope="row" class="col-sm-3">{{ fill.fill.fill_number}}</td>
+                <td class="col-sm-9">{{ fill.run_number|join:", " }}</td>
             </tr>
             {% endfor %}
         </tbody>

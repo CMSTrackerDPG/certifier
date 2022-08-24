@@ -98,21 +98,13 @@
                     {% load l10n %}
                     <h3>Shift Leader Report - Week {{ filter.qs.week_number }} <small>{{ filter.qs.days|first|as_date|localize }} - {{ filter.qs.days|last|as_date|localize }}</small></h3>
                 </div>
+				
                 {% if slreport %}
                 {% include "shiftleader/shift-leader-report.html" %}
-				<!-- Button to generate report -->
-				<div class="row mb-2 mt-2">
-					<div class="col">
-						<button class="btn btn-primary"
-								id="shiftleader-report-presentation">
-							Generate presentation<i class="bi bi-easel3-fill pl-1"></i>
-						</button>
-					</div>
-				</div>
-
                 {% else %}
-                <div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
+				<div class="alert alert-danger" role="alert">No Shiftleader Report found.</div>
                 {% endif %}
+				
                 {% else %}
                 <div class="alert alert-danger" role="alert">
                     No runs have been certified in the specified filter criteria.
