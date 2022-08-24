@@ -500,7 +500,6 @@ class ShiftLeaderReportPresentation(object):
 
         col_names = {
             "Fill": "fill_number",
-            # "Type": "fill_type_runtime",
             "Run Min": "first_run_number",
             "Run Max": "last_run_number",
             "Del. Lumi": "delivered_lumi",
