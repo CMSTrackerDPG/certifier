@@ -8,9 +8,9 @@
                 <th scope="col">Fill Number</th>
                 <th scope="col">Certified Runs</th>
                 <!-- <th scope="col">Ini Lumi</th> -->
-                <th scope="col">Peak Lumi</th>
-				<th scope="col">Peak PU</th>
-                <th scope="col">Nb. Bunches</th>
+                <!-- <th scope="col">Peak Lumi</th> -->
+				<!-- <th scope="col">Peak PU</th> -->
+                <!-- <th scope="col">Nb. Bunches</th> -->
             </tr>
         </thead>
         <tbody>
@@ -19,9 +19,9 @@
                 <td>{{ fill.fill.fill_number}}</td>
                 <td>{{ fill.run_number|join:", " }}</td>
                 <!-- <td>\({{ fill.fill.init_lumi|floatformat:2 }}\) \({{ fill.fill.init_lumi_unit }}\)</td> -->
-                <td>\({{ fill.fill.peak_lumi|floatformat:2 }}\) \({{ fill.fill.peak_lumi_unit }}\)</td>
-				<td>{{ fill.fill.peak_pileup }}</td>					
-				<td>{{ fill.fill.bunches_colliding }}</td>	
+                <!-- <td>\({{ fill.fill.peak_lumi|floatformat:2 }}\) \({{ fill.fill.peak_lumi_unit }}\)</td> -->
+				<!-- <td>{{ fill.fill.peak_pileup }}</td>					 -->
+				<!-- <td>{{ fill.fill.bunches_colliding }}</td>	 -->
             </tr>
             {% endfor %}
         </tbody>
