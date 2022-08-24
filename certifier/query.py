@@ -573,7 +573,9 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_registry_entries = runregistry.get_datasets(
             filter={
                 "run_number": {"or": run_numbers},
-                "dataset_name": {"notlike": "%online%"},
+                "dataset_name": {
+                    "and": [{"notlike": "%online%"}, {"notlike": "%commissioning%"}]
+                },
             }
         )
 
