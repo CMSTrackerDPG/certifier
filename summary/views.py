@@ -57,13 +57,13 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
 
         summary = SummaryReport(runs)
 
-        # Get run numbers from QuerySet
-        runs_list = [
-            r[0] for r in runs.values_list("runreconstruction__run__run_number")
-        ]
+        # Get TrackerCertification instances PKs from QuerySet
+        certs_list = [r[0] for r in runs.values_list("runreconstruction")]
 
         try:
-            summary_db_instance, _ = SummaryInfo.objects.get_or_create(runs=runs_list)
+            summary_db_instance, _ = SummaryInfo.objects.get_or_create(
+                certifications=certs_list
+            )
             form = SummaryExtraInfoForm(instance=summary_db_instance)
         except ValidationError:
             summary_db_instance = None
@@ -72,7 +72,7 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
         context = {
             "refs": summary.reference_runs(),
             "runs": summary.runs_checked_per_type(),
-            "runs_list": runs_list,
+            "certs_list": certs_list,
             "tk_maps": summary.tracker_maps_per_type(),
             "certified_runs": summary.certified_runs_per_type(),
             "sums": summary.sum_of_quantities_per_type(),
@@ -91,21 +91,23 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
         # For some reason it's especially not straightforward
         # to extract a list from a Querydict value
         data = request.POST.copy()
-        runs_list = json.loads(data.pop("runs_list")[0])
+        certs_list = json.loads(data.pop("certs_list")[0])
 
         try:
-            runs_list = [int(r) for r in runs_list]
+            certs_list = [int(r) for r in certs_list]
         except (ValueError, TypeError) as e:
             success = False
             response = {"success": success, "msg": repr(e)}
             return JsonResponse(response)
 
-        if len(runs_list) < 1:
+        if len(certs_list) < 1:
             success = False
             response = {"success": success, "msg": "No runs specified"}
             return JsonResponse(response)
 
-        summary_instance, _ = SummaryInfo.objects.get_or_create(runs=runs_list)
+        summary_instance, _ = SummaryInfo.objects.get_or_create(
+            certifications=certs_list
+        )
         f = self.form(data=request.POST, instance=summary_instance)
         if f.is_valid():
             logger.debug(f"Summary information updated for {summary_instance}")

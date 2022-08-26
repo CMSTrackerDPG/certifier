@@ -120,7 +120,7 @@
 =============Sum of Quantities============
 {% for sum in sums %}{{ sum }}
 {% endfor %}
-<div id="comment_div" style="{% if not form.special_comment %}display: none;{% else %}display: block;{% endif %}">
+<div id="comment_div" style="{% if not form.special_comment.initial %}display: none;{% else %}display: block;{% endif %}">
 =============Special Comments=============
 <p id="specialcomment_text">{% if form.special_comment.initial %}{{ form.special_comment.initial }}{% endif %}</p><div id="formarea" style="display: none;">{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
@@ -144,7 +144,7 @@
 			 // all form fields without directly referencing them? dunno			 
 			 'links_prompt_feedback': $('#id_links_prompt_feedback').val(),
 			 'special_comment' : $('#id_special_comment').val(),
-			 'runs_list': "{{runs_list}}"
+			 'certs_list': "{{certs_list}}"
          },
          success: function(data) {
 			 if(!data.success){
@@ -163,9 +163,9 @@
 
  // Get text from form field, append it to HTML
  function write_to_comment_area(t=$('#id_special_comment').val()) {
-	 console.log(t)
-     $('#specialcomment_text').html(t);
-     $('#formarea').css('display', 'None');
+     $('#id_special_comment').val(t);// In case we want to clear it
+	 $('#specialcomment_text').html(t);
+	 $('#formarea').css('display', 'None');
      $('#specialcomment_text').css('display', 'inline-block');
 	 submit_form();
  }

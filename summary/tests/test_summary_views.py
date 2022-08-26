@@ -28,6 +28,9 @@ def test_view_requires_shifter_rights():
 
 
 def test_get_success():
+    """
+    GETting the page should result in creation of SummaryInfo instances
+    """
 
     user = mixer.blend(User, user_privilege=User.SHIFTER)
     certs = [
@@ -38,7 +41,7 @@ def test_get_success():
             TrackerCertification, runreconstruction__run__run_number=299929, user=user
         ),
     ]
-    runs_list = [cert.runreconstruction.run.run_number for cert in certs]
+    certs_list = [cert.runreconstruction.pk for cert in certs]
 
     req = RequestFactory().get(reverse("summary:summary"))
 
@@ -55,14 +58,17 @@ def test_get_success():
 
 
 def test_post_success():
-    runs = [
-        mixer.blend(OmsRun, run_number=355555),
-        mixer.blend(OmsRun, run_number=299929),
+    """
+    Successful post of summary info
+    """
+    certs = [
+        mixer.blend(TrackerCertification, runreconstruction__run__run_number=355555),
+        mixer.blend(TrackerCertification, runreconstruction__run__run_number=299929),
     ]
 
-    runs_list = [run.run_number for run in runs]
+    certs_list = [cert.runreconstruction.pk for cert in certs]
     form = SummaryExtraInfoForm(
-        data={"runs_list": str(runs_list), "links_prompt_feedback": "link1, link2"}
+        data={"certs_list": str(certs_list), "links_prompt_feedback": "link1, link2"}
     )
     assert form.is_valid()
 
@@ -77,10 +83,12 @@ def test_post_success():
 
 
 def test_post_failure():
-
+    """
+    Not supplying links_prompt_feedback is not allowed
+    """
     form = SummaryExtraInfoForm(
         data={
-            "runs_list": str([]),
+            "certs_list": str([]),
         }
     )
     assert form.is_valid() == False

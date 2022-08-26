@@ -317,10 +317,15 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
 
     def prompt_feedback_plots(self):
         """ """
-        run_numbers = self.run_numbers()
+        certs = [r[0] for r in self.values_list("runreconstruction")]
+        if not certs:
+            return []
+
         return [
             summary.links_prompt_feedback
-            for summary in SummaryInfo.objects.filter(runs=run_numbers)
+            for summary in SummaryInfo.objects.filter(
+                certifications__contained_by=certs
+            )
         ]
 
     def pks(self):

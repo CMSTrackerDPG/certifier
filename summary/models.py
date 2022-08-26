@@ -7,12 +7,15 @@ class SummaryInfo(models.Model):
     """
     Information regarding a summary/Elog.
 
-    A summary is identified by the list of runs it is composed of
+    A summary is identified by the list of PKs of TrackerCertification
+    instances it is summarizing.
+
+    ManyToManyField cannot be used, as it cannot be made unique.
     """
 
-    runs = ArrayField(
+    certifications = ArrayField(
         base_field=models.IntegerField(null=False),
-        help_text="Unique summary for list of runs",
+        help_text="Unique summary for list of certifications. Each element is the PK of a TrackerCertification instance",
         unique=True,
     )
     links_prompt_feedback = models.TextField(
@@ -24,8 +27,8 @@ class SummaryInfo(models.Model):
 
     def save(self, *args, **kwargs):
         # ArrayField does not seem to use a validators argument
-        validate_list_length(self.runs)
+        validate_list_length(self.certifications)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.runs}"
+        return f"{self.__class__.__name__} {self.certifications}"
