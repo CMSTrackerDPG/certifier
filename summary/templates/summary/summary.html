@@ -120,11 +120,11 @@
 =============Sum of Quantities============
 {% for sum in sums %}{{ sum }}
 {% endfor %}
-<div id="comment_div" style={% if not form.special_comment %}"display: none;"{% else %}"display: block;"{% endif %}>
+<div id="comment_div" style="{% if not form.special_comment %}display: none;{% else %}display: block;{% endif %}">
 =============Special Comments=============
-<p id="specialcomment_text">{{ form.special_comment.initial }}</p><div id="formarea" style="display: none;">{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
+<p id="specialcomment_text">{% if form.special_comment.initial %}{{ form.special_comment.initial }}{% endif %}</p><div id="formarea" style="display: none;">{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
-<p id="links_text">{{ form.links_prompt_feedback.initial }}</p><div id="links_div" style="display: none;"><div id="linksarea">{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
+<p id="links_text">{% if form.links_prompt_feedback.initial %}{{ form.links_prompt_feedback.initial }}{%endif%}</p><div id="links_div" style="display: none;"><div id="linksarea">{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
 				<!-- END PREFORMATTED TEXT -->
 			</form>
 		</div>
@@ -148,7 +148,7 @@
          },
          success: function(data) {
 			 if(!data.success){
-				 alert(`Error! ${data.errors}`)
+				 alert(`Error! ${data.msg}`)
 			 }
 			 
 		 },

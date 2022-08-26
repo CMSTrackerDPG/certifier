@@ -94,6 +94,11 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
             response = {"success": success, "msg": repr(e)}
             return JsonResponse(response)
 
+        if len(runs_list) < 1:
+            success = False
+            response = {"success": success, "msg": "No runs specified"}
+            return JsonResponse(response)
+
         summary_instance = SummaryInfo.objects.get(runs=runs_list)
         f = self.form(data=request.POST, instance=summary_instance)
         if f.is_valid():
