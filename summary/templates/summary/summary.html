@@ -120,17 +120,9 @@
 {% endfor %}
 <div id=comment_div style="display: none;">
 =============Special Comments=============
-<p id=specialcomment_text></p><div id=formarea><textarea
-				rows="4" cols="40"
-				id=special_comment_textarea
-				form="usrform"
-					  placeholder="Enter text here"></textarea><div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
+<p id=specialcomment_text></p><div id=formarea>{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
-<p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea><textarea
-																									   rows="4" cols="40"
-																											 id=links_textarea
-																											 form="usrform"
-																									   placeholder="Enter text here"></textarea><div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
+<p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea>{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
 			<!-- END PREFORMATTED TEXT -->
 		</div>
 	</div>
@@ -145,8 +137,9 @@
      $('#specialcomment_text').css('display', 'None');
  }
 
+ // Get text from form field, append it to HTML
  function write_to_comment_area() {
-     let t = $('#special_comment_textarea').val();
+     let t = $('#id_special_comment').val();
      $('#specialcomment_text').html(t);
      $('#formarea').css('display', 'None');
      $('#specialcomment_text').css('display', 'inline-block');
@@ -163,7 +156,7 @@
  }
 
  function write_to_text_area() {
-     let t = $('#links_textarea').val();
+     let t = $('#id_links_prompt_feedback').val();
      $('#links_text').html(t);
      $('#linksarea').css('display', 'None');
      $('#links_text').css('display', 'inline-block');
