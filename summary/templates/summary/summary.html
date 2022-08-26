@@ -120,11 +120,11 @@
 =============Sum of Quantities============
 {% for sum in sums %}{{ sum }}
 {% endfor %}
-<div id=comment_div style="display: none;">
+<div id="comment_div" style={% if not form.special_comment %}"display: none;"{% else %}"display: block;"{% endif %}>
 =============Special Comments=============
-<p id=specialcomment_text></p><div id=formarea>{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
+<p id="specialcomment_text">{{ form.special_comment.initial }}</p><div id="formarea" style="display: none;">{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
-<p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea>{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
+<p id="links_text">{{ form.links_prompt_feedback.initial }}</p><div id="links_div" style="display: none;"><div id="linksarea">{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
 				<!-- END PREFORMATTED TEXT -->
 			</form>
 		</div>
@@ -144,11 +144,14 @@
 			 // all form fields without directly referencing them? dunno			 
 			 'links_prompt_feedback': $('#id_links_prompt_feedback').val(),
 			 'special_comment' : $('#id_special_comment').val(),
+			 'runs_list': "{{runs_list}}"
          },
          success: function(data) {
-			 console.log(data);
+			 if(!data.success){
+				 alert(`Error! ${data.errors}`)
+			 }
 			 
-		 }
+		 },
 	 })
  }
   
@@ -159,8 +162,8 @@
  }
 
  // Get text from form field, append it to HTML
- function write_to_comment_area() {
-     let t = $('#id_special_comment').val();
+ function write_to_comment_area(t=$('#id_special_comment').val()) {
+	 console.log(t)
      $('#specialcomment_text').html(t);
      $('#formarea').css('display', 'None');
      $('#specialcomment_text').css('display', 'inline-block');
@@ -169,6 +172,9 @@
 
  function hide_comment_area() {
      $('#comment_div').css('display', 'None');
+	 $('#id_special_comment').html(""),	 
+	 write_to_comment_area("");
+	 
  }
 
  function show_links_area() {
@@ -186,7 +192,14 @@
 	 submit_form();	 
  }
 
-
+ window.addEventListener("load", function(){
+	 // Prevent refreshing the page on submission
+	 var form = document.getElementById("summary_form");
+	 form.onsubmit =function(e){
+		e.preventDefault(); 
+	 }
+ });
+ 
 
 </script>
 {% endblock scripts %}

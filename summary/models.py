@@ -19,7 +19,7 @@ class SummaryInfo(models.Model):
         help_text="tinyurl links to plots on cmsweb.cern.ch"
     )
     special_comment = models.TextField(
-        help_text="Special comment by shifter for this summary"
+        help_text="Special comment by shifter for this summary", blank=True
     )
 
     def save(self, *args, **kwargs):

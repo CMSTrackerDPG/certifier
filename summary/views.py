@@ -1,4 +1,5 @@
 import logging
+import json
 from datetime import datetime
 from django.shortcuts import render
 from django.core.exceptions import ValidationError
@@ -71,6 +72,7 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
         context = {
             "refs": summary.reference_runs(),
             "runs": summary.runs_checked_per_type(),
+            "runs_list": runs_list,
             "tk_maps": summary.tracker_maps_per_type(),
             "certified_runs": summary.certified_runs_per_type(),
             "sums": summary.sum_of_quantities_per_type(),
@@ -83,6 +85,26 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
         return render(request, "summary/summary.html", context)
 
     def post(self, request, *args, **kwargs):
-        response = {"success": True}
+        success = True
+        msg = ""
+        try:
+            runs_list = json.loads(request.POST.get("runs_list"))
+        except (ValueError, TypeError) as e:
+            success = False
+            response = {"success": success, "msg": repr(e)}
+            return JsonResponse(response)
 
+        summary_instance = SummaryInfo.objects.get(runs=runs_list)
+        f = self.form(data=request.POST, instance=summary_instance)
+        if f.is_valid():
+            logger.debug(f"Summary information updated for {summary_instance}")
+            f.save()
+        else:
+            logger.error(
+                "Form validation failed for {summary_instance}: ", dict(f.errors)
+            )
+            msg = f.errors
+            success = False
+
+        response = {"success": success, "msg": msg}
         return JsonResponse(response)
