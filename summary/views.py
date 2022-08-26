@@ -87,8 +87,14 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
     def post(self, request, *args, **kwargs):
         success = True
         msg = ""
+
+        # For some reason it's especially not straightforward
+        # to extract a list from a Querydict value
+        data = request.POST.copy()
+        runs_list = json.loads(data.pop("runs_list")[0])
+
         try:
-            runs_list = json.loads(request.POST.get("runs_list"))
+            runs_list = [int(r) for r in runs_list]
         except (ValueError, TypeError) as e:
             success = False
             response = {"success": success, "msg": repr(e)}
@@ -99,7 +105,7 @@ class SummaryView(LoginRequiredMixin, UserPassesTestMixin, View):
             response = {"success": success, "msg": "No runs specified"}
             return JsonResponse(response)
 
-        summary_instance = SummaryInfo.objects.get(runs=runs_list)
+        summary_instance, _ = SummaryInfo.objects.get_or_create(runs=runs_list)
         f = self.form(data=request.POST, instance=summary_instance)
         if f.is_valid():
             logger.debug(f"Summary information updated for {summary_instance}")
