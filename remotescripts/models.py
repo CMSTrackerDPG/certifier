@@ -97,20 +97,36 @@ class ScriptConfigurationBase(models.Model):
 
     def before_execution(self):
         self.is_running = True
+        logger.debug(f"Marking script {self} as running")
         self.save()
 
     def after_execution(self):
+        logger.debug(f"Marking script {self} as not running")
         self.is_running = False
         self.save()
 
     @abstractclassmethod
-    def execute(self, *args, **kwargs):
+    def execute_core(self, *args, **kwargs):
         """
         Abstract class method to be overriden by subclasses.
         Executes the script specified by this instance.
+        """
+
+    def execute(self, *args, **kwargs):
+        """
+        Main script execution.
         Meant to be run in a thread.
         """
-        pass
+        if self.is_running:
+            logger.warning("{self} is already running!")
+            return
+
+        self.before_execution()
+        try:
+            self.execute_core(*args, **kwargs)
+        except Exception as e:
+            logger.error(e)
+        self.after_execution()
 
     @abstractclassmethod
     def get_output(self, *args, **kwargs):
@@ -121,31 +137,29 @@ class ScriptConfigurationBase(models.Model):
         """
         pass
 
+    class Meta:
+        ordering = ["id"]
+
 
 class BashScriptConfiguration(ScriptConfigurationBase):
     """
     Model for local bash script configuration
     """
 
-    def execute(self, *args, **kwargs):
+    def execute_core(self, *args, **kwargs):
         """
         The idea here is to save the script in a temp file,
         then pass it to bash via subprocess.
 
         Not tested a lot, but the main idea works.
         """
-        if self.is_running:
-            logger.warning("{self} is already running!")
-            return
 
         cmd_to_execute = self._form_command(*args, **kwargs)
-        self.before_execution()
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(cmd_to_execute.encode())
             with subprocess.Popen(["bash", fp.name], stdout=subprocess.PIPE) as process:
                 output, error = process.communicate()
             logger.info(output)
-        self.after_execution()
 
     def __str__(self) -> str:
         return f"{self.title} (Local)"
@@ -216,16 +230,10 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
             for line in f:
                 yield line
 
-    def execute(self, *args, **kwargs) -> int:
+    def execute_core(self, *args, **kwargs) -> int:
         """
         Method that executes the remote script.
-
         """
-        if self.is_running:
-            logger.warning("{self} is already running!")
-            return
-
-        self.before_execution()
         self._configure_callbacks(kwargs)
 
         self.on_script_start()
@@ -321,7 +329,6 @@ class RemoteScriptConfiguration(ScriptConfigurationBase):
                     self.on_new_output_file(f_db.id, localpath)
                 ftp.close()
         ssh.close()
-        self.after_execution()
         return exit_status
 
     def __str__(self) -> str:

@@ -1,0 +1,38 @@
+{% if slreport.run_numbers %}
+<div id="slr-recorded-luminosity" class="tab-pane fade">
+	<h3>Recorded luminosity</h3>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th scope="col">Fill</th>
+				<th scope="col">Run Min</th>
+				<th scope="col">Run Max</th>
+				<th scope="col">Del. Lumi \(pb^{-1}\)</th>
+				<th scope="col">Rec. Lumi \(pb^{-1}\)</th>
+				<th scope="col">Eff By Lumi \(\%\)</th>
+				<th scope="col">Peak Lumi \(10^{33}cm^{-2}s^{-1}\)</th>
+				<th scope="col">Peak PU</th>
+				<th scope="col">Nb. Bunches</th>
+			</tr>
+		</thead>
+		<tbody>
+			{# Same logic with presentation #}
+			{% for fill in slreport.fills %}
+			{% if fill.fill.bunches_colliding %}
+			<tr>
+				<td scope="row">{{ fill.fill.fill_number }}</td>
+				<td>{{ fill.fill.first_run_number }}</td>
+				<td>{{ fill.fill.last_run_number }}</td>
+				<td>{{ fill.fill.delivered_lumi|floatformat:3 }}</td>
+				<td>{{ fill.fill.recorded_lumi|floatformat:3 }}</td>
+				<td>{{ fill.fill.efficiency_lumi|floatformat:2 }}</td>
+				<td>{{ fill.fill.peak_lumi|floatformat:3 }}</td>
+				<td>{{ fill.fill.peak_pileup|floatformat:3 }}</td>
+				<td>{{ fill.fill.bunches_colliding }}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}

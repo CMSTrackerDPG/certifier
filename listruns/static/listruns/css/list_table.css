@@ -101,3 +101,15 @@ th:after {
 	font-weight: bold;
     color: grey;
 }
+.inline-tooltip{
+	place-content: stretch flex-start;
+	-moz-box-align: center;
+	align-items: center;
+	flex-wrap: nowrap;
+	-moz-box-pack: start;
+	display: flex;
+}
+
+.i-tooltip{
+	display:inline;
+}

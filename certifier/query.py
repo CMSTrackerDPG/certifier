@@ -29,6 +29,7 @@ from shiftleader.utilities.utilities import (
 from shiftleader.exceptions import CannotAssumeRunTypeException
 from listruns.utilities.luminosity import convert_luminosity_to_pb
 from oms.models import OmsFill
+from summary.models import SummaryInfo
 
 logger = logging.getLogger(__name__)
 
@@ -314,6 +315,19 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             .values("fill_number")
         ]
 
+    def prompt_feedback_plots(self):
+        """ """
+        certs = [r[0] for r in self.values_list("runreconstruction")]
+        if not certs:
+            return []
+
+        return [
+            summary.links_prompt_feedback
+            for summary in SummaryInfo.objects.filter(
+                certifications__contained_by=certs
+            )
+        ]
+
     def pks(self):
         """
         :return: sorted list of primary keys
@@ -573,7 +587,9 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
         run_registry_entries = runregistry.get_datasets(
             filter={
                 "run_number": {"or": run_numbers},
-                "dataset_name": {"notlike": "%online%"},
+                "dataset_name": {
+                    "and": [{"notlike": "%online%"}, {"notlike": "%commissioning%"}]
+                },
             }
         )
 
@@ -642,11 +658,12 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             .order_by("-fill_number")
             .distinct()
         )
+
         fill_run_group = []
         for fill in fills:
             fill_run_group.append(
                 {
-                    "fill_number": fill.fill_number,
+                    "fill": fill,
                     "run_number": [
                         run["run_number"]
                         for run in fill.oms_runs.order_by("-run_number").values(

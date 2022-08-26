@@ -5,5 +5,5 @@ from . import views
 app_name = "summary"
 
 urlpatterns = [
-    path("", views.summaryView, name="summary"),
+    path("", views.SummaryView.as_view(), name="summary"),
 ]
