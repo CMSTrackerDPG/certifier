@@ -29,6 +29,7 @@ from shiftleader.utilities.utilities import (
 from shiftleader.exceptions import CannotAssumeRunTypeException
 from listruns.utilities.luminosity import convert_luminosity_to_pb
 from oms.models import OmsFill
+from summary.models import SummaryInfo
 
 logger = logging.getLogger(__name__)
 
@@ -312,6 +313,14 @@ class TrackerCertificationQuerySet(SoftDeletionQuerySet):
             for fill in OmsFill.objects.filter(oms_runs__run_number__in=run_numbers)
             .distinct()
             .values("fill_number")
+        ]
+
+    def prompt_feedback_plots(self):
+        """ """
+        run_numbers = self.run_numbers()
+        return [
+            summary.links_prompt_feedback
+            for summary in SummaryInfo.objects.filter(runs=run_numbers)
         ]
 
     def pks(self):

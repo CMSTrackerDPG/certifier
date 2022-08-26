@@ -100,8 +100,10 @@
 
 				 I.e. new lines, spaces between <p> and <div> will
 				 *also show inside the <pre>* !!
-			-->		
-			<pre id="summary" class="pt-3">
+			-->
+			<form id="summary_form">
+				{{ csfr_token }}
+				<pre id="summary" class="pt-3">
 =============Reference Runs===============
 {% for ref in refs %}{{ ref }}
 {% endfor %}
@@ -118,20 +120,13 @@
 =============Sum of Quantities============
 {% for sum in sums %}{{ sum }}
 {% endfor %}
-<div id=comment_div style="display: none;">
+<div id="comment_div" style="{% if not form.special_comment %}display: none;{% else %}display: block;{% endif %}">
 =============Special Comments=============
-<p id=specialcomment_text></p><div id=formarea><textarea
-				rows="4" cols="40"
-				id=special_comment_textarea
-				form="usrform"
-					  placeholder="Enter text here"></textarea><div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
+<p id="specialcomment_text">{% if form.special_comment.initial %}{{ form.special_comment.initial }}{% endif %}</p><div id="formarea" style="display: none;">{{form.special_comment}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_comment_area()"><i class="bi bi-check-lg"></i> Apply</button></div><div class="col"><button type="button" class="btn btn-light" onclick="hide_comment_area()"><i class="bi bi-x-lg"></i> Remove</button></div></div></div></div>
 =============Link to the Prompt Feedback plots============
-<p id=links_text>Please add the link</p><div id=links_div style="display: none;"><div id=linksarea><textarea
-																									   rows="4" cols="40"
-																											 id=links_textarea
-																											 form="usrform"
-																									   placeholder="Enter text here"></textarea><div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
-			<!-- END PREFORMATTED TEXT -->
+<p id="links_text">{% if form.links_prompt_feedback.initial %}{{ form.links_prompt_feedback.initial }}{%endif%}</p><div id="links_div" style="display: none;"><div id="linksarea">{{form.links_prompt_feedback}}<div align="center" class="row p-1"><div class="col"><button type="button" class="btn btn-light" onclick="write_to_text_area()"><i class="bi bi-check-lg"></i> OK</button></div></div></div></div></pre>
+				<!-- END PREFORMATTED TEXT -->
+			</form>
 		</div>
 	</div>
 </div>
@@ -139,21 +134,47 @@
 
 {% block scripts %}
 <script>
+ function submit_form(){
+     $.ajax({
+         headers: { "X-CSRFToken": '{{csrf_token}}' },
+         type: "POST",
+         url: "{% url 'summary:summary' %}",
+         data: {
+			 // Is there a better idea which automatically gets
+			 // all form fields without directly referencing them? dunno			 
+			 'links_prompt_feedback': $('#id_links_prompt_feedback').val(),
+			 'special_comment' : $('#id_special_comment').val(),
+			 'runs_list': "{{runs_list}}"
+         },
+         success: function(data) {
+			 if(!data.success){
+				 alert(`Error! ${data.msg}`)
+			 }
+			 
+		 },
+	 })
+ }
+  
  function show_special_comment_area() {
-     $('#comment_div').css('display', 'inline-block');
-     $('#formarea').css('display', 'inline-block');
-     $('#specialcomment_text').css('display', 'None');
+	 $('#comment_div').css('display', 'inline-block');
+	 $('#formarea').css('display', 'inline-block');
+	 $('#specialcomment_text').css('display', 'None');
  }
 
- function write_to_comment_area() {
-     let t = $('#special_comment_textarea').val();
+ // Get text from form field, append it to HTML
+ function write_to_comment_area(t=$('#id_special_comment').val()) {
+	 console.log(t)
      $('#specialcomment_text').html(t);
      $('#formarea').css('display', 'None');
      $('#specialcomment_text').css('display', 'inline-block');
+	 submit_form();
  }
 
  function hide_comment_area() {
      $('#comment_div').css('display', 'None');
+	 $('#id_special_comment').html(""),	 
+	 write_to_comment_area("");
+	 
  }
 
  function show_links_area() {
@@ -162,12 +183,23 @@
      $('#links_text').css('display', 'None');
  }
 
+ // Get text from links field, append it to HTML
  function write_to_text_area() {
-     let t = $('#links_textarea').val();
+     let t = $('#id_links_prompt_feedback').val();
      $('#links_text').html(t);
      $('#linksarea').css('display', 'None');
      $('#links_text').css('display', 'inline-block');
+	 submit_form();	 
  }
+
+ window.addEventListener("load", function(){
+	 // Prevent refreshing the page on submission
+	 var form = document.getElementById("summary_form");
+	 form.onsubmit =function(e){
+		e.preventDefault(); 
+	 }
+ });
+ 
 
 </script>
 {% endblock scripts %}

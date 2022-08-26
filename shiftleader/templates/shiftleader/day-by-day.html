@@ -35,8 +35,20 @@
             </li>
         </ul>
 
-        Daily Shifter Summaries: <strong>link1</strong>, <strong>link2</strong>
-        Prompt Feedback plots: <strong>link1</strong>
+		<p>
+			Daily Shifter Summaries: <strong>link1</strong>, <strong>link2</strong>
+		</p>
+        <p>
+			Prompt Feedback plots:
+			<ul>
+				{% for link in day.runs.prompt_feedback_plots %}
+				<li><strong>{{ link }}</strong></li>
+				{%endfor%}
+			</ul>
+			
+
+
+		</p>
         </p>
     </div>
 {% endfor %}
