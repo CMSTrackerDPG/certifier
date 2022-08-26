@@ -711,7 +711,11 @@ class ShiftLeaderReportPresentation(object):
             )
             tb.addElement(list1)
             tb.addElement(P(text="Daily Shifter Summaries:"))
+
             tb.addElement(P(text="Prompt Feedback plots:"))
+            tb.addElement(
+                self._generate_list(list_items=day.runs.prompt_feedback_plots())
+            )
 
             frame.addElement(tb)
             page.addElement(frame)
