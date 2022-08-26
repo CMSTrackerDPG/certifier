@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from summary.validators import validate_list_length
 
 
 class SummaryInfo(models.Model):
@@ -10,9 +11,9 @@ class SummaryInfo(models.Model):
     """
 
     runs = ArrayField(
-        base_field=models.IntegerField(blank=False, null=False),
-        primary_key=True,
+        base_field=models.IntegerField(null=False),
         help_text="Unique summary for list of runs",
+        unique=True,
     )
     links_prompt_feedback = models.TextField(
         help_text="tinyurl links to plots on cmsweb.cern.ch"
@@ -20,3 +21,11 @@ class SummaryInfo(models.Model):
     special_comment = models.TextField(
         help_text="Special comment by shifter for this summary"
     )
+
+    def save(self, *args, **kwargs):
+        # ArrayField does not seem to use a validators argument
+        validate_list_length(self.runs)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.runs}"

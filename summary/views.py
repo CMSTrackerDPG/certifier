@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from django.shortcuts import render
+from django.core.exceptions import ValidationError
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -46,9 +47,12 @@ def summaryView(request):
     # Get run numbers from QuerySet
     runs_list = [r[0] for r in runs.values_list("runreconstruction__run__run_number")]
 
-    print("!!!!!!!!", runs_list)
-    summary_db_instance, _ = SummaryInfo.objects.get_or_create(runs=runs_list)
-    form = SummaryExtraInfoForm(instance=summary_db_instance)
+    try:
+        summary_db_instance, _ = SummaryInfo.objects.get_or_create(runs=runs_list)
+        form = SummaryExtraInfoForm(instance=summary_db_instance)
+    except ValidationError:
+        summary_db_instance = None
+        form = SummaryExtraInfoForm()
 
     context = {
         "refs": summary.reference_runs(),
