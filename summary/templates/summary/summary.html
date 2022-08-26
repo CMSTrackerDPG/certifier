@@ -135,12 +135,13 @@
 {% block scripts %}
 <script>
  function submit_form(){
-     // var form = $("#summary_form");
      $.ajax({
          headers: { "X-CSRFToken": '{{csrf_token}}' },
          type: "POST",
-         url: "{% url 'summary:summary_info' %}",
+         url: "{% url 'summary:summary' %}",
          data: {
+			 // Is there a better idea which automatically gets
+			 // all form fields without directly referencing them? dunno			 
 			 'links_prompt_feedback': $('#id_links_prompt_feedback').val(),
 			 'special_comment' : $('#id_special_comment').val(),
          },
