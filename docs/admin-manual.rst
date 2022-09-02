@@ -1,21 +1,23 @@
 Administration manual
 =====================
 
-The administrator has the most power in the website. He can create new
-(local) users and is responsible for maintaining the website. He can
-update or create the OAuth2 keys, which are necessary for CERN Single
-sign-on.
-
-The admin panel of the administrator consists of all of the same rights
-that a shift leader has plus additional settings that for site
-management.
-
 .. note::
    
    You must be an Administrator in order to follow the procedures listed here
 
-Roles
------
+Administrators are the users with the most power in the website. They can create new
+(local) users and are responsible for maintaining parts of the website.
+
+Other actions they can perform:
+
+#. Assign roles to users (see `Role assignment`_).
+#. Update or create `OAuth2 keys <https://certhelper.web.cern.ch/admin/socialaccount/socialapp/>`__, which are necessary for CERN Single sign-on.
+#. Update or create Checklists and Checklist items (see: `Adding/Tweaking Checklist items`_)
+#. Update or create remotescript configurations (see: `Adding Remote scripts`_).
+
+
+Role assignment
+---------------
 To assign the Shifter or Shift Leader role to a user, follow the steps below:
 
 #. Make sure that the user has already signed in using the **Login with CERN** button.
@@ -29,18 +31,24 @@ To assign the Shifter or Shift Leader role to a user, follow the steps below:
      .. image:: images/admin-change-role-shifter.png
 #. Click on **SAVE**
 	  
-	   	   
+
 Adding/Tweaking Checklist items
 -------------------------------
-Checklists appear on the `/update/` url of the app, and their purpose is to help
-the Shifter keep track of the required checks that must be done before submission.
+Checklists are lists of items whose purpose is to
+to help the Shifter keep track of the required checks that must be done before
+certification submission.
 
-These can be configured from the admin panel.
+These can be configured from the
+`admin panel <https://certhelper.web.cern.ch/admin/checklists/>`__.
+
+Adding new items
+^^^^^^^^^^^^^^^^
 
 **Checklists** are composed of **Checklist Groups**. Checklist Groups, are composed
-of **Checklist Items**. So, if you need to add items to a specific Checklist, create
-new Checklist Items and select the appropriate Checklist Group they should belong
-to. 
+of **Checklist Items**. So, if you need to add items to a specific Checklist:
+
+- Make sure the appropriate `Checklist Group <https://certhelper.web.cern.ch/admin/checklists/checklistitemgroup/>`__ exists.
+- Create the `new Checklist Item <https://certhelper.web.cern.ch/admin/checklists/checklistitem/add/>`__ by select the appropriate Checklist Group they should belong to. 
 
 An example of a checklist structure:
 

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block style %}
-<link rel="stylesheet" href="{% static 'summary/css/summary.css' %}" type="text/css">
+<!-- <link rel="stylesheet" href="{% static 'summary/css/summary.css' %}" type="text/css"> -->
 {% endblock %}
 
 {% block content %}
@@ -148,7 +148,8 @@
          },
          success: function(data) {
 			 if(!data.success){
-				 alert(`Error! ${data.msg}`)
+				 console.error(`Error! ${data.msg}`);
+				 alert(`Make sure you have added the required links to prompt feedback plots!`);
 			 }
 			 
 		 },
