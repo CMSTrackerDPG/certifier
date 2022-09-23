@@ -6,11 +6,11 @@
         <p>
         <ul>
             <li>Fills <strong>{{ day.collisions.express.fill_numbers|join:","  }}</strong>
-                <ul>
-                    <li>
-                        <strong>[insert here]</strong> colliding bunches, peak lumi <strong>[insert here]</strong> x 10³⁴ cm²/s
-                    </li>
-                </ul>
+                <!-- <ul>
+                     <li>
+                     <strong>[insert here]</strong> colliding bunches, peak lumi <strong>[insert here]</strong> x 10³⁴ cm²/s
+                     </li>
+					 </ul> -->
             </li>
             <li>Number of runs certified:
                 <ul>
@@ -35,8 +35,20 @@
             </li>
         </ul>
 
-        Daily Shifter Summaries: <strong>link1</strong>, <strong>link2</strong>
-        Prompt Feedback plots: <strong>link1</strong>
+		<p>
+			Daily Shifter Summaries: <strong>link1</strong>, <strong>link2</strong>
+		</p>
+        <p>
+			Prompt Feedback plots:
+			<ul>
+				{% for link in day.runs.prompt_feedback_plots %}
+				<li><strong>{{ link }}</strong></li>
+				{%endfor%}
+			</ul>
+			
+
+
+		</p>
         </p>
     </div>
 {% endfor %}

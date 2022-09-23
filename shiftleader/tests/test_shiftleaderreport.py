@@ -9,6 +9,7 @@ from shiftleader.utilities.shiftleader_report import (
 )
 from shiftleader.utilities.utilities import to_date
 from shiftleader.tests.utilities.utilities import create_runs
+from oms.models import OmsFill
 
 pytestmark = pytest.mark.django_db
 
@@ -289,8 +290,14 @@ class TestShiftLeaderReport:
         report = ShiftLeaderReport(runs)
 
         assert [
-            {"fill_number": 7049, "run_number": [321185, 321182]},
-            {"fill_number": 7048, "run_number": [321181, 321179, 321171]},
+            {
+                "fill": OmsFill.objects.get(fill_number=7049),
+                "run_number": [321185, 321182],
+            },
+            {
+                "fill": OmsFill.objects.get(fill_number=7048),
+                "run_number": [321181, 321179, 321171],
+            },
         ] == report.cosmics().express().good().fills()
 
     def test_flag_changed(self):

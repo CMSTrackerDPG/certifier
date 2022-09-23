@@ -54,6 +54,8 @@ class ShiftLeaderReportPresentation(object):
     - Weekly certification
     """
 
+    COORDS_TOP_LEFT_CONTENT = {"x": "40pt", "y": "58pt"}
+
     def __init__(
         self,
         date_from: datetime,
@@ -235,10 +237,40 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_cell)
 
+        # Small cells
+        self.style_cell_small = Style(name="ce1-sm", family="table-cell")
+        self.style_cell_small.addElement(
+            GraphicProperties(
+                fillcolor="#ffffff",
+                textareaverticalalign="middle",
+            )
+        )
+        self.style_cell_small.addElement(
+            TableCellProperties(
+                paddingtop="0.1in",
+                paddingleft="0.1in",
+                paddingright="0.1in",
+                paddingbottom="0.1in",
+                backgroundcolor="#ffffff",
+            )
+        )
+        self.style_cell_small.addElement(
+            ParagraphProperties(
+                border="0.03pt solid #000000", writingmode="lr-tb", textalign="left"
+            )
+        )
+        self.style_cell_small.addElement(
+            TextProperties(fontsize="6pt", fontsizeasian="6pt", fontsizecomplex="6pt")
+        )
+        self.doc.automaticstyles.addElement(self.style_cell_small)
+
         # Header Cell style
         self.style_cell_header = Style(name="ceh", family="table-cell")
         self.style_cell_header.addElement(
             GraphicProperties(fillcolor="#dddddd", textareaverticalalign="middle")
+        )
+        self.style_cell_header.addElement(
+            TextProperties(fontsize="9pt", fontsizeasian="9pt", fontsizecomplex="9pt")
         )
         self.style_cell_header.addElement(
             ParagraphProperties(
@@ -443,35 +475,106 @@ class ShiftLeaderReportPresentation(object):
         page.addElement(c_frame)
 
     def _add_page_recorded_luminosity(self):
+        logger.debug("Creating page Recorded Luminosity")
         page = self._create_content_page(title="Recorded Luminosity")
-        # TODO: add content
+        WIDTH_FRAME = 648
+        WIDTH_COL = 70
+        HEIGHT_FRAME = 105
+        HEIGHT_ROW = 30
+
+        table_frame = Frame(
+            width=f"{WIDTH_FRAME}pt",
+            height=f"{HEIGHT_FRAME}pt",
+            **self.COORDS_TOP_LEFT_CONTENT,
+        )
+
+        table = self._create_table()
+
+        # Style for rows
+        style_row = Style(name="roh-reclumi", family="table-row")
+        style_row.addElement(TableRowProperties(rowheight=f"{HEIGHT_ROW}pt"))
+        self.doc.automaticstyles.addElement(style_row)
+
+        # Header row
+        tr = TableRow(defaultcellstylename=self.style_cell_header, stylename=style_row)
+
+        col_names = {
+            "Fill": "fill_number",
+            "Run Min": "first_run_number",
+            "Run Max": "last_run_number",
+            "Del. Lumi": "delivered_lumi",
+            "Rec. Lumi": "recorded_lumi",
+            "Eff By Lumi %": "efficiency_lumi",
+            "Peak Lumi": "peak_lumi",
+            "Peak PU": "peak_pileup",
+            "Nb. Bunches": "bunches_colliding",
+        }
+        # Create table structure
+        for i, col_name in enumerate(col_names.keys()):
+            style_column = Style(name=f"co{i}-reclumi", family="table-column")
+            # Last column is given the rest of the total frame width,
+            # this was the only way to set a width for the first column
+            style_column.addElement(
+                TableColumnProperties(
+                    columnwidth=f"{WIDTH_COL if i < len(col_names)-1 else WIDTH_FRAME-i*WIDTH_COL}pt"
+                )
+            )
+            self.doc.automaticstyles.addElement(style_column)
+
+            table.addElement(
+                TableColumn(stylename=style_column, defaultcellstylename="")
+            )
+
+            tc = TableCell()
+            p = P()
+            p.addElement(Span(text=col_name, stylename=self.style_span_header))
+            tc.addElement(p)
+            tr.addElement(tc)
+        table.addElement(tr)
+
+        # Create a row for each fill
+        for fill in self.slreport.fills():
+            # Skip fills without recorded luminosity
+            if fill["fill"].bunches_colliding is None:
+                continue
+
+            tr = TableRow(
+                defaultcellstylename=self.style_cell_small, stylename=style_row
+            )
+            table.addElement(tr)
+            for attr_name in col_names.values():
+                tc = TableCell()
+                tr.addElement(tc)
+                p = P()
+                attr = getattr(fill["fill"], attr_name, "-")
+                p.addElement(
+                    Span(
+                        text=f"{attr:.3f}" if isinstance(attr, float) else attr,
+                        stylename=self.style_span,
+                    )
+                )
+                tc.addElement(p)
+        table_frame.addElement(table)
+        page.addElement(table_frame)
 
     def _add_page_list_lhc_fills(self):
         """
         LHC fills only
         """
+        logger.debug("Creating page LHC Fills")
         if not self.queryset.run_numbers():
             logger.debug("No runs certified")
             return
 
-        logger.debug("Getting information on collisions express")
-        collisions_express = self.slreport.collisions().express().fills()
-        logger.debug("Getting information on collisions prompt")
-        collisions_prompt = self.slreport.collisions().prompt().fills()
-        logger.debug("Getting information on cosmics express")
-        cosmics_express = self.slreport.cosmics().express().fills()
-        logger.debug("Getting information on cocmics prompt")
-        cosmics_prompt = self.slreport.cosmics().prompt().fills()
         table_names = {
-            "Collisions Express": {"fills": collisions_express},
-            "Collisions Prompt": {"fills": collisions_prompt},
-            "Cosmics Express": {"fills": cosmics_express},
-            "Cosmics Prompt": {"fills": cosmics_prompt},
+            "Collisions Express": self.slreport.collisions().express().fills(),
+            "Collisions Prompt": self.slreport.collisions().prompt().fills(),
+            "Cosmics Express": self.slreport.cosmics().express().fills(),
+            "Cosmics Prompt": self.slreport.cosmics().prompt().fills(),
         }
-        logger.debug("Done.")
 
         # Iterate over all required tables
-        for table_name, table_config in table_names.items():
+        for table_name, fills in table_names.items():
             logger.debug(f"Creating table {table_name}")
             page = self._create_content_page(title=f"List of LHC Fills - {table_name}")
 
@@ -483,14 +586,13 @@ class ShiftLeaderReportPresentation(object):
             table_frame = Frame(
                 width=f"{WIDTH_FRAME}pt",
                 height=f"{HEIGHT_FRAME}pt",
-                x="40pt",
-                y="117pt",
+                **self.COORDS_TOP_LEFT_CONTENT,
             )
 
             table = self._create_table()
 
             # Style for rows
-            style_row = Style(name="roh", family="table-row")
+            style_row = Style(name=f"roh-{table_name}", family="table-row")
             style_row.addElement(TableRowProperties(rowheight=f"{HEIGHT_ROW}pt"))
             self.doc.automaticstyles.addElement(style_row)
 
@@ -503,7 +605,7 @@ class ShiftLeaderReportPresentation(object):
 
             # Two columns
             for i, col_name in enumerate(col_names):
-                style_column = Style(name=f"co{i}", family="table-column")
+                style_column = Style(name=f"co{i}-{table_name}", family="table-column")
                 # Last column is given the rest of the total frame width,
                 # this was the only way to set a width for the first column
                 style_column.addElement(
@@ -526,7 +628,7 @@ class ShiftLeaderReportPresentation(object):
             table.addElement(tr)
 
             # Add fill information
-            for fill in table_config["fills"]:
+            for fill in fills:
 
                 tr = TableRow(defaultcellstylename=self.style_cell, stylename=style_row)
                 table.addElement(tr)
@@ -583,6 +685,7 @@ class ShiftLeaderReportPresentation(object):
             return p
 
         for day in self.slreport.day_by_day():
+            logger.debug(f"Creating page {day.name()}, {day.date()}")
             page = self._create_content_page(
                 title=f"Day by day notes: {day.name()}, {day.date()}"
             )
@@ -591,9 +694,9 @@ class ShiftLeaderReportPresentation(object):
             list1 = self._generate_list(
                 list_items=[
                     f"Fills {self._format_list_to_str(day.collisions().express().fill_numbers(), comma=True)}",
-                    [
-                        "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
-                    ],
+                    # [
+                    #     "[insert here] colliding bunches, peak lumi [insert here] x 10³³ cm²/s",
+                    # ],
                     "Number of runs certified:",
                     [
                         f"Collisions: {day.collisions().express().total_number()} in Stream-Express ({format_integrated_luminosity(day.collisions().express().integrated_luminosity())}), {day.collisions().prompt().total_number()} in Prompt-Reco ({format_integrated_luminosity(day.collisions().prompt().integrated_luminosity())})",
@@ -608,7 +711,11 @@ class ShiftLeaderReportPresentation(object):
             )
             tb.addElement(list1)
             tb.addElement(P(text="Daily Shifter Summaries:"))
+
             tb.addElement(P(text="Prompt Feedback plots:"))
+            tb.addElement(
+                self._generate_list(list_items=day.runs.prompt_feedback_plots())
+            )
 
             frame.addElement(tb)
             page.addElement(frame)
@@ -617,7 +724,7 @@ class ShiftLeaderReportPresentation(object):
         """
         Weekly certification page
         """
-
+        logger.debug(f"Creating page Weekly certification")
         page = self._create_content_page(title=f"Weekly certification")
         frame = self._create_full_page_content_frame(self.style_frame_list)
         tb = TextBox()
@@ -654,6 +761,7 @@ class ShiftLeaderReportPresentation(object):
         page.addElement(frame)
 
     def _add_page_summary(self):
+        logger.debug(f"Creating page Summary")
         page = self._create_content_page(
             title=f"Summary of week {self.slreport.runs.week_number()}"
         )
@@ -692,6 +800,7 @@ class ShiftLeaderReportPresentation(object):
         return p
 
     def _add_page_list_express(self):
+        logger.debug(f"Creating page List Express")
         page = self._create_content_page(title="List of runs certified StreamExpress")
         frame = self._create_full_page_content_frame(self.style_frame_list)
         tb = TextBox()
@@ -714,6 +823,7 @@ class ShiftLeaderReportPresentation(object):
         page.addElement(frame)
 
     def _add_page_list_prompt(self):
+        logger.debug(f"Creating page List Prompt")
         page = self._create_content_page(title="List of runs certified Prompt")
         frame = self._create_full_page_content_frame(self.style_frame_list)
         tb = TextBox()
