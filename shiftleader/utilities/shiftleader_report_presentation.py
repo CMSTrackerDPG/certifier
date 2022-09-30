@@ -408,7 +408,9 @@ class ShiftLeaderReportPresentation(object):
         )
         self.doc.automaticstyles.addElement(self.style_span_bad)
 
-    def _generate_list(self, list_items: list, identation_level: int = 1) -> List:
+    def _generate_list(
+        self, list_items: list, identation_level: int = 1, allow_empty: bool = False
+    ) -> List:
         stylename = f"L1-{identation_level}"
         l = List(stylename=stylename)
         for item in list_items:
@@ -419,7 +421,7 @@ class ShiftLeaderReportPresentation(object):
                 li.addElement(item)
             elif isinstance(item, Element):
                 li.addElement(item)
-            else:
+            elif allow_empty or item:
                 li.addElement(P(text=item))
 
             l.addElement(li)

@@ -42,12 +42,11 @@
 			Prompt Feedback plots:
 			<ul>
 				{% for link in day.runs.prompt_feedback_plots %}
+				{% if link %}
 				<li><strong>{{ link }}</strong></li>
+				{% endif %}
 				{%endfor%}
 			</ul>
-			
-
-
 		</p>
         </p>
     </div>
