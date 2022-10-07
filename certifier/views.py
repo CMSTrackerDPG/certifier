@@ -222,7 +222,6 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
-        self.run.run_type = OmsRun.COLLISIONS
 
         context = {
             "run_number": run_number,
