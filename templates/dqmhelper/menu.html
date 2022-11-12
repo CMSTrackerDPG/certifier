@@ -7,7 +7,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
 				<li class="nav-item">
-					<a class="nav-link text-secondary"
+					<a class="nav-link"
 					   href="https://github.com/CMSTrackerDPG/certifier/releases/tag/{{ certhelper_version }}">
 						<small>v.{{ certhelper_version }}</small>
 					</a>
@@ -16,7 +16,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'admin:index' %}"><span class="glyphicon glyphicon-cog"></span> Admin Settings</a>
                 </li>
-
+				{% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="https://github.com/CMSTrackerDPG/certifier/issues"><span class="glyphicon glyphicon-exclamation-sign"></span> Report an issue</a>
                 </li>
