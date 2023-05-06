@@ -158,8 +158,10 @@ class RemoteScriptView(ScriptExecutionBaseView):
                 ).start()
             except Exception as e:
                 logger.error(e)
+        else:
+            logger.error(form.errors.as_data())
 
-        return JsonResponse({"success": success})
+        return JsonResponse({"success": success, "errors": form.errors})
 
 
 class TrackerMapsView(ScriptExecutionBaseView):
@@ -171,7 +173,6 @@ class TrackerMapsView(ScriptExecutionBaseView):
     def post(self, request):
         success = False
         if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
-
             run_type = request.POST.get("type", None)
             runs_list = request.POST.get("list", None)
             logger.info(
