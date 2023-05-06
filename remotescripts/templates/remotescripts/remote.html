@@ -192,10 +192,17 @@
 		 // url: "",// Not needed
 		 data: values,
 	 })
-	  .always(function(){
+	  .always(function(data){
+		if (data.errors){
+			console.log(data.errors)
+			for (const [key, value] of Object.entries(data.errors)){
+				alert(`${key} : ${value}`);
+			}
+			enableControls();
+		}
 	  })
 	  .fail(function(data){
-		  let msg = `Command failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
+		  let msg = `Request failed with error ${data.status}: ${JSON.parse(data.responseText).message}`;
 		  console.error(msg);
 		  alert(msg);
 	  });
