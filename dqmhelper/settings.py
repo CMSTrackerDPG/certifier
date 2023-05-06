@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [config("CSRF_TRUSTED_ORIGINS", default="")]
 
 INSTALLED_APPS = [
+    "daphne",
     "channels",
     "remotescripts",
     "openruns.apps.OpenrunsConfig",
@@ -131,7 +132,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis://:" + REDIS_PASSWORD + "@" + REDIS_HOST + ":6379/0")],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
