@@ -1,5 +1,5 @@
-numba==0.48.0
-llvmlite==0.31.0
+numba
+llvmlite
 asgiref>=3.2.10
 cernrequests>=0.3.0
 certifi==2018.11.29
