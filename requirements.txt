@@ -1,10 +1,11 @@
-numba==0.48.0
-llvmlite==0.31.0
+numba
+llvmlite
 asgiref>=3.2.10
-cernrequests>=0.3.0
+cernrequests==0.3.3
 certifi==2018.11.29
+channels[daphne]
 channels_redis
-Django>=3.0.3
+Django<4.2.0
 django-allauth>=0.40.0
 django-bootstrap3>=9.1.0
 django-filter>=2.2.0

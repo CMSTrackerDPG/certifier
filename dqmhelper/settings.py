@@ -20,7 +20,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "1.10.2"
+CERTHELPER_VERSION = "1.10.3"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [config("CSRF_TRUSTED_ORIGINS", default="")]
 
 INSTALLED_APPS = [
+    "daphne",
     "channels",
     "remotescripts",
     "openruns.apps.OpenrunsConfig",
