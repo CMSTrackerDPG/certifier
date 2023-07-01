@@ -1,7 +1,6 @@
 #!/bin/bash
 echo "Before assembling"
 git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cern.ch".insteadOf https://gitlab.cern.ch   
-echo "188.184.88.153 login.cern.ch" | sudo tee -a /etc/hosts
 /usr/libexec/s2i/assemble
 rc=$?
 
