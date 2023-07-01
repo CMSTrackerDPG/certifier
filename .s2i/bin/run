@@ -1,4 +1,0 @@
-#!/bin/bash
-echo "Before running application"
-echo $(cat /etc/hosts)
-exec /usr/libexec/s2i/run

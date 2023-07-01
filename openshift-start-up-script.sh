@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "188.184.88.153 login.cern.ch" >> /etc/hosts
 
 python manage.py collectstatic --noinput
 python manage.py migrate --run-syncdb
