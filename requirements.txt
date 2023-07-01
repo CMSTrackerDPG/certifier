@@ -1,7 +1,7 @@
 numba
 llvmlite
 asgiref>=3.2.10
-cernrequests>=0.3.0
+cernrequests==0.3.3
 certifi==2018.11.29
 channels[daphne]
 channels_redis
