@@ -6,6 +6,7 @@ from oms.models import OmsFill, OmsRun
 from oms.exceptions import (
     OmsApiFillNumberNotFound,
     OmsApiRunNumberNotFound,
+    OmsApiDataInvalidError,
     RunRegistryNoAvailableDatasets,
     RunRegistryReconstructionNotFound,
 )
@@ -161,7 +162,20 @@ def oms_retrieve_fill(fill_number: int) -> OmsFill:  # pragma: no cover
     try:
         with transaction.atomic():
             OmsFill.objects.create(**fill_kwargs)
-    except IntegrityError:
+    except IntegrityError as e:
+        logger.error(f"Failed to create OmsFill object in DB: {repr(e)}")
+        if "violates check constraint" in repr(e):
+            raise OmsApiDataInvalidError(repr(e))
+        # This try-except block was probably added for the case where more than one users simultaneously
+        # ask to certify the same run, meaning that only one call of this function
+        # will actually manage to create the entry, all others throwing an Integrity Error.
+        # Not raising an exception here, though, allows ALL kinds of IntegrityErrors to pass through,
+        # including ones that have to do with the actual data from OMS being bad.
+        # An example was an incident where the bunches_colliding that OMS was returning was negative,
+        # raising an IntegrityError here, which failed to create the OmsFill entry, hence
+        # raising an exception on the return statement without a descriptive message.
+        # For this reason, it's better to just crash early, with a meaningful reason.
+        # There's, of course, room for improvement here.
         OmsFill.objects.filter(fill_number=fill_number).update(**fill_kwargs)
 
     return OmsFill.objects.get(fill_number=fill_number)
@@ -250,10 +264,12 @@ def oms_retrieve_run(run_number: int) -> OmsRun:  # pragma: no cover
     run_kwargs["lumisections"] = get_oms_lumisection_count(run_number)
 
     try:
+        # Make sure that, if more than one user requests a run that had not been added to the DB,
+        # it will only be added once.
         with transaction.atomic():
             OmsRun.objects.create(fill=fill, **run_kwargs)
     except IntegrityError as e:
-        logger.warning(f"{e} trying to create OmsRun")
+        logger.error(f"Failed to create OmsRun object: {repr(e)}")
         OmsRun.objects.filter(run_number=run_number).update(**run_kwargs)
 
     return OmsRun.objects.get(run_number=run_number)
