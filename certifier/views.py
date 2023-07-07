@@ -24,6 +24,7 @@ from oms.models import OmsRun, OmsFill
 from oms.exceptions import (
     OmsApiFillNumberNotFound,
     OmsApiRunNumberNotFound,
+    OmsApiDataInvalidError,
     RunRegistryNoAvailableDatasets,
     RunRegistryReconstructionNotFound,
 )
@@ -204,6 +205,7 @@ class CertifyView(View):
             ParseError,
             OmsApiRunNumberNotFound,
             OmsApiFillNumberNotFound,
+            OmsApiDataInvalidError,
         ) as e:
             # If OMS API does not contain the info required,
             # or OMS is unreachable, create the run with minimal
@@ -222,6 +224,10 @@ class CertifyView(View):
         logger.debug(
             f"Requesting certification of run {run_number} {reco if reco else ''}"
         )
+        # Allow GUI user to force update of the OMS data
+        # A bit of a machete code, in order to
+        if request.GET.get("external_info_complete", None) == "false":
+            self.external_info_complete = False
 
         context = {
             "run_number": run_number,

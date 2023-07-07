@@ -10,6 +10,13 @@ class OmsApiRunNumberNotFound(Exception):
     """
 
 
+class OmsApiDataInvalidError(Exception):
+    """
+    Raised when data from OMS violates a constraint in our DB,
+    e.g. Colliding bunches < 0
+    """
+
+
 class RunRegistryNoAvailableDatasets(Exception):
     """
     Raised when no datasets were found in RunRegistry

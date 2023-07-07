@@ -78,7 +78,19 @@
             <div class="col-md-4">
                 <div class="card shadow-sm bg-white">
                     <div class="card-body">
-                        <h6 class="card-title text-primary">Type</h6>
+                        <div class="row">
+                            <div class="col-11">
+                                <h6 class="card-title text-primary">Type</h6>
+                            </div>
+                            <div class="col-1">
+                                {% comment %} Allow editing of OMS attributes {% endcomment %}
+                                {% if form.external_info_complete.value %}
+                                <div class="row justify-content-center">
+                                    <a class="btn btn-light" title="Edit OMS info" href="./?external_info_complete=false"><i class="bi bi-pencil-fill pl-1"></i></a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="row m-1">
                             <div class="col-md-4 text-right">
                                 <strong>Run type</strong>
@@ -155,8 +167,19 @@
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-
-                        <h6 class="card-title text-success">Lumi</h6>
+                        <div class="row">
+                            <div class="col-11">
+                                <h6 class="card-title text-success">Lumi</h6>
+                            </div>
+                            <div class="col-1">
+                                {% comment %} Allow editing of OMS attributes {% endcomment %}
+                                {% if form.external_info_complete.value %}
+                                <div class="row justify-content-center">
+                                    <a class="btn btn-light" title="Edit OMS info" href="./?external_info_complete=false"><i class="bi bi-pencil-fill pl-1"></i></a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Lumisections</strong>
@@ -237,7 +260,19 @@
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h6 class="card-title text-info">Fill</h6>
+                        <div class="row">
+                            <div class="col-11">
+                                <h6 class="card-title text-info">Fill</h6>
+                            </div>
+                            <div class="col-1">
+                                {% comment %} Allow editing of OMS attributes {% endcomment %}
+                                {% if form.external_info_complete.value %}
+                                <div class="row justify-content-center">
+                                    <a class="btn btn-light" title="Edit OMS info" href="./?external_info_complete=false"><i class="bi bi-pencil-fill pl-1"></i></a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="row m-1">
                             <div class="col-md-5 text-right">
                                 <strong>Fill number</strong>
