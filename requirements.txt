@@ -1,7 +1,7 @@
 numba
 llvmlite
 asgiref<4.0.0
-cernrequests==0.3.3
+cernrequests>=0.4.1
 certifi<2023.0.0
 channels[daphne]
 channels_redis
@@ -20,7 +20,9 @@ daphne<5.0.0
 django-widget-tweaks<2.0.0
 django-extensions<4.0.0
 paramiko
-runregistry
+# This will be uncommented once the tested 
+# version is released.
+# runregistry
 apscheduler
 whitenoise
 factory_boy

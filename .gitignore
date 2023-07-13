@@ -274,5 +274,13 @@ wsgi/static/
 
 # End of https://www.gitignore.io/api/django,python,pycharm+all
 
+# Temp files when creating presentations
 *.odp
 
+# Directory where static files go after collectstatic
+sock/
+
+# Redis db files
+*.rdb
+
+.env_*
