@@ -42,7 +42,7 @@ jobs:
         git config --global url."https://${{ secrets.CERN_GITLAB_USER }}:${{ secrets.CERN_GITLAB_TOKEN }}@gitlab.cern.ch".insteadOf https://gitlab.cern.ch
         python -m pip install --upgrade pip
         
-        ALLAUTH_INSTALL_DIR=/home/runner
+        ALLAUTH_INSTALL_DIR=$HOME
         mkdir -p $ALLAUTH_INSTALL_DIR
         git clone https://github.com/nothingface0/django-allauth.git $ALLAUTH_INSTALL_DIR/django-allauth
         cd $ALLAUTH_INSTALL_DIR/django-allauth
@@ -50,9 +50,9 @@ jobs:
         wget https://github.com/pennersr/django-allauth/compare/main...nothingface0:django-allauth:fix_cern_sso.patch --output-document=patch
         git apply patch --reject || true
         cd -
-
+        
         pip install -r requirements.txt
-
+        pip install $ALLAUTH_INSTALL_DIR/django-allauth
         pip install --index-url https://test.pypi.org/simple runregistry==1.0.0
 
         pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
