@@ -3,15 +3,14 @@ echo "Before assembling"
 git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cern.ch".insteadOf https://gitlab.cern.ch   
 
 # TODO: remove once PR in django-allauth merged
-git clone https://github.com/nothingface0/django-allauth.git
-cd django-allauth
+mkdir -p /tmp/runner
+git clone https://github.com/nothingface0/django-allauth.git /tmp/runner/django-allauth
+cd /tmp/runner/django-allauth
 git checkout 77368a8
 wget https://github.com/pennersr/django-allauth/compare/main...nothingface0:django-allauth:fix_cern_sso.patch --output-document=patch
-result=$(git apply patch --reject)
-echo RESULT: $result
-cd ..
+git apply patch --reject || true
+cd -
 
-ls
 
 /usr/libexec/s2i/assemble
 rc=$?
