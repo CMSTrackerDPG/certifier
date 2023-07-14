@@ -3,7 +3,7 @@ echo "Before assembling"
 git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cern.ch".insteadOf https://gitlab.cern.ch   
 
 # TODO: remove once PR in django-allauth merged
-ALLAUTH_INSTALL_DIR=/home/runner
+ALLAUTH_INSTALL_DIR=$HOME
 mkdir -p $ALLAUTH_INSTALL_DIR
 git clone https://github.com/nothingface0/django-allauth.git $ALLAUTH_INSTALL_DIR/django-allauth
 cd $ALLAUTH_INSTALL_DIR/django-allauth
@@ -16,7 +16,7 @@ cd -
 /usr/libexec/s2i/assemble
 rc=$?
 
-ls
+pip install $ALLAUTH_INSTALL_DIR/django-allauth
 
 # Temporarily install runregistry api client from test PyPI
 pip install --index-url https://test.pypi.org/simple runregistry==1.0.0
