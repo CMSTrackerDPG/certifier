@@ -7,7 +7,7 @@ channels[daphne]
 channels_redis
 Django<4.2.0
 # TODO: Update this once PR is merged to django-allauth
--e /tmp/runner/django-allauth
+-e /home/runner/django-allauth
 #django-allauth<1.0.0
 django-bootstrap3<24.0
 django-filter<24.0
