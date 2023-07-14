@@ -13,6 +13,7 @@ def test_create_user():
     user.extra_data = {"hi": "test"}
     assert user
 
+
 def test_logs():
     """
     Just run them once, nothing really to test here
@@ -26,9 +27,11 @@ def test_logs():
     log_social_account_updated(None, None)
     log_social_account_removed(None, None)
 
+
 def test_user_automatically_created():
     user = mixer.blend(get_user_model())
     assert user
+
 
 def test_users_login():
     user = mixer.blend(get_user_model())
@@ -57,7 +60,7 @@ def test_update_users_on_save():
     assert user.is_guest
     user.save()
     assert user.is_guest
-    extra_data = {"groups": ["tkdqmdoctor-admins"]}
+    extra_data = {"cern_roles": ["admin"]}
     mixer.blend(SocialAccount, user=user, extra_data=extra_data)
     assert user.is_guest
     assert not user.is_staff

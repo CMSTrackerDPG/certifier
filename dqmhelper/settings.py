@@ -77,7 +77,6 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.cern",
-    "allauth.socialaccount.providers.github",
     "widget_tweaks",
     "django_extensions",
     "django_tables2",
@@ -176,7 +175,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = 1
+# This must be added from the admin page. Then, you
+# can see the id by:
+# from django.contrib.sites.models import Site
+# Site.objects.all()
+SITE_ID = config("SITE_ID", default=2, cast=int)
 
 LOGGING = {
     "version": 1,
@@ -222,3 +225,4 @@ CERN_CERTIFICATE_PATH = config("CERN_CERTIFICATE_PATH", default="")
 
 # When Upgraded to Django 3.2 - RELEASE 06.04.2021
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+ACCOUNT_EMAIL_VERIFICATION = "none"
