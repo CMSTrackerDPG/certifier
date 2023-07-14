@@ -4,6 +4,9 @@ git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cer
 /usr/libexec/s2i/assemble
 rc=$?
 
+# Temporarily install runregistry api client from test PyPI
+pip install --index-url https://test.pypi.org/simple runregistry==1.0.0
+
 if [ $rc -eq 0 ]; then
     echo "After successful assembling"
 else
