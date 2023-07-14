@@ -5,21 +5,21 @@ from users.utilities.logger import get_configured_logger
 logger = get_configured_logger(loggername=__name__, filename="utilities.log")
 
 
-def extract_egroups(json_data):
+def extract_roles(json_data):
     """
     Returns the E-Groups in a JSON Dictionary
     """
-    return json_data.get("groups")
+    return json_data.get("cern_roles")
 
 
-def get_highest_privilege_from_egroup_list(egroups, criteria_dict):
+def get_highest_privilege_from_roles_list(roles, criteria_dict):
     """
-    Compares every egroup in egroups with the criteria_dict
+    Compares every egroup in roles with the criteria_dict
     and returns the highest criteria found
     """
     highest_privilege = 0
-    for privilege, criteria_list in criteria_dict.items():
-        if any(egroup in criteria_list for egroup in egroups):
+    for privilege, role_name in criteria_dict.items():
+        if any(role in role_name for role in roles):
             if privilege > highest_privilege:
                 highest_privilege = privilege
     return highest_privilege
@@ -29,14 +29,12 @@ def get_or_create_group(group_name):
     try:
         g = Group.objects.get(name=group_name)
     except Group.DoesNotExist:
-        user_permissions = Permission.objects.filter(
-            content_type__model="user")
-        users_permissions = Permission.objects.filter(
-            content_type__app_label="users")
-        oms_permissions = Permission.objects.filter(
-            content_type__app_label="oms")
+        user_permissions = Permission.objects.filter(content_type__model="user")
+        users_permissions = Permission.objects.filter(content_type__app_label="users")
+        oms_permissions = Permission.objects.filter(content_type__app_label="oms")
         certifier_permissions = Permission.objects.filter(
-            content_type__app_label="certifier")
+            content_type__app_label="certifier"
+        )
         all_permissions = Permission.objects.all()
 
         g = Group.objects.create(name=group_name)
@@ -69,5 +67,4 @@ def update_user_extradata(user):
         except SocialAccount.DoesNotExist:
             logger.warning("No SocialAccount exists for User {}".format(user))
     else:
-        logger.info(
-            "Cannot update extradata for non existing User {}".format(user))
+        logger.info("Cannot update extradata for non existing User {}".format(user))

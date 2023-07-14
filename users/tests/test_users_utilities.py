@@ -10,19 +10,20 @@ from users.utilities.utilities import *
 
 pytestmark = pytest.mark.django_db
 
-class TestUtilities:
-    def test_extract_egroups(self):
-        egroups = extract_egroups({})
-        assert egroups is None
-        egroups = extract_egroups({"test": ["something", "wrong"]})
-        assert egroups is None
-        egroups = extract_egroups(
-            {"unrelated": None, "groups": ["correct", "groups"], "name": "Frank"}
-        )
-        assert ["correct", "groups"] == egroups
 
-    def test_get_highest_privilege_from_egroup_list(self):
-        egroups = ["useless"]
+class TestUtilities:
+    def test_extract_roles(self):
+        roles = extract_roles({})
+        assert roles is None
+        roles = extract_roles({"test": ["something", "wrong"]})
+        assert roles is None
+        roles = extract_roles(
+            {"unrelated": None, "cern_roles": ["correct", "roles"], "name": "Frank"}
+        )
+        assert ["correct", "roles"] == roles
+
+    def test_get_highest_privilege_from_roles_list(self):
+        roles = ["useless"]
         criteria_dict = {
             10: ["useful", "slightly useful"],
             20: ["more useful"],
@@ -30,74 +31,65 @@ class TestUtilities:
             50: ["most useful"],
         }
 
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 0 == privilege
 
-        egroups.append("slightly useful")
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles.append("slightly useful")
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 10 == privilege
 
-        egroups.append("more useful")
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles.append("more useful")
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 20 == privilege
 
-        egroups.append("useful")
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles.append("useful")
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 20 == privilege
 
-        egroups.append("most useful")
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles.append("most useful")
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 50 == privilege
 
-        egroups.append("very useful")
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles.append("very useful")
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert 50 == privilege
 
-    def test_get_highest_privilege_from_egroup_list_real_data(self):
+    def test_get_highest_privilege_from_roles_list_real_data(self):
         GUEST = 0
         SHIFTER = 10
         SHIFTLEADER = 20
         EXPERT = 30
         ADMIN = 50
 
-        criteria_dict = {
-            SHIFTER: ["tkdqmdoctor-shifters"],
-            SHIFTLEADER: [
-                "cms-tracker-offline-shiftleader",
-                "cms-tracker-offline-shiftleaders",
-                "tkdqmdoctor-shiftleaders",
-            ],
-            EXPERT: ["tkdqmdoctor-experts"],
-            ADMIN: ["tkdqmdoctor-admins"],
-        }
+        criteria_dict = User.criteria_roles_dict
 
-        egroups = []
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles = []
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert GUEST == privilege
 
-        egroups = ["tkdqmdoctor-shifters"]
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles = ["shifter"]
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert SHIFTER == privilege
 
-        egroups = ["cms-tracker-offline-shiftleaders"]
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        roles = ["shiftleader"]
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert SHIFTLEADER == privilege
 
-        egroups = [
-            "cms-tracker-offline-shiftleaders",
-            "tkdqmdoctor-experts",
-            "tkdqmdoctor-shifters",
+        roles = [
+            "shiftleader",
+            "expert",
+            "shifter",
         ]
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert EXPERT == privilege
 
-        egroups = [
-            "cms-tracker-offline-shiftleaders",
-            "tkdqmdoctor-admins",
-            "tkdqmdoctor-experts",
-            "tkdqmdoctor-shifters",
+        roles = [
+            "shiftleader",
+            "admin",
+            "expert",
+            "shifter",
         ]
-        privilege = get_highest_privilege_from_egroup_list(egroups, criteria_dict)
+        privilege = get_highest_privilege_from_roles_list(roles, criteria_dict)
         assert ADMIN == privilege
 
     def test_get_or_create_group(self):
@@ -115,24 +107,23 @@ class TestUtilities:
         user = mixer.blend(get_user_model())
         assert user.is_guest
 
-        user=None
+        user = None
 
-        extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        extra_data = {"cern_roles": ["shiftleader"]}
         update_user_extradata(user)
 
         assert True
-
 
     def test_update_user(self):
         user = mixer.blend(get_user_model())
         assert user.is_guest
 
-        extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        extra_data = {"cern_roles": ["shiftleader"]}
         account = mixer.blend(SocialAccount, user=user, extra_data=extra_data)
         update_user_extradata(user)
         assert not user.is_guest
         assert user.is_shiftleader
-        account.extra_data = {"groups": ["tkdqmdoctor-experts"]}
+        account.extra_data = {"cern_roles": ["expert"]}
         account.save()
 
         update_user_extradata(user)

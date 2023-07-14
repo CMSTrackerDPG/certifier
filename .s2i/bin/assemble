@@ -1,8 +1,21 @@
 #!/bin/bash
 echo "Before assembling"
 git config --global url."https://$CERN_GITLAB_USER:$CERN_GITLAB_TOKEN@gitlab.cern.ch".insteadOf https://gitlab.cern.ch   
+
+# TODO: remove once PR in django-allauth merged
+mkdir -p /tmp/runner
+git clone https://github.com/nothingface0/django-allauth.git /tmp/runner/django-allauth
+cd /tmp/runner/django-allauth
+git checkout 77368a8
+wget https://github.com/pennersr/django-allauth/compare/main...nothingface0:django-allauth:fix_cern_sso.patch --output-document=patch
+git apply patch --reject || true
+cd -
+
+
 /usr/libexec/s2i/assemble
 rc=$?
+
+ls
 
 # Temporarily install runregistry api client from test PyPI
 pip install --index-url https://test.pypi.org/simple runregistry==1.0.0

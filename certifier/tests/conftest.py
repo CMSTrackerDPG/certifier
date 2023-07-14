@@ -552,7 +552,7 @@ def runs_for_slr():
 @pytest.fixture
 def shifter(django_user_model):
     user = mixer.blend(get_user_model(), username=SHIFTER1_USERNAME, password=PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+    user.extra_data = {"cern_roles": ["shifter"]}
     user.update_privilege()
     user.save()
     return user
