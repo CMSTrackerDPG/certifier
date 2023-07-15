@@ -6,9 +6,7 @@ certifi<2023.0.0
 channels[daphne]
 channels_redis
 Django<4.2.0
-# TODO: Update this once PR is merged to django-allauth
-#-e /home/runner/django-allauth
-#django-allauth<1.0.0
+django-allauth<1.0.0
 django-bootstrap3<24.0
 django-filter<24.0
 django-ckeditor<7.0.0
@@ -29,5 +27,6 @@ apscheduler
 whitenoise
 factory_boy
 prettytable
+pyjwt
 git+https://gitlab.cern.ch/cmsoms/oms-api-client
 git+https://github.com/eea/odfpy.git

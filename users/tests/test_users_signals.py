@@ -1,9 +1,9 @@
 import pytest
 from django.db import IntegrityError
-from mixer.backend.django import mixer
 from django.contrib.auth import get_user_model
-from users.signals import *
 from django.test import Client
+from users.signals import *
+from mixer.backend.django import mixer
 
 pytestmark = pytest.mark.django_db
 
@@ -12,6 +12,12 @@ def test_create_user():
     user = mixer.blend(get_user_model())
     user.extra_data = {"hi": "test"}
     assert user
+
+
+def test_pre_social_login():
+    # TODO: Add test for verifying functionality
+    # of users.signals.pre_social_login, if possible
+    pass
 
 
 def test_logs():
