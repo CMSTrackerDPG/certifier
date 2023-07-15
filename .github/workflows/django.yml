@@ -42,17 +42,8 @@ jobs:
         git config --global url."https://${{ secrets.CERN_GITLAB_USER }}:${{ secrets.CERN_GITLAB_TOKEN }}@gitlab.cern.ch".insteadOf https://gitlab.cern.ch
         python -m pip install --upgrade pip
         
-        ALLAUTH_INSTALL_DIR=$HOME
-        mkdir -p $ALLAUTH_INSTALL_DIR
-        git clone https://github.com/nothingface0/django-allauth.git $ALLAUTH_INSTALL_DIR/django-allauth
-        cd $ALLAUTH_INSTALL_DIR/django-allauth
-        git checkout 77368a8
-        wget https://github.com/pennersr/django-allauth/compare/main...nothingface0:django-allauth:fix_cern_sso.patch --output-document=patch
-        git apply patch --reject || true
-        cd -
-        
         pip install -r requirements.txt
-        pip install $ALLAUTH_INSTALL_DIR/django-allauth
+
         pip install --index-url https://test.pypi.org/simple runregistry==1.0.0
 
         pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
@@ -69,7 +60,8 @@ jobs:
         DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         OMS_CLIENT_ID: ${{ secrets.OMS_CLIENT_ID }}
         OMS_CLIENT_SECRET: ${{ secrets.OMS_CLIENT_SECRET }}
-
+        CERN_SSO_REGISTRATION_CLIENT_ID: ${{ secrets.CERN_SSO_REGISTRATION_CLIENT_ID }}
+        CERN_SSO_REGISTRATION_CLIENT_SECRET: ${{ secrets.CERN_SSO_REGISTRATION_CLIENT_SECRET }}
       run: |
         PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=./ --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py --ignore oms/tests/test_oms_models.py
         codecov
