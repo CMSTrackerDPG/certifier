@@ -56,8 +56,11 @@ def log_pre_social_login(request, sociallogin):
 
 @receiver(pre_social_login)
 def pre_social_login(request, sociallogin, **kwargs):
-    # Get the token from the login and decode it,
-    # so that we can get cern_roles out of it
+    log_pre_social_login(request, sociallogin=sociallogin)
+    # The default OIDC provider does not provide the extra
+    # data that CERN SSO returns (i.e. cern_roles).
+    # For that reason we use the token from the login and decode it,
+    # so that we can get all the extra info from it.
     key = jwt.PyJWKClient(settings.CERN_SSO_JWKS_URI).get_signing_keys()[0]
     sociallogin.account.extra_data = jwt.decode(
         jwt=sociallogin.token.token.encode("utf-8"),
@@ -65,7 +68,24 @@ def pre_social_login(request, sociallogin, **kwargs):
         algorithms=["RS256"],
         audience=config("CERN_SSO_REGISTRATION_CLIENT_ID"),
     )
-    log_pre_social_login(request, sociallogin=sociallogin)
+    # We now have to make sure that this data is saved in the
+    # SocialAccount entry in the Database; there are two distinct
+    # cases here:
+    # 1. This is the first login of this specific user, and
+    # there's no SocialAccount entry for them yet. In this case
+    # (i.e. sociallogin.account.pk = None), at this point of the
+    # login flow, this SocialAccount is NOT yet ready for saving,
+    # as django-allauth is going to add some missing information
+    # at a later step (during django-allauth's _add_social_account),
+    # so let django-allauth save the account, later.
+    #
+    # 2. This is a login of a returning user we've already registered.
+    # django-allauth has already updated and saved the account with the
+    # stripped down information that the SSO returns (i.e. without
+    # cern_roles) during account lookup, which happens *before* pre_social_login.
+    # In this case, we have to update the extra info ourselves.
+    if sociallogin.account.pk:
+        sociallogin.account.save()
 
 
 @receiver(social_account_added)
