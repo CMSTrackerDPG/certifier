@@ -1,9 +1,9 @@
 import pytest
 from django.db import IntegrityError
-from mixer.backend.django import mixer
 from django.contrib.auth import get_user_model
-from users.signals import *
 from django.test import Client
+from users.signals import *
+from mixer.backend.django import mixer
 
 pytestmark = pytest.mark.django_db
 
@@ -12,6 +12,13 @@ def test_create_user():
     user = mixer.blend(get_user_model())
     user.extra_data = {"hi": "test"}
     assert user
+
+
+def test_pre_social_login():
+    # TODO: Add test for verifying functionality
+    # of users.signals.pre_social_login, if possible
+    pass
+
 
 def test_logs():
     """
@@ -26,9 +33,11 @@ def test_logs():
     log_social_account_updated(None, None)
     log_social_account_removed(None, None)
 
+
 def test_user_automatically_created():
     user = mixer.blend(get_user_model())
     assert user
+
 
 def test_users_login():
     user = mixer.blend(get_user_model())
@@ -57,7 +66,7 @@ def test_update_users_on_save():
     assert user.is_guest
     user.save()
     assert user.is_guest
-    extra_data = {"groups": ["tkdqmdoctor-admins"]}
+    extra_data = {"cern_roles": ["admin"]}
     mixer.blend(SocialAccount, user=user, extra_data=extra_data)
     assert user.is_guest
     assert not user.is_staff

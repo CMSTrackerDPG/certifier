@@ -19,13 +19,16 @@
         padding: 15px;
         margin: 0 auto;
     }
+
     .form-signin .form-signin-heading,
     .form-signin .checkbox {
         margin-bottom: 10px;
     }
+
     .form-signin .checkbox {
         font-weight: normal;
     }
+
     .form-signin .form-control {
         position: relative;
         height: auto;
@@ -35,14 +38,17 @@
         padding: 10px;
         font-size: 16px;
     }
+
     .form-signin .form-control:focus {
         z-index: 2;
     }
+
     .form-signin input[type="email"] {
         margin-bottom: -1px;
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
     }
+
     .form-signin input[type="password"] {
         margin-bottom: 10px;
         border-top-left-radius: 0;
@@ -58,6 +64,7 @@
         padding-top: 0.5em;
         padding-bottom: 0.5em;
     }
+
     hr.or {
         background-color: #cdcdcd;
         height: 1px;
@@ -85,24 +92,27 @@
         visibility: hidden;
     }
 
-    .use-local-account-div{
+    .use-local-account-div {
         text-align: center;
     }
 </style>
 
 
-<div class="container">
-    <form class="form-signin" method="post">
-        <a type="button" class="btn btn-primary btn-lg btn-block" href="{% provider_login_url "cern" %}">
+<div class="container-fluid">
+    <form class="form-signin" method="post" action="{% provider_login_url 'cern' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-lg btn-block" >
             <div class="row">
-                <div class="col-sm-3"><img src="{% static "users/img/cern_logo.svg" %}" alt="Place Holder" height="80" width="80"/></div>
+                <div class="col-sm-3"><img src="{% static 'users/img/cern_logo.svg' %}" alt="Place Holder" height="80"
+                        width="80" /></div>
                 <div class="col-sm-9 vcenter"><br/>Login with CERN</div>
             </div>
-
-        </a>
-        <hr class="or">
-        <!--<hr class="or"style="width: 100%; color: black; height: 1px; background-color:black;"! />-->
-        <div class="use-local-account-div"><button type="button" class="btn btn-link" id="id_use_local_btn">Use local account instead</button></div>
+        </button>
+    </form>
+    <hr class="or">
+    <form class="form-signin" method="post">
+        <div class="use-local-account-div"><button type="button" class="btn btn-link" id="id_use_local_btn">Use local
+                account instead</button></div>
         <div id="local-login">
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -112,9 +122,8 @@
 </div>
 
 <script>
-    $( "#id_use_local_btn" ).click(function() {
-        $( ".use-local-account-div" ).css('visibility', 'hidden');
-        $( "#local-login" ).css('visibility', 'visible');
+    $("#id_use_local_btn").click(function () {
+        $(".use-local-account-div").css('visibility', 'hidden');
+        $("#local-login").css('visibility', 'visible');
     });
 </script>
-

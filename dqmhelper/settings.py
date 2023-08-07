@@ -10,9 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import os
 from pathlib import Path
-
 from decouple import config
 from django.contrib.messages import constants as messages
 
@@ -20,7 +18,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "1.11.0"
+CERTHELPER_VERSION = "1.11.1"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,8 +74,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.cern",
-    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.openid_connect",
     "widget_tweaks",
     "django_extensions",
     "django_tables2",
@@ -176,7 +173,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = 1
+# This must be added from the admin page. Then, you
+# can see the id by:
+# from django.contrib.sites.models import Site
+# Site.objects.all()
+SITE_ID = config("SITE_ID", default=2, cast=int)
 
 LOGGING = {
     "version": 1,
@@ -222,3 +223,36 @@ CERN_CERTIFICATE_PATH = config("CERN_CERTIFICATE_PATH", default="")
 
 # When Upgraded to Django 3.2 - RELEASE 06.04.2021
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "openid_connect": {
+        "SERVERS": [
+            {
+                "id": "cern",  # 30 characters or less
+                "name": "CERN",
+                "server_url": "https://auth.cern.ch/auth/realms/cern",
+                # Optional token endpoint authentication method.
+                # May be one of "client_secret_basic", "client_secret_post"
+                # If omitted, a method from the the server's
+                # token auth methods list is used
+                "token_auth_method": "client_secret_post",
+                "APP": {
+                    "client_id": config("CERN_SSO_REGISTRATION_CLIENT_ID"),
+                    "secret": config("CERN_SSO_REGISTRATION_CLIENT_SECRET"),
+                },
+            },
+        ]
+    }
+}
+
+# This is used to get the public key and decode access tokens
+# for users when they login. The URL can be found under the
+# jwks_uri key of the JSON pointed to by the server_url of
+# CERN's well-known config URL:
+# https://auth.cern.ch/auth/realms/cern/.well-known/openid-configuration
+CERN_SSO_JWKS_URI = (
+    "https://auth.cern.ch/auth/realms/cern/protocol/openid-connect/certs"
+)
