@@ -20,9 +20,7 @@ daphne<5.0.0
 django-widget-tweaks<2.0.0
 django-extensions<4.0.0
 paramiko
-# This will be uncommented once the tested 
-# version is released.
-# runregistry
+runregistry>=1.0.0
 apscheduler
 whitenoise
 factory_boy
