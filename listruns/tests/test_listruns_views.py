@@ -121,7 +121,7 @@ class TestListRuns:
         req = RequestFactory().get(reverse("listruns:update", kwargs=arguments))
 
         user = mixer.blend(get_user_model())
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         user.save()
 
@@ -158,7 +158,7 @@ class TestListRuns:
         req = RequestFactory().get(reverse("listruns:update", kwargs=arguments))
 
         user = mixer.blend(get_user_model())
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         user.save()
 
@@ -195,7 +195,7 @@ class TestListRuns:
         req = RequestFactory().get(reverse("listruns:update", kwargs=arguments))
 
         user = mixer.blend(get_user_model())
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         user.save()
 
@@ -233,7 +233,7 @@ class TestListRuns:
 
         user = mixer.blend(get_user_model())
         user_aux = mixer.blend(get_user_model())
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         user.save()
 

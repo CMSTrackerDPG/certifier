@@ -41,7 +41,11 @@ jobs:
         git config --global url."https://${{ secrets.CERN_GITLAB_USER }}:${{ secrets.CERN_GITLAB_TOKEN }}@gitlab.cern.ch".insteadOf https://gitlab.cern.ch       
         git config --global url."https://${{ secrets.CERN_GITLAB_USER }}:${{ secrets.CERN_GITLAB_TOKEN }}@gitlab.cern.ch".insteadOf https://gitlab.cern.ch
         python -m pip install --upgrade pip
+        
         pip install -r requirements.txt
+
+        pip install --index-url https://test.pypi.org/simple runregistry==1.0.0
+
         pip install --upgrade pytest pytest-django pytest-cov codecov mixer selenium
 
     - name: Run Unit Tests
@@ -56,7 +60,8 @@ jobs:
         DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         OMS_CLIENT_ID: ${{ secrets.OMS_CLIENT_ID }}
         OMS_CLIENT_SECRET: ${{ secrets.OMS_CLIENT_SECRET }}
-
+        CERN_SSO_REGISTRATION_CLIENT_ID: ${{ secrets.CERN_SSO_REGISTRATION_CLIENT_ID }}
+        CERN_SSO_REGISTRATION_CLIENT_SECRET: ${{ secrets.CERN_SSO_REGISTRATION_CLIENT_SECRET }}
       run: |
         PYTHONWARNINGS=all pytest --ds=dqmhelper.test_ci_settings --cov=./ --ignore addrefrun/tests/test_addrefrun_views.py --ignore certifier/tests/test_certifier_views.py --ignore oms/tests/test_oms_utils.py --ignore oms/tests/test_oms_models.py
         codecov

@@ -1,3 +1,4 @@
+import os
 from .settings import *
 
 if os.environ.get("GITHUB_WORKFLOW"):

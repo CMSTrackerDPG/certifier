@@ -85,6 +85,7 @@ class ScriptConfigurationBase(models.Model):
                 if _k.keyword not in kwargs:
                     raise TypeError(f"Missing keyword argument '{_k.keyword}'")
                 cmd += f" {str(_k)}{kwargs[_k.keyword]}"
+        logger.debug(f"Command: {cmd}")
         return cmd
 
     def save(self, *args, **kwargs):

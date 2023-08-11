@@ -6,22 +6,23 @@ from django.contrib.auth import get_user_model
 
 pytestmark = pytest.mark.django_db
 
+
 class TestUser:
     def test_update_privilege_if_changed(self):
         user = mixer.blend(get_user_model())
 
         assert user.user_privilege == 0
-        user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+        user.extra_data = {"cern_roles": ["shifter"]}
         assert user.user_privilege == 0
         user.update_privilege()
         assert user.user_privilege == 10
-        user.extra_data.get("groups").append("cms-tracker-offline-shiftleader")
+        user.extra_data.get("cern_roles").append("shiftleader")
         user.update_privilege()
         assert user.user_privilege == 20
-        user.extra_data.get("groups").append("tkdqmdoctor-experts")
+        user.extra_data.get("cern_roles").append("expert")
         user.update_privilege()
         assert user.user_privilege == 30
-        user.extra_data.get("groups").append("tkdqmdoctor-admins")
+        user.extra_data.get("cern_roles").append("admin")
         user.update_privilege()
         assert user.user_privilege == 50
 
@@ -29,27 +30,27 @@ class TestUser:
         user = mixer.blend(get_user_model())
 
         assert user.user_privilege == 0
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         assert user.user_privilege == 20
 
     def test_downgrade_not_possible(self):
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-admins"]}
+        user.extra_data = {"cern_roles": ["admin"]}
         user.update_privilege()
         assert user.user_privilege == 50
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+        user.extra_data = {"cern_roles": ["shifter"]}
         assert user.user_privilege == 50
 
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         assert user.user_privilege == 20
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+        user.extra_data = {"cern_roles": ["shifter"]}
         assert user.user_privilege == 20
 
     def test_properties(self):
@@ -66,7 +67,7 @@ class TestUser:
         assert user.is_staff is False
         assert user.is_superuser is False
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+        user.extra_data = {"cern_roles": ["shifter"]}
         user.update_privilege()
         assert user.user_privilege == 10
         assert not user.is_guest
@@ -79,7 +80,7 @@ class TestUser:
         assert user.is_staff is False
         assert user.is_superuser is False
 
-        user.extra_data.get("groups").append("cms-tracker-offline-shiftleader")
+        user.extra_data.get("cern_roles").append("shiftleader")
         user.update_privilege()
         assert user.user_privilege == 20
         assert not user.is_guest
@@ -92,7 +93,7 @@ class TestUser:
         assert user.is_staff is True
         assert user.is_superuser is False
 
-        user.extra_data.get("groups").append("tkdqmdoctor-experts")
+        user.extra_data.get("cern_roles").append("expert")
         user.update_privilege()
         assert user.user_privilege == 30
         assert not user.is_guest
@@ -105,7 +106,7 @@ class TestUser:
         assert user.is_staff is True
         assert user.is_superuser is False
 
-        user.extra_data.get("groups").append("tkdqmdoctor-admins")
+        user.extra_data.get("cern_roles").append("admin")
         user.update_privilege()
         assert user.user_privilege == 50
         assert not user.is_guest
@@ -135,7 +136,7 @@ class TestUser:
 
         assert user.is_guest
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
 
         assert not user.is_guest
@@ -158,7 +159,6 @@ class TestUser:
         assert not user.is_guest
         assert user.is_shiftleader
 
-
         assert user.is_staff is True
         assert user.is_superuser is False
 
@@ -171,7 +171,7 @@ class TestUser:
     def test_update_privilege_to_shifter(self):
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+        user.extra_data = {"cern_roles": ["shifter"]}
         user.update_privilege()
         user.save()
 
@@ -189,7 +189,7 @@ class TestUser:
     def test_update_privilege_to_shift_leader(self):
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        user.extra_data = {"cern_roles": ["shiftleader"]}
         user.update_privilege()
         user.save()
 
@@ -207,7 +207,7 @@ class TestUser:
     def test_update_privilege_to_expert(self):
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-experts"]}
+        user.extra_data = {"cern_roles": ["expert"]}
         user.update_privilege()
         user.save()
 
@@ -225,7 +225,7 @@ class TestUser:
     def test_update_privilege_to_admin(self):
         user = mixer.blend(get_user_model())
 
-        user.extra_data = {"groups": ["tkdqmdoctor-admins"]}
+        user.extra_data = {"cern_roles": ["admin"]}
         user.update_privilege()
         user.save()
 
@@ -246,14 +246,14 @@ class TestUser:
         assert not user.is_superuser
         assert user.is_guest
 
-        extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+        extra_data = {"cern_roles": ["shiftleader"]}
         account = mixer.blend(SocialAccount, user=user, extra_data=extra_data)
         user.save()
         assert not user.is_guest
         assert user.is_shiftleader
         assert user.is_staff
         assert not user.is_superuser
-        account.extra_data = {"groups": ["tkdqmdoctor-experts"]}
+        account.extra_data = {"cern_roles": ["expert"]}
         account.save()
 
         user.save()

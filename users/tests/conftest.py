@@ -31,7 +31,7 @@ def superuser(django_user_model):
 def shifter(django_user_model):
     user = django_user_model.objects.create(username=SHIFTER1_USERNAME)
     user.set_password(PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+    user.extra_data = {"cern_roles": ["shifter"]}
     user.update_privilege()
     user.save()
     return user
@@ -41,7 +41,7 @@ def shifter(django_user_model):
 def second_shifter(django_user_model):
     user = django_user_model.objects.create(username=SHIFTER2_USERNAME)
     user.set_password(PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-shifters"]}
+    user.extra_data = {"cern_roles": ["shifter"]}
     user.update_privilege()
     user.save()
     return user
@@ -51,7 +51,7 @@ def second_shifter(django_user_model):
 def shiftleader(django_user_model):
     user = django_user_model.objects.create(username=SHIFTLEADER_USERNAME)
     user.set_password(PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-shiftleaders"]}
+    user.extra_data = {"cern_roles": ["shiftleader"]}
     user.update_privilege()
     user.save()
     return user
@@ -61,7 +61,7 @@ def shiftleader(django_user_model):
 def expert(django_user_model):
     user = django_user_model.objects.create(username=EXPERT_USERNAME)
     user.set_password(PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-experts"]}
+    user.extra_data = {"cern_roles": ["expert"]}
     user.update_privilege()
     user.save()
     return user
@@ -71,9 +71,7 @@ def expert(django_user_model):
 def admin(django_user_model):
     user = django_user_model.objects.create(username=ADMIN_USERNAME)
     user.set_password(PASSWORD)
-    user.extra_data = {"groups": ["tkdqmdoctor-admins"]}
+    user.extra_data = {"cern_roles": ["admin"]}
     user.update_privilege()
     user.save()
     return user
-
-

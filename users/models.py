@@ -4,12 +4,13 @@ from django.db import models
 from django.contrib.auth.models import UserManager
 from users.utilities.logger import get_configured_logger
 from users.utilities.utilities import (
-    get_highest_privilege_from_egroup_list,
-    extract_egroups,
+    get_highest_privilege_from_roles_list,
+    extract_roles,
     get_or_create_group,
 )
 
 logger = get_configured_logger(loggername=__name__, filename="models.log")
+
 
 class User(AbstractUser):
     """
@@ -36,20 +37,11 @@ class User(AbstractUser):
     Dictionary containing which e-group a user has to be member of, in order to 
     to gain a specific user privilege (e.g. Shift Leader or Admin)
     """
-    criteria_groups_dict = {
-        SHIFTER: [
-            "cms-dqm-runregistry-offline-tracker-certifiers",
-            "CMS-Shiftlist_shifters_DQM_Offline",
-            "tkdqmdoctor-shifters",
-            "CMS-Shiftlist_shifters_DQM_P5"],
-        SHIFTLEADER: [
-            "cms-tracker-offline-shiftleader",
-            "cms-tracker-offline-shiftleaders",
-            "tkdqmdoctor-shiftleaders",
-            "cms-dqm-runregistry-admin-tracker",
-        ],
-        EXPERT: ["cms-dqm-certification-experts", "tkdqmdoctor-experts"],
-        ADMIN: ["tkdqmdoctor-admins"],
+    criteria_roles_dict = {
+        SHIFTER: "shifter",
+        SHIFTLEADER: "shiftleader",
+        EXPERT: "expert",
+        ADMIN: "admin",
     }
 
     objects = UserManager()
@@ -61,10 +53,10 @@ class User(AbstractUser):
     user_groups = dict((privilege, group) for privilege, group in USER_PRIVILEGE_GROUPS)
 
     def update_privilege(self):
-        egroups = extract_egroups(self.extra_data)
+        roles = extract_roles(self.extra_data)
 
-        privilege = get_highest_privilege_from_egroup_list(
-            egroups, self.criteria_groups_dict
+        privilege = get_highest_privilege_from_roles_list(
+            roles, criteria_dict=self.criteria_roles_dict
         )
 
         if self.user_privilege < privilege:
@@ -83,8 +75,7 @@ class User(AbstractUser):
                 )
                 self.groups.add(shift_leader_group)
                 logger.info(
-                    "User {} has been added "
-                    "to the shift leader group".format(self)
+                    "User {} has been added " "to the shift leader group".format(self)
                 )
 
             if self.user_privilege >= self.ADMIN:
