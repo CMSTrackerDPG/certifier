@@ -6,7 +6,7 @@ certifi<2023.0.0
 channels[daphne]
 channels_redis
 Django<4.2.0
-django-allauth<1.0.0
+django-allauth==0.54.0
 django-bootstrap3<24.0
 django-filter<24.0
 django-ckeditor<7.0.0
@@ -20,7 +20,7 @@ daphne<5.0.0
 django-widget-tweaks<2.0.0
 django-extensions<4.0.0
 paramiko
-runregistry>=1.0.0
+runregistry==1.2.1
 apscheduler
 whitenoise
 factory_boy
