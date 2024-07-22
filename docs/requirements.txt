@@ -2,7 +2,7 @@ numba==0.48.0
 llvmlite==0.31.0
 asgiref>=3.2.10
 cernrequests>=0.3.0
-certifi==2018.11.29
+certifi==2023.7.22
 channels_redis
 django-allauth>=0.40.0
 django-bootstrap3>=9.1.0
