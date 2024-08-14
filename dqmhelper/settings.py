@@ -92,6 +92,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "dqmhelper.urls"
@@ -119,6 +120,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_REDIRECT_URL = "/"
+
+SOCIALACCOUNT_ONLY = True
 
 # WSGI_APPLICATION = "dqmhelper.wsgi.application"
 ASGI_APPLICATION = "dqmhelper.asgi.application"
