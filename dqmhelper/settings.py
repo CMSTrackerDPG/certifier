@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "bootstrap3",
     "allauth",
-    "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.openid_connect",
     "widget_tweaks",
@@ -114,8 +113,6 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
