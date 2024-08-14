@@ -88,13 +88,6 @@
         vertical-align: middle;
     }
 
-    #local-login {
-        visibility: hidden;
-    }
-
-    .use-local-account-div {
-        text-align: center;
-    }
 </style>
 
 
@@ -109,21 +102,4 @@
             </div>
         </button>
     </form>
-    <hr class="or">
-    <form class="form-signin" method="post">
-        <div class="use-local-account-div"><button type="button" class="btn btn-link" id="id_use_local_btn">Use local
-                account instead</button></div>
-        <div id="local-login">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <button id="id_login_submit" class="btn btn-lg btn-primary center-block" type="submit">Sign in</button>
-        </div>
-    </form>
 </div>
-
-<script>
-    $("#id_use_local_btn").click(function () {
-        $(".use-local-account-div").css('visibility', 'hidden');
-        $("#local-login").css('visibility', 'visible');
-    });
-</script>
