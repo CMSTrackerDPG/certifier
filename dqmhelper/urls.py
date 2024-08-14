@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from allauth.account.views import login, logout
 
 urlpatterns = [
     path("", include("home.urls")),
@@ -31,5 +32,7 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("reference/", include("addrefrun.urls")),
     path("oms/", include("oms.urls")),
+    path("admin/login/", login),
+    path("admin/logout/", logout),
     path("admin/", admin.site.urls),
 ]
