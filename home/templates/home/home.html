@@ -1,5 +1,6 @@
 {% extends 'dqmhelper/base.html' %}
-
+{% load socialaccount %}
+{% load bootstrap3 %}
 {% load static %}
 
 {% block style %}
@@ -114,11 +115,15 @@
                     <p class="card-text text-center" style="font-size: 18px">Execute scripts such as tracker maps</p>
                 </div>
 			</div>
-		
+
             {% endif %}
 		</div>
 		{% else %}
-		<h4>Please <a href="{% url 'account_login' %}">login</a> to use the application.</h4>
+        <form class="form-signin" method="post" action="{% provider_login_url 'cern' %}">
+            {% csrf_token %}
+		<h4>Please <button class="btn btn-lg btn-outline-dark"  type="submit" >login</button> to use the application.</h4>
+        </form>
+
         {% endif %}
     </div>
 </div>

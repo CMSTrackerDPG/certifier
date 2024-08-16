@@ -18,7 +18,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 # Version to display in order to keep track of changes
-CERTHELPER_VERSION = "1.11.1"
+CERTHELPER_VERSION = "1.11.3"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,6 +92,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "dqmhelper.urls"
@@ -114,13 +115,13 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 LOGIN_REDIRECT_URL = "/"
+
+SOCIALACCOUNT_ONLY = True
 
 # WSGI_APPLICATION = "dqmhelper.wsgi.application"
 ASGI_APPLICATION = "dqmhelper.asgi.application"

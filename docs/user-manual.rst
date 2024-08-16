@@ -41,14 +41,17 @@ that shift leaders are detected by the e-groups the user is a member of.
 The Shift Leader e-group is automatically assigned and does not have to
 be updated manually.
 
-Shifters must be subscribed to the following e-groups:
+Shifters must be subscribed to any of the following e-groups:
 
 - ``cms-dqm-runregistry-offline-tracker-certifiers``
+- ``cms-shiftlist_shifters_dqm_p5``
+- ``tkdqmdoctor-shifters``
+- ``cms-shiftlist_shifters_dqm_offline``
 
-Shift Leaders must be subscribed to the following e-groups:
+Shift Leaders must be subscribed to any of the following e-groups:
 
 - ``cms-tracker-offline-shiftleader``
-- ``cms-tracker-offline-shiftleaders``
+- ``tkdqmdoctor-shiftleaders``
 
 Experts must be subscribed to:
 
