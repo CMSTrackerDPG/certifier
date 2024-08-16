@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from allauth.socialaccount.fields import JSONField
 from django.db import models
 from django.contrib.auth.models import UserManager
 from users.utilities.logger import get_configured_logger
@@ -34,7 +33,7 @@ class User(AbstractUser):
     )
 
     """
-    Dictionary containing which e-group a user has to be member of, in order to 
+    Dictionary containing which e-group a user has to be member of, in order to
     to gain a specific user privilege (e.g. Shift Leader or Admin)
     """
     criteria_roles_dict = {
@@ -46,7 +45,7 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    extra_data = JSONField(verbose_name="extra data", default=dict)
+    extra_data = models.JSONField(verbose_name="extra data", default=dict)
 
     user_privilege = models.IntegerField(choices=USER_PRIVILEGE_GROUPS, default=GUEST)
 
