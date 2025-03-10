@@ -11,7 +11,7 @@ django-allauth[socialaccount]
 django-bootstrap3<24.0
 django-filter<24.0
 django-ckeditor<7.0.0
-django-tables2<3.0.0
+django-tables2<=2.6.0
 djangorestframework<4.0.0
 django-model-utils
 psycopg2-binary<3.0.0
